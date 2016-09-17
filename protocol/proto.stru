@@ -1,0 +1,57 @@
+#类型名称，注释
+
+#单个玩家的匹配信息
+macthing_info,/*单个玩家的匹配信息*/
+	war_id,uint32,0,/*场次ID*/
+	kuafu_type,uint8,0,/*跨服类型*/
+	player_guid,String,50,/*玩家GUID*/
+	begin_time,uint32,0,/*匹配结束时间*/
+	kuafu_number,uint32,0,/*跨服编号*/
+	reserve,uint32,0,/*保留参数*/
+	reserve2,uint32,0,/*保留参数*/
+	battle_server_info,String,200,/*战斗服信息*/
+	reserve_str,String,1024,/*保留字符串参数*/
+
+#跨服战报名
+world_reg_info,/*跨服战报名*/
+	guid,String,50,/*玩家GUID*/
+	kuafu_type,uint8,0,/*跨服类型*/
+	reserve,uint32,0,/*预留用的*/
+	reserve_str,String,200,/*预留用的*/
+	data,String,200,/*预留*/
+	force,double,0,/*战斗力*/
+
+#跨服1v1排行信息结构体
+world_kuafu_rank_1v1_info,/*跨服1v1排行信息结构体*/
+	rank,uint32,0,/*排行*/
+	guid,String,50,/*玩家guid*/
+	name,String,50,/*玩家名字*/
+	weiwang,uint32,0,/*威望*/
+	win_count,uint32,0,/*总胜利次数*/
+	total_count,uint32,0,/*总参与次数*/
+
+#家族信息
+family_info,/*家族信息*/
+	family_guid,String,50,/*家族GUID*/
+	family_name,String,50,/*家族名字*/
+	max_force,double,0,/*最大战力*/
+	cur_win,uint16,0,/*当前连胜*/
+	max_win,uint16,0,/*最大连胜*/
+	boss_force,double,0,/*老大战力*/
+	pay_level,uint8,0,/*最大付费等级*/
+
+#家族战组织信息
+family_war_orz_info,/*家族战组织信息*/
+	jie_id,uint32,0,/*界ID*/
+	reg_begin,uint32,0,/*报名开始时间*/
+	reg_end,uint32,0,/*报名结束时间*/
+	matching_show_begin,uint32,0,/*匹配开始时间*/
+	teleport_begin,uint32,0,/*传送开始时间*/
+
+#家族战匹配信息
+family_match_info,/*家族战匹配信息*/
+	jie_id,uint32,0,/*界ID*/
+	match_id,uint32,0,/*匹配ID*/
+	family1_guid,String,50,/*家族1GUID*/
+	family2_guid,String,50,/*家族2GUID*/
+	teleport_begin,uint32,0,/*传送开始时间*/

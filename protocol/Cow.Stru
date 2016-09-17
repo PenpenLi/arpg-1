@@ -1,0 +1,57 @@
+#类型名称，注释
+
+#坐标结构体
+point,/*坐标结构体*/
+	pos_x,float,0,/*坐标X*/
+	pos_y,float,0,/*坐标Y*/
+
+#传送地点结构体
+taxi_menu_info,/*传送地点结构体*/
+	id,int32,0,/**/
+	taxi_text,String,50,/*传送地点名称*/
+	map_id,uint32,0,/*地图ID*/
+	pos_x,uint16,0,/*坐标X*/
+	pos_y,uint16,0,/*坐标Y*/
+
+#玩家角色创建选择信息
+char_create_info,/*玩家角色创建选择信息*/
+	name,String,50,/*名称*/
+	faction,uint8,0,/*阵营*/
+	gender,uint8,0,/*性别*/
+	level,uint16,0,/*等级*/
+	guid,String,50,/**/
+	head_id,uint32,0,/*头像*/
+	hair_id,uint32,0,/*发型ID*/
+	race,uint8,0,/*种族，猛男美女萝莉那些*/
+
+#任务菜单
+quest_option,/*任务菜单*/
+	quest_id,uint32,0,/*任务id*/
+	quest_icon,uint32,0,/*图标*/
+	quest_level,uint16,0,/*任务等级*/
+	quest_title,String,50,/*任务标题*/
+	flags,uint32,0,/*标识*/
+
+#可接任务信息
+quest_canaccept_info,/*可接任务信息*/
+	quest_id,uint32,0,/*任务ID*/
+	quest_type,uint8,0,/*任务类别*/
+	title,String,50,/*标题*/
+	npc_id,uint32,0,/*接受任务NPC模板id*/
+	quest_level,uint32,0,/*任务等级*/
+
+#闲聊选项结构体
+gossip_menu_option_info,/*闲聊选项结构体*/
+	id,int32,0,/*id*/
+	option_icon,int32,0,/*选项icon图标*/
+	option_title,String,200,/*选项文本*/
+
+#物品冷却
+item_cooldown_info,/*物品冷却*/
+	item,uint32,0,/*物品摸版*/
+	cooldown,uint32,0,/*冷却时间*/
+
+#任务状态
+quest_status,/*任务状态*/
+	quest_id,uint16,0,/*任务ID*/
+	status,uint8,0,/*任务状态*/
