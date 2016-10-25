@@ -827,5 +827,11 @@ function OperationFailedToString(type, reason, data)
 		end
 		return "未知错误1  OPERTE_TYPE_HOSTING " .. reason .. "    "  .. data
 	end
+	if(type == OPERTE_TYPE_STRENGTH)then
+		if (reason ==STRENGTH_OPERTE_FAIL)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
+		end
+		return "未知错误1  OPERTE_TYPE_STRENGTH " .. reason .. "    "  .. data
+	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

@@ -133,17 +133,21 @@ SPELL_SHIFANG_SHAN					= 3	--前方扇形范围
 SPELL_SHIFANG_DIAN					= 4	--坐标点范围
 
 --技能开始的逻辑判断 (Handle_Spell_Start) 返回false则条件不满足(玩家才会走这个判断)
-function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)	
+function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
 	local casterInfo = UnitInfo:new{ptr = caster}
+	
 	if(casterInfo:IsAlive() == false)then
 		outDebug("do DoHandleSpellStart but caster is not alive")
 		return false
 	end
+
+	--[[
 	--看看本地图是否允许施法
 	if(not mapLib.GetCanCastSpell(map_ptr))then
 		outDebug("DoHandleSpellStart  this map is cannot cast spell !!!")
 		return false
 	end
+	
 	local spellid_str = string.format('%d', spell_id)
 	if(tb_skill_base[spell_id] == nil)then
 		--技能不存在
@@ -160,7 +164,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_ENOUGH_CONSUMPTION, spellid_str)		
 		return false
 	end
-
+	
 	--获取2段技能的技能ID
 	local old_spell_id = spell_id
 	spell_id = casterInfo:GetNextSpellID(spell_id)
@@ -177,8 +181,16 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
 			return false
 		end
 	end
-	
+	]]
+	--print("now is:"..nowtime)
+	if casterInfo:IsSpellCD(spell_id, nowtime) then
+		--print("skill is countdown")
+		--技能冷却中
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN, spellid_str)		
+		return false
+	end
 
+	--[[
 	if(not casterInfo:IsCanCast(spell_id))then
 		--被限制施法
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_CAN_NOT_CAST, spellid_str)		
@@ -194,6 +206,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
 		--已经在施法，则停止施法
 		unitLib.SpellStop(caster)
 	end
+	
 	
 	local target = unitLib.GetTarget(caster)
 	if(spell_id == SPELL_ID_CHONGFENG) then -- 冲撞技能
@@ -288,7 +301,8 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
 			return false
 		end
 	end
-	
+	]]
+
 	return true
 end
 
@@ -349,15 +363,74 @@ end
 function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, unit, data)
 	local allTargets = {}
 	local casterInfo = UnitInfo:new{ptr = caster}
+
+	-- 扇形(以自己为圆心, 有朝向)
+
+	-- 圆形
+		-- 以自己为圆心
+		-- 以(dst_x, dst_y)为圆心, 需要认证正确性
+
+	if true then
+		local caster_x, caster_y = unitLib.GetPos(caster)
+		local r = 5
+
+		--[[
+			float start_x	= (float)LUA_TONUMBER(scriptL,1);
+	float end_y		= (float)LUA_TONUMBER(scriptL,2);
+	float end_x		= (float)LUA_TONUMBER(scriptL,3);
+	float start_y	= (float)LUA_TONUMBER(scriptL,4);
+
+	Unit* unit = (Unit*)LUA_TOUSERDATA(scriptL,5, ObjectTypeUnit);
+	if (!unit)
+	{
+		tea_perror("error: LuaGetRectTargets unit = null");
+		return 0;
+	}
+	Spell_Target_Type TargetType = (Spell_Target_Type)(int)LUA_TONUMBER(scriptL,6);
+		]]
+
+
+		local targetUnits = mapLib.GetRectTargets(caster_x-5, caster_y+5, caster_x+5, caster_y-5, caster, TARGET_TYPE_ENEMY)
+		local dam = 10
+		if casterInfo:GetTypeID() == TYPEID_PLAYER then
+			dam = 100
+		end
+
+		local hasTarget = false
+		for _, _target in pairs(targetUnits) do
+			--print("hit target:")
+			--print("	"..unitLib.GetIntGuid(_target))
+			if caster ~= _target then
+				hasTarget = true
+				AddSpellCastinfo(caster, _target, dam, HITINFO_NORMALSWING, spell_id)
+				--BuffTargetType(_target,caster,spell_id,spell_lv,BUFF_JIANSU,dst_x,dst_y,10,80)
+			end
+		end
+		
+		if not hasTarget then
+			--print("not find target:")
+			AddSpellCastinfo(caster, caster, 0, HITINFO_NORMALSWING, spell_id)
+		end
+		
+		return true
+	end
+	
+
+
+
 	if(GetUnitTypeID(caster) == TYPEID_PLAYER)then
 		if(unit == nil)then
+			--[[FIXME
 			--取一下二段技能
 			spell_id = casterInfo:GetNextSpellID(spell_id)
 			--设置下一个技能有效时间
 			casterInfo:SetNextSpellValid(spell_id)
 			spell_lv = casterInfo:GetNextSpellLv(spell_id,spell_lv)
+			]]
 		end
 	end
+
+
 	if(spell_id >= SPELL_ID_LUOYANZHAN_1 and spell_id <= SPELL_ID_LUOYANZHAN_3)then	--落雁斩1
 		if GetUnitTypeID(caster) == TYPEID_PLAYER then
 			if(unit == nil)then
@@ -1190,6 +1263,8 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 		end
 	end
 end
+
+--[[CAST:1]]
 --单体接口,此接口玩家和怪物都可以调用
 function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets,tar_x, tar_y)
 	if(target == nil)then
@@ -1282,6 +1357,7 @@ function handle_cast_monomer_spell_addbuff(caster, target, buff_table)
 		elseif buff_table[k+3] == 2 then
 			buff_target = creatureLib.GetMonsterHost(caster)
 		end
+
 		if buff_target then
 			SpelladdBuff(buff_target, buff_table[k], caster, 1, buff_table[k+2],buff_table[k+1])
 		end
@@ -1291,8 +1367,9 @@ end
 --buff添加类型
 function BuffTargetType(unit,buff_giver,spell_id,spell_lv,buff_id,dst_x,dst_y,duration,reserve)
 	local casterInfo = UnitInfo:new{ptr = buff_giver}
-	local shifang = tb_skill_base[spell_id].target_type --释放类型
-	local duration = duration or tb_buff_template[buff_id].duration
+	local shifang = SPELL_SHIFANG_DAN
+	--tb_skill_base[spell_id].target_type --释放类型
+	--local duration = duration or tb_buff_template[buff_id].duration
 	if shifang == SPELL_SHIFANG_DAN then	--目标单体
 		SpelladdBuff(unit, buff_id, buff_giver, 1, duration,reserve)
 	else

@@ -206,7 +206,7 @@ end
 --根据一定的规则获得场景服连接 inst_type:副本类型（0：不是副本 1：活动副本 2：单人副本）
 function ServerConnList:GetScenedFDByType (inst_type, mapid)
 	local conn_id = 0
-	if(inst_type == MAP_INST_TYP_SINGLETON)then		--单人副本
+	if(inst_type == MAP_INST_TYP_SINGLETON or inst_type == MAP_INST_TYP_GROUP)then		--单人副本
 		conn_id = self:SelectScenedFDByType(SCENED_TYPE_INST, mapid)
 	elseif(inst_type == MAP_INST_TYP_ACTIVITY)then	--活动副本
 		conn_id = self:SelectScenedFDByType(SCENED_TYPE_ACTIVI, mapid)

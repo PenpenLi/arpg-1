@@ -22,7 +22,6 @@ config = {
 	auto_save_time = 360,						--自动保存数据时间间隔，秒
 	auto_backup_hdd_time	= 1800,				--每30分钟存一次回档，秒
 	reload_game_config_interval = 600,			--重新读取游戏配置间隔
-	auto_check_world_conn = 10,					--每10s检测下与世界服的连接
 	Save_Player_To_DB_Count = 1,				--每次轮询保存到数据库的个数
 	cant_make_name = NAME_ILLEGAL_CHAR,			--取名屏蔽字
 	--游戏服命令表
@@ -37,12 +36,12 @@ config = {
 		CMSG_PLAYER_LOGOUT,
 		CMSG_REGULARISE_ACCOUNT,		
 		CMSG_PLAYER_KICKING,	--踢人
-		CMSG_KUAFU_FIGHT_SIGN,
+		--CMSG_KUAFU_FIGHT_SIGN,
 		CMSG_GOBACK_TO_GAME_SERVER,
-		CMSG_KUAFU_FIGHT_CANCEL_SIGN,
-		CMSG_SEND_TO_WORLD,					--发给世界服
-		CMSG_ADD_WATCH_WORLD_OBJECT,		--请求监听世界服某对象
-		CMSG_DEL_WATCH_WORLD_OBJECT,		--取消世界服某对象的监听
+		--CMSG_KUAFU_FIGHT_CANCEL_SIGN,
+		--CMSG_SEND_TO_WORLD,					--发给世界服
+		--CMSG_ADD_WATCH_WORLD_OBJECT,		--请求监听世界服某对象
+		--CMSG_DEL_WATCH_WORLD_OBJECT,		--取消世界服某对象的监听
 		CMSG_MODIFY_WATCH,					--客户端订阅
 		CMSG_KUAFU_CHUANSONG,				--跨服传送
 	},
@@ -115,7 +114,7 @@ end
 
 --玩家下线的时候判断是否记录玩家所在地图的信息，最多保留10分钟
 function DoIsRecordIntanceInfo(player, map_id, isfuben, fuben_type)	
-	if(isfuben == 0 or fuben_type ~= MAP_INST_TYP_SINGLETON )then
+	if(isfuben == 0 or fuben_type ~= MAP_INST_TYP_SINGLETON or  fuben_type ~= MAP_INST_TYP_GROUP)then
 		return false
 	end
 
@@ -140,6 +139,7 @@ function FindOrCreateMap(mapid, inst_type, general_id, lineno)
 	if(inst_type == MAP_INST_TYP_SINGLETON)then	--单人副本
 		return createInstance(mapid, "", lineno)
 	end
+
 	--找一下真正该去的分线号
 	local lineno_true = GetWantToLineno(mapid, lineno, general_id)
 	
@@ -154,8 +154,9 @@ end
 
 --地图分线人数配置
 map_line_config = {
-	[101001] = 30,
-	[102001] = 300,
+	[1] = 2,
+	[101] = 30,
+	[102] = 300,
 }
 --获取真正该传去的分线号
 function GetWantToLineno(mapid, lineno, general_id)

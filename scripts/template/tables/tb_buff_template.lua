@@ -125,4 +125,6 @@ tb_buff_template = {
 	[411] = {id = 411,name = "百分比攻击",duration = 10,frequency = 0,recalculation = 1,die_clear = 1,skill_id = 0,},
 	[421] = {id = 421,name = "百分比防御",duration = 10,frequency = 0,recalculation = 1,die_clear = 1,skill_id = 0,},
 	[431] = {id = 431,name = "百分比减伤",duration = 10,frequency = 0,recalculation = 1,die_clear = 1,skill_id = 0,},
+	-- 自己加的
+	[900] = {id = 900,name = "百分比血量上限buff",duration = 10,frequency = 0,recalculation = 1,die_clear = 1,skill_id = 0,},
 }

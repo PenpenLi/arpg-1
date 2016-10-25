@@ -5,9 +5,15 @@ OPT_UNSET 	 = 0x02
 OPT_ADD 	 = 0x04
 OPT_SUB 	 = 0x08
 OPT_MARK	 = 0x10	--注释
-	
+
 --地图初始化时在这里取得剧情脚本
-function Select_Instance_Script(mapid)	
+function Select_Instance_Script(mapid)
+	local ret = INSTANCE_SCRIPT_TABLE[mapid]
+	
+	if ret ~= nil then
+		return ret
+	end
+
 	return Instance_base
 end
 
@@ -417,7 +423,12 @@ Instance_base = {
 	end,
 	--获取副本类型
 	GetInstanceType = function(self)
-		return self:GetUInt32(MAP_INT_FIELD_INSTANCE_TYPE, val)
+		return self:GetUInt32(MAP_INT_FIELD_INSTANCE_TYPE)
+	end,
+
+	-- 获取副本instanceId
+	GetInstanceId = function(self)
+		return self:GetUInt32(MAP_INT_FIELD_INSTANCE_ID)
 	end,
 	
 	--脚本初始化事件，在每次初始化地图或者@脚本的时候触发
@@ -524,7 +535,21 @@ Instance_base = {
 	--是否友好（友好1，不友好0）
 	DoIsFriendly = 
 		function(self, killer_ptr, target_ptr)
-			return 1
+			local killerInfo = UnitInfo:new{ptr = killer_ptr}
+			local targetInfo = UnitInfo:new{ptr = target_ptr}
+
+			-- 先判断
+			local ret = false
+			if killerInfo:GetTypeID() == TYPEID_PLAYER then
+				ret = targetInfo:GetTypeID() ~= TYPEID_UNIT or targetInfo:GetNpcFlags() ~= 0
+			elseif killerInfo:GetTypeID() == TYPEID_UNIT then
+				ret = targetInfo:GetTypeID() ~= TYPEID_PLAYER
+			end
+			
+			if ret then
+				return 1
+			end
+			return 0
 		end,
 	
 	--复活处理
@@ -550,7 +575,7 @@ Instance_base = {
 	OnPlayerKilled = function(self, player, killer)
 		local playerInfo = UnitInfo:new{ptr = killer}
 		--增加击杀玩家次数
-		playerInfo:AddKillPlayerCount(1)
+		--playerInfo:AddKillPlayerCount(1)
 		return 0
 	end,
 
@@ -592,10 +617,17 @@ Instance_base = {
 		local entry = creature:GetEntry()
 		local config = tb_creature_template[entry]
 		if config then
+			--给怪物添加基本信息
+			creature:SetNpcFlags(config.npcflag)
+			if creature:GetLevel() == 0 then
+				creature:SetLevel(config.level)
+			end
+			creature:SetName(config.name)
+
+			--给怪物添加技能
 			local spells = config.spell
 			for i = 1, #spells, 3 do
-				--给怪物添加技能
-				--creatureLib.MonsterAddSpell(creature_ptr, spells[i], spells[i+1], spells[i+2])
+				creatureLib.MonsterAddSpell(creature_ptr, spells[i], spells[i+1], spells[i+2])
 			end
 		end
 		

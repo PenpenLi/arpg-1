@@ -194,7 +194,7 @@ function PlayerInfo:CheckChatLimit(c_type, content)
 		return true
 	end
 	--还没名字的玩家不能发言
-	if self>GetName() == "" then
+	if self:GetName() == "" then
 		return false
 	end
 	--没内容的发言

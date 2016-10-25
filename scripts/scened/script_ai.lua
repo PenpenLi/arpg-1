@@ -109,7 +109,7 @@ AI_Base = {
 			return '',{}
 		end,		--闲聊选项
 	LootAllot = 	--生成战利品
-		function(self, owner, player, drop_rate_multiples, fcm)
+		function(self, owner, player, killer, drop_rate_multiples, boss_type, fcm)
 			local playerInfo = UnitInfo:new{ptr = player}
 			local player_guid = playerInfo:GetPlayerGuid()
 			local player_lv = playerInfo:GetLevel()
@@ -125,13 +125,9 @@ AI_Base = {
 				--循环处理要掉落的铜钱堆数
 				local need_drop_silver = self:SilverLoot(info)
 				local result_silver = need_drop_silver
-				local attr_ptr = playerLib.GetEquipAttrs(player)
-				if attr_ptr then
-					local attrInfo = ReCalculate:new{ptr = attr_ptr}
-					result_silver = result_silver + need_drop_silver * attrInfo:GetOthers(EEQUIP_OTHER_KILL_CREATURE_SILVER) * 0.0001
-				end
 				if result_silver > 0 then
-					AddLootGameObject(map_ptr, owner, player_guid, Item_Loot_Silver, result_silver, fcm)
+					playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, result_silver)
+					--AddLootGameObject(map_ptr, owner, player_guid, Item_Loot_Silver, result_silver, fcm)
 				end
 			end
 			
@@ -140,21 +136,22 @@ AI_Base = {
 			for i = 1, #need_drop_items do
 				local drop_item_config = need_drop_items[i]
 				local loot_entry = drop_item_config[1]
-				if loot_entry == Item_Loot_Silver or loot_entry == Item_Loot_Wood or loot_entry == Item_Loot_Mineral or loot_entry == Item_Loot_Coal 
-							or loot_entry == Item_Loot_Leather or loot_entry == Item_Loot_Pearl or loot_entry == Item_Loot_Crystal then
-					AddLootGameObject(map_ptr, owner, player_guid, loot_entry, drop_item_config[2], fcm)
+				if loot_entry == Item_Loot_Silver then
+					playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, drop_item_config[2])
+					--AddLootGameObject(map_ptr, owner, player_guid, loot_entry, drop_item_config[2], fcm)
 				else
-					for j = 1, drop_item_config[2] do				
-						AddLootGameObject(map_ptr, owner, player_guid, loot_entry, drop_item_config[3], fcm, drop_item_config[4], drop_item_config[5],drop_item_config[6])				
+					for j = 1, drop_item_config[2] do	
+						playerLib.AddItem(player, loot_entry, 1, ITEM_BIND_NONE, LOG_ITEM_OPER_TYPE_LOOT)			
+						--AddLootGameObject(map_ptr, owner, player_guid, loot_entry, drop_item_config[3], fcm, drop_item_config[4], drop_item_config[5],drop_item_config[6])				
 					end
 				end
 			end
 			
-			--兽魂
-			local shouhun = self:ShouHunLoot(info) 
-			if shouhun > 0 then
-				playerInfo:AddMountShouHun(shouhun)
-			end
+			-- --兽魂
+			-- local shouhun = self:ShouHunLoot(info) 
+			-- if shouhun > 0 then
+			-- 	playerInfo:AddMountShouHun(shouhun)
+			-- end
 		end,
 	--处理兽魂掉落
 	ShouHunLoot = function( self, info )
@@ -191,10 +188,10 @@ AI_Base = {
 					if player_gender == CHAR_GENDER_FEMALE then
 						config = drop_info.nv_reward
 					end
-					local index = ExtractItem( config )
+					local index = 1
 					if index > 0 then
 						--随机掉落物品的强化等级
-						local streng_lv = RandLootItemStrengLv(player,config[index][1],owner)
+						local streng_lv = 0
 						--模板,数量,绑定与否,存在时间,保护时间
 						local temp = {config[index][1], randIntD(config[index][2], config[index][3]), config[index][5], drop_info.continue_time, drop_info.possess_time,streng_lv}						
 						table.insert(need_drop_items, temp)
@@ -434,8 +431,9 @@ end
 
 
 --生成战利品
-function AI_boss:LootAllot(owner, player, drop_rate_multiples, fcm)
+function AI_boss:LootAllot(owner, player, killer, drop_rate_multiples, boss_type, fcm)
 	--boss掉落不走正常掉落
+
 end
 
 function AI_boss:SuiJiBossLoot(creature_entry,creature_level,info)

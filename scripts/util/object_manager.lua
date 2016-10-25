@@ -4,7 +4,7 @@ local ObjectManager = class('ObjectManager')
 
 GLOBAL_VALUE_OWNER_STRING = "global_value"
 WORLD_BINLOG_OWNER_STRING = "world"
-FACTION_OWNER_STRING = "faction"
+FACTION_BINLOG_OWNER_STRING = "faction"
 GROUP_OWNER_STRING = "group"
 
 function ObjectManager:ctor( )

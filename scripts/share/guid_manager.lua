@@ -9,8 +9,12 @@ GuidManager.ObjectTypeGlobalValue			= 'G'	--//全局对象
 GuidManager.ObjectTypeUnit					= 'U'	--//生物
 GuidManager.ObjectTypePlayer				= 'p'	--//玩家
 GuidManager.ObjectTypeItemMgr				= 'I'	--//物品
+
+GuidManager.ObjectTypeFaction				= 'L'	--//帮派
+
 GuidManager.ObjectTypeLimit					= 'l'	--//限时活动对象
 GuidManager.ObjectTypeSocial				= 's'	--//社交
+GuidManager.ObjectTypeLogical 				= 'B'	--//业务逻辑
 GuidManager.ObjectTypeGiftPacks				= 'g'	--//礼包
 GuidManager.ObjectTypeMap					= 'M'	--//地图变量
 GuidManager.ObjectTypeMapPlayerInfo			= 'u'	--//任意地图实例信息(目前主要是在线玩家列表),前缀被用光了，这个将就点用吧

@@ -623,7 +623,12 @@ end
 
 --获得npc标志
 function UnitInfo:GetNpcFlags()
-	return self:GetUInt32(UNIT_FIELD_NPC_FLAG, val)
+	return self:GetUInt32(UNIT_FIELD_NPC_FLAG)
+end
+
+--设置npc名字
+function UnitInfo:SetName(val)
+	self:SetStr(BINLOG_STRING_FIELD_NAME, val)
 end
 
 --获得pos槽中的buff id 
@@ -1292,8 +1297,15 @@ end
 
 --属性重算（场景服）
 function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
+	--TODO: 场景服计算属性
+    unitLib.SetMoveSpeed(player, 135)
+end
 
-
+-- 怪物初始化
+function creatureInit(creature, entry)
+	local obj = tb_creature_template[entry]
+	creatureLib.SetActionRadius(creature, obj.actionradius)
+	creatureLib.SetVisionRadius(creature, obj.visionradius)
 end
 
 --应用服通知场景服消耗元宝或铜钱做些什么

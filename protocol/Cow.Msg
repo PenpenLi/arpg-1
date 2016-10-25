@@ -574,60 +574,35 @@ merge_server_msg,s2c,117,/*合服通知*/,STATUS_NEVER,False
 	reserve,uint32,False,/*预留*/
 	reserve2,uint32,False,/*预留2*/
 
-#发送给世界服
-send_to_world,c2s,118,/*发送给世界服*/,STATUS_NEVER,False
-	pkt,ByteArray,False,/**/
-
-#世界服给客户端
-world_to_client,s2c,119,/*世界服给客户端*/,STATUS_NEVER,True
-
-#请求监听世界服某对象
-add_watch_world_object,c2s,120,/*请求监听世界服某对象*/,STATUS_NEVER,False
-	guid,String,False,/*guid*/
-
-#取消世界服某对象的监听
-del_watch_world_object,c2s,121,/*取消世界服某对象的监听*/,STATUS_NEVER,False
-	guid,String,False,/*guid*/
-
 #
-rank_list_query,c2s,122,/*获取排行信息*/,STATUS_NEVER,False
+rank_list_query,c2s,118,/*获取排行信息*/,STATUS_NEVER,False
 	call_back_id,uint32,False,/*回调号*/
 	rank_list_type,uint8,False,/*排行类型*/
 	start_index,uint16,False,/*开始*/
 	end_index,uint16,False,/*结束*/
 
 #
-rank_list_query_result,s2c,123,/*客户端获取排行榜返回结果*/,STATUS_NEVER,True
+rank_list_query_result,s2c,119,/*客户端获取排行榜返回结果*/,STATUS_NEVER,True
 
 #客户端热更场景模块后获取uint
-client_update_scened,c2s,124,/*客户端热更场景模块后获取uint*/,STATUS_NEVER,False
+client_update_scened,c2s,120,/*客户端热更场景模块后获取uint*/,STATUS_NEVER,False
 
 #数值包
-num_lua,s2c,125,/*数值包*/,STATUS_NEVER,True
+num_lua,s2c,121,/*数值包*/,STATUS_NEVER,True
 
 #战利品拾取
-loot_select,c2s,126,/*战利品拾取*/,STATUS_NEVER,False
+loot_select,c2s,122,/*战利品拾取*/,STATUS_NEVER,False
 	x,uint16,False,/*x*/
 	y,uint16,False,/*y*/
 
-#跨服战报名
-kuafu_fight_sign,c2s,127,/*跨服战报名*/,STATUS_NEVER,False
-	kuafu_type,uint8,False,/*跨服类型*/
-	data,uint32,False,/*保留参数*/
-	data_str,String,False,/*保留参数*/
-
-#跨服取消报名
-kuafu_fight_cancel_sign,c2s,128,/*跨服取消报名*/,STATUS_NEVER,False
-	kuafu_type,uint8,False,/*跨服类型*/
-
 #通知登录服把玩家传回游戏服
-goback_to_game_server,c2s,129,/*通知登录服把玩家传回游戏服*/,STATUS_NEVER,False
+goback_to_game_server,c2s,123,/*通知登录服把玩家传回游戏服*/,STATUS_NEVER,False
 
 #客户端把比赛人员数据传给比赛服
-world_war_CS_player_info,c2s,130,/*客户端把比赛人员数据传给比赛服*/,STATUS_NEVER,False
+world_war_CS_player_info,c2s,124,/*客户端把比赛人员数据传给比赛服*/,STATUS_NEVER,False
 
 #玩家加入或者离开某服务器
-join_or_leave_server,s2c,131,/*玩家加入或者离开某服务器*/,STATUS_NEVER,False
+join_or_leave_server,s2c,125,/*玩家加入或者离开某服务器*/,STATUS_NEVER,False
 	join_or_leave,uint8,False,/*加入或者离开*/
 	server_type,uint8,False,/*服务器类型*/
 	server_pid,uint32,False,/*服务器进程id*/
@@ -635,33 +610,55 @@ join_or_leave_server,s2c,131,/*玩家加入或者离开某服务器*/,STATUS_NEVER,False
 	time,uint32,False,/*加入或者离开的时间点*/
 
 #客户端请求跨服人员数据
-world_war_SC_player_info,both,132,/*客户端请求跨服人员数据*/,STATUS_NEVER,True
+world_war_SC_player_info,both,126,/*客户端请求跨服人员数据*/,STATUS_NEVER,True
 
 #客户端订阅信息
-clientSubscription,both,133,/*客户端订阅信息*/,STATUS_NEVER,False
+clientSubscription,both,127,/*客户端订阅信息*/,STATUS_NEVER,False
 	guid,uint32,False,/*玩家guid*/
 
 #服务端下发lua脚本
-lua_script,s2c,134,/*服务端下发lua脚本*/,STATUS_NEVER,True
+lua_script,s2c,128,/*服务端下发lua脚本*/,STATUS_NEVER,True
 
 #角色更改信息
-char_update_info,c2s,135,/*角色更改信息*/,STATUS_AUTHED,False
+char_update_info,c2s,129,/*角色更改信息*/,STATUS_AUTHED,False
 	info,char_create_info,False,/*角色更改信息*/
 
 #通知客户端观察者的视角
-notice_watcher_map_info,s2c,136,/*通知客户端观察者的视角*/,STATUS_NEVER,False
+notice_watcher_map_info,s2c,130,/*通知客户端观察者的视角*/,STATUS_NEVER,False
 	wather_guid,String,False,/*观察者guid*/
 	map_id,uint32,False,/*地图id*/
 	instance_id,uint32,False,/*实例id*/
 
 #客户端订阅对象信息
-modify_watch,c2s,137,/*客户端订阅对象信息*/,STATUS_NEVER,False
+modify_watch,c2s,131,/*客户端订阅对象信息*/,STATUS_NEVER,False
 	opt,uint8,False,/*操作类型*/
 	cid,uint32,False,/*修改对象订阅*/
 	key,String,False,/*订阅key*/
 
 #跨服传送
-kuafu_chuansong,c2s,138,/*跨服传送*/,STATUS_NEVER,False
+kuafu_chuansong,c2s,132,/*跨服传送*/,STATUS_NEVER,False
 	str_data,String,False,/*战斗信息*/
 	watcher_guid,String,False,/*观察者guid*/
 	reserve,uint32,False,/*预留参数*/
+
+#
+strength,c2s,139,/*强化*/,STATUS_NEVER,False
+	part,uint8,False,/*强化的位置*/
+
+#
+strength_success,s2c,140,/*强化成功*/,STATUS_NEVER,False
+	level,uint16,False,/*当前强化等级*/
+	
+#强制所有人员进入到一个组队副本中
+forceInto,c2s,141,/*强制进入*/,STATUS_NEVER,False
+
+#
+create_faction,c2s,142,/*创建帮派*/,STATUS_NEVER,False
+	name,String,False,/*帮派名称*/
+	
+#
+faction_upgrade,c2s,143,/*升级帮派*/,STATUS_NEVER,False
+
+#
+faction_join,c2s,144,/*申请加入帮派*/,STATUS_NEVER,False
+	id,String,False,/*帮派guid*/

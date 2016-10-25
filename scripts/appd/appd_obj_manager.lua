@@ -3,6 +3,8 @@ require 'util.functions'
 local ObjectManager = require('util.object_manager')
 local AppObjectManager = class('AppObjectManager', ObjectManager)
 local AppItemMgr = require('appd.appd_item_mgr')
+local AppLogicalMgr = require('appd.appd_logical_mgr')
+local AppFactionMgr = require('appd.faction_info')
 
 
 function AppObjectManager:ctor( )
@@ -10,10 +12,12 @@ function AppObjectManager:ctor( )
 
 	--binlog对象对照类型前缀索引
 	self.binlogTypes[guidMgr.ObjectTypePlayer] = PlayerInfo	--玩家
-	self.binlogTypes[guidMgr.ObjectTypeSocial] = SocialSystem		--社交
-	self.binlogTypes[guidMgr.ObjectTypeGiftPacks] = GiftPacksInfo	--礼包对象
-	self.binlogTypes[guidMgr.ObjectTypeLimit] = LimitActivityBase	--限时活动
-	self.binlogTypes[guidMgr.ObjectTypeItemMgr] = AppItemMgr
+	--self.binlogTypes[guidMgr.ObjectTypeSocial] = SocialSystem		--社交
+	--self.binlogTypes[guidMgr.ObjectTypeGiftPacks] = GiftPacksInfo	--礼包对象
+	--self.binlogTypes[guidMgr.ObjectTypeLimit] = LimitActivityBase	--限时活动
+	self.binlogTypes[guidMgr.ObjectTypeItemMgr] = AppItemMgr 	--道具
+	self.binlogTypes[guidMgr.ObjectTypeLogical] = AppLogicalMgr --业务逻辑
+	self.binlogTypes[guidMgr.ObjectTypeFaction] = AppFactionMgr	--帮派
 	
 	--由于基类会构建实例，所有需要在调用基类构造函数前给类型表赋值
 	super(self)	

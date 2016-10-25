@@ -48,6 +48,10 @@ function BinLogObject:SetUInt16 (index, offset, value)
 	binLogLib.SetUInt16(self.ptr, index, offset, value)
 end
 
+function BinLogObject:SetInt16 (index, offset, value)
+	binLogLib.SetInt16(self.ptr, index, offset, value)
+end
+
 function BinLogObject:GetUInt32 (index)
 	return binLogLib.GetUInt32(self.ptr, index)
 end

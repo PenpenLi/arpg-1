@@ -796,12 +796,17 @@ function ScenedContext:Hanlde_Faction_FuBen(packet)
 	playerLib.Teleport(player_ptr, to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2],0,string.format("faction_boss_%d",lv))
 end
 
+function ScenedContext:Handle_ForceInto(pkt)
+	print("force into")
+	DoForceInto(self)
+end
+
 
 local OpcodeHandlerFuncTable = require 'scened.context.scened_context_handler_map'
 
 --网络包处理方法
 packet.register_on_external_packet(function ( player_ptr, pkt )
-	local _player = UnitInfo:new {ptr = player_ptr}
+	local _player = UnitInfo:new{ptr = player_ptr}	
 	local optcode = packet.optcode(pkt)
 	local succeed, args = protocols.unpack_packet(optcode, pkt)
 	

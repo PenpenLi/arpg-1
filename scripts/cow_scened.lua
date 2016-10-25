@@ -102,9 +102,10 @@ config = {
 		CMSG_INSTANCE_NEXT_STATE,
 		MSG_QUERY_QUEST_STATUS,
 		CMSG_INSTANCE_ENTER,
+		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
-		MSG_SYNC_MSTIME,--同步时间
+		MSG_SYNC_MSTIME,--同步时间 29
 		MSG_TEST_NETD_SCENED,
 		MSG_JUMP_START	,-- /*跳跃开始*/
 		MSG_JUMP_END	,-- /*跳跃结束*/
@@ -135,6 +136,8 @@ config = {
 		CMSG_GET_SWFJ_INSTANCE_REWARD,			--塞外伏击领取经验
 		CMSG_SWFJ_INSTANCE_JIANZAO,				--塞外伏击建造
 		CMSG_ENTER_FACTION_FUBEN,				--进入帮派副本
+		]]
+		CMSG_FORCEINTO,							--强制进入
 	},
 	--pk服命令表
 	pk_external_router_map = {
@@ -189,6 +192,9 @@ function load_lua_scripts()
 		{'NPC智能脚本'		,'scened/npc_ai'},
 		{"战利品脚本"		,'scened/loot_manager'},
 		{'副本脚本'			,'scened/instance/instance_base'},
+		{'九重天脚本1'		,'scened/instance/instanceTower1'},
+		{'九重天脚本2'		,'scened/instance/instanceTower2'},
+		{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
 		{'LUA之GM命令'		,'scened/gm_command'},
 	}
 	local i = 0
@@ -199,6 +205,13 @@ function load_lua_scripts()
 
 end
 load_lua_scripts()
+
+-- 映射mapid和脚本关系
+INSTANCE_SCRIPT_TABLE = {
+	[101] = InstanceTower1,
+	[102] = InstanceTower2,
+	[103] = InstanceTaoHua,
+}
 
 -- 复活点坐标
 function GetRespawnPos()

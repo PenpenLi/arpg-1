@@ -1,5 +1,9 @@
 --地图传送
-function Script_WorldMap_Teleport(playerInfo,map_id,p_x,p_y)
+function Script_WorldMap_Teleport(player,map_id,p_x,p_y)
+	print("Script_WorldMap_Teleport")
+	playerLib.Teleport(player, map_id, p_x, p_y, 0, "")
+	
+	--[[
 	local map_info = tb_map_info[map_id]
 	if not map_info then
 		outFmtError("Script_WorldMap_Teleport: %d tb_map_info config not find!",map_id)
@@ -11,12 +15,32 @@ function Script_WorldMap_Teleport(playerInfo,map_id,p_x,p_y)
 		outFmtDebug("Script_WorldMap_Teleport: player %s level %d < %d is too low!", playerInfo:GetPlayerGuid(), player_lv, map_info.min_level)
 		return		
 	end
+	
 	if p_x == 0 or p_y == 0 then
 		p_x = map_info.into_point[1]
 		p_y = map_info.into_point[2]
 	end
-	if not playerInfo:GetPVPState() then
-		playerLib.Teleport(playerInfo.ptr, map_id, p_x, p_y)
+
+	--if not playerInfo:GetPVPState() then
+	--end
+	]]
+end
+
+
+-- 找到本地图的所有人传送到某一个组队副本中
+function DoForceInto(playerInfo)
+	local toMapId = 103
+	local toX = 25
+	local toY = 21
+
+	--local ownerGuid = playerInfo:GetPlayerGuid()
+
+	local map_ptr = unitLib.GetMap(playerInfo.ptr)
+	local mapId = mapLib.GetMapID(map_ptr)
+	local targetUnits = mapLib.GetAllPlayer(map_ptr)
+
+	for _, target in pairs(targetUnits) do
+		playerLib.Teleport(target, toMapId, toX, toY, 0, "")
 	end
 end
 

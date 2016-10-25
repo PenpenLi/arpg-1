@@ -6,6 +6,8 @@ function ScenedObjectManager:ctor()
 	
 	self.binlogTypes = {}
 	
+	--self.binlogTypes[guidMgr.ObjectTypeUnit] = ScenedContext --生物
+
 	super(self)
 end
 

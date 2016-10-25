@@ -133,27 +133,27 @@ CMSG_OPEN_WINDOW		= 114	-- /*玩家打开某个窗口*/
 CMSG_PLAYER_GAG		= 115	-- /*禁言操作*/	
 CMSG_PLAYER_KICKING		= 116	-- /*踢人操作*/	
 SMSG_MERGE_SERVER_MSG		= 117	-- /*合服通知*/	
-CMSG_SEND_TO_WORLD		= 118	-- /*发送给世界服*/	
-SMSG_WORLD_TO_CLIENT		= 119	-- /*世界服给客户端*/	
-CMSG_ADD_WATCH_WORLD_OBJECT		= 120	-- /*请求监听世界服某对象*/	
-CMSG_DEL_WATCH_WORLD_OBJECT		= 121	-- /*取消世界服某对象的监听*/	
-CMSG_RANK_LIST_QUERY		= 122	-- /*获取排行信息*/	
-SMSG_RANK_LIST_QUERY_RESULT		= 123	-- /*客户端获取排行榜返回结果*/	
-CMSG_CLIENT_UPDATE_SCENED		= 124	-- /*客户端热更场景模块后获取uint*/	
-SMSG_NUM_LUA		= 125	-- /*数值包*/	
-CMSG_LOOT_SELECT		= 126	-- /*战利品拾取*/	
-CMSG_KUAFU_FIGHT_SIGN		= 127	-- /*跨服战报名*/	
-CMSG_KUAFU_FIGHT_CANCEL_SIGN		= 128	-- /*跨服取消报名*/	
-CMSG_GOBACK_TO_GAME_SERVER		= 129	-- /*通知登录服把玩家传回游戏服*/	
-CMSG_WORLD_WAR_CS_PLAYER_INFO		= 130	-- /*客户端把比赛人员数据传给比赛服*/	
-SMSG_JOIN_OR_LEAVE_SERVER		= 131	-- /*玩家加入或者离开某服务器*/	
-MSG_WORLD_WAR_SC_PLAYER_INFO		= 132	-- /*客户端请求跨服人员数据*/	
-MSG_CLIENTSUBSCRIPTION		= 133	-- /*客户端订阅信息*/	
-SMSG_LUA_SCRIPT		= 134	-- /*服务端下发lua脚本*/	
-CMSG_CHAR_UPDATE_INFO		= 135	-- /*角色更改信息*/	
-SMSG_NOTICE_WATCHER_MAP_INFO		= 136	-- /*通知客户端观察者的视角*/	
-CMSG_MODIFY_WATCH		= 137	-- /*客户端订阅对象信息*/	
-CMSG_KUAFU_CHUANSONG		= 138	-- /*跨服传送*/	
+CMSG_RANK_LIST_QUERY		= 118	-- /*获取排行信息*/	
+SMSG_RANK_LIST_QUERY_RESULT		= 119	-- /*客户端获取排行榜返回结果*/	
+CMSG_CLIENT_UPDATE_SCENED		= 120	-- /*客户端热更场景模块后获取uint*/	
+SMSG_NUM_LUA		= 121	-- /*数值包*/	
+CMSG_LOOT_SELECT		= 122	-- /*战利品拾取*/	
+CMSG_GOBACK_TO_GAME_SERVER		= 123	-- /*通知登录服把玩家传回游戏服*/	
+CMSG_WORLD_WAR_CS_PLAYER_INFO		= 124	-- /*客户端把比赛人员数据传给比赛服*/	
+SMSG_JOIN_OR_LEAVE_SERVER		= 125	-- /*玩家加入或者离开某服务器*/	
+MSG_WORLD_WAR_SC_PLAYER_INFO		= 126	-- /*客户端请求跨服人员数据*/	
+MSG_CLIENTSUBSCRIPTION		= 127	-- /*客户端订阅信息*/	
+SMSG_LUA_SCRIPT		= 128	-- /*服务端下发lua脚本*/	
+CMSG_CHAR_UPDATE_INFO		= 129	-- /*角色更改信息*/	
+SMSG_NOTICE_WATCHER_MAP_INFO		= 130	-- /*通知客户端观察者的视角*/	
+CMSG_MODIFY_WATCH		= 131	-- /*客户端订阅对象信息*/	
+CMSG_KUAFU_CHUANSONG		= 132	-- /*跨服传送*/	
+CMSG_STRENGTH		= 139	-- /*强化*/	
+SMSG_STRENGTH_SUCCESS		= 140	-- /*强化成功*/	
+CMSG_FORCEINTO		= 141	-- /*强制进入*/	
+CMSG_CREATE_FACTION		= 142	-- /*创建帮派*/	
+CMSG_FACTION_UPGRADE		= 143	-- /*升级帮派*/	
+CMSG_FACTION_JOIN		= 144	-- /*申请加入帮派*/	
 
 
 ---------------------------------------------------------------------
@@ -4687,115 +4687,6 @@ function Protocols.unpack_merge_server_msg (pkt)
 end
 
 
--- /*发送给世界服*/	
-function Protocols.pack_send_to_world ( pkt)
-	local output = Packet.new(CMSG_SEND_TO_WORLD)
-	pkt :write(output)
-	return output
-end
-
--- /*发送给世界服*/	
-function Protocols.call_send_to_world ( playerInfo, pkt)
-	local output = Protocols.	pack_send_to_world ( pkt)
-	playerInfo:SendPacket(output)
-	output:delete()
-end
-
--- /*发送给世界服*/	
-function Protocols.unpack_send_to_world (pkt)
-	local input = Packet.new(nil, pkt)
-	local param_table = {}
-	local ret
-	--
-
-	return true,param_table	
-
-end
-
-
--- /*世界服给客户端*/	
-function Protocols.pack_world_to_client (  )
-	local output = Packet.new(SMSG_WORLD_TO_CLIENT)
-	return output
-end
-
--- /*世界服给客户端*/	
-function Protocols.call_world_to_client ( playerInfo )
-	local output = Protocols.	pack_world_to_client (  )
-	playerInfo:SendPacket(output)
-	output:delete()
-end
-
--- /*世界服给客户端*/	
-function Protocols.unpack_world_to_client (pkt)
-	local input = Packet.new(nil, pkt)
-	local param_table = {}
-	local ret
-
-	return true,{}
-	
-
-end
-
-
--- /*请求监听世界服某对象*/	
-function Protocols.pack_add_watch_world_object ( guid)
-	local output = Packet.new(CMSG_ADD_WATCH_WORLD_OBJECT)
-	output:writeUTF(guid)
-	return output
-end
-
--- /*请求监听世界服某对象*/	
-function Protocols.call_add_watch_world_object ( playerInfo, guid)
-	local output = Protocols.	pack_add_watch_world_object ( guid)
-	playerInfo:SendPacket(output)
-	output:delete()
-end
-
--- /*请求监听世界服某对象*/	
-function Protocols.unpack_add_watch_world_object (pkt)
-	local input = Packet.new(nil, pkt)
-	local param_table = {}
-	local ret
-	ret,param_table.guid = input:readUTF()
-	if not ret then
-		return false
-	end	
-
-	return true,param_table	
-
-end
-
-
--- /*取消世界服某对象的监听*/	
-function Protocols.pack_del_watch_world_object ( guid)
-	local output = Packet.new(CMSG_DEL_WATCH_WORLD_OBJECT)
-	output:writeUTF(guid)
-	return output
-end
-
--- /*取消世界服某对象的监听*/	
-function Protocols.call_del_watch_world_object ( playerInfo, guid)
-	local output = Protocols.	pack_del_watch_world_object ( guid)
-	playerInfo:SendPacket(output)
-	output:delete()
-end
-
--- /*取消世界服某对象的监听*/	
-function Protocols.unpack_del_watch_world_object (pkt)
-	local input = Packet.new(nil, pkt)
-	local param_table = {}
-	local ret
-	ret,param_table.guid = input:readUTF()
-	if not ret then
-		return false
-	end	
-
-	return true,param_table	
-
-end
-
-
 -- /*获取排行信息*/	
 function Protocols.pack_rank_list_query ( call_back_id ,rank_list_type ,start_index ,end_index)
 	local output = Packet.new(CMSG_RANK_LIST_QUERY)
@@ -4940,74 +4831,6 @@ function Protocols.unpack_loot_select (pkt)
 		return false
 	end
 	ret,param_table.y = input:readU16()
-	if not ret then
-		return false
-	end
-
-	return true,param_table	
-
-end
-
-
--- /*跨服战报名*/	
-function Protocols.pack_kuafu_fight_sign ( kuafu_type ,data ,data_str)
-	local output = Packet.new(CMSG_KUAFU_FIGHT_SIGN)
-	output:writeByte(kuafu_type)
-	output:writeU32(data)
-	output:writeUTF(data_str)
-	return output
-end
-
--- /*跨服战报名*/	
-function Protocols.call_kuafu_fight_sign ( playerInfo, kuafu_type ,data ,data_str)
-	local output = Protocols.	pack_kuafu_fight_sign ( kuafu_type ,data ,data_str)
-	playerInfo:SendPacket(output)
-	output:delete()
-end
-
--- /*跨服战报名*/	
-function Protocols.unpack_kuafu_fight_sign (pkt)
-	local input = Packet.new(nil, pkt)
-	local param_table = {}
-	local ret
-	ret,param_table.kuafu_type = input:readByte()
-	if not ret then
-		return false
-	end
-	ret,param_table.data = input:readU32()
-	if not ret then
-		return false
-	end	
-	ret,param_table.data_str = input:readUTF()
-	if not ret then
-		return false
-	end	
-
-	return true,param_table	
-
-end
-
-
--- /*跨服取消报名*/	
-function Protocols.pack_kuafu_fight_cancel_sign ( kuafu_type)
-	local output = Packet.new(CMSG_KUAFU_FIGHT_CANCEL_SIGN)
-	output:writeByte(kuafu_type)
-	return output
-end
-
--- /*跨服取消报名*/	
-function Protocols.call_kuafu_fight_cancel_sign ( playerInfo, kuafu_type)
-	local output = Protocols.	pack_kuafu_fight_cancel_sign ( kuafu_type)
-	playerInfo:SendPacket(output)
-	output:delete()
-end
-
--- /*跨服取消报名*/	
-function Protocols.unpack_kuafu_fight_cancel_sign (pkt)
-	local input = Packet.new(nil, pkt)
-	local param_table = {}
-	local ret
-	ret,param_table.kuafu_type = input:readByte()
 	if not ret then
 		return false
 	end
@@ -5341,6 +5164,172 @@ function Protocols.unpack_kuafu_chuansong (pkt)
 end
 
 
+-- /*强化*/	
+function Protocols.pack_strength ( part)
+	local output = Packet.new(CMSG_STRENGTH)
+	output:writeByte(part)
+	return output
+end
+
+-- /*强化*/	
+function Protocols.call_strength ( playerInfo, part)
+	local output = Protocols.	pack_strength ( part)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*强化*/	
+function Protocols.unpack_strength (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.part = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*强化成功*/	
+function Protocols.pack_strength_success ( level)
+	local output = Packet.new(SMSG_STRENGTH_SUCCESS)
+	output:writeI16(level)
+	return output
+end
+
+-- /*强化成功*/	
+function Protocols.call_strength_success ( playerInfo, level)
+	local output = Protocols.	pack_strength_success ( level)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*强化成功*/	
+function Protocols.unpack_strength_success (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.level = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*强制进入*/	
+function Protocols.pack_forceInto (  )
+	local output = Packet.new(CMSG_FORCEINTO)
+	return output
+end
+
+-- /*强制进入*/	
+function Protocols.call_forceInto ( playerInfo )
+	local output = Protocols.	pack_forceInto (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*强制进入*/	
+function Protocols.unpack_forceInto (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*创建帮派*/	
+function Protocols.pack_create_faction ( name)
+	local output = Packet.new(CMSG_CREATE_FACTION)
+	output:writeUTF(name)
+	return output
+end
+
+-- /*创建帮派*/	
+function Protocols.call_create_faction ( playerInfo, name)
+	local output = Protocols.	pack_create_faction ( name)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*创建帮派*/	
+function Protocols.unpack_create_faction (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*升级帮派*/	
+function Protocols.pack_faction_upgrade (  )
+	local output = Packet.new(CMSG_FACTION_UPGRADE)
+	return output
+end
+
+-- /*升级帮派*/	
+function Protocols.call_faction_upgrade ( playerInfo )
+	local output = Protocols.	pack_faction_upgrade (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*升级帮派*/	
+function Protocols.unpack_faction_upgrade (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*申请加入帮派*/	
+function Protocols.pack_faction_join ( id)
+	local output = Packet.new(CMSG_FACTION_JOIN)
+	output:writeUTF(id)
+	return output
+end
+
+-- /*申请加入帮派*/	
+function Protocols.call_faction_join ( playerInfo, id)
+	local output = Protocols.	pack_faction_join ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*申请加入帮派*/	
+function Protocols.unpack_faction_join (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -5466,17 +5455,11 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_player_gag = self.call_player_gag
 	playerInfo.call_player_kicking = self.call_player_kicking
 	playerInfo.call_merge_server_msg = self.call_merge_server_msg
-	playerInfo.call_send_to_world = self.call_send_to_world
-	playerInfo.call_world_to_client = self.call_world_to_client
-	playerInfo.call_add_watch_world_object = self.call_add_watch_world_object
-	playerInfo.call_del_watch_world_object = self.call_del_watch_world_object
 	playerInfo.call_rank_list_query = self.call_rank_list_query
 	playerInfo.call_rank_list_query_result = self.call_rank_list_query_result
 	playerInfo.call_client_update_scened = self.call_client_update_scened
 	playerInfo.call_num_lua = self.call_num_lua
 	playerInfo.call_loot_select = self.call_loot_select
-	playerInfo.call_kuafu_fight_sign = self.call_kuafu_fight_sign
-	playerInfo.call_kuafu_fight_cancel_sign = self.call_kuafu_fight_cancel_sign
 	playerInfo.call_goback_to_game_server = self.call_goback_to_game_server
 	playerInfo.call_world_war_CS_player_info = self.call_world_war_CS_player_info
 	playerInfo.call_join_or_leave_server = self.call_join_or_leave_server
@@ -5487,6 +5470,12 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_notice_watcher_map_info = self.call_notice_watcher_map_info
 	playerInfo.call_modify_watch = self.call_modify_watch
 	playerInfo.call_kuafu_chuansong = self.call_kuafu_chuansong
+	playerInfo.call_strength = self.call_strength
+	playerInfo.call_strength_success = self.call_strength_success
+	playerInfo.call_forceInto = self.call_forceInto
+	playerInfo.call_create_faction = self.call_create_faction
+	playerInfo.call_faction_upgrade = self.call_faction_upgrade
+	playerInfo.call_faction_join = self.call_faction_join
 end
 
 local unpack_handler = {
@@ -5609,17 +5598,11 @@ local unpack_handler = {
 [CMSG_PLAYER_GAG] =  Protocols.unpack_player_gag,
 [CMSG_PLAYER_KICKING] =  Protocols.unpack_player_kicking,
 [SMSG_MERGE_SERVER_MSG] =  Protocols.unpack_merge_server_msg,
-[CMSG_SEND_TO_WORLD] =  Protocols.unpack_send_to_world,
-[SMSG_WORLD_TO_CLIENT] =  Protocols.unpack_world_to_client,
-[CMSG_ADD_WATCH_WORLD_OBJECT] =  Protocols.unpack_add_watch_world_object,
-[CMSG_DEL_WATCH_WORLD_OBJECT] =  Protocols.unpack_del_watch_world_object,
 [CMSG_RANK_LIST_QUERY] =  Protocols.unpack_rank_list_query,
 [SMSG_RANK_LIST_QUERY_RESULT] =  Protocols.unpack_rank_list_query_result,
 [CMSG_CLIENT_UPDATE_SCENED] =  Protocols.unpack_client_update_scened,
 [SMSG_NUM_LUA] =  Protocols.unpack_num_lua,
 [CMSG_LOOT_SELECT] =  Protocols.unpack_loot_select,
-[CMSG_KUAFU_FIGHT_SIGN] =  Protocols.unpack_kuafu_fight_sign,
-[CMSG_KUAFU_FIGHT_CANCEL_SIGN] =  Protocols.unpack_kuafu_fight_cancel_sign,
 [CMSG_GOBACK_TO_GAME_SERVER] =  Protocols.unpack_goback_to_game_server,
 [CMSG_WORLD_WAR_CS_PLAYER_INFO] =  Protocols.unpack_world_war_CS_player_info,
 [SMSG_JOIN_OR_LEAVE_SERVER] =  Protocols.unpack_join_or_leave_server,
@@ -5630,6 +5613,12 @@ local unpack_handler = {
 [SMSG_NOTICE_WATCHER_MAP_INFO] =  Protocols.unpack_notice_watcher_map_info,
 [CMSG_MODIFY_WATCH] =  Protocols.unpack_modify_watch,
 [CMSG_KUAFU_CHUANSONG] =  Protocols.unpack_kuafu_chuansong,
+[CMSG_STRENGTH] =  Protocols.unpack_strength,
+[SMSG_STRENGTH_SUCCESS] =  Protocols.unpack_strength_success,
+[CMSG_FORCEINTO] =  Protocols.unpack_forceInto,
+[CMSG_CREATE_FACTION] =  Protocols.unpack_create_faction,
+[CMSG_FACTION_UPGRADE] =  Protocols.unpack_faction_upgrade,
+[CMSG_FACTION_JOIN] =  Protocols.unpack_faction_join,
 
 }
 

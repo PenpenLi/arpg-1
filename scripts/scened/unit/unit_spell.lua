@@ -79,6 +79,11 @@ end
 
 --判断释放技能的消耗是否够 返回true则够消耗
 function UnitInfo:IsEnoughConsumption(spell_id)
+	--FIXME
+	if true then
+		return true
+	end
+
 	spell_id = self:GetNextSpellID(spell_id)
 	local config = tb_skill_base[spell_id].nuqi_change
 	if config < 0 then
@@ -91,6 +96,11 @@ end
 
 --处理释放技能消耗
 function UnitInfo:SpellConsumption(spell_id)
+	--FIXME
+	if true then
+		return true
+	end
+
 	spell_id = self:GetNextSpellID(spell_id)
 	self:AddAnger(spell_id)
 	return true
@@ -98,6 +108,14 @@ end
 
 --设置技能cd
 function UnitInfo:SetSpellCD(spell_id, nowtime)
+	--设置技能cd
+	if true then
+		local cd = 500;
+		--print("set next spell cd:"..(nowtime + cd))
+		playerLib.SetSpellCD(self.ptr, spell_id, nowtime + cd)			--设置单独cd
+		return
+	end
+
 	local spell_lv = self:GetSpellLevel(spell_id)
 	local config = tb_skill_base[spell_id]
 	if config ~= nil and spell_lv > 0 then
@@ -154,8 +172,14 @@ end
 
 --判断技能是否处于CD，返回为true则技能冷却中
 function UnitInfo:IsSpellCD(spell_id, nowtime)
+	--print("IsSpellCD, spellID:"..spell_id)
+	local cd = playerLib.GetSpellCD(self.ptr, spell_id)
+	return nowtime < cd;
+	--[[
 	for i = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0, PLAYER_SCENED_INT_FIELD_SLOT_SPELL_END-1, MAX_SLOT_ATTR_COUNT do
+		--print("index = "..i)
 		if(self:GetPlayerUInt32(i + SLOT_SPELL_ID) == spell_id)then
+			print("spellId = "..playerLib.GetSpellCD(self.ptr, spell_id))
 			if(self:isNeedSaveSpellCd(spell_id))then
 				if nowtime < self:GetPlayerUInt32(i + SLOT_SPELL_CD) then
 					return true
@@ -173,6 +197,7 @@ function UnitInfo:IsSpellCD(spell_id, nowtime)
 		end
 	end
 	return false
+	]]
 end
 
 --判断是否有某个技能 返回为true则有这个技能

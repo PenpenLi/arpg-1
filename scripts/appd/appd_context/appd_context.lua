@@ -34,6 +34,8 @@ function PlayerInfo:GetScenedFD()
 	return self:GetUInt32(PLAYER_FIELD_FD)
 end
 
+
+
 -- 玩家是否还活着
 function PlayerInfo:IsAlive ()
 	return self:GetUInt32(PLAYER_FIELD_DEATH_STATE) == DEATH_STATE_ALIVE
@@ -48,6 +50,18 @@ end
 function PlayerInfo:SetPlayerFlags ( index)
 	self:SetBit(PLAYER_FIELD_FLAGS, index)
 end
+
+-- 获得帮派guid
+function PlayerInfo:GetFactionId ()
+	return self:GetStr(PLAYER_STRING_FIELD_FACTION_GUID)
+end
+
+--设置帮派guid
+function PlayerInfo:SetFactionId (factionId)
+	self:SetStr(PLAYER_STRING_FIELD_FACTION_GUID, factionId)
+end
+
+
 
 --设置玩家主下标的flag标志
 function PlayerInfo:UnSetPlayerFlags (index)
@@ -524,8 +538,12 @@ require("appd/appd_context/appd_context_usemoney_opt")
 require("appd/appd_context/appd_context_calculAttr")
 require("appd/appd_context/appd_context_resetdaily")
 require("appd/appd_context/appd_context_scened_dosomething")
-require("appd/appd_context/appd_context_hanlder")
 require("appd/appd_context/appd_context_other_binlog")
 require("appd/appd_context/appd_context_chat")
+require("appd/appd_context/appd_context_equip_part_opt")
+require("appd/appd_context/hanlder/faction_handler")
+require("appd/appd_context/hanlder/chat_handler")
+
+require("appd/appd_context/appd_context_hanlder")
 
 return PlayerInfo

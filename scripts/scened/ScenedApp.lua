@@ -5,7 +5,7 @@ local ScenedApp = class('ScenedApp',require('util.app_base'))
 function ScenedApp:ctor( )
 	super(self)	
 	
-	--self.objMgr = require('scened.scened_obj_manager').new()
+	self.objMgr = require('scened.scened_obj_manager').new()
 	self.http = require('scened.ScenedHttp').new()
 end
 

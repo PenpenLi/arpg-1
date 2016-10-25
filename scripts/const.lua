@@ -80,6 +80,8 @@ MAP_INST_TYP_NO_INSTANCE	= 0		--不是副本
 MAP_INST_TYP_ACTIVITY		= 1		--活动副本,虽是副本地图,但是,只有单例,活动时间自动关闭
 MAP_INST_TYP_SINGLETON		= 2		--单人副本，副本完成直接关闭
 MAP_INST_TYP_KUAFU			= 3		--跨服地图
+MAP_INST_TYP_GROUP          = 4		--组队副本 
+
 DELETE_GENERALS_ID = 9999
 MAX_UINT32_NUM = 4294967295			--32位最大值
 MAX_UINT16_NUM = 65535				--16位最大值

@@ -26,19 +26,23 @@ end
 --玩家PVP时的一些处理
 function DOPlayerPvP(player,target)
 	--取消打坐
+	--[[
 	local playerInfo = UnitInfo:new{ptr = target}
 	if playerInfo:GetDaZuoTime() > 0 then
 		playerInfo:ReceiveDaZuo()
 	end
+	]]
 end
 
 -- 怪物攻击玩家时的一些处理
 function DOPlayerPvE(creature, target)
 	--取消打坐
+	--[[
 	local playerInfo = UnitInfo:new{ptr = target}
 	if playerInfo:GetDaZuoTime() > 0 then
 		playerInfo:ReceiveDaZuo()
 	end
+	]]
 end
 
 --上线清除一些BUFF

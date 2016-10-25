@@ -20,6 +20,10 @@ hanlders[MSG_CHAT_NOTICE] = PlayerInfo.Handle_Chat_Notice
 hanlders[MSG_CHAT_HORN] = PlayerInfo.Handle_Chat_Horn
 hanlders[MSG_CHAT_WHISPER] = PlayerInfo.Handle_Chat_Whisper
 hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
+hanlders[CMSG_STRENGTH] = PlayerInfo.Handle_Strength
+hanlders[CMSG_CREATE_FACTION] = PlayerInfo.Handle_Faction_Create
+hanlders[CMSG_FACTION_UPGRADE] = PlayerInfo.Handle_Faction_Upgrade
+hanlders[CMSG_FACTION_JOIN] = PlayerInfo.Hanlde_Faction_Apply
 
 
 return hanlders

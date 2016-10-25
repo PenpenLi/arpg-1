@@ -169,6 +169,16 @@ function PlayerInfo:Handle_Chat_Notice( pkt )
 	app:SendNotice(pkt.id, pkt.content, pkt.data)
 end
 
+-- 强化
+function PlayerInfo:Handle_Strength(pkt)
+	self:strength(pkt.part)
+end
+
+-- 使用物品
+function PlayerInfo:Hanlde_Bag_Item_User(pkt)
+	UseItem(self, pkt.item_guid, pkt.count)
+end
+
 --函数包路由表
 local OpcodeHandlerFuncTable = require 'appd.appd_context.appd_context_hanlder_map'
 
@@ -184,6 +194,7 @@ packet.register_on_external_packet(function ( player_ptr, pkt )
 		logLib.WriteAttackPacker(self:GetGuid(), optcode, ACCACK_PACKET_TYPE_UNPACK, '')
 	else
 		args.__optcode = optcode		
+		print("handler opcode = "..optcode)
 		if OpcodeHandlerFuncTable[optcode] then
 			doxpcall(OpcodeHandlerFuncTable[optcode], _player, args)
 		end

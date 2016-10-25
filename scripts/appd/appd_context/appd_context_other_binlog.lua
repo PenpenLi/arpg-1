@@ -32,3 +32,11 @@ function PlayerInfo:getItemMgr()
 	end
 	return self:getObj(self.guid_itemMgr)	
 end
+
+--根据玩家guid获得强化管理器
+function PlayerInfo:getLogicalMgr()
+	if not self.guid_logicalMgr then
+		self.guid_logicalMgr = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeLogical)
+	end
+	return self:getObj(self.guid_logicalMgr)	
+end

@@ -80,6 +80,10 @@ config = {
 		CMSG_WAREHOUSE_TAKE_MONEY,	--仓库取钱
 		MSG_SYNC_MSTIME_APP,
 		CMSG_OPEN_WINDOW,
+		CMSG_STRENGTH,
+		CMSG_CREATE_FACTION,
+		CMSG_FACTION_UPGRADE,
+		CMSG_FACTION_JOIN,
 	},
 	--pk服命令表
 	pk_external_router_map = {
