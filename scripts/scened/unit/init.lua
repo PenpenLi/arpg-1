@@ -85,7 +85,7 @@ function UnitInfo:GetPlayerUInt16(index, offset)
 end
 
 function UnitInfo:GetPlayerUInt32(index)
-	self:CheckPlayer(string.format("GetPlayerUInt32-- index = %d", index))
+	--self:CheckPlayer(string.format("GetPlayerUInt32-- index = %d", index))
 	return binLogLib.GetUInt32(self.ptr_player_data, index)
 end
 
@@ -386,6 +386,16 @@ end
 --获取当前血量
 function UnitInfo:GetHealth()
 	return self:GetUInt32(UNIT_FIELD_HEALTH)
+end
+
+--获取最大血量
+function UnitInfo:GetMAXHealth()
+	return self:GetUInt32(UNIT_FIELD_MAXHEALTH)
+end
+
+--设置最大血量
+function UnitInfo:SetMAXHealth(val)
+	return self:SetUInt32(UNIT_FIELD_MAXHEALTH, val)
 end
 
 --设置当前血量
@@ -1105,19 +1115,24 @@ end
 
 --开始使用游戏对象
 function UnitInfo:StartUseGameObject()
+	--[[
 	if self:GetUseGameObjectTime() == 0 then
 		self:SetUseGameObjectTime(os.time())
 	end
+	]]
 	if not self:GetUnitFlags(UNIT_FIELD_FLAGS_USE_GAMEOBJECT) then
 		self:SetUnitFlags(UNIT_FIELD_FLAGS_USE_GAMEOBJECT)
 	end
+	
 end
 
 -- 移除使用游戏对象标识
 function UnitInfo:RemoveUseGameObjectFlag()
+	--[[
 	if self:GetUseGameObjectTime() ~= 0 then
 		self:SetUseGameObjectTime(0)
 	end
+	]]
 	if self:GetUnitFlags(UNIT_FIELD_FLAGS_USE_GAMEOBJECT) then
 		self:UnSetUnitFlags(UNIT_FIELD_FLAGS_USE_GAMEOBJECT)
 	end
@@ -1306,6 +1321,8 @@ function creatureInit(creature, entry)
 	local obj = tb_creature_template[entry]
 	creatureLib.SetActionRadius(creature, obj.actionradius)
 	creatureLib.SetVisionRadius(creature, obj.visionradius)
+	creatureLib.SetScriptAI(creature, obj.ainame)
+	creatureLib.SetReactState(creature, obj.attack_type)
 end
 
 --应用服通知场景服消耗元宝或铜钱做些什么
