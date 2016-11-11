@@ -75,7 +75,7 @@ config = {
 	--游戏服命令表
 	external_router_map = {
 		MSG_UNIT_MOVE,
-		MSG_TELEPORT,
+		CMSG_TELEPORT,
 		MSG_MOVE_STOP,
 		MSG_SPELL_START,
 		MSG_SPELL_STOP,

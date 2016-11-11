@@ -1,6 +1,30 @@
---地图传送
+--地图传送检验
+function Script_Teleport_Check(player_ptr, entry, x, y)
+	
+	local px, py = unitLib.GetPos(player_ptr)
+	local config = tb_gameobject_template[entry]
+	if config == nil then
+		return false
+	end
+	
+	-- 左上
+	local lx = x - config.trigger_width
+	local ly = y - config.trigger_height
+	-- 右下
+	local rx = x + config.trigger_width
+	local ry = y + config.trigger_height
+	
+	return lx <= px and px <= rx and ly <= py and py <= ry
+end
+
+--客户端发起的世界地图传送
 function Script_WorldMap_Teleport(player,map_id,p_x,p_y)
 	print("Script_WorldMap_Teleport")
+	
+	-- 是否在传送感应区内
+	
+	
+	-- 判断是否能够传送
 	playerLib.Teleport(player, map_id, p_x, p_y, 0, "")
 	
 	--[[

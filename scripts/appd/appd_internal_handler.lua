@@ -59,6 +59,9 @@ local function on_scened_player_upgrade( pkt )
 		return
 	end
 
+	
+	-- TODO:处理升级以后的逻辑
+	-- 如技能解锁
 	local socialSysInfo = player:getSocialSystem()
 	if socialSysInfo then
 		socialSysInfo:ProceedUpgrade(player, FRIEND_OPT_PLAYER_UPGRADE, player_lv)

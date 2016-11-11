@@ -43,7 +43,7 @@ CMSG_PLAYER_LOGOUT		= 24	-- /*玩家退出*/
 CMSG_REGULARISE_ACCOUNT		= 25	-- /*临时账号转正规*/	
 CMSG_CHAR_REMOTESTORE		= 26	-- /*角色配置信息*/	
 CMSG_CHAR_REMOTESTORE_STR		= 27	-- /*角色配置信息*/	
-MSG_TELEPORT		= 28	-- /*传送，如果是C->S，mapid变量请填成传送点ID*/	
+CMSG_TELEPORT		= 28	-- /*传送，如果是C->S，mapid变量请填成传送点ID*/	
 MSG_MOVE_STOP		= 29	-- /*停止移动*/	
 MSG_UNIT_MOVE		= 30	-- /*unit对象移动*/	
 CMSG_USE_GAMEOBJECT		= 31	-- /*使用游戏对象*/	
@@ -1473,17 +1473,15 @@ end
 
 
 -- /*传送，如果是C->S，mapid变量请填成传送点ID*/	
-function Protocols.pack_teleport ( map_id ,pos_x ,pos_y)
-	local output = Packet.new(MSG_TELEPORT)
-	output:writeU32(map_id)
-	output:writeFloat(pos_x)
-	output:writeFloat(pos_y)
+function Protocols.pack_teleport ( intGuid)
+	local output = Packet.new(CMSG_TELEPORT)
+	output:writeU32(intGuid)
 	return output
 end
 
 -- /*传送，如果是C->S，mapid变量请填成传送点ID*/	
-function Protocols.call_teleport ( playerInfo, map_id ,pos_x ,pos_y)
-	local output = Protocols.	pack_teleport ( map_id ,pos_x ,pos_y)
+function Protocols.call_teleport ( playerInfo, intGuid)
+	local output = Protocols.	pack_teleport ( intGuid)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -1493,18 +1491,10 @@ function Protocols.unpack_teleport (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
-	ret,param_table.map_id = input:readU32()
+	ret,param_table.intGuid = input:readU32()
 	if not ret then
 		return false
 	end	
-	ret,param_table.pos_x = input:readFloat()
-	if not ret then
-		return false
-	end
-	ret,param_table.pos_y = input:readFloat()
-	if not ret then
-		return false
-	end
 
 	return true,param_table	
 
@@ -5508,7 +5498,7 @@ local unpack_handler = {
 [CMSG_REGULARISE_ACCOUNT] =  Protocols.unpack_regularise_account,
 [CMSG_CHAR_REMOTESTORE] =  Protocols.unpack_char_remotestore,
 [CMSG_CHAR_REMOTESTORE_STR] =  Protocols.unpack_char_remotestore_str,
-[MSG_TELEPORT] =  Protocols.unpack_teleport,
+[CMSG_TELEPORT] =  Protocols.unpack_teleport,
 [MSG_MOVE_STOP] =  Protocols.unpack_move_stop,
 [MSG_UNIT_MOVE] =  Protocols.unpack_unit_move,
 [CMSG_USE_GAMEOBJECT] =  Protocols.unpack_use_gameobject,

@@ -23,5 +23,5 @@ tb_gameobject_template = {
 	[3] = {id = 3,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
 	[4] = {id = 4,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
 	[5] = {id = 5,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
-	[6] = {id = 6,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
+	[6] = {id = 6,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
 }
