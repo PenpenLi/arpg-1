@@ -230,35 +230,62 @@ function UnitInfo:GetTouXianLv()
 	return self:GetByte(UNIT_FIELD_BYTE_0, 3)
 end
 
+--获得打坐时间
+function UnitInfo:GetDaZuoTime()
+	return playerLib.GetDaZuoStartTime(self.ptr)
+end
+
+-- 开始打坐
+function UnitInfo:StartDaZuo()
+	playerLib.SetDaZuoStartTime(self.ptr, os.time())
+end
+
+-- 取消打坐
+function UnitInfo:CancelDaZuo()
+	--TODO: 取消以后的一些逻辑
+	playerLib.SetDaZuoStartTime(self.ptr, 0)
+end
+
+
 --生物部分
 function UnitInfo:SetBaseAttrs(info, bRecal)
 	local tBaseKey = {
-		-- [EQUIP_ATTR_MIN_DAMAGE	] = {UNIT_FIELD_MIN_DAMAGE},			--最小攻击
-		-- [EQUIP_ATTR_MAX_DAMAGE	] = {UNIT_FIELD_MAX_DAMAGE},			--最大攻击
-		-- [EQUIP_ATTR_DEF			] = {UNIT_FIELD_RESISTANCES},			--防御
-		[EQUIP_ATTR_HIT			] = {UNIT_FIELD_COMBAT_HIT},			--命中	
-		-- [EQUIP_ATTR_EVA			] = {UNIT_FIELD_COMBAT_EVA},			--闪避	
-		-- [EQUIP_ATTR_CRIT		] = {UNIT_FIELD_COMBAT_CRIT},   		--暴击
-		-- [EQUIP_ATTR_CRIT_DEF	] = {UNIT_FIELD_COMBAT_CRIT_DEF},   	--抗暴
-		-- [EQUIP_ATTR_EVA_RATE	] = {UNIT_FIELD_COMBAT_RATE_EVA},		--闪避率(万分比)
-		-- [EQUIP_ATTR_CRIT_RATE	] = {UNIT_FIELD_COMBAT_RATE_CRIT},		--暴击率(万分比)
+		[EQUIP_ATTR_MAXHEALTH] = {UNIT_FIELD_MAXHEALTH},
+		[EQUIP_ATTR_DAMAGE] = {UNIT_FIELD_DAMAGE},
+		[EQUIP_ATTR_ARMOR] = {UNIT_FIELD_ARMOR},
+		[EQUIP_ATTR_HIT] = {UNIT_FIELD_HIT},
+		[EQUIP_ATTR_DODGE] = {UNIT_FIELD_DODGE},
+		[EQUIP_ATTR_CRIT] = {UNIT_FIELD_CRIT},
+		[EQUIP_ATTR_TOUGH] = {UNIT_FIELD_TOUGH},
+		[EQUIP_ATTR_ATTACK_SPEED] = {UNIT_FIELD_ATTACK_SPEED},
+		[EQUIP_ATTR_MOVE_SPEED] = {UNIT_FIELD_MOVE_SPEED},
+		[EQUIP_ATTR_AMPLIFY_DAMAGE] = {UNIT_FIELD_AMPLIFY_DAMAGE},
+		[EQUIP_ATTR_IGNORE_DEFENSE] = {UNIT_FIELD_IGNORE_DEFENSE},
+		[EQUIP_ATTR_DAMAGE_RESIST] = {UNIT_FIELD_DAMAGE_RESIST},
+		[EQUIP_ATTR_DAMAGE_RETURNED] = {UNIT_FIELD_DAMAGE_RETURNED},
+		[EQUIP_ATTR_HIT_RATE] = {UNIT_FIELD_HIT_RATE},
+		[EQUIP_ATTR_DODGE_RATE] = {UNIT_FIELD_DODGE_RATE},
+		[EQUIP_ATTR_CRIT_RATE] = {UNIT_FIELD_CRIT_RATE},
+		[EQUIP_ATTR_CRITICAL_RESIST_RATE] = {UNIT_FIELD_CRITICAL_RESIST_RATE},
+		[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = {UNIT_FIELD_DAMAGE_CRIT_MULTIPLE},
+		[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = {UNIT_FIELD_RESIST_CRIT_MULTIPLE},
 	}
+	--[[
+	-- 只改变上线 不改变当前血量
 	if bRecal then
 		tBaseKey[EQUIP_ATTR_HP] = {UNIT_FIELD_MAXHEALTH}		 --血
 	else
-		tBaseKey[EQUIP_ATTR_HP] = {UNIT_FIELD_MAXHEALTH, UNIT_FIELD_HEALTH}		 --血
-	end
+	]]
+		-- 默认都走这里
+	tBaseKey[EQUIP_ATTR_MAXHEALTH] = {UNIT_FIELD_MAXHEALTH, UNIT_FIELD_HEALTH}		 --血
+	--end
 	
-	local movespd = 130
-	for i = 1, #info, 2 do
-		local attrtype = info[i]
-		local attrval = info[i+1]
-		if attrtype == EQUIP_ATTR_MOVE_SPD and attrval > 0 then
-			movespd = attrval
-		end
-		
+	for i = 1, #info do
+		local attrtype = info[ i ][ 1 ]
+		local attrval = info[ i ][ 2 ]
 		if tBaseKey[attrtype] then
-			for _,k in pairs(tBaseKey[attrtype]) do					
+			for _, k in pairs(tBaseKey[attrtype]) do
+				--outFmtDebug("creature attrtype = %d, binlogIndex = %d, val = %d", attrtype, k, attrval)					
 				if(self:GetUInt32(k) ~= attrval)then
 					self:SetUInt32(k, attrval)
 				end
@@ -266,20 +293,6 @@ function UnitInfo:SetBaseAttrs(info, bRecal)
 		end			
 	end
 	--outFmtDebug('---> init creature attr %d %d %d', self:GetEntry(), self:GetUInt32(UNIT_FIELD_MAXHEALTH), self:GetUInt32(UNIT_FIELD_HEALTH))
-	--设置移动速度
-	if self:GetByte(UNIT_FIELD_BYTE_0, 2) ~= movespd then
-		self:SetByte(UNIT_FIELD_BYTE_0, 2, movespd)
-	end
-end
-
---获取最大生命
-function UnitInfo:GetMaxHealth()
-	return self:GetUInt32(UNIT_FIELD_MAXHEALTH)
-end	
-
---设置最大生命
-function UnitInfo:SetMaxHealth(val)
-	self:SetUInt32(UNIT_FIELD_MAXHEALTH,val)
 end
 
 function UnitInfo:AddMaxHealth(val)
@@ -305,102 +318,6 @@ function UnitInfo:SetMaxPower(ntype, val)
 	if ntype == POWER_ENERGY then
 		self:SetUInt32(UNIT_FIELD_MAXPOWERS_ENERGY, val)
 	end
-end
-
---获取最小攻击
-function UnitInfo:GetMinDamage()
-	return self:GetUInt32(UNIT_FIELD_MIN_DAMAGE)
-end
-
---设置最小攻击
-function UnitInfo:SetMinDamage(val)
-	self:SetUInt32(UNIT_FIELD_MIN_DAMAGE, val)
-end
-
---获取最大攻击
-function UnitInfo:GetMaxDamage()
-	return self:GetUInt32(UNIT_FIELD_MAX_DAMAGE)
-end
-
---设置最大攻击
-function UnitInfo:SetMaxDamage(val)
-	self:SetUInt32(UNIT_FIELD_MAX_DAMAGE, val)
-end
-
---获取暴击率、闪避率
-function UnitInfo:GetCombatRate(ntype)	-- type:COMBAT_RATE_CRIT  COMBAT_RATE_EVA
-	if(ntype >= MAX_COMBAT_RATE)then
-		return 0
-	end
-	if ntype == COMBAT_RATE_CRIT then
-		return self:GetUInt32(UNIT_FIELD_COMBAT_RATE_CRIT)
-	elseif ntype == COMBAT_RATE_EVA then
-		return self:GetUInt32(UNIT_FIELD_COMBAT_RATE_EVA)		
-	end
-	return 0
-end
-
---设置暴击率、闪避率
-function UnitInfo:SetCombatRate(ntype, val)	-- type:COMBAT_RATE_CRIT  COMBAT_RATE_EVA
-	if(ntype >= MAX_COMBAT_RATE)then
-		return
-	end
-	if ntype == COMBAT_RATE_CRIT then
-		self:SetUInt32(UNIT_FIELD_COMBAT_RATE_CRIT, val)
-	elseif ntype == COMBAT_RATE_EVA then
-		self:SetUInt32(UNIT_FIELD_COMBAT_RATE_EVA, val)		
-	end
-end
-
---获取防御
-function UnitInfo:GetArmor()
-	return self:GetUInt32(UNIT_FIELD_RESISTANCES)
-end
-
---设置防御
-function UnitInfo:SetArmor(val)
-	self:SetUInt32(UNIT_FIELD_RESISTANCES, val)
-end
-
---获取伤害加深属性值
-function UnitInfo:GetAddDamage()
-	return self:GetUInt32(UINT_FIELD_ADD_DAMAGE)
-end
-
---设置伤害加深属性值
-function UnitInfo:SetAddDamage(val)
-	self:SetUInt32(UINT_FIELD_ADD_DAMAGE, val)
-end
-
---获取伤害减免属性值
-function UnitInfo:GetSubDamage()
-	return self:GetUInt32(UINT_FIELD_SUB_DAMAGE)
-end
-
---设置伤害减免属性值
-function UnitInfo:SetSubDamage(val)
-	self:SetUInt32(UINT_FIELD_SUB_DAMAGE, val)
-end
-
-
---获取当前血量
-function UnitInfo:GetHealth()
-	return self:GetUInt32(UNIT_FIELD_HEALTH)
-end
-
---获取最大血量
-function UnitInfo:GetMAXHealth()
-	return self:GetUInt32(UNIT_FIELD_MAXHEALTH)
-end
-
---设置最大血量
-function UnitInfo:SetMAXHealth(val)
-	return self:SetUInt32(UNIT_FIELD_MAXHEALTH, val)
-end
-
---设置当前血量
-function UnitInfo:SetHealth(val)
-	unitLib.SetHealth(self.ptr, val)
 end
 
 --增加当前血量
@@ -455,53 +372,6 @@ function UnitInfo:ModifyPower(ntype, dval)
 		val = 0
 	end
 	self:SetPower(ntype, val)
-end
-
---获得闪避
-function UnitInfo:GetEva()
-	return self:GetUInt32(UNIT_FIELD_COMBAT_EVA)
-end
---设置闪避
-function UnitInfo:SetEva(val)
-	self:SetUInt32(UNIT_FIELD_COMBAT_EVA,val)
-end
-
---获得暴击
-function UnitInfo:GetCrit()
-	return self:GetUInt32(UNIT_FIELD_COMBAT_CRIT)
-end
---设置暴击
-function UnitInfo:SetCrit(val)
-	self:SetUInt32(UNIT_FIELD_COMBAT_CRIT,val)
-end
-
---获得抗暴
-function UnitInfo:GetCritDef()
-	return self:GetUInt32(UNIT_FIELD_COMBAT_CRIT_DEF)
-end	
---设置抗暴
-function UnitInfo:SetCritDef(val)
-	self:SetUInt32(UNIT_FIELD_COMBAT_CRIT_DEF,val)
-end	
-
---获得命中
-function UnitInfo:GetHit()
-	return self:GetUInt32(UNIT_FIELD_COMBAT_HIT)
-end
-
---设置命中
-function UnitInfo:SetHit(val)
-	self:SetUInt32(UNIT_FIELD_COMBAT_HIT,val)
-end
-
---获得闪避率
-function UnitInfo:GetEvaRate()
-	return self:GetUInt32(UNIT_FIELD_COMBAT_RATE_EVA)
-end
-
---获得获得暴击率
-function UnitInfo:GetCritRate()
-	return self:GetUInt32(UNIT_FIELD_COMBAT_RATE_CRIT)
 end
 
 --设置阵营
@@ -566,14 +436,9 @@ function UnitInfo:SetAutoMp(val)
 	self:SetPlayerDouble(PLAYER_FIELD_AUTO_MP, val)
 end
 
---获取性别 1女 0男
+--获取角色id
 function UnitInfo:GetGender()
 	return self:GetByte(UNIT_FIELD_BYTE_1, 0)
-end
-
---获取性别 1女 0男
-function UnitInfo:SetGender(val)
-	self:SetByte(UNIT_FIELD_BYTE_1, 0, val)
 end
 
 --获取头像
@@ -1248,6 +1113,255 @@ function UnitInfo:ActivedSystemToDoSomething(questid)
 	end
 end
 
+--获得当前生命	
+function UnitInfo:GetHealth()
+	return self:GetUInt32(UNIT_FIELD_HEALTH)
+end
+
+--设置当前生命	
+function UnitInfo:SetHealth(val)
+	self:SetUInt32(UNIT_FIELD_HEALTH, val)
+end
+
+--获得最大生命
+function UnitInfo:GetMaxhealth()
+	return self:GetUInt32(UNIT_FIELD_MAXHEALTH)
+end
+
+--设置最大生命
+function UnitInfo:SetMaxhealth(val)
+	self:SetUInt32(UNIT_FIELD_MAXHEALTH, val)
+end
+
+--获得攻击力
+function UnitInfo:GetDamage()
+	return self:GetUInt32(UNIT_FIELD_DAMAGE)
+end
+
+--设置攻击力
+function UnitInfo:SetDamage(val)
+	self:SetUInt32(UNIT_FIELD_DAMAGE, val)
+end
+
+--获得防御力
+function UnitInfo:GetArmor()
+	return self:GetUInt32(UNIT_FIELD_ARMOR)
+end
+
+--设置防御力
+function UnitInfo:SetArmor(val)
+	self:SetUInt32(UNIT_FIELD_ARMOR, val)
+end
+
+--获得命中
+function UnitInfo:GetHit()
+	return self:GetUInt32(UNIT_FIELD_HIT)
+end
+
+--设置命中
+function UnitInfo:SetHit(val)
+	self:SetUInt32(UNIT_FIELD_HIT, val)
+end
+
+--获得闪避
+function UnitInfo:GetDodge()
+	return self:GetUInt32(UNIT_FIELD_DODGE)
+end
+
+--设置闪避
+function UnitInfo:SetDodge(val)
+	self:SetUInt32(UNIT_FIELD_DODGE, val)
+end
+
+--获得暴击
+function UnitInfo:GetCrit()
+	return self:GetUInt32(UNIT_FIELD_CRIT)
+end
+
+--设置暴击
+function UnitInfo:SetCrit(val)
+	self:SetUInt32(UNIT_FIELD_CRIT, val)
+end
+
+--获得坚韧
+function UnitInfo:GetTough()
+	return self:GetUInt32(UNIT_FIELD_TOUGH)
+end
+
+--设置坚韧
+function UnitInfo:SetTough(val)
+	self:SetUInt32(UNIT_FIELD_TOUGH, val)
+end
+
+--获得攻击速度
+function UnitInfo:GetAttackSpeed()
+	return self:GetUInt32(UNIT_FIELD_ATTACK_SPEED)
+end
+
+--设置攻击速度
+function UnitInfo:SetAttackSpeed(val)
+	self:SetUInt32(UNIT_FIELD_ATTACK_SPEED, val)
+end
+
+--获得伤害加深(万分比)
+function UnitInfo:GetAmplifyDamage()
+	return self:GetUInt32(UNIT_FIELD_AMPLIFY_DAMAGE)
+end
+
+--设置伤害加深(万分比)
+function UnitInfo:SetAmplifyDamage(val)
+	self:SetUInt32(UNIT_FIELD_AMPLIFY_DAMAGE, val)
+end
+
+--获得忽视防御(万分比)
+function UnitInfo:GetIgnoreDefense()
+	return self:GetUInt32(UNIT_FIELD_IGNORE_DEFENSE)
+end
+
+--设置忽视防御(万分比)
+function UnitInfo:SetIgnoreDefense(val)
+	self:SetUInt32(UNIT_FIELD_IGNORE_DEFENSE, val)
+end
+
+--获得伤害减免(万分比)
+function UnitInfo:GetDamageResist()
+	return self:GetUInt32(UNIT_FIELD_DAMAGE_RESIST)
+end
+
+--设置伤害减免(万分比)
+function UnitInfo:SetDamageResist(val)
+	self:SetUInt32(UNIT_FIELD_DAMAGE_RESIST, val)
+end
+
+--获得反弹伤害(万分比)
+function UnitInfo:GetDamageReturned()
+	return self:GetUInt32(UNIT_FIELD_DAMAGE_RETURNED)
+end
+
+--设置反弹伤害(万分比)
+function UnitInfo:SetDamageReturned(val)
+	self:SetUInt32(UNIT_FIELD_DAMAGE_RETURNED, val)
+end
+
+--获得命中率加成(万分比)
+function UnitInfo:GetHitRate()
+	return self:GetUInt32(UNIT_FIELD_HIT_RATE)
+end
+
+--设置命中率加成(万分比)
+function UnitInfo:SetHitRate(val)
+	self:SetUInt32(UNIT_FIELD_HIT_RATE, val)
+end
+
+--获得闪避率加成(万分比)
+function UnitInfo:GetDodgeRate()
+	return self:GetUInt32(UNIT_FIELD_DODGE_RATE)
+end
+
+--设置闪避率加成(万分比)
+function UnitInfo:SetDodgeRate(val)
+	self:SetUInt32(UNIT_FIELD_DODGE_RATE, val)
+end
+
+--获得暴击率加成(万分比)
+function UnitInfo:GetCritRate()
+	return self:GetUInt32(UNIT_FIELD_CRIT_RATE)
+end
+
+--设置暴击率加成(万分比)
+function UnitInfo:SetCritRate(val)
+	self:SetUInt32(UNIT_FIELD_CRIT_RATE, val)
+end
+
+--获得抗暴率加成(万分比)
+function UnitInfo:GetCriticalResistRate()
+	return self:GetUInt32(UNIT_FIELD_CRITICAL_RESIST_RATE)
+end
+
+--设置抗暴率加成(万分比)
+function UnitInfo:SetCriticalResistRate(val)
+	self:SetUInt32(UNIT_FIELD_CRITICAL_RESIST_RATE, val)
+end
+
+--获得暴击伤害倍数(万分比)
+function UnitInfo:GetDamageCritMultiple()
+	return self:GetUInt32(UNIT_FIELD_DAMAGE_CRIT_MULTIPLE)
+end
+
+--设置暴击伤害倍数(万分比)
+function UnitInfo:SetDamageCritMultiple(val)
+	self:SetUInt32(UNIT_FIELD_DAMAGE_CRIT_MULTIPLE, val)
+end
+
+--获得降暴伤害倍数(万分比)
+function UnitInfo:GetResistCritMultiple()
+	return self:GetUInt32(UNIT_FIELD_RESIST_CRIT_MULTIPLE)
+end
+
+--设置降暴伤害倍数(万分比)
+function UnitInfo:SetResistCritMultiple(val)
+	self:SetUInt32(UNIT_FIELD_RESIST_CRIT_MULTIPLE, val)
+end
+
+--获得移动速度
+function UnitInfo:GetMoveSpeed()
+	return self:GetUInt32(UNIT_FIELD_MOVE_SPEED)
+end
+
+--设置移动速度
+function UnitInfo:SetMoveSpeed(val)
+	self:SetUInt32(UNIT_FIELD_MOVE_SPEED, val)
+end
+
+-- UnitInfo的属性映射方法
+UnitInfo_Set_Attr_Func = {
+	[EQUIP_ATTR_MAXHEALTH] = UnitInfo.SetMaxhealth,
+	[EQUIP_ATTR_DAMAGE] = UnitInfo.SetDamage,
+	[EQUIP_ATTR_ARMOR] = UnitInfo.SetArmor,
+	[EQUIP_ATTR_HIT] = UnitInfo.SetHit,
+	[EQUIP_ATTR_DODGE] = UnitInfo.SetDodge,
+	[EQUIP_ATTR_CRIT] = UnitInfo.SetCrit,
+	[EQUIP_ATTR_TOUGH] = UnitInfo.SetTough,
+	[EQUIP_ATTR_ATTACK_SPEED] = UnitInfo.SetAttackSpeed,
+	[EQUIP_ATTR_MOVE_SPEED] = UnitInfo.SetMoveSpeed,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = UnitInfo.SetAmplifyDamage,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = UnitInfo.SetIgnoreDefense,
+	[EQUIP_ATTR_DAMAGE_RESIST] = UnitInfo.SetDamageResist,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = UnitInfo.SetDamageReturned,
+	[EQUIP_ATTR_HIT_RATE] = UnitInfo.SetHitRate,
+	[EQUIP_ATTR_DODGE_RATE] = UnitInfo.SetDodgeRate,
+	[EQUIP_ATTR_CRIT_RATE] = UnitInfo.SetCritRate,
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = UnitInfo.SetCriticalResistRate,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = UnitInfo.SetDamageCritMultiple,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = UnitInfo.SetResistCritMultiple,
+}
+
+--属性重算（场景服）
+function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
+	local unitInfo = UnitInfo:new {ptr = player}
+	--TODO: 场景服计算属性
+	for attrId, func in pairs(UnitInfo_Set_Attr_Func) do
+		local index = attrId - 1
+		local value = binLogLib.GetUInt32(attrBinlog, index)
+		func(unitInfo, value)
+		-- 如果是重算的话当前血量也得加, 另外一种是BUFF计算当前血量不需要改, 当然如果大于上线还是得改
+		if bRecal then
+			if attrId == EQUIP_ATTR_MAXHEALTH then
+				unitInfo:SetHealth(value)
+			end
+		end
+	end
+end
+
+-- 通过等级解锁
+function DoPlayerUnlock(player, prevLevel)
+	--[[
+		local unitInfo = UnitInfo:new {ptr = player}
+		local level = unitInfo:GetLevel()
+	]]
+end
+
+
 --通过原点和半径获取随机点坐标(b:为true时，为在地图内可在打码区，为false时，为玩家可到区域非打码区)
 function GetRandPosByRadius(map_ptr, x, y, r, b)
 	local beishu = 10000
@@ -1283,11 +1397,13 @@ function DOComputeExpBonusScript(player, creature, xp, fcmtime, percent)
 	local result = xp
 	local vip_exp = 0
 	
+	--[[
 	-- 队伍加成
 	if GetGroupAddExp(player) > 0 then
 		result = result + xp*GetGroupAddExp(player)/100
 	end
-	
+	]]
+
 	--经验丹加成
 	if unitLib.HasBuff(player, BUFF_ONEPOINTFIVE_JINGYAN) then		
 		result =  result + xp*0.5		
@@ -1299,6 +1415,7 @@ function DOComputeExpBonusScript(player, creature, xp, fcmtime, percent)
 		result =  result + xp*4		
 	end
 	
+	--[[
 	--防沉迷部分
 	if(fcmtime ~= MAX_UINT32_NUM and fcmtime >=300) then
 		result = 0
@@ -1307,13 +1424,9 @@ function DOComputeExpBonusScript(player, creature, xp, fcmtime, percent)
 		result = result * 0.5
 		vip_exp = vip_exp * 0.5
 	end
+	]]
+	
 	return result,vip_exp
-end
-
---属性重算（场景服）
-function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
-	--TODO: 场景服计算属性
-    unitLib.SetMoveSpeed(player, 135)
 end
 
 -- 怪物初始化

@@ -57,6 +57,7 @@ end
 
 --交换位置
 function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
+	outFmtDebug("-------------exchange%d,%d,%d,%d",src_bag,src_pos,dst_bag,dst_pos)
 	local owner = self:getOwner()
 	if not owner then
 		outFmtError("exchangePos:not find %s owner!", self.itemMgr:GetGuid())
@@ -134,8 +135,9 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 		if dst_bag == BAG_TYPE_EQUIP then -- or (src_bag == BAG_TYPE_EQUIP and dst_item )
 			--目的包裹是装备包裹			
 			if dst_item then
-				local dst_temp = tb_item_template[dst_item:getEntry()]
 				--戒指特殊处理
+				--[[ 我们游戏不分左右戒指故不用处理
+				local dst_temp = tb_item_template[dst_item:getEntry()]
 				if dst_temp.pos == EQUIPMENT_TYPE_LRING then
 					local litem = dst_item
 					--说明已经穿了一个戒指在身上了,这样只能把戒指穿在右戒指的位置了
@@ -154,6 +156,7 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 						isRring = true
 					end
 				end
+				]]
 			end
 			
 			--校验装备位置
@@ -180,15 +183,17 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 			end
 			
 			--校验性别
-			if owner:GetGender() ~= src_temp.sex and src_temp.sex ~= 2 then
+			if owner:GetGender() ~= src_temp.sex and src_temp.sex ~= 0 then
 				outFmtError("exchangePos: player gender %d ~= %d", owner:GetGender(), src_temp.sex)
 				return false
 			end
 			
+			--[[ 无负重相关属性
 			if not self:isCanBear(src_item, dst_item) then
 				outFmtError("exchangePos: cant bear!")
 				return false
 			end
+			]]
 		end		
 	end
 	

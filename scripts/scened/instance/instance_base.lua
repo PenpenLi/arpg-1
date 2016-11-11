@@ -535,6 +535,7 @@ Instance_base = {
 	--是否友好（友好1，不友好0）
 	DoIsFriendly = 
 		function(self, killer_ptr, target_ptr)
+			--[[
 			local killerInfo = UnitInfo:new{ptr = killer_ptr}
 			local targetInfo = UnitInfo:new{ptr = target_ptr}
 
@@ -549,6 +550,7 @@ Instance_base = {
 			if ret then
 				return 1
 			end
+			]]
 			return 0
 		end,
 	
@@ -627,10 +629,20 @@ Instance_base = {
 			--给怪物添加技能
 			local spells = config.spell
 			for i = 1, #spells, 3 do
-				creatureLib.MonsterAddSpell(creature_ptr, spells[i], spells[i+1], spells[i+2])
+				local skillConfig = tb_skill_base[spells[i]]
+				if skillConfig then
+					local index = skillConfig.uplevel_id[ 1 ]
+					local upgradeConfig = tb_skill_uplevel[index]
+					local dist = upgradeConfig.distance
+					local groupCD = skillConfig.groupCD - upgradeConfig.mcd
+					local singleCD = skillConfig.singleCD - upgradeConfig.mcd
+					local targetType = skillConfig.target_type
+					creatureLib.MonsterAddSpell(creature_ptr, spells[i], spells[i+1], spells[i+2], dist, groupCD, singleCD, targetType)
+				end
 			end
+			creature:SetBaseAttrs(config.pro, bRecal)
+		else
+			outFmtError("no entry[%d] for creature", entry)
 		end
-		
-		creature:SetBaseAttrs(config.pro, bRecal)
 	end,
 }

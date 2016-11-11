@@ -10,11 +10,15 @@ function AppItemInstance:itemAppaisal(item)
 	if not item_tempate then return end
 	
 	local attr_config = item_tempate.basic_properties
-	--生成基础属性
-	self:createBaseAtrr(item, item_tempate.type, attr_config)
 
-	--重算下战斗力
-	self:resetItemForce(item)
+	if item_tempate.type == ITEM_TYPE_EQUIP then
+		--生成基础属性
+		self:createBaseAtrr(item, item_tempate.type, attr_config)
+
+		--重算下战斗力
+		self:resetItemForce(item)
+	end
+	
 	
 	--标志为已鉴定
 	if not item:isAppaisal() then item:setApparisal() end
@@ -24,6 +28,7 @@ end
 --获得物品属性 ps：这里只获得pk属性相关的，不包括特殊属性
 function AppItemInstance:getItemCalculAttr( item )
 	local attrs = {}
+
 	for i = 1, MAX_EQUIP_ATTR - 1 do
 		attrs[i] = item.item:GetAttr(GetAttrKey({[1] = i})[1])
 	end
@@ -117,14 +122,17 @@ end
 --生成物品基础属性
 function AppItemInstance:createBaseAtrr(item, typed, attr_config)
 	self:clearBaseAtrr(item)	--清除老的基础属性
-	local length = #attr_config / 2
+	local length = #attr_config
 	if length < 1 then return end
+	--[[
 	if typed == 1 then
 		--装备,必须有2条属性以上
 		if length < 2 then return end
 	end
-	for i = 1,#attr_config,2 do
-		item:setAttr(attr_config[i], attr_config[i+1])
+	]]
+	for i = 1,#attr_config do
+		--outFmtDebug("att config %s,%s",attr_config[i][1],attr_config[i][2])
+		item:setAttr(attr_config[i][1], attr_config[i][2])
 	end
 end
 
@@ -135,6 +143,7 @@ end
 
 --重算物品战斗力
 function AppItemInstance:resetItemForce(item)
+	--[[
 	local temp_attrs = self:getItemCalculAttr(item)
 	--强加加成
 	local streng_lv = item:getStrongLv()
@@ -150,6 +159,7 @@ function AppItemInstance:resetItemForce(item)
 		item:setAttr(ITEM_OTHER_ATTR_FORCE, force)		--更新物品战斗力		
 	end	
 	self.itemMgr:SavePtr(item.item)
+	]]
 end
 
 --查找商品列表

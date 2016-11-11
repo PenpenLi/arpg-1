@@ -114,7 +114,7 @@ end
 
 --玩家下线的时候判断是否记录玩家所在地图的信息，最多保留10分钟
 function DoIsRecordIntanceInfo(player, map_id, isfuben, fuben_type)	
-	if(isfuben == 0 or fuben_type ~= MAP_INST_TYP_SINGLETON or  fuben_type ~= MAP_INST_TYP_GROUP)then
+	if(isfuben == 0 or fuben_type ~= MAP_INST_TYP_SINGLETON)then
 		return false
 	end
 
@@ -154,7 +154,7 @@ end
 
 --地图分线人数配置
 map_line_config = {
-	[1] = 2,
+	[1] = 22,
 	[101] = 30,
 	[102] = 300,
 }

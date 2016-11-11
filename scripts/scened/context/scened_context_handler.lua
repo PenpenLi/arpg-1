@@ -13,7 +13,7 @@ function ScenedContext:Hanlde_Dazuo_Start( pkt )
 	if self:GetDaZuoTime() == 0 then	--不在打坐，则打坐
 		self:StartDaZuo()
 	else
-		self:ReceiveDaZuo()
+		self:CancelDaZuo()
 	end
 end
 

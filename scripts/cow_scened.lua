@@ -185,6 +185,7 @@ function load_lua_scripts()
 		{'公式脚本'			,'scened/formula'},
 		{'buffer脚本'		,'scened/buffer'},
 		{'技能脚本脚本'		,'scened/spell'},
+		{'技能范围脚本'		,'scened/hit'},
 		{'使用物品脚本'		,'scened/item'},
 		{'伤害计算脚本'		,'scened/meleeattack'},
 		{'闲聊及任务脚本'	,'scened/gossip'},

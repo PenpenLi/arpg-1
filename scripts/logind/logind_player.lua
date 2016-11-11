@@ -11,6 +11,11 @@ function LogindPlayer:DefereSuccess()
 	end
 end
 
+-- 获得角色id
+function LogindPlayer:GetGender()
+	return self:GetByte(PLAYER_FIELD_BYTES_0, 0)
+end
+
 --获取某玩家标志位
 function LogindPlayer:GetFlags(index)
 	return self:GetBit(PLAYER_APPD_INT_FIELD_FLAG, index)
@@ -79,15 +84,165 @@ function DoMergeSomething()
 
 end
 
---初始化新玩家属性
-function LogindPlayer:SetNewPlayerAttr()
+--生命
+function LogindPlayer:SetHealth(val)
+	self:SetDouble(PLAYER_FIELD_HEALTH, val)
+end
+
+--设置最大生命
+function LogindPlayer:SetMaxhealth(val)
+	self:SetDouble(PLAYER_FIELD_MAXHEALTH, val)
+end
+
+--设置攻击力
+function LogindPlayer:SetDamage(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE, val)
+end
+
+--设置防御力
+function LogindPlayer:SetArmor(val)
+	self:SetDouble(PLAYER_FIELD_ARMOR, val)
+end
+
+--设置命中
+function LogindPlayer:SetHit(val)
+	self:SetDouble(PLAYER_FIELD_HIT, val)
+end
+
+--设置闪避
+function LogindPlayer:SetDodge(val)
+	self:SetDouble(PLAYER_FIELD_DODGE, val)
+end
+
+--设置暴击
+function LogindPlayer:SetCrit(val)
+	self:SetDouble(PLAYER_FIELD_CRIT, val)
+end
+
+--设置坚韧
+function LogindPlayer:SetTough(val)
+	self:SetDouble(PLAYER_FIELD_TOUGH, val)
+end
+
+--设置攻击速度
+function LogindPlayer:SetAttackSpeed(val)
+	self:SetDouble(PLAYER_FIELD_ATTACK_SPEED, val)
+end
+
+--设置移动速度
+function LogindPlayer:SetMoveSpeed(val)
+	self:SetDouble(PLAYER_FIELD_MOVE_SPEED, val)
+end
+
+--设置伤害加深(万分比)
+function LogindPlayer:SetAmplifyDamage(val)
+	self:SetDouble(PLAYER_FIELD_AMPLIFY_DAMAGE, val)
+end
+
+--设置忽视防御(万分比)
+function LogindPlayer:SetIgnoreDefense(val)
+	self:SetDouble(PLAYER_FIELD_IGNORE_DEFENSE, val)
+end
+
+--设置伤害减免(万分比)
+function LogindPlayer:SetDamageResist(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_RESIST, val)
+end
+
+--设置反弹伤害(万分比)
+function LogindPlayer:SetDamageReturned(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_RETURNED, val)
+end
+
+--设置命中率加成(万分比)
+function LogindPlayer:SetHitRate(val)
+	self:SetDouble(PLAYER_FIELD_HIT_RATE, val)
+end
+
+--设置闪避率加成(万分比)
+function LogindPlayer:SetDodgeRate(val)
+	self:SetDouble(PLAYER_FIELD_DODGE_RATE, val)
+end
+
+--设置暴击率加成(万分比)
+function LogindPlayer:SetCritRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_RATE, val)
+end
+
+--设置抗暴率加成(万分比)
+function LogindPlayer:SetCriticalResistRate(val)
+	self:SetDouble(PLAYER_FIELD_CRITICAL_RESIST_RATE, val)
+end
+
+--设置暴击伤害倍数(万分比)
+function LogindPlayer:SetDamageCritMultiple(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_CRIT_MULTIPLE, val)
+end
+
+--设置降暴伤害倍数(万分比)
+function LogindPlayer:SetResistCritMultiple(val)
+	self:SetDouble(PLAYER_FIELD_RESIST_CRIT_MULTIPLE, val)
+end
+
+-- LogindPlayer的属性映射方法
+InitAttrFunc = {
+	[EQUIP_ATTR_MAXHEALTH] = LogindPlayer.SetMaxhealth,
+	[EQUIP_ATTR_DAMAGE] = LogindPlayer.SetDamage,
+	[EQUIP_ATTR_ARMOR] = LogindPlayer.SetArmor,
+	[EQUIP_ATTR_HIT] = LogindPlayer.SetHit,
+	[EQUIP_ATTR_DODGE] = LogindPlayer.SetDodge,
+	[EQUIP_ATTR_CRIT] = LogindPlayer.SetCrit,
+	[EQUIP_ATTR_TOUGH] = LogindPlayer.SetTough,
+	[EQUIP_ATTR_ATTACK_SPEED] = LogindPlayer.SetAttackSpeed,
+	[EQUIP_ATTR_MOVE_SPEED] = LogindPlayer.SetMoveSpeed,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = LogindPlayer.SetAmplifyDamage,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = LogindPlayer.SetIgnoreDefense,
+	[EQUIP_ATTR_DAMAGE_RESIST] = LogindPlayer.SetDamageResist,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = LogindPlayer.SetDamageReturned,
+	[EQUIP_ATTR_HIT_RATE] = LogindPlayer.SetHitRate,
+	[EQUIP_ATTR_DODGE_RATE] = LogindPlayer.SetDodgeRate,
+	[EQUIP_ATTR_CRIT_RATE] = LogindPlayer.SetCritRate,
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = LogindPlayer.SetCriticalResistRate,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = LogindPlayer.SetDamageCritMultiple,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = LogindPlayer.SetResistCritMultiple,
+}
+
+--设置玩家初始信息
+function LogindPlayer:SetNewPlayerInfo()
+	-- 初始化属性
 	local config = tb_char_level[1]
 	if config then
-		for _,val in ipairs(config.prop)do
-			if val[1] == EQUIP_ATTR_HP then
-				self:SetDouble(PLAYER_FIELD_MAXHEALTH, val[2])
-				self:SetDouble(PLAYER_FIELD_HEALTH, val[2])
-				self:SetDouble(PLAYER_EXPAND_INT_NEXT_LEVEL_XP, config.next_exp)
+		self:SetDouble(PLAYER_EXPAND_INT_NEXT_LEVEL_XP, config.next_exp)
+		for _, val in ipairs(config.prop)do
+			local func = InitAttrFunc[val[ 1 ]];
+			if func ~= nil then
+				func(self, val[2])
+				-- 需要设置当前血量
+				if val[ 1 ] == EQUIP_ATTR_MAXHEALTH then
+					self:SetHealth(val[ 2 ])
+				end
+			end
+		end
+	end
+
+	-- 初始化玩家技能
+	local gender = self:GetGender()
+	local config = tb_char_skill[gender]
+
+	if config then
+		-- 初始主动技能
+		local initiativeStart = PLAYER_INT_FIELD_SPELL_START
+		
+		for _, spellId in ipairs(config.init_spell) do
+			
+			local spellBaseConfig = tb_skill_base[spellId]
+			if spellBaseConfig ~= nil then
+				-- 主动技能列表
+				self:SetUInt16(initiativeStart, SHORT_SLOT_SPELL_ID, spellId)
+				self:SetByte(initiativeStart, BYTE_SLOT_SPELL_LV,		1)
+				local slot = spellBaseConfig.skill_slot
+				self:SetByte(initiativeStart, BYTE_SLOT,	slot)
+				initiativeStart = initiativeStart + 1
 			end
 		end
 	end

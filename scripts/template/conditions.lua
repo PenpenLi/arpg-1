@@ -318,11 +318,12 @@ function CalculWuJiangForce(tParam)
 end
 
 
-
+--[[
 --神兵资质转换成百分比的表配置
 ShenBing_zizhi_Coeffection = {
 	[EQUIP_ATTR_FIXED_OUT_DAMAGE] = 0.002, [EQUIP_ATTR_FIXED_IN_DAMAGE] = 0.002, [EQUIP_ATTR_FIXED_OUT_DEF] = 0.0023, [EQUIP_ATTR_FIXED_IN_DEF] = 0.0023, [EQUIP_ATTR_FIXED_HP] = 0.0025,
 }
+]]
 
 --副本需要刷的怪物数量
 function GetFubenRefreshCreatureCount( tParam )
@@ -362,6 +363,28 @@ end
 
 
 equip_attr_type = {
+
+	[EQUIP_ATTR_MAXHEALTH				] = "hp",		--生命
+	[EQUIP_ATTR_DAMAGE					] = "dam",		--攻击
+	[EQUIP_ATTR_ARMOR					] = "arm",		--防御
+	[EQUIP_ATTR_HIT						] = "hit",		--命中
+	[EQUIP_ATTR_DODGE					] = "dod",		--闪避
+	[EQUIP_ATTR_CRIT					] = "crt",		--暴击
+	[EQUIP_ATTR_TOUGH					] = "tou",		--坚韧
+	[EQUIP_ATTR_ATTACK_SPEED			] = "asp",		--攻速
+	[EQUIP_ATTR_MOVE_SPEED				] = "msp",		--移速
+	[EQUIP_ATTR_AMPLIFY_DAMAGE			] = "adm",		--伤害加深(万分比)
+	[EQUIP_ATTR_IGNORE_DEFENSE			] = "idm",		--忽视防御(万分比)
+	[EQUIP_ATTR_DAMAGE_RESIST			] = "drs",		--伤害减免(万分比)
+	[EQUIP_ATTR_DAMAGE_RETURNED			] = "dre",		--反弹伤害(万分比)
+
+	[EQUIP_ATTR_HIT_RATE				] = "hir",		--命中率加成(万分比)
+	[EQUIP_ATTR_DODGE_RATE				] = "dor",		--闪避率加成(万分比)
+	[EQUIP_ATTR_CRIT_RATE				] = "crr",		--暴击率加成(万分比)
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE	] = "tor",		--抗暴率加成(万分比)
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE	] = "dcm",		--暴击伤害倍数(万分比)
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE 	] = "rcm",		--降暴伤害倍数(万分比)
+	--[[
 	[EQUIP_ATTR_HP				] = "hp",
 	[EQUIP_ATTR_OUT_DAMAGE		] = "odam",
 	[EQUIP_ATTR_IN_DAMAGE		] = "idam",
@@ -397,6 +420,7 @@ equip_attr_type = {
 	[ITEM_OTHER_ATTR_STRONG_LV 	] = "istronglv",
 	[ITEM_OTHER_ATTR_STRONG_FAIL_COUNT] = "isfcount",
 	[ITEM_OTHER_ATTR_FORCE		] = "force",	
+	]]
 }
 
 --通过属性类型获得对应的key

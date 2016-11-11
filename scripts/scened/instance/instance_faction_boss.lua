@@ -92,7 +92,7 @@ function InstanceFactionBoss:DoRespawn( player,cur_map_id,respwan_map,respwan_ty
 end
 
 -----------------------------------------------------------------------------
------------------帮派单人boss ai------------------------
+--------------------------------帮派单人boss ai------------------------------
 AI_faction_boss = class("AI_faction_boss", AI_boss)
 AI_faction_boss.ainame = "AI_faction_boss"
 

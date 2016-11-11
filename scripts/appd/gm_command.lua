@@ -2,6 +2,7 @@
 function  DoGMScripts(player_ptr, gm_commands)
 	local player = app.objMgr:fromPtr(player_ptr)
 	local result = ""
+
 	
 	if(gm_commands == "@hello")then
 		result = "ni ye hello"
@@ -936,6 +937,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 		player:SetUInt32(PLAYER_INT_FIELD_JUNGONG,val)
 
 	elseif(tokens[1] == "@制造")then
+		
 		if(#tokens < 2)then
 			return result
 		end
@@ -948,10 +950,14 @@ function  DoGMScripts(player_ptr, gm_commands)
 				end
 			end
 		end
+
 		--100之后才是物品~
 		if id <= 100 or not tb_item_template[id] then
 			return result
 		end
+
+		--outFmtDebug("zhiao2")
+
 		local count = paras[3] or 1
 		local bind = paras[4] or false
 		local strong = paras[5] or 0

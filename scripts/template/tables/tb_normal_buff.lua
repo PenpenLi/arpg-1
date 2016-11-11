@@ -13,9 +13,7 @@ tb_normal_buff = {
 	[3] = {id = 3,buff_id = 421,effect = 5,time = 300,},
 	[4] = {id = 4,buff_id = 411,effect = 10,time = 65535,},
 	[5] = {id = 5,buff_id = 431,effect = 50,time = 65535,},
-
-	-- 增伤BUFF
-	[6] = {id = 6,buff_id = 301,effect = 100,time = 65535,},
-	-- 百分比血量上限BUFF
-	[7] = {id = 7,buff_id = 900,effect = 50,time = 65535,},
+	[6] = {id = 6,buff_id = 441,effect = 60,time = 20,},
+	[7] = {id = 7,buff_id = 432,effect = 15,time = 65535,},
+	[8] = {id = 8,buff_id = 432,effect = 30,time = 65535,},
 }

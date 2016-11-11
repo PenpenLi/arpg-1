@@ -100,8 +100,11 @@ function PlayerInfo:Hanlde_Npc_Sell(pkt)
 
 	if(item:getCount() < count)then
 		return
-	end
+	end	
+	--直接删除物品
+	itemMgr:delItemObj(item,count)
 
+	--[[ 注释掉回购操作
 	if not self.repurchase_pos then self.repurchase_pos = 0 end
 	local repurchase_size = itemMgr:getBagSize(BAG_TYPE_REPURCHASE)
 	if self.repurchase_pos >= 20 then
@@ -127,10 +130,13 @@ function PlayerInfo:Hanlde_Npc_Sell(pkt)
 		local dst_pos = itemMgr:getEmptyPos(BAG_TYPE_REPURCHASE)
 		itemMgr:exchangePos(src_bag,src_pos,dst_bag,dst_pos)
 	end
+	]]
 
-	--处理金钱
+	--处理金钱 FIXME 处理金钱的操作需要处理
+	--[[
 	self:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_NPC_SELL, tb_item_template[item:getEntry()].price*count, "",
 		item:getEntry(), count, item:isBind() and ITEM_BIND_GET or ITEM_BIND_NONE ,item:getFailTime() > 0 and 1 or 0)	
+	]]
 end
 
 --回购物品
@@ -177,6 +183,15 @@ end
 -- 使用物品
 function PlayerInfo:Hanlde_Bag_Item_User(pkt)
 	UseItem(self, pkt.item_guid, pkt.count)
+end
+--交换物品 （穿装备）
+function PlayerInfo:Hanlde_Bag_Exchange_Pos(pkt)
+	local src_bag = pkt.src_bag
+	local src_pos = pkt.src_pos
+	local dst_bag = pkt.dst_bag
+	local dst_pos = pkt.dst_pos
+	local itemMgr = self:getItemMgr()
+	itemMgr:exchangePos(src_bag,src_pos,dst_bag,dst_pos)
 end
 
 --函数包路由表

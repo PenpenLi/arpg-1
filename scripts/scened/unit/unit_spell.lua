@@ -1,46 +1,130 @@
+--[[
+	当玩家进入场景是 playerbase对象同步技能等级和重要技能cd分别到player对象的临时信息m_spell_level和m_importance_spell_cd中
+	玩家增加技能的时候, 需要修改playerbase对象技能信息和player对象的临时m_spell_level信息
+	玩家使用技能时候, 通过字典表中查询need_save属性来确定是放到m_spell_cd(不需要存)还是m_importance_spell_cd(要存)中
+	玩家离开场景时候, 把m_importance_spell_cd信息同步到playerbase对象中
+]]
+
+-- 技能类型is_initiative
+SPELL_SUPPORT = 0 -- 辅助
+
+SPELL_INITIATIVE_DAMAGE  = 1 -- 主动（伤害）
+SPELL_INITIATIVE_PROTECT = 2 -- 主动（防护）
+SPELL_INITIATIVE_CONTROL = 3 -- 主动（控制）
+SPELL_INITIATIVE_CURE 	 = 4 -- 主动（回复）
+SPELL_INITIATIVE_BUFF = 5 -- 主动（增益）
+
+SPELL_PASSIVE_DAMAGE = 6 -- 被动（伤害）
+SPELL_PASSIVE_PROTECT = 7 -- 被动（防护）
+SPELL_PASSIVE_CONTROL = 8 -- 被动（控制）
+SPELL_PASSIVE_CURE = 9 -- 被动（回复）
+SPELL_PASSIVE_BUFF = 10 -- 被动（增益）
+
+SPELL_INITIATIVE = {
+	[SPELL_INITIATIVE_DAMAGE]  = 1, -- 主动（伤害）
+	[SPELL_INITIATIVE_PROTECT] = 2, -- 主动（防护）
+	[SPELL_INITIATIVE_CONTROL] = 3, -- 主动（控制）
+	[SPELL_INITIATIVE_CURE]    = 4, -- 主动（回复）
+	[SPELL_INITIATIVE_BUFF]    = 5, -- 主动（增益）
+}
+
+SPELL_PASSIVE = {
+	[SPELL_PASSIVE_DAMAGE] = 6, -- 被动（伤害）
+	[SPELL_PASSIVE_PROTECT] = 7, -- 被动（防护）
+	[SPELL_PASSIVE_CONTROL] = 8, -- 被动（控制）
+	[SPELL_PASSIVE_CURE] = 9, -- 被动（回复）
+	[SPELL_PASSIVE_BUFF] = 10, -- 被动（增益）
+}
 
 --添加技能
-function UnitInfo:AddSpell(need_add_spell, spell_cd_save)
-	local idx = 0
-	for i = 1, #need_add_spell, 2 do
-		local index = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0 + idx * MAX_SLOT_ATTR_COUNT
-		local spell_id = need_add_spell[i]
-		self:SetPlayerUInt32(index + SLOT_SPELL_ID, spell_id)
-		self:SetPlayerUInt32(index + SLOT_SPELL_LV, need_add_spell[i+1])
-		if(spell_cd_save[spell_id] ~= nil and spell_cd_save[spell_id] > 0)then
-			--需要存技能cd的技能
-			if(self:isNeedSaveSpellCd(spell_id))then
-				if self:GetPlayerUInt32(index + SLOT_SPELL_CD) ~= spell_cd_save[spell_id] then
-					self:SetPlayerUInt32(index + SLOT_SPELL_CD, spell_cd_save[spell_id])
-				end
-			else
-				playerLib.SetSpellCD(self.ptr, spell_id, spell_cd_save[spell_id])--保存cd
-			end
+function UnitInfo:AddSpell(need_add_spell)
+	--[[
+	-- 当前3种技能的空位
+	local emptySupport		= self:findSpellEmptyIndex(PLAYER_INT_FIELD_SUPPORT_SPELL_HAS_START, MAX_SPELL_BASE_COUNT, PLAYER_OWN_SUPPORT_SPELL_MAX_COUNT)
+	local emptyInitative	= self:findSpellEmptyIndex(PLAYER_INT_FIELD_INITIATIVE_SPELL_START, MAX_SLOT_ATTR_COUNT, PLAYER_OWN_INITIATIVE_SPELL_MAX_COUNT)
+	local emptyPassive		= self:findSpellEmptyIndex(PLAYER_INT_FIELD_PASSIVE_SPELL, MAX_SPELL_BASE_COUNT, PLAYER_OWN_PASSIVE_SPELL_MAX_COUNT)
+	
+	-- 当前3中技能空位对应的binlog偏移量
+	local supportOffset		= emptySupport * MAX_SPELL_BASE_COUNT
+	local initativeOffset	= emptyInitative * MAX_SLOT_ATTR_COUNT
+	local passiveOffset		= emptyPassive * MAX_SPELL_BASE_COUNT
+	
+	--添加技能
+	for _, spellInfo in ipairs(need_add_spell) do
+		local spellId = spellInfo[ 1 ]
+		local spellLv = spellInfo[ 2 ]
+		
+		local config = tb_skill_base[spellId];
+		if config == nil then
+			outFmtError("in function AddSpell, designer has record invalid data, spellId = %d is not exist", spellId)
 		else
-			--需要存技能cd的技能
-			if(self:isNeedSaveSpellCd(spell_id))then
-				if self:GetPlayerUInt32(index + SLOT_SPELL_CD) ~= 0 then
-					self:SetPlayerUInt32(index + SLOT_SPELL_CD, 0)
+			local skillType = config.is_initiative
+			local index
+			
+			if skillType == SPELL_SUPPORT then
+				-- 辅助
+				if emptySupport >= PLAYER_OWN_SUPPORT_SPELL_MAX_COUNT then
+					outFmtDebug("in function AddSpell, designer has record invalid data, support spell is full")
+				else
+					index = supportOffset
+					emptySupport = emptySupport + 1
+					supportOffset = supportOffset + MAX_SPELL_BASE_COUNT
+					outInfoDebug("add !support! spell, indexStart = %d, spellId = %d, spellLv = %d", index, spellId, spellLv)
+				end
+			elseif SPELL_INITIATIVE[skillType] ~= nil then 
+				-- 主动
+				if emptyInitative >= PLAYER_OWN_INITIATIVE_SPELL_MAX_COUNT then
+					outFmtDebug("in function AddSpell, designer has record invalid data, initative spell is full")
+				else
+					index = initativeOffset
+					emptyInitative = emptyInitative + 1
+					initativeOffset = initativeOffset + MAX_SLOT_ATTR_COUNT
+					outInfoDebug("add @initative@ spell, indexStart = %d, spellId = %d, spellLv = %d", index, spellId, spellLv)
 				end
 			else
-				if(playerLib.GetSpellCD(self.ptr, spell_id) ~= 0)then
-					playerLib.SetSpellCD(self.ptr, spell_id, 0)
+				-- 被动
+				if emptyPassive >= PLAYER_OWN_PASSIVE_SPELL_MAX_COUNT then
+					outFmtDebug("in function AddSpell, designer has record invalid data, passive spell is full")
+				else
+					index = passiveOffset
+					emptyPassive = emptyPassive + 1
+					passiveOffset = passiveOffset + MAX_SPELL_BASE_COUNT
+					outInfoDebug("add #passive# spell, indexStart = %d, spellId = %d, spellLv = %d", index, spellId, spellLv)
 				end
 			end
-		end
-		idx = idx + 1
-		if idx >= PLAYER_SPELL_MAX_COUNT then break end				--已经超过最大技能槽个数了
-	end
-	--把后面多余的清空
-	for i = idx, PLAYER_SPELL_MAX_COUNT-1 do
-		local index = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0 + i * MAX_SLOT_ATTR_COUNT
-		if(self:GetPlayerUInt32(index + SLOT_SPELL_ID) ~= 0)then
-			--清空
-			self:SetPlayerUInt32(index + SLOT_SPELL_ID, 0)
-			self:SetPlayerUInt32(index + SLOT_SPELL_LV, 0)
-			self:SetPlayerUInt32(index + SLOT_SPELL_CD, 0)
+			
+			if index ~= nil then
+				self:AddSpellToPlayer(index, spellId, spellLv)
+			end
 		end
 	end
+	]]
+end
+
+--加到玩家身上
+function UnitInfo:AddSpellToPlayer(index, spellId, spellLv, spellCd)
+	self:SetPlayerUInt32(index + SPELL_ID, spellId)
+	self:SetPlayerUInt32(index + SPELL_LV, spellLv)
+	
+	-- 设置技能等级
+	playerLib.SetSpellLevel(self.ptr, spellId, spellLv)
+	
+	if spellCd then
+		self:FinalSetSpellCD(spellId, spellCd)
+	end
+end
+
+-- -1表示没找到
+function UnitInfo:findSpellEmptyIndex(start, increase, maxCount)
+	-- 找空位
+	for i = 0, maxCount-1 do
+		if self:GetPlayerUInt32(start + SPELL_ID) == 0 then
+			return i
+		end
+		start = start + increase
+	end
+	
+	return -1
 end
 
 function UnitInfo:PrintSpellSlotInfo()
@@ -54,28 +138,12 @@ function UnitInfo:PrintSpellSlotInfo()
 	end
 end
 
---删除技能
-function UnitInfo:DeleteSpell(spell_id)
-	for i = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0, PLAYER_SCENED_INT_FIELD_SLOT_SPELL_END-1, MAX_SLOT_ATTR_COUNT do
-		if(self:GetPlayerUInt32(i + SLOT_SPELL_ID) == spell_id)then
-			self:SetPlayerUInt32(i + SLOT_SPELL_ID, 0)
-			self:SetPlayerUInt32(i + SLOT_SPELL_LV, 0)
-			playerLib.SetSpellCD(self.ptr, spell_id, 0)
-			self:SetPlayerUInt32(i + SLOT_SPELL_CD, 0)
-			break
-		end
-	end
+--获得技能等级
+function UnitInfo:GetSpellLevel(spellId)
+	return playerLib.GetSpellLevel(self.ptr, spellId)
 end
 
---获得技能等级
-function UnitInfo:GetSpellLevel(spell_id)
-	for i = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0, PLAYER_SCENED_INT_FIELD_SLOT_SPELL_END-1, MAX_SLOT_ATTR_COUNT do
-		if(self:GetPlayerUInt32(i + SLOT_SPELL_ID) == spell_id)then
-			return self:GetPlayerUInt32(i + SLOT_SPELL_LV)
-		end
-	end
-	return 0
-end
+
 
 --判断释放技能的消耗是否够 返回true则够消耗
 function UnitInfo:IsEnoughConsumption(spell_id)
@@ -108,102 +176,68 @@ end
 
 --设置技能cd
 function UnitInfo:SetSpellCD(spell_id, nowtime)
-	--设置技能cd
-	if true then
-		local cd = 500;
-		--print("set next spell cd:"..(nowtime + cd))
-		playerLib.SetSpellCD(self.ptr, spell_id, nowtime + cd)			--设置单独cd
-		return
-	end
-
 	local spell_lv = self:GetSpellLevel(spell_id)
+	
 	local config = tb_skill_base[spell_id]
 	if config ~= nil and spell_lv > 0 then
-		local category_cd = config.groupCD
-		local single_cd = config.singleCD
-		local type = config.group				--技能族(同一技能族共享公共CD)
-		--给同一族的技能设置公共CD
-		for i = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0, PLAYER_SCENED_INT_FIELD_SLOT_SPELL_END-1, MAX_SLOT_ATTR_COUNT do
-			local temp_id = self:GetPlayerUInt32(i + SLOT_SPELL_ID)
-			if temp_id == spell_id and single_cd > 0 then
-				--如果是二段技能，不用设置CD
-				local old_spell_id = spell_id
-				if self:GetTypeID() == TYPEID_PLAYER then
-					old_spell_id = self:GetNextSpellID(spell_id)
-				end
-				if old_spell_id == spell_id then
-					local cd_tm = nowtime + single_cd
-					--需要存技能cd的技能
-					if self:isNeedSaveSpellCd(spell_id) then
-						if self:GetPlayerUInt32(i + SLOT_SPELL_CD) ~= cd_tm then
-							self:SetPlayerUInt32(i + SLOT_SPELL_CD, cd_tm)
-						end
-					else
-						playerLib.SetSpellCD(self.ptr, temp_id, cd_tm)			--设置单独cd
-					end
-				end
-			end
-			if tb_skill_base[temp_id] ~= nil and type == tb_skill_base[temp_id].group and category_cd > 0 then
-				if temp_id == spell_id and category_cd > single_cd then
-					local cd_tm = nowtime + category_cd
-					if self:isNeedSaveSpellCd(temp_id) then
-						if self:GetPlayerUInt32(i + SLOT_SPELL_CD) ~= cd_tm then
-							self:SetPlayerUInt32(i + SLOT_SPELL_CD, cd_tm)
-						end
-					else
-						playerLib.SetSpellCD(self.ptr, temp_id, cd_tm)		--设置公共cd
-					end
-				elseif temp_id ~= spell_id then
-					local cd_tm = nowtime + category_cd
-					if self:isNeedSaveSpellCd(temp_id) then
-						if self:GetPlayerUInt32(i + SLOT_SPELL_CD) < cd_tm then
-							self:SetPlayerUInt32(i + SLOT_SPELL_CD, cd_tm)
-						end
-					else
-						if playerLib.GetSpellCD(self.ptr, temp_id) < cd_tm then
-							playerLib.SetSpellCD(self.ptr, temp_id, cd_tm)	--设置公共cd
+		local levelIndex = self:GetSpellLvIndex(spell_id)
+		local upConfig = tb_skill_uplevel[levelIndex]
+		local category_cd = config.groupCD - upConfig.mcd
+		local single_cd = config.singleCD - upConfig.mcd
+		local group = config.group	--技能族(同一技能族共享公共CD)
+		
+		
+		if group > 0 then
+			-- 一定装备在技能槽
+			-- 给同一族的技能设置公共CD
+			-- 给当前技能设置设置2个技能CD的最大值
+			for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
+				local temp_id = self:GetPlayerUInt16(i, SHORT_SLOT_SPELL_ID)
+				if tb_skill_base[temp_id] ~= nil and group == tb_skill_base[temp_id].group then
+					local tcd = category_cd
+					if temp_id == spell_id then
+						if category_cd < single_cd then
+							tcd = single_cd
 						end
 					end
+					self:FinalSetSpellCD(temp_id, tcd + nowtime)
 				end
 			end
+		else
+			-- 设置cd即可
+			self:FinalSetSpellCD(spell_id, nowtime + single_cd)
 		end
 	end
 end
 
+-- 调用C++函数设置内存cd及其是否是重要CD
+function UnitInfo:FinalSetSpellCD(spellId, cd)
+	-- 需要判断是否是binlog存CD技能
+	if self:isNeedSaveSpellCd(spellId) then
+		playerLib.SetImportanceSpellCD(self.ptr, spellId, cd)
+	else
+		playerLib.SetSpellCD(self.ptr, spellId, cd)
+	end
+end
+
+-- 是否需要存binlog
+function UnitInfo:isNeedSaveSpellCd(spellId)
+	return tb_skill_base[spellId].need_save == 1
+end
+
 --判断技能是否处于CD，返回为true则技能冷却中
+-- 包括重要技能和一般技能的CD
 function UnitInfo:IsSpellCD(spell_id, nowtime)
 	--print("IsSpellCD, spellID:"..spell_id)
 	local cd = playerLib.GetSpellCD(self.ptr, spell_id)
 	return nowtime < cd;
-	--[[
-	for i = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0, PLAYER_SCENED_INT_FIELD_SLOT_SPELL_END-1, MAX_SLOT_ATTR_COUNT do
-		--print("index = "..i)
-		if(self:GetPlayerUInt32(i + SLOT_SPELL_ID) == spell_id)then
-			print("spellId = "..playerLib.GetSpellCD(self.ptr, spell_id))
-			if(self:isNeedSaveSpellCd(spell_id))then
-				if nowtime < self:GetPlayerUInt32(i + SLOT_SPELL_CD) then
-					return true
-				else
-					self:SetPlayerUInt32(i + SLOT_SPELL_CD, 0)
-				end
-				break
-			elseif(nowtime < playerLib.GetSpellCD(self.ptr, spell_id))then
-				return true			--技能冷却中
-			else
-				--清理cd
-				playerLib.SetSpellCD(self.ptr, spell_id, 0)
-			end
-			break
-		end
-	end
-	return false
-	]]
 end
 
---判断是否有某个技能 返回为true则有这个技能
-function UnitInfo:HasSpell(spell_id)
-	for i = PLAYER_SCENED_INT_FIELD_SLOT_SPELL_0, PLAYER_SCENED_INT_FIELD_SLOT_SPELL_END-1, MAX_SLOT_ATTR_COUNT do
-		if(self:GetPlayerUInt32(i + SLOT_SPELL_ID) == spell_id)then
+-- 判断是否有装备某个技能
+function UnitInfo:HasSpell(spellId)
+	
+	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
+		if self:GetPlayerUInt16(i, SHORT_SLOT_SPELL_ID) == spellId then
 			return true
 		end
 	end
@@ -246,24 +280,3 @@ function UnitInfo:SetUnitPassiveSpellCD(spell_id,cd)
 	table.insert(ps_table,new_cd)
 end
 
---玩家是否激活该技能
-function UnitInfo:IsActiveSpell(spell_id)
-	for i = PLAYER_APPD_INT_FIELD_SPELL,PLAYER_APPD_INT_FIELD_SPELL_END,MAX_SPELLBASE do
-		if(self:GetPlayerUInt32(i + SPELL_BASE_ID) == spell_id)then
-			return true
-		end
-	end
-	return false
-end
-
---2段技能对应的有效时间下标
-spell_valid_time_config = {
---技能ID = 下标位置
-	[11] = SPELL_VALID_TIME_POTIAN_2, 
-	[12] = SPELL_VALID_TIME_POTIAN_3, 
-	[15] = SPELL_VALID_TIME_YUNFEI_2, 
-	[16] = SPELL_VALID_TIME_YUNFEI_3, 
-	[18] = SPELL_VALID_TIME_FENGFAN_2, 
-	[20] = SPELL_VALID_TIME_ZHUXIAN_2,
-	
-}

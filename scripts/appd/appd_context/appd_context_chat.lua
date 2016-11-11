@@ -87,13 +87,17 @@ function PlayerInfo:GmCommand(str)
 		WriteClientInfoLog(self:GetGuid(), at_tokens[2], bx_tokens[2], bx_tokens[3], bx_tokens[4], bx_tokens[5], bx_tokens[6], bx_tokens[7], bx_tokens[8], bx_tokens[9])
 		return
 	end
+	
 	outFmtInfo("player %s send gm command : %s", self:GetGuid(), str)
+	local gm_level = 100;
+	--[[
 	local gm_level = self:GetGMLevel()
 	local whisper_str = "Please do not enter illegal characters"
 	if(gm_level < GM_LEVEL_3)then
 		self:call_chat_whisper(self:GetGuid(), self:GetFaction(), self:GetName(), whisper_str)
 		return
 	end
+	]]
 	-- //发给其他服务器
 	call_gm_command(self:GetGuid(), command)
 	
@@ -104,10 +108,12 @@ function PlayerInfo:GmCommand(str)
 		end
 		call_opt_command(0, 0, "reload_template")
 	elseif(gm_key == GM_COMMAND_JIAOBEN)then		-- @脚本
+		--[[
 		if(gm_level < GM_LEVEL_3)then
 			self:call_chat_whisper(self:GetGuid(), self:GetFaction(), self:GetName(), whisper_str)
 			return
 		end
+		]]
 		local temp = "reload_script"
 		for i=2, size_t do
 			temp = temp..','..tokens[i]
@@ -183,7 +189,8 @@ function PlayerInfo:GmCommand(str)
 			self:call_chat_whisper(self:GetGuid(), self:GetFaction(), self:GetName(), whisper_str)
 			return
 		end
-		DoGMScripts(self, str)
+		--outFmtInfo("DoGMScripts")
+		DoGMScripts(self.ptr, str)
 	end
 end
 

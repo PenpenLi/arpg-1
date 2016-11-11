@@ -89,27 +89,4 @@ function AppLogicalMgr:getPlayerGuid()
 	return self.owner_guid
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 return AppLogicalMgr

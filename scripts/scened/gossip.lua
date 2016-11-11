@@ -29,6 +29,7 @@ end
 
 -- 找到本地图的所有人传送到某一个组队副本中
 function DoForceInto(playerInfo)
+	--[[
 	local toMapId = 103
 	local toX = 25
 	local toY = 21
@@ -42,6 +43,7 @@ function DoForceInto(playerInfo)
 	for _, target in pairs(targetUnits) do
 		playerLib.Teleport(target, toMapId, toX, toY, 0, "")
 	end
+	]]
 end
 
 

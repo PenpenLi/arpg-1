@@ -143,12 +143,12 @@ end
 
 --清空所有属性
 function AppItem:clearAttr()
-	local fail_time = self:getAttr(ITEM_OTHER_ATTR_FAIL_TIME)
-	local strong_lv = self:getAttr(ITEM_OTHER_ATTR_STRONG_LV)
+	--local fail_time = self:getAttr(ITEM_OTHER_ATTR_FAIL_TIME)
+	--local strong_lv = self:getAttr(ITEM_OTHER_ATTR_STRONG_LV)
 	self.item:ClearAttr()				--清空所有属性对	
 	--把特殊属性设回去
-	if fail_time > 0 then self:setAttr(ITEM_OTHER_ATTR_FAIL_TIME, fail_time) end
-	if strong_lv > 0 then self:setAttr(ITEM_OTHER_ATTR_STRONG_LV, strong_lv) end
+	--if fail_time > 0 then self:setAttr(ITEM_OTHER_ATTR_FAIL_TIME, fail_time) end
+	--if strong_lv > 0 then self:setAttr(ITEM_OTHER_ATTR_STRONG_LV, strong_lv) end
 	
 end
 

@@ -11,7 +11,7 @@ GuidManager.ObjectTypePlayer				= 'p'	--//玩家
 GuidManager.ObjectTypeItemMgr				= 'I'	--//物品
 
 GuidManager.ObjectTypeFaction				= 'L'	--//帮派
-
+GuidManager.ObjectTypeSpell					= 'X'	--//技能
 GuidManager.ObjectTypeLimit					= 'l'	--//限时活动对象
 GuidManager.ObjectTypeSocial				= 's'	--//社交
 GuidManager.ObjectTypeLogical 				= 'B'	--//业务逻辑

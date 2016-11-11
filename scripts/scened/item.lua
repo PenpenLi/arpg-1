@@ -34,13 +34,17 @@ function DoUseItemScript(user, item_entry, count)
 		end
 		local info = config.using_effect
 		for i = 1, #info, 2 do
-			if info[i] == 1 then			--加生命
-				userInfo:ModifyHealth(info[i+1])
-			elseif info[i] == 2 then		--加法力
-				userInfo:ModifyPower(POWER_MANA, info[i+1])
-			elseif info[i] == 3 then		--加体力
-				userInfo:ModifyPower(POWER_ENERGY, info[i+1])
+			if info[i][1] == 1 then
+				--outFmtDebug("use yao %d",info[i][2])
+				userInfo:ModifyHealth(info[i][2])
 			end
+			--if info[i] == 1 then			--加生命
+			--	userInfo:ModifyHealth(info[i+1])
+			--elseif info[i] == 2 then		--加法力
+			--	userInfo:ModifyPower(POWER_MANA, info[i+1])
+			--elseif info[i] == 3 then		--加体力
+			--	userInfo:ModifyPower(POWER_ENERGY, info[i+1])
+			--end
 		end
 		return true
 	--PK药

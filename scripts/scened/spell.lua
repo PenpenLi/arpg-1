@@ -1,129 +1,5 @@
 -----------------------------------------------------------------
 -----------------------------------------------------------------
---技能id
-erduan_spell_self_cd = {}
-luoyanzhan_spell_time = {}	--施放落雁斩的时间
-gehou_spell_time = {}	--施放割喉的时间
-SPELL_ID_LUOYANZHAN_1		= 1		--落雁斩1
-SPELL_ID_LUOYANZHAN_2		= 2		--落雁斩2
-SPELL_ID_LUOYANZHAN_3		= 3		--落雁斩3
-SPELL_ID_WUXIANGJIEZHI		= 7		--无相劫指
-SPELL_ID_CHONGFENG			= 9		--冲锋
-SPELL_ID_ANXIANGSHUYING		= 13	--暗香疏影
-SPELL_ID_YUNFEIYUHUANG_2	= 15	--云飞玉皇·二段
-SPELL_ID_YUNFEIYUHUANG_3	= 16	--云飞玉皇·三段
-SPELL_ID_FENGFANYUNBIAN_1	= 17	--风翻云变·一段
-SPELL_ID_FENGFANYUNBIAN_2	= 18	--风翻云变·二段
-SPELL_ID_ZHUXIANJIANZHEN_1	= 20	--诛仙剑阵·二段
-SPELL_ID_ZHUXIANJIANZHEN_2	= 19	--诛仙剑阵·一段
-SPELL_ID_WANJIANGUIZHONG	= 22	--万剑归宗
-SPELL_ID_QUANTUMIAOSHA		= 29	--全屏秒杀
-SPELL_ID_GEHOU				= 151	--割喉
-
---侠侣技能
-XIALV_SPELL_YHLW			= 62	--月华乱舞
-
---六道技能
-LIUDAO_SPELL_XUNSHI			= 30	--觅食
-LIUDAO_SPELL_KUANGBEN		= 31	--狂奔
-LIUDAO_SPELL_CAIJI			= 32	--采集
-LIUDAO_SPELL_HUOBA			= 33	--火把
-LIUDAO_SPELL_GUIZHUA		= 34	--鬼爪
-LIUDAO_SPELL_LINGTI			= 35	--灵体
-LIUDAO_SPELL_YAOSHU			= 36	--妖术
-LIUDAO_SPELL_HUANHUA		= 37	--幻化
-LIUDAO_SPELL_XIANFA			= 38	--仙法
-LIUDAO_SPELL_TIANYAN		= 39	--天眼
-LIUDAO_SPELL_SHISHA			= 40	--嗜杀
-LIUDAO_SPELL_XIULUOLI		= 41	--修罗力
-
---boss技能
-BOSS_SPELL_DINGSHEN			= 121	--定身
-BOSS_SPELL_JIASUO			= 122	--枷锁
-BOSS_SPELL_GOUHE			= 123	--沟壑
-BOSS_SPELL_ELING			= 124	--恶灵
-BOSS_SPELL_SIWANGYIZHI		= 125	--死亡一指
-BOSS_SPELL_LIUXUE			= 126	--流血
-BOSS_SPELL_ZHUOSHAO			= 127	--灼烧
-BOSS_SPELL_ZHONGDU			= 128	--中毒
-BOSS_SPELL_BINGJIA			= 129	--冰甲
-BOSS_SPELL_DILEI			= 130	--地雷
-BOSS_SPELL_ZHAOHUAN			= 131	--召唤
-BOSS_SPELL_BIAOJI			= 132	--标记
-BOSS_SPELL_JIANSU			= 133	--减速
-BOSS_SPELL_CHENMO			= 134	--沉默
-BOSS_SPELL_BOSSSPELL1		= 135	--BOSS技能1
-BOSS_SPELL_BOSSSPELL2		= 136	--BOSS技能2
-BOSS_SPELL_BOSSSPELL3		= 137	--BOSS技能3
-
-
---塞外伏击技能
-SWFJ_SPELL_TSHF				= 203	--天山护法
-
-
---荒岛求生技能
-HDQS_SPELL_NORMAL			= 211	--普通攻击
-HDQS_SPELL_CISHA			= 212	--刺杀
-HDQS_SPELL_PIKAN			= 213	--劈砍
-HDQS_SPELL_HENGSAO			= 214	--横扫
-HDQS_SPELL_JUJI				= 215	--狙击
-HDQS_SPELL_HUOQIU			= 216	--火球
-HDQS_SPELL_YOUBU			= 217	--诱捕
-HDQS_SPELL_STEAL			= 218	--猴子偷桃
-HDQS_SPELL_ANGER			= 219	--野性咆哮
-HDQS_SPELL_LOYAL			= 220	--忠诚守护
-HDQS_SPELL_DRUG				= 221	--草药
-HDQS_SPELL_BOOM				= 222	--炸弹
-HDQS_SPELL_TRAP				= 223	--陷阱
-HDQS_SPELL_BAOZIDAN			= 224	--豹子胆
-HDQS_SPELL_NET				= 225	--网
-
---生化危机技能
-SHWJ_SPELL_BUQIANG				= 42	--步枪
-SHWJ_SPELL_JIQIANG				= 43	--机枪
-SHWJ_SPELL_JUJIQIANG			= 44	--狙击枪
-SHWJ_SPELL_FENGKUANG_LUANZHUA	= 47	--疯狂乱抓
-SHWJ_SPELL_BAOFA_TUJIN			= 48	--爆发突进
-SHWJ_SPELL_BIANYI_ZAISHENG		= 49	--变异再生
-
-
-----------------------------------------------------------------
-----------被动技能ID--------------------------------------------
---boss技能 被攻击触发
-passive_spell_cd = {}
-BOSS_PASSIVESPELL_FANTAN		= 1	--反弹
-BOSS_PASSIVESPELL_LIANJIE		= 2	--连接
-BOSS_PASSIVESPELL_GANGCI		= 3	--钢刺
-BOSS_PASSIVESPELL_HUIFUHUDUN	= 4	--恢复护盾
-BOSS_PASSIVESPELL_FANJIHUDUN	= 5	--反击护盾
-BOSS_PASSIVESPELL_KUANGBAO		= 6	--狂暴
-BOSS_PASSIVESPELL_XUECHI		= 7	--血池
-BOSS_PASSIVESPELL_WAIGONGMIANYI	= 8	--外攻免疫
-BOSS_PASSIVESPELL_NEIGONGMIANYI	= 9	--内攻免疫
-
---玩家被动技能
-PASSIVESPELLID_CJDG				= 71 --摧经断骨
-PASSIVESPELLID_HSQJ				= 72 --横扫千军
-PASSIVESPELLID_TZSL				= 73 --天助神力
-PASSIVESPELLID_LSHZ				= 74 --灵神护住
-PASSIVESPELLID_FHZY				= 81 --飞花摘叶
-PASSIVESPELLID_BYLH				= 82 --暴雨梨花
-PASSIVESPELLID_LSCH				= 83 --辣手摧花
-PASSIVESPELLID_FHYY				= 84 --风花饮月
-
---需求特殊hit_info的技能
-SPECIL_HIT_INFO_TBL = {
-	--暗器
-	[PASSIVESPELLID_FHZY] = HITINFO_ANQI_INFO, --暗器：飞花摘叶
-	[PASSIVESPELLID_BYLH] = HITINFO_ANQI_INFO, --暗器：暴雨梨花
-	[PASSIVESPELLID_LSCH] = HITINFO_ANQI_INFO, --暗器：辣手摧花
-	[PASSIVESPELLID_FHYY] = HITINFO_ANQI_INFO, --暗器：风花饮月
-	--剑鞘
-	[PASSIVESPELLID_CJDG] = HITINFO_JIANQIAO,
-	[PASSIVESPELLID_HSQJ] = HITINFO_JIANQIAO,
-	[PASSIVESPELLID_TZSL] = HITINFO_JIANQIAO,
-	[PASSIVESPELLID_LSHZ] = HITINFO_JIANQIAO,
-}
 
 --技能释放类型
 SPELL_SHIFANG_DAN					= 0	--目标单体
@@ -132,33 +8,152 @@ SPELL_SHIFANG_ZHI					= 2	--前方直线范围
 SPELL_SHIFANG_SHAN					= 3	--前方扇形范围
 SPELL_SHIFANG_DIAN					= 4	--坐标点范围
 
+
+
+
+
 --技能开始的逻辑判断 (Handle_Spell_Start) 返回false则条件不满足(玩家才会走这个判断)
-function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
+function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, nowtime)
 	local casterInfo = UnitInfo:new{ptr = caster}
 	
-	if(casterInfo:IsAlive() == false)then
+	-- 是否活着
+	if not casterInfo:IsAlive() then
 		outDebug("do DoHandleSpellStart but caster is not alive")
 		return false
 	end
-
-	--[[
-	--看看本地图是否允许施法
-	if(not mapLib.GetCanCastSpell(map_ptr))then
-		outDebug("DoHandleSpellStart  this map is cannot cast spell !!!")
+	
+	-- 技能1-4不能走这个流程
+	if spell_id >= FUNCTIONAL_QING_GONG and spell_id <= FUNCTIONAL_DA_ZUO then
+		outFmtDebug("do DoHandleSpellStart but this spellId = %d is functional spell", spell_id)
 		return false
 	end
 	
-	local spellid_str = string.format('%d', spell_id)
-	if(tb_skill_base[spell_id] == nil)then
-		--技能不存在
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_DOENT_EXIST, spellid_str)		
-		return false
-	end
-	if(not(casterInfo:HasSpell(spell_id)))then
-		--没有装备这个技能
+	-- 未放到技能槽
+	if not casterInfo:HasSpell(spell_id) then
+		outFmtDebug("DoHandleSpellStart spellId = %d player not set", spell_id)
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL, spellid_str)		
 		return false
 	end
+
+	-- 本地图是否允许施法
+	if not mapLib.GetCanCastSpell(map_ptr) then
+		outDebug("DoHandleSpellStart  this map is cannot cast spell !!!")
+		return false
+	end
+
+	local config = tb_skill_base[spell_id]
+	if config == nil then
+		--技能不存在
+		outFmtDebug("DoHandleSpellStart  no spell = %d", spell_id)
+		local spellid_str = string.format('%d', spell_id)
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_DOENT_EXIST, spellid_str)		
+		return false
+	end
+
+	if casterInfo:IsSpellCD(spell_id, nowtime) then
+		--技能冷却中
+		outFmtDebug("DoHandleSpellStart spellId = %d in countdown", spell_id)
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN, spellid_str)
+		return false
+	end
+
+	if(not casterInfo:IsCanCast(spell_id))then
+		--被限制施法
+		outFmtDebug("DoHandleSpellStart spellId = %d IsCanCast", spell_id)
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_CAN_NOT_CAST, spellid_str)		
+		return false
+	end
+	if(unitLib.GetCurSpell(caster) ~= 0 and unitLib.GetCurSpell(caster) == spell_id)then
+		--此技能已经在施法
+		outFmtDebug("DoHandleSpellStart spellId = %d is casting", spell_id)
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST, spellid_str)		
+		return false
+	end
+	
+	if(unitLib.HasUnitState(caster, UNIT_STAT_CAST_SPELL) or unitLib.HasUnitState(caster, UNIT_STAT_SPELL_PROCESS))then
+		--已经在施法，则停止施法
+		unitLib.SpellStop(caster)
+	end
+	
+	-- 检测拥有技能族的技能释放顺序
+	if config.group ~= 0 then
+		local lastSpellId = playerLib.GetSpellStyle(caster, config.group)
+		if lastSpellId ~= nil then
+			-- 连招顺序不对
+			if config.pre ~= lastSpellId then
+				outFmtDebug("DoHandleSpellStart spellId = %d combat sequence is fail, config.pre = %d, lastspellId = %d", spell_id, config.pre, lastSpellId)
+				return false
+			end
+		end
+	end
+	
+	local spell_type = tb_skill_base[spell_id].type   --获得目标类型
+	if spell_type == TARGET_TYPE_ONESELF then	--目标为自己
+		if not casterInfo:IsAlive() then
+			--已经死了
+			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_TARGET_DEAD, spellid_str)		
+			return false
+		end
+	end
+	
+	local target_type = tb_skill_base[spell_id].target_type --获得施放类型
+	if target_type == SPELL_SHIFANG_ZHI or target_type == SPELL_SHIFANG_DIAN or target_type == SPELL_SHIFANG_SHAN then
+		if tar_x == 0 or tar_y == 0 then
+			return false
+		end
+	end
+	
+	--非单点和自身周围释放的技能都得判断距离
+	if target_type ~= SPELL_SHIFANG_DAN and target_type ~= SPELL_SHIFANG_QUN then
+		local dis = casterInfo:GetDistance(tar_x, tar_y)
+		local spell_lv = 1
+		if casterInfo:GetTypeID() == TYPEID_PLAYER then
+			spell_lv = casterInfo:GetSpellLevel(spell_id)
+		end
+		local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
+		local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
+		if dis > spell_dis + 3 then	--允许3码误差
+			outFmtDebug("DoHandleSpellStart spellId = %d so far away", spell_id)
+			return false
+		end
+	end
+	
+	--[[
+	--local index = casterInfo:GetSpellLvIndex(spell_id)
+	local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
+	--目标单体并且目标不是自己
+	if target_type == SPELL_SHIFANG_DAN and spell_type ~= TARGET_TYPE_ONESELF then
+		--要求有目标
+		if target ~= nil then
+			local targetInfo = UnitInfo:new{ptr = target}
+			local x, y = unitLib.GetPos(target)
+			local dis = casterInfo:GetDistance(x,y)
+			if dis > spell_dis + 3 then		--允许3码误差
+				--超出施放距离
+				casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_OUT_OF_RANGE, spellid_str)		
+				return false
+			end
+			local isfriend = unitLib.IsFriendlyTo(caster, target)
+			if spell_type == TARGET_TYPE_FRIENDLY and isfriend == 0 then --目标要求为友方
+			--目标要求为友方，但与目标友好判断却为不友好
+				casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_WRONG_TARGET, spellid_str)		
+				return false
+			elseif spell_type == TARGET_TYPE_ENEMY and isfriend == 1 then--目标要求为仇人
+				--目标要求为仇人，但与目标友好判断却为友好
+				casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_WRONG_TARGET, spellid_str)					
+				return false
+			end
+		end
+	--目标直前范围、目标直扇范围和坐标点范围 这个坐标由客户端传上来
+	else
+	]]
+
+
+	
+	
+	
+
+	--[[
 	if(not casterInfo:IsEnoughConsumption(spell_id))then
 		--不够消耗
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_ENOUGH_CONSUMPTION, spellid_str)		
@@ -176,37 +171,15 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
 		end
 	else
 		if casterInfo:IsSpellCD(spell_id, nowtime) then
-			--技能冷却中
+			
 			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN, spellid_str)		
 			return false
 		end
 	end
 	]]
 	--print("now is:"..nowtime)
-	if casterInfo:IsSpellCD(spell_id, nowtime) then
-		--print("skill is countdown")
-		--技能冷却中
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN, spellid_str)		
-		return false
-	end
 
-	--[[
-	if(not casterInfo:IsCanCast(spell_id))then
-		--被限制施法
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_CAN_NOT_CAST, spellid_str)		
-		return false
-	end
-	if(unitLib.GetCurSpell(caster) ~= 0 and unitLib.GetCurSpell(caster) == spell_id)then
-		--此技能已经在施法
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST, spellid_str)		
-		return false
-	end
-	
-	if(unitLib.HasUnitState(caster, UNIT_STAT_CAST_SPELL) or unitLib.HasUnitState(caster, UNIT_STAT_SPELL_PROCESS))then
-		--已经在施法，则停止施法
-		unitLib.SpellStop(caster)
-	end
-	
+	--[[	
 	
 	local target = unitLib.GetTarget(caster)
 	if(spell_id == SPELL_ID_CHONGFENG) then -- 冲撞技能
@@ -224,58 +197,6 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, nowtime)
 	if spell_id == LIUDAO_SPELL_HUANHUA then 
 		if(GetUnitTypeID(caster) == TYPEID_PLAYER and casterInfo:GetPVPState())then
 			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_PVP_STATE, spellid_str)
-			return false
-		end
-	end
-	
-	local spell_type = tb_skill_base[spell_id].type   --获得技能类型
-	if(spell_type == TARGET_TYPE_ONESELF)then	--目标为自己
-		if(casterInfo:IsAlive() == false)then
-			--已经死了
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_TARGET_DEAD, spellid_str)		
-			return false
-		end
-	end
-	local index = casterInfo:GetSpellLvIndex(spell_id)
-	local target_type = tb_skill_base[spell_id].target_type --获得施放类型
-	local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
-	--目标单体并且目标不是自己
-	if(target_type == SPELL_SHIFANG_DAN and spell_type ~= TARGET_TYPE_ONESELF)then
-		--要求有目标
-		if(target == nil)then
-			--技能需要目标
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NEED_TARGET, spellid_str)
-			return false
-		end
-		local targetInfo = UnitInfo:new{ptr = target}
-		if(targetInfo:IsAlive() == false)then
-			--目标已死
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_TARGET_DEAD, spellid_str)
-			return false
-		end
-		if(unitLib.GetMap(target) == nil)then
-			return false	
-		end
-		local x, y = unitLib.GetPos(target)
-		local dis = casterInfo:GetDistance(x,y)
-		if(dis > spell_dis + 3)then		--允许3码误差
-			--超出施放距离
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_OUT_OF_RANGE, spellid_str)		
-			return false
-		end
-		local isfriend = unitLib.IsFriendlyTo(caster, target)
-		if(spell_type == TARGET_TYPE_FRIENDLY and isfriend == 0)then --目标要求为友方
-		--目标要求为友方，但与目标友好判断却为不友好
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_WRONG_TARGET, spellid_str)		
-			return false
-		elseif(spell_type == TARGET_TYPE_ENEMY and isfriend == 1)then--目标要求为仇人
-			--目标要求为仇人，但与目标友好判断却为友好
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_WRONG_TARGET, spellid_str)					
-			return false
-		end
-	--目标直前范围和坐标点范围 这个坐标由客户端传上来
-	elseif(target_type == SPELL_SHIFANG_ZHI or target_type == SPELL_SHIFANG_DIAN or target_type == SPELL_SHIFANG_SHAN)then
-		if(tar_x == 0 or tar_y == 0)then
 			return false
 		end
 	end
@@ -362,225 +283,10 @@ end
 --（@caster：施法者，@target：攻击目标，@dst_x@dst_y：技能坐标点，@spellid：技能id，@spell_lv：技能等级，@unit：技能用精灵，@data：预留参数）
 function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, unit, data)
 	local allTargets = {}
-	local casterInfo = UnitInfo:new{ptr = caster}
-
-	-- 扇形(以自己为圆心, 有朝向)
-
-	-- 圆形
-		-- 以自己为圆心
-		-- 以(dst_x, dst_y)为圆心, 需要认证正确性
-
-	if true then
-		local caster_x, caster_y = unitLib.GetPos(caster)
-		local r = 5
-
-		--[[
-			float start_x	= (float)LUA_TONUMBER(scriptL,1);
-	float end_y		= (float)LUA_TONUMBER(scriptL,2);
-	float end_x		= (float)LUA_TONUMBER(scriptL,3);
-	float start_y	= (float)LUA_TONUMBER(scriptL,4);
-
-	Unit* unit = (Unit*)LUA_TOUSERDATA(scriptL,5, ObjectTypeUnit);
-	if (!unit)
-	{
-		tea_perror("error: LuaGetRectTargets unit = null");
-		return 0;
-	}
-	Spell_Target_Type TargetType = (Spell_Target_Type)(int)LUA_TONUMBER(scriptL,6);
-		]]
-
-
-		local targetUnits = mapLib.GetRectTargets(caster_x-5, caster_y+5, caster_x+5, caster_y-5, caster, TARGET_TYPE_ENEMY)
-		local dam = 10
-		if casterInfo:GetTypeID() == TYPEID_PLAYER then
-			dam = 100
-		end
-
-		local hasTarget = false
-		for _, _target in pairs(targetUnits) do
-			--print("hit target:")
-			--print("	"..unitLib.GetIntGuid(_target))
-			if caster ~= _target then
-				hasTarget = true
-				AddSpellCastinfo(caster, _target, dam, HITINFO_NORMALSWING, spell_id)
-				--BuffTargetType(_target,caster,spell_id,spell_lv,BUFF_JIANSU,dst_x,dst_y,10,80)
-			end
-		end
-		
-		if not hasTarget then
-			--print("not find target:")
-			AddSpellCastinfo(caster, caster, 0, HITINFO_NORMALSWING, spell_id)
-		end
-		
-		return true
-	end
-	
-
-
-
-	if(GetUnitTypeID(caster) == TYPEID_PLAYER)then
-		if(unit == nil)then
-			--[[FIXME
-			--取一下二段技能
-			spell_id = casterInfo:GetNextSpellID(spell_id)
-			--设置下一个技能有效时间
-			casterInfo:SetNextSpellValid(spell_id)
-			spell_lv = casterInfo:GetNextSpellLv(spell_id,spell_lv)
-			]]
-		end
-	end
-
-
-	if(spell_id >= SPELL_ID_LUOYANZHAN_1 and spell_id <= SPELL_ID_LUOYANZHAN_3)then	--落雁斩1
-		if GetUnitTypeID(caster) == TYPEID_PLAYER then
-			if(unit == nil)then
-				spell_id = casterInfo:GetLYZSpellStyle(spell_id)
-				handle_cast_add_unit_effect_lyz(caster, target, spell_id, spell_lv,dst_x, dst_y)
-				return false
-			else
-				luoyanzhan_spell_time[casterInfo:GetPlayerGuid()] = getMsTime()
-				SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-			end
-		else
-			casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-		end
-	elseif(spell_id == SPELL_ID_QUANTUMIAOSHA)then		--全屏秒杀
-		handle_cast_monomer_quantumiaosha(spell_id,caster)	
-	elseif(spell_id == SPELL_ID_CHONGFENG)then		--冲锋
-		handle_cast_spell_chongfeng(caster,target,dst_x,dst_y,spell_id,spell_lv)
-	elseif(spell_id >= LIUDAO_SPELL_XUNSHI and spell_id <= LIUDAO_SPELL_XIULUOLI)then	--六道轮回技能
-		handle_cast_monomer_liudao_spell(caster, target, spell_id)
-	elseif(spell_id == SPELL_ID_WUXIANGJIEZHI)then	--无相劫指
-		if(unit == nil)then
-			handle_cast_add_unit_effect_wxjz(caster, target, spell_id,spell_lv)
-			return false
-		else
-			handle_cast_monomer_wuxiangjiezhi(caster, target, dst_x,dst_y,spell_id, spell_lv, allTargets)
-		end
-	elseif(spell_id == SPELL_ID_ANXIANGSHUYING)then	--暗香疏影
-		if(unit == nil)then
-			handle_cast_add_unit_effect_axsy(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			handle_cast_monomer_anxiangshuying(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-		end
-	elseif(spell_id == SPELL_ID_YUNFEIYUHUANG_2)then	--云飞玉皇·二段
-		if(unit == nil)then
-			handle_cast_add_unit_effect_yfyh(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			handle_cast_monomer_yunfeiyuhuang_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-		end
-	elseif(spell_id == SPELL_ID_YUNFEIYUHUANG_3)then	--云飞玉皇·三段
-		if(unit == nil)then
-			handle_cast_add_unit_effect_yfyh_3(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			handle_cast_monomer_yunfeiyuhuang_3(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-		end
-	elseif(spell_id == SPELL_ID_FENGFANYUNBIAN_1)then	--风翻云变·一段
-		if(unit == nil)then
-			handle_cast_add_unit_effect_ffyb_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			handle_cast_monomer_fengfanyunbian_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-		end
-	elseif(spell_id == SPELL_ID_FENGFANYUNBIAN_2)then	--风翻云变·二段
-		if(unit == nil)then
-			handle_cast_add_unit_effect_ffyb_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-		end
-	elseif(spell_id == SPELL_ID_ZHUXIANJIANZHEN_1)then	--诛仙剑阵·一段	
-		if(unit == nil)then
-			handle_cast_add_unit_effect_zxjz_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-		end
-	elseif(spell_id == SPELL_ID_ZHUXIANJIANZHEN_2)then	--诛仙剑阵·二段
-		if(unit == nil)then
-			handle_cast_monomer_zhuxianjianzhen_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-		else
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-			BuffTargetType(target,caster,spell_id,spell_lv,BUFF_DINGSHEN,dst_x,dst_y,3)
-		end
-	elseif(spell_id == SPELL_ID_WANJIANGUIZHONG)then	--万剑归宗	
-		if(unit == nil)then
-			handle_cast_add_unit_effect_wjgz(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-			--减速40%，持续3秒
-			BuffTargetType(target,caster,spell_id,spell_lv,BUFF_JIANSU,dst_x,dst_y,3,40)
-		end
-	
-	elseif(spell_id >= BOSS_SPELL_DINGSHEN and spell_id <= BOSS_SPELL_BOSSSPELL3)then	--boss技能	
-		handle_cast_monomer_boss(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-	elseif(spell_id == SWFJ_SPELL_TSHF)then	
-		local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
-		local js_config = tb_skill_uplevel[index]
-		local js_time = js_config.type_effect[3]
-		local js_bili = js_config.type_effect[2]
-		BuffTargetType(target,caster,spell_id,spell_lv,BUFF_JIANSU,dst_x,dst_y,js_time,js_bili)
+	--落雁斩1
+	if spell_id >= 5 and spell_id <= 65536 then
 		SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-	--生化危机技能
-	elseif spell_id >= SHWJ_SPELL_BUQIANG and spell_id <= SHWJ_SPELL_BIANYI_ZAISHENG then
-		handle_cast_monomer_shwj_spell(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-	--荒岛求生技能
-	elseif spell_id >= HDQS_SPELL_NORMAL and spell_id <= HDQS_SPELL_NET then
-		handle_cast_hdqs_spell(caster, target, spell_id, spell_lv, dst_x, dst_y)
-	elseif spell_id == SPELL_ID_GEHOU then
-		handle_cast_monomer_gehou(caster, target, spell_id,spell_lv,dst_x,dst_y)
-	elseif spell_id == XIALV_SPELL_YHLW then
-		if(unit == nil)then
-			handle_cast_add_unit_effect_xialv_yhlw(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-		end	
-		
-	elseif spell_id == PASSIVESPELLID_CJDG or spell_id == PASSIVESPELLID_HSQJ then
-		if(unit == nil)then
-			handle_cast_add_unit_effect_jianqiao(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-			return false
-		else
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-		end
-	else
-		--蓄力技能
-		local sing_time = tb_skill_base[spell_id].spell_time
-		if #sing_time > 0 then
-			if unit == nil then
-				handle_cast_add_unit_effect_boss(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data,sing_time)
-				return false
-			else
-				if casterInfo:GetCurSpellId() == sing_time[1] then
-					casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-					SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-					casterInfo:ClearCurSpell(true)
-				end
-			end
-		--不需要蓄力技能	
-		else
-			if(GetUnitTypeID(caster) == TYPEID_PLAYER 
-				or casterInfo:GetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
-				or casterInfo:GetUnitFlags(UNIT_FIELD_FLAGS_IS_XIALV)
-				)then
-				local targetintguid = 0
-				if(target ~= nil)then
-					local targetInfo = UnitInfo:new{ptr = target}
-					targetintguid = targetInfo:GetIntGuid()
-				end
-				casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),targetintguid,spell_id,{dst_x,dst_y},true)
-			end
-			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-		end
 	end
-	-- 处理被动技能
-	DoPassiveSpellProceed(caster, allTargets, spell_id)
 	return true
 end
 
@@ -602,10 +308,6 @@ function DoPassiveSpellProceed(caster, allTargets, spell_id)
 		end		
 	end
 end
-
-
-
-
 
 
 --目标主动攻击时的被动技能处理
@@ -724,7 +426,6 @@ end
 --boss技能
 function handle_cast_monomer_boss(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 	
-	
 	if(spell_id == BOSS_SPELL_DINGSHEN)then		--定身
 		BuffTargetType(target,caster,spell_id,spell_lv,BUFF_DINGSHEN,dst_x,dst_y)
 	elseif(spell_id == BOSS_SPELL_JIANSU)then	--枷锁
@@ -804,277 +505,6 @@ function handle_cast_monomer_boss(caster,target,spell_id,spell_lv,dst_x,dst_y, a
 		SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 	end
 end
-
-
-
-
-
-
-function handle_cast_add_unit_effect_lyz(caster, target, spell_id, spell_lv,dst_x, dst_y)
-	local casterInfo = UnitInfo:new{ptr = caster}
-	casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-	unitLib.AddSpellTrigger(caster,"", dst_x, dst_y, spell_id, spell_lv, 50, 1, "")
-end
-
---全图秒杀
-function handle_cast_monomer_quantumiaosha(spell_id, caster)
-	local map_ptr = unitLib.GetMap(caster)
-	local map_id = unitLib.GetMapID(caster)
-	if not (map_id >= 201 and map_id <= 206) then
-		return --只有副本地图才能全图秒杀
-	end
-	local allPlayers = mapLib.GetAllPlayer(map_ptr)
-	if(#allPlayers == 1)then
-		local allCreatures = mapLib.GetAllCreature(map_ptr)
-		for _, creature_ptr in pairs(allCreatures) do
-			local creatureInfo = UnitInfo:new{ptr = creature_ptr}
-			AddSpellCastinfo(caster, creature_ptr, creatureInfo:GetMaxHealth(), HITINFO_NORMALSWING, spell_id)			
-		end	
-	end
-end
-
---无相劫指定时器
-function handle_cast_add_unit_effect_wxjz(caster, target, spell_id,spell_lv)
-	if(target == nil)then
-		return
-	end
-	local creatureInfo = UnitInfo:new{ptr = caster}
-	local targetInfo = UnitInfo:new{ptr = target}
-	local target_x, target_y = unitLib.GetPos(target)
-	local map_ptr = unitLib.GetMap(caster)
-	if not map_ptr then return end
-	local angle = creatureInfo:GetAngle(target_x, target_y)
-	local distance = 15 - creatureInfo:GetDistance(target_x, target_y)	--击退距离
-	local pos_x,pos_y
-	if distance <= 0 then
-		pos_x = target_x
-		pos_y = target_y
-	else
-		while(distance > 0)do
-			pos_x = target_x + distance * math.cos(angle)
-			pos_y = target_y + distance * math.sin(angle)
-			if mapLib.IsCanRun(map_ptr, pos_x, pos_y) ~= 0 then
-				break
-			else
-				distance = distance - 0.5
-			end
-		end
-	end
-	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),targetInfo:GetIntGuid(),spell_id,{pos_x,pos_y,pos_x,pos_y},true)
-	unitLib.AddSpellTrigger(caster, targetInfo:GetGuid(), pos_x, pos_y, spell_id, spell_lv, 200, 1, "")
-	SpelladdBuff(caster, BUFF_WUXIANGJIEZHI, caster, 1, tb_buff_template[BUFF_WUXIANGJIEZHI].duration)
-end
-
---无相劫指
-function handle_cast_monomer_wuxiangjiezhi(caster, target, dst_x,dst_y,spell_id, spell_lv, allTargets)
-	if(target == nil)then
-		return
-	end
-	local targetInfo = UnitInfo:new{ptr = target}
-	handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets)
-	--击退目标
-	local map_ptr = unitLib.GetMap(caster)
-	if not map_ptr then return end
-	if mapLib.IsCanRun(map_ptr, dst_x, dst_y) == 1 then
-		unitLib.SetPos(caster, dst_x, dst_y)
-		unitLib.SetPos(target, dst_x, dst_y)
-		AddSpellCastinfo(caster, target, 0, HITINFO_BLOWFLY, spell_id,dst_x,dst_y)
-	end
-	--将对目标定身2秒
-	SpelladdBuff(target, BUFF_DINGSHEN, caster, 1, 2)
-	--清空目标正在释放的技能
-	targetInfo:ClearCurSpell(false)
-end
-
---暗香疏影定时器
-function handle_cast_add_unit_effect_axsy(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	local casterInfo = UnitInfo:new{ptr = caster}
-	casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 500, 6, "")
-end
-
---暗香疏影
-function handle_cast_monomer_anxiangshuying(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	local casterInfo = UnitInfo:new{ptr = caster}
-	if casterInfo:IsAlive() then
-		SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-	end
-end
-
-function handle_cast_add_unit_effect_yfyh(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	if(target == nil)then
-		return
-	end
-	local targetInfo = UnitInfo:new{ptr = target}
-	local casterInfo = UnitInfo:new{ptr = caster}
-	casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),targetInfo:GetIntGuid(),spell_id,{dst_x,dst_y},true)
-	unitLib.AddSpellTrigger(caster, targetInfo:GetGuid(), dst_x, dst_y, spell_id, spell_lv, 150, 1, "")
-end
-
---云飞玉皇·二段
-function handle_cast_monomer_yunfeiyuhuang_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-	--并且100%将目标挑飞，浮空2秒，浮空期间目标无法移动、攻击等
-	BuffTargetType(target,caster,spell_id,spell_lv,BUFF_ZHIKONG,dst_x,dst_y)
-end
-
-function handle_cast_add_unit_effect_yfyh_3(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	if(target == nil)then
-		return
-	end
-	local creatureInfo = UnitInfo:new{ptr = caster}
-	local targetInfo = UnitInfo:new{ptr = target}
-	--击退目标5码
-	local map_ptr = unitLib.GetMap(caster)
-	if map_ptr == nil then return end
-	local angle = creatureInfo:GetAngle(dst_x, dst_y)
-	local distance = 5	--击退距离
-	local pos_x,pos_y
-	while(distance > 0)do
-		pos_x = dst_x + distance * math.cos(angle)
-		pos_y = dst_y + distance * math.sin(angle)
-		if mapLib.IsCanRun(map_ptr, pos_x, pos_y) ~= 0 then
-			unitLib.SetPos(target, pos_x, pos_y)
-			break
-		else
-			distance = distance - 0.5
-		end
-	end
-	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),targetInfo:GetIntGuid(),spell_id,{pos_x,pos_y},true)
-	unitLib.AddSpellTrigger(caster, targetInfo:GetGuid(), pos_x, pos_y, spell_id, spell_lv, 400, 1, "")
-end
-
---云飞玉皇·三段
-function handle_cast_monomer_yunfeiyuhuang_3(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	--伤害
-	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-	AddSpellCastinfo(caster, target, 0, HITINFO_BLOWFLY, spell_id,dst_x,dst_y) 
-	--玩家自身浮空，浮空期间不会受到控制、击退等（会受到伤害）
-	BuffTargetType(caster,caster,spell_id,spell_lv,BUFF_FUKONG,dst_x,dst_y)
-end
-
---风翻云变·一段定时器
-function handle_cast_add_unit_effect_ffyb_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	local map_ptr = unitLib.GetMap(caster)
-	if map_ptr == nil then return end
-	local creatureInfo = UnitInfo:new{ptr = caster}
-	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
-	local max_distance = tb_skill_uplevel[index].distance
-	local distance = creatureInfo:GetDistance(dst_x, dst_y)
-	local angle = creatureInfo:GetAngle(dst_x, dst_y)
-	local cast_x, cast_y = unitLib.GetPos(caster)
-	distance = distance > max_distance and max_distance or distance
-	while(distance > 0)do
-		dst_x = cast_x + distance * math.cos(angle)
-		dst_y = cast_y + distance * math.sin(angle)
-		if mapLib.IsCanRun(map_ptr, dst_x, dst_y) ~= 0 then
-			break
-		else
-			distance = distance - 0.5
-		end
-	end
-	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 700, 1, "")
-end
-
---风翻云变·一段
-function handle_cast_monomer_fengfanyunbian_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	unitLib.SetPos(caster, dst_x, dst_y)
-	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-	--减速40%，持续4秒
-	BuffTargetType(target,caster,spell_id,spell_lv,BUFF_JIANSU,dst_x,dst_y,4,40)
-end
-
---风翻云变·二段定时器
-function handle_cast_add_unit_effect_ffyb_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	local creatureInfo = UnitInfo:new{ptr = caster}
-	local pos_x,pos_y
-	local cas_x, cas_y = unitLib.GetPos(caster)
-	local angle = creatureInfo:GetAngle(dst_x, dst_y)
-	local map_ptr = unitLib.GetMap(caster)
-	if not map_ptr then return end
-	local distance = 12
-	while(distance > 0)do
-		pos_x = cas_x + distance * math.cos(angle)
-		pos_y = cas_y + distance * math.sin(angle)
-		if mapLib.IsCanRun(map_ptr, pos_x, pos_y) ~= 0 then
-			break
-		else
-			distance = distance - 0.5
-		end
-	end
-	unitLib.SetPos(caster, pos_x, pos_y)
-	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{pos_x,pos_y},true)
-	unitLib.AddSpellTrigger(caster, "", cas_x, cas_y, spell_id, spell_lv, 250, 1, "")
-end
-
-
---万剑归宗定时器
-function handle_cast_add_unit_effect_wjgz(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	local creatureInfo = UnitInfo:new{ptr = caster}
-	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 500, 12, "")
-	SpelladdBuff(caster, BUFF_WANJIANGUIZONG, caster, 1, tb_buff_template[BUFF_WANJIANGUIZONG].duration)
-	SpelladdBuff(caster, BUFF_WUDI, caster, 1, tb_buff_template[BUFF_WANJIANGUIZONG].duration)
-end
-
---诛仙剑阵·一段定时器
-function handle_cast_add_unit_effect_zxjz_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	--处理一下最大距离
-	local creatureInfo = UnitInfo:new{ptr = caster}
-	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
-	local max_distance = tb_skill_uplevel[index].distance
-	local distance = creatureInfo:GetDistance(dst_x, dst_y)
-	local angle = creatureInfo:GetAngle(dst_x, dst_y)
-	local cast_x, cast_y = unitLib.GetPos(caster)
-	distance = distance > max_distance and max_distance or distance
-	dst_x = cast_x + distance * math.cos(angle)
-	dst_y = cast_y + distance * math.sin(angle)
-	--通知客户端开始施法技能
-	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-	--刷特效精灵
-	local map_ptr = unitLib.GetMap(caster)
-	if map_ptr == nil then return end
-	local creature = mapLib.AddCreature(map_ptr, {templateid = 6001, x = dst_x, y = dst_y, ainame = 'AI_guaiwu', active_grid = true, npcflag = {UNIT_NPC_FLAG_GOSSIP}})
-	if creature~=nil then
-		creatureLib.MonsterMove(creature,DISAPPEAR_ONE_MOTION_TYPE,5000)
-	end
-	--技能延迟释放
-	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 500, 10, "")
-end
-
---诛仙剑阵·二段
-function handle_cast_monomer_zhuxianjianzhen_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
-	--处理一下最大距离
-	local creatureInfo = UnitInfo:new{ptr = caster}
-	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
-	local max_distance = tb_skill_uplevel[index].distance
-	local distance = creatureInfo:GetDistance(dst_x, dst_y)
-	local angle = creatureInfo:GetAngle(dst_x, dst_y)
-	local cast_x, cast_y = unitLib.GetPos(caster)
-	distance = distance > max_distance and max_distance or distance
-	dst_x = cast_x + distance * math.cos(angle)
-	dst_y = cast_y + distance * math.sin(angle)
-	--通知客户端开始施法技能
-	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
-	--刷特效精灵
-	local map_ptr = unitLib.GetMap(caster)
-	if map_ptr == nil then return end
-	local creature = mapLib.AddCreature(map_ptr, {templateid = 6002, x = dst_x, y = dst_y, ainame = 'AI_guaiwu', active_grid = true, npcflag = {UNIT_NPC_FLAG_GOSSIP}})
-	if creature~=nil then
-		creatureLib.MonsterMove(creature,DISAPPEAR_ONE_MOTION_TYPE,4000)
-	end
-	--给伤害
-	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 750, 3, "")
-end
-
-
-
-
-
-
-----------------------------------------------------------------------------------------------------------
-
 
 --处理buff影响伤害和伤害类型
 function handle_cast_monomer_buff(caster,target,total_damage,hit_info,spell_id)
@@ -1182,18 +612,27 @@ function GetFlowDamage(damage)
 end
 
 --技能释放类型
-function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)	
+function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 	local casterInfo = UnitInfo:new{ptr = caster}
 	local shifang = tb_skill_base[spell_id].target_type --技能释放类型
 	local _m_count = 0
 	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
 	local max_count = tb_skill_uplevel[index].num	--施放数量
-	local buff_table = tb_skill_uplevel[index].type_effect	--buff效果类型
+	local buff_table = tb_skill_uplevel[index].type_effect	--buff效果类型	
+	
 	if shifang == SPELL_SHIFANG_DAN then--目标单体
-		handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets)
-		--处理技能触发buff
-		handle_cast_monomer_spell_addbuff(caster,target,buff_table)
+		-- 判断释放距离
+		if target then
+			local tar_x, tar_y = unitLib.GetPos(target)
+			local dis = casterInfo:GetDistance(tar_x,tar_y)
+			local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
+			if dis <= spell_dis + 3 then	--允许3码误差
+				handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets, buff_table)
+			end
+		end
 	else
+		local px = 0
+		local py = 0
 		--发出点
 		local cast_x, cast_y = unitLib.GetPos(caster)
 		--施法点
@@ -1203,13 +642,15 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 			shifa_x = dst_x
 			shifa_y = dst_y
 		end
+		px = dst_x
+		py = dst_y
 		--角度
 		local angle = casterInfo:GetAngle(dst_x, dst_y)
 		if tb_skill_base[spell_id].is_fix == 1 then
 			angle = 0
 		end
 		--击中的目标们
-		local hit_targets = ""
+		local hit_target = false
 		local attack_mast = {0,0}
 		for k = 1,#tb_skill_base[spell_id].attack_mast do
 			attack_mast[k+2] = tb_skill_base[spell_id].attack_mast[k]
@@ -1224,15 +665,13 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 				attack_mast[2] = pos[2]
 				local isfriend = unitLib.IsFriendlyTo(caster, target)
 				if CalHitTest(attack_mast)[1] and isfriend == 0 then
-					handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets)
-					--处理技能触发buff
-					handle_cast_monomer_spell_addbuff(caster,target,buff_table)
+					handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets, buff_table, px, py)
 					_m_count = _m_count + 1
-					hit_targets = tar_x.."|"..tar_y
+					hit_target = true
 				end
 			end
 			if _m_count < max_count then
-				local targets = mapLib.GetCircleTargets(cast_x, cast_y, 20, caster, TARGET_TYPE_ENEMY,true)		
+				local targets = mapLib.GetCircleTargets(cast_x, cast_y, 20, caster, TARGET_TYPE_ENEMY, true)
 				for _, attack_target in pairs(targets) do
 					if attack_target ~= nil and attack_target ~= target and unitLib.IsCanHit(attack_target) == 0 then
 						--目标点
@@ -1241,15 +680,10 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 						attack_mast[1] = pos[1]
 						attack_mast[2] = pos[2]
 						if CalHitTest(attack_mast)[1] then
-							handle_cast_monomer_spell(caster, attack_target, spell_id, spell_lv, allTargets)
-							--处理技能触发buff
-							handle_cast_monomer_spell_addbuff(caster,target,buff_table)
-							if hit_targets == "" then
-								hit_targets = tar_x.."|"..tar_y
-							else
-								hit_targets = hit_targets.."|"..tar_x.."|"..tar_y
-							end
+							-- TODO: 这里修改技能
+							handle_cast_monomer_spell(caster, attack_target, spell_id, spell_lv, allTargets, buff_table, px, py)
 							_m_count = _m_count + 1
+							hit_target = true
 							if(_m_count >= max_count)then
 								break
 							end
@@ -1258,46 +692,85 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 				end
 			end
 		end
+		
+		if not hit_target and shifang == SPELL_SHIFANG_DIAN then
+			AddSpellCastinfo(caster, caster, 0, 0, spell_id, px, py)
+		end
+		--[[
 		if GetUnitTypeID(caster) == TYPEID_PLAYER then
 			casterInfo:QuerySpellEventInfo(casterInfo:GetPlayerGuid(),spell_id,cast_x,cast_y,angle,shifa_x,shifa_y,hit_targets)
+		end
+		]]
+	end
+	
+	-- 设置技能族当前技能
+	if GetUnitTypeID(caster) == TYPEID_PLAYER then
+		local config = tb_skill_base[spell_id]
+		if config.group ~= 0 then
+			local endId = spell_id
+			if config.is_end == 1 then
+				endId = 0
+			end
+			playerLib.SetSpellStyle(caster, config.group, endId)
 		end
 	end
 end
 
 --[[CAST:1]]
 --单体接口,此接口玩家和怪物都可以调用
-function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets,tar_x, tar_y)
-	if(target == nil)then
-		return 	--这里是计算伤害的接口，没有目标怎么计算伤害
+function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets, buff_table, tar_x, tar_y)
+	if target == nil then
+		-- 处理单点的空放
+		return
 	end
 	local casterInfo = UnitInfo:new{ptr = caster}
 	local targetInfo = UnitInfo:new{ptr = target}
 	if not targetInfo:IsAlive() then return end			--目标已经死了
-
+		
 	if tar_x == nil or tar_y == nil then
 		tar_x, tar_y = unitLib.GetPos(target)	--获得目标坐标
+		tar_x = math.floor(tar_x)
+		tar_y = math.floor(tar_y)
 	end
-	local caster_typeid = GetUnitTypeID(caster)	
-	local base_damage = calculDamage(caster, target, spell_id, spell_lv)  --基本伤害结果
-	local hit_info = HITINFO_NORMALSWING
-	local last_eva = GetLastEva(caster, target)
-	local last_crit = GetLastCrit(caster, target)	
-	local percent = randIntD(1, 10000)
-	--闪避
-	if percent <= last_eva then
-		hit_info = HITINFO_MISS
-		base_damage = 0
-		AddSpellCastinfo(caster, target, base_damage, hit_info, spell_id, tar_x, tar_y)		
+	
+	-- 闪避
+	if not isHit(casterInfo, targetInfo) then
+		AddSpellCastinfo(caster, target, 0, HITINFO_MISS, spell_id, tar_x, tar_y)
 		return
 	end
-
-	--暴击
-	percent = randIntD(1, 10000)
-	if percent <= last_crit then
-		hit_info = HITINFO_CRITHIT	
-		base_damage = base_damage * 2
+	
+	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
+	local skillDamFactor = tb_skill_uplevel[index].hurt_percent
+	local skillDamVal = tb_skill_uplevel[index].cannot_defence_hure
+	
+	local hitInfo = HITINFO_NORMALSWING
+	local normalDam = getCastDamage(casterInfo, targetInfo, spell_lv, skillDamFactor/100, skillDamVal)
+	local dam = 0
+	-- 判断暴击
+	if isCrit(casterInfo, targetInfo) then
+		local mult = critMult(casterInfo, targetInfo)
+		dam = math.floor(critDamage(normalDam, mult))
+		hitInfo = HITINFO_CRITHIT
+	else
+		dam = math.floor(normalDam)
 	end
-
+	
+	-- 最小值
+	if dam <= 0 then
+		dam = 1
+	end
+	
+	AddSpellCastinfo(caster, target, dam, hitInfo, spell_id, tar_x, tar_y)
+	--判断是否反弹伤害
+	if targetInfo:GetDamageReturned() > 0 then
+		local damReturned = damageReturned(dam, targetInfo)
+		AddSpellCastinfo(target, caster, damReturned, HITINFO_FANTANSHANGHAI, spell_id)
+	end
+	
+	--处理技能触发buff
+	handle_cast_monomer_spell_addbuff(caster,target,buff_table)
+	
+	--[[
 	if tb_skill_base[spell_id].is_initiative == 0 then
 		--威望加成
 		base_damage = WeiWangAddSpellDamage(casterInfo,targetInfo,base_damage)
@@ -1334,9 +807,9 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 			base_damage = base_damage + (base_damage*add_yq/100)
 		end
 	end
+	]]
 	
-	--打包施法
-	AddSpellCastinfo(caster, target, base_damage, hit_info, spell_id, tar_x, tar_y)
+	--[[
 	--主动技能并且不是闪避才insert，防止重复
 	if(tb_skill_base[spell_id].is_initiative == 0 and hit_info ~= HITINFO_MISS)then
 		table.insert(allTargets, target)
@@ -1344,6 +817,7 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 		DoTrueJiTui(caster,target,spell_id,tar_x,tar_y)
 		DoTrueJiTui2(caster,target,spell_id,tar_x,tar_y)
 	end
+	]]
 end
 
 
@@ -1935,3 +1409,265 @@ function handle_cast_add_unit_effect_jianqiao(caster, target, spell_id, spell_lv
 	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 300, 1, "")
 end
 
+
+
+
+
+
+function handle_cast_add_unit_effect_lyz(caster, target, spell_id, spell_lv,dst_x, dst_y)
+	local casterInfo = UnitInfo:new{ptr = caster}
+	casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
+	unitLib.AddSpellTrigger(caster,"", dst_x, dst_y, spell_id, spell_lv, 50, 1, "")
+end
+
+--全图秒杀
+function handle_cast_monomer_quantumiaosha(spell_id, caster)
+	local map_ptr = unitLib.GetMap(caster)
+	local map_id = unitLib.GetMapID(caster)
+	if not (map_id >= 201 and map_id <= 206) then
+		return --只有副本地图才能全图秒杀
+	end
+	local allPlayers = mapLib.GetAllPlayer(map_ptr)
+	if(#allPlayers == 1)then
+		local allCreatures = mapLib.GetAllCreature(map_ptr)
+		for _, creature_ptr in pairs(allCreatures) do
+			local creatureInfo = UnitInfo:new{ptr = creature_ptr}
+			AddSpellCastinfo(caster, creature_ptr, creatureInfo:GetMaxHealth(), HITINFO_NORMALSWING, spell_id)			
+		end	
+	end
+end
+
+--无相劫指定时器
+function handle_cast_add_unit_effect_wxjz(caster, target, spell_id,spell_lv)
+	if(target == nil)then
+		return
+	end
+	local creatureInfo = UnitInfo:new{ptr = caster}
+	local targetInfo = UnitInfo:new{ptr = target}
+	local target_x, target_y = unitLib.GetPos(target)
+	local map_ptr = unitLib.GetMap(caster)
+	if not map_ptr then return end
+	local angle = creatureInfo:GetAngle(target_x, target_y)
+	local distance = 15 - creatureInfo:GetDistance(target_x, target_y)	--击退距离
+	local pos_x,pos_y
+	if distance <= 0 then
+		pos_x = target_x
+		pos_y = target_y
+	else
+		while(distance > 0)do
+			pos_x = target_x + distance * math.cos(angle)
+			pos_y = target_y + distance * math.sin(angle)
+			if mapLib.IsCanRun(map_ptr, pos_x, pos_y) ~= 0 then
+				break
+			else
+				distance = distance - 0.5
+			end
+		end
+	end
+	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),targetInfo:GetIntGuid(),spell_id,{pos_x,pos_y,pos_x,pos_y},true)
+	unitLib.AddSpellTrigger(caster, targetInfo:GetGuid(), pos_x, pos_y, spell_id, spell_lv, 200, 1, "")
+	SpelladdBuff(caster, BUFF_WUXIANGJIEZHI, caster, 1, tb_buff_template[BUFF_WUXIANGJIEZHI].duration)
+end
+
+--无相劫指
+function handle_cast_monomer_wuxiangjiezhi(caster, target, dst_x,dst_y,spell_id, spell_lv, allTargets)
+	if(target == nil)then
+		return
+	end
+	local targetInfo = UnitInfo:new{ptr = target}
+	handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets)
+	--击退目标
+	local map_ptr = unitLib.GetMap(caster)
+	if not map_ptr then return end
+	if mapLib.IsCanRun(map_ptr, dst_x, dst_y) == 1 then
+		unitLib.SetPos(caster, dst_x, dst_y)
+		unitLib.SetPos(target, dst_x, dst_y)
+		AddSpellCastinfo(caster, target, 0, HITINFO_BLOWFLY, spell_id,dst_x,dst_y)
+	end
+	--将对目标定身2秒
+	SpelladdBuff(target, BUFF_DINGSHEN, caster, 1, 2)
+	--清空目标正在释放的技能
+	targetInfo:ClearCurSpell(false)
+end
+
+--暗香疏影定时器
+function handle_cast_add_unit_effect_axsy(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	local casterInfo = UnitInfo:new{ptr = caster}
+	casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
+	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 500, 6, "")
+end
+
+--暗香疏影
+function handle_cast_monomer_anxiangshuying(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	local casterInfo = UnitInfo:new{ptr = caster}
+	if casterInfo:IsAlive() then
+		SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+	end
+end
+
+function handle_cast_add_unit_effect_yfyh(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	if(target == nil)then
+		return
+	end
+	local targetInfo = UnitInfo:new{ptr = target}
+	local casterInfo = UnitInfo:new{ptr = caster}
+	casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),targetInfo:GetIntGuid(),spell_id,{dst_x,dst_y},true)
+	unitLib.AddSpellTrigger(caster, targetInfo:GetGuid(), dst_x, dst_y, spell_id, spell_lv, 150, 1, "")
+end
+
+--云飞玉皇·二段
+function handle_cast_monomer_yunfeiyuhuang_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+	--并且100%将目标挑飞，浮空2秒，浮空期间目标无法移动、攻击等
+	BuffTargetType(target,caster,spell_id,spell_lv,BUFF_ZHIKONG,dst_x,dst_y)
+end
+
+function handle_cast_add_unit_effect_yfyh_3(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	if(target == nil)then
+		return
+	end
+	local creatureInfo = UnitInfo:new{ptr = caster}
+	local targetInfo = UnitInfo:new{ptr = target}
+	--击退目标5码
+	local map_ptr = unitLib.GetMap(caster)
+	if map_ptr == nil then return end
+	local angle = creatureInfo:GetAngle(dst_x, dst_y)
+	local distance = 5	--击退距离
+	local pos_x,pos_y
+	while(distance > 0)do
+		pos_x = dst_x + distance * math.cos(angle)
+		pos_y = dst_y + distance * math.sin(angle)
+		if mapLib.IsCanRun(map_ptr, pos_x, pos_y) ~= 0 then
+			unitLib.SetPos(target, pos_x, pos_y)
+			break
+		else
+			distance = distance - 0.5
+		end
+	end
+	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),targetInfo:GetIntGuid(),spell_id,{pos_x,pos_y},true)
+	unitLib.AddSpellTrigger(caster, targetInfo:GetGuid(), pos_x, pos_y, spell_id, spell_lv, 400, 1, "")
+end
+
+--云飞玉皇·三段
+function handle_cast_monomer_yunfeiyuhuang_3(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	--伤害
+	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+	AddSpellCastinfo(caster, target, 0, HITINFO_BLOWFLY, spell_id,dst_x,dst_y) 
+	--玩家自身浮空，浮空期间不会受到控制、击退等（会受到伤害）
+	BuffTargetType(caster,caster,spell_id,spell_lv,BUFF_FUKONG,dst_x,dst_y)
+end
+
+--风翻云变·一段定时器
+function handle_cast_add_unit_effect_ffyb_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	local map_ptr = unitLib.GetMap(caster)
+	if map_ptr == nil then return end
+	local creatureInfo = UnitInfo:new{ptr = caster}
+	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
+	local max_distance = tb_skill_uplevel[index].distance
+	local distance = creatureInfo:GetDistance(dst_x, dst_y)
+	local angle = creatureInfo:GetAngle(dst_x, dst_y)
+	local cast_x, cast_y = unitLib.GetPos(caster)
+	distance = distance > max_distance and max_distance or distance
+	while(distance > 0)do
+		dst_x = cast_x + distance * math.cos(angle)
+		dst_y = cast_y + distance * math.sin(angle)
+		if mapLib.IsCanRun(map_ptr, dst_x, dst_y) ~= 0 then
+			break
+		else
+			distance = distance - 0.5
+		end
+	end
+	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
+	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 700, 1, "")
+end
+
+--风翻云变·一段
+function handle_cast_monomer_fengfanyunbian_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	unitLib.SetPos(caster, dst_x, dst_y)
+	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+	--减速40%，持续4秒
+	BuffTargetType(target,caster,spell_id,spell_lv,BUFF_JIANSU,dst_x,dst_y,4,40)
+end
+
+--风翻云变·二段定时器
+function handle_cast_add_unit_effect_ffyb_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	local creatureInfo = UnitInfo:new{ptr = caster}
+	local pos_x,pos_y
+	local cas_x, cas_y = unitLib.GetPos(caster)
+	local angle = creatureInfo:GetAngle(dst_x, dst_y)
+	local map_ptr = unitLib.GetMap(caster)
+	if not map_ptr then return end
+	local distance = 12
+	while(distance > 0)do
+		pos_x = cas_x + distance * math.cos(angle)
+		pos_y = cas_y + distance * math.sin(angle)
+		if mapLib.IsCanRun(map_ptr, pos_x, pos_y) ~= 0 then
+			break
+		else
+			distance = distance - 0.5
+		end
+	end
+	unitLib.SetPos(caster, pos_x, pos_y)
+	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{pos_x,pos_y},true)
+	unitLib.AddSpellTrigger(caster, "", cas_x, cas_y, spell_id, spell_lv, 250, 1, "")
+end
+
+
+--万剑归宗定时器
+function handle_cast_add_unit_effect_wjgz(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	local creatureInfo = UnitInfo:new{ptr = caster}
+	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
+	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 500, 12, "")
+	SpelladdBuff(caster, BUFF_WANJIANGUIZONG, caster, 1, tb_buff_template[BUFF_WANJIANGUIZONG].duration)
+	SpelladdBuff(caster, BUFF_WUDI, caster, 1, tb_buff_template[BUFF_WANJIANGUIZONG].duration)
+end
+
+--诛仙剑阵·一段定时器
+function handle_cast_add_unit_effect_zxjz_1(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	--处理一下最大距离
+	local creatureInfo = UnitInfo:new{ptr = caster}
+	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
+	local max_distance = tb_skill_uplevel[index].distance
+	local distance = creatureInfo:GetDistance(dst_x, dst_y)
+	local angle = creatureInfo:GetAngle(dst_x, dst_y)
+	local cast_x, cast_y = unitLib.GetPos(caster)
+	distance = distance > max_distance and max_distance or distance
+	dst_x = cast_x + distance * math.cos(angle)
+	dst_y = cast_y + distance * math.sin(angle)
+	--通知客户端开始施法技能
+	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
+	--刷特效精灵
+	local map_ptr = unitLib.GetMap(caster)
+	if map_ptr == nil then return end
+	local creature = mapLib.AddCreature(map_ptr, {templateid = 6001, x = dst_x, y = dst_y, ainame = 'AI_guaiwu', active_grid = true, npcflag = {UNIT_NPC_FLAG_GOSSIP}})
+	if creature~=nil then
+		creatureLib.MonsterMove(creature,DISAPPEAR_ONE_MOTION_TYPE,5000)
+	end
+	--技能延迟释放
+	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 500, 10, "")
+end
+
+--诛仙剑阵·二段
+function handle_cast_monomer_zhuxianjianzhen_2(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
+	--处理一下最大距离
+	local creatureInfo = UnitInfo:new{ptr = caster}
+	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
+	local max_distance = tb_skill_uplevel[index].distance
+	local distance = creatureInfo:GetDistance(dst_x, dst_y)
+	local angle = creatureInfo:GetAngle(dst_x, dst_y)
+	local cast_x, cast_y = unitLib.GetPos(caster)
+	distance = distance > max_distance and max_distance or distance
+	dst_x = cast_x + distance * math.cos(angle)
+	dst_y = cast_y + distance * math.sin(angle)
+	--通知客户端开始施法技能
+	creatureInfo:CallCastSpellStart(creatureInfo:GetIntGuid(),0,spell_id,{dst_x,dst_y},true)
+	--刷特效精灵
+	local map_ptr = unitLib.GetMap(caster)
+	if map_ptr == nil then return end
+	local creature = mapLib.AddCreature(map_ptr, {templateid = 6002, x = dst_x, y = dst_y, ainame = 'AI_guaiwu', active_grid = true, npcflag = {UNIT_NPC_FLAG_GOSSIP}})
+	if creature~=nil then
+		creatureLib.MonsterMove(creature,DISAPPEAR_ONE_MOTION_TYPE,4000)
+	end
+	--给伤害
+	unitLib.AddSpellTrigger(caster, "", dst_x, dst_y, spell_id, spell_lv, 750, 3, "")
+end

@@ -5,7 +5,7 @@ local AppObjectManager = class('AppObjectManager', ObjectManager)
 local AppItemMgr = require('appd.appd_item_mgr')
 local AppLogicalMgr = require('appd.appd_logical_mgr')
 local AppFactionMgr = require('appd.faction_info')
-
+local AppSpellMgr = require('appd.appd_spell_manager')
 
 function AppObjectManager:ctor( )
 	self.binlogTypes = {}
@@ -18,6 +18,7 @@ function AppObjectManager:ctor( )
 	self.binlogTypes[guidMgr.ObjectTypeItemMgr] = AppItemMgr 	--道具
 	self.binlogTypes[guidMgr.ObjectTypeLogical] = AppLogicalMgr --业务逻辑
 	self.binlogTypes[guidMgr.ObjectTypeFaction] = AppFactionMgr	--帮派
+	self.binlogTypes[guidMgr.ObjectTypeSpell] = AppSpellMgr	--技能
 	
 	--由于基类会构建实例，所有需要在调用基类构造函数前给类型表赋值
 	super(self)	

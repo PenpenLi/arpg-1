@@ -114,10 +114,8 @@ char_remotestore_str,c2s,27,/*角色配置信息*/,STATUS_NEVER,False
 	value,String,False,/*配置信息*/
 
 #
-teleport,both,28,/*传送，如果是C->S，mapid变量请填成传送点ID*/,STATUS_NEVER,False
-	map_id,uint32,False,/*地图ID*/
-	pos_x,float,False,/**/
-	pos_y,float,False,/**/
+teleport,c2s,28,/*传送，如果是C->S，mapid变量请填成传送点ID*/,STATUS_NEVER,False
+	intGuid,uint32,False,/*传送点intGuid*/
 
 #
 move_stop,both,29,/*停止移动*/,STATUS_NEVER,False
