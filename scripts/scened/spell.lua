@@ -623,11 +623,14 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 	if shifang == SPELL_SHIFANG_DAN then--目标单体
 		-- 判断释放距离
 		if target then
-			local tar_x, tar_y = unitLib.GetPos(target)
-			local dis = casterInfo:GetDistance(tar_x,tar_y)
-			local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
-			if dis <= spell_dis + 3 then	--允许3码误差
-				handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets, buff_table)
+			local isfriend = unitLib.IsFriendlyTo(caster, target)
+			if isfriend == 0 then
+				local tar_x, tar_y = unitLib.GetPos(target)
+				local dis = casterInfo:GetDistance(tar_x,tar_y)
+				local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
+				if dis <= spell_dis + 3 then	--允许3码误差
+					handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets, buff_table)
+				end
 			end
 		end
 	else

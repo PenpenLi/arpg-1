@@ -535,7 +535,6 @@ Instance_base = {
 	--是否友好（友好1，不友好0）
 	DoIsFriendly = 
 		function(self, killer_ptr, target_ptr)
-			--[[
 			local killerInfo = UnitInfo:new{ptr = killer_ptr}
 			local targetInfo = UnitInfo:new{ptr = target_ptr}
 
@@ -550,7 +549,6 @@ Instance_base = {
 			if ret then
 				return 1
 			end
-			]]
 			return 0
 		end,
 	

@@ -919,19 +919,6 @@ ITEM_OTHER_ATTR_FAIL_TIME = 20	-- 失效时间
 ITEM_OTHER_ATTR_STRONG_LV = 21	-- 强化等级
 ITEM_OTHER_ATTR_STRONG_FAIL_COUNT = 22	-- 强化失败次数
 ITEM_OTHER_ATTR_FORCE = 23	-- 战斗力
---  玩家拥有的辅助技能属性信息
-SPELL_ID = 0	-- 技能id
-SPELL_LV = 1	-- 技能等级
-MAX_SPELL_BASE_COUNT = 2	-- 被动/辅助技能的属性数量
-SPELL_SLOT = 2	-- 技能槽位置 [主动技能专用]
-MAX_SLOT_ATTR_COUNT = 3	-- 主动技能属性数量
-SHORT_SLOT_SPELL_ID = 0	-- 技能槽中的技能id	占一个short
-BYTE_SLOT_SPELL_LV = 2	-- 技能槽中的技能lv	占一个byte
-BYTE_SLOT = 3	-- 技能槽的位置		占一个byte
---  要在binlog中存CD的重要技能CD信息
-IMPORTANT_SPELL_ID = 0	-- 技能id
-IMPORTANT_SPELL_CD = 1	-- 技能CD
-MAX_IMPORTANT_SPELL_ATTR_COUNT = 2
 -- 技能族公共CD类型
 SPELL_CD_BASE = 0
 SPELL_CD_SPECIAL = 1
@@ -955,11 +942,6 @@ QUEST_REWARDS_COUNT = 4
 QUEST_LOW_LEVEL_HIDE_DIFF = 4
 QUEST_ITEMS_COUNTS = 10	-- 任务物品最大容量
 QUEST_COMPLETE_LIST = 200	-- 任务已完成列表的长度
-PLAYER_SLOT_SPELL_MAX_COUNT = 10	-- 玩家技能槽信息上限
-PLAYER_INITIATIVE_SPELL_MAX_COUNT = 12	-- 玩家主动技能的上限
-PLAYER_SUPPORT_SPELL_MAX_COUNT = 1000	-- 玩家辅助技能的上限
-PLAYER_PASSIVE_SPELL_MAX_COUNT = 1000	-- 玩家被动技能的上限
-PLAYER_IMPORTANT_CD_COUNT = 20	-- 玩家重要技能的CD
 BINLOG_STRING_FIELD_GUID = 0	-- 所有binlog的guid位置
 BINLOG_STRING_FIELD_NAME = 1	-- 所有binlog的name位置
 BINLOG_STRING_FIELD_VERSION = 2	-- 所有binlog的版本信息位置
@@ -1090,6 +1072,7 @@ PLAYER_APPD_INT_FIELD_FLAGS_SOCIAL_CREATE = 12	-- 社交系统是否以创建
 PLAYER_APPD_INT_FIELD_FLAGS_ITEM_CREATE = 13	-- 物品binlog是否创建
 PLAYER_APPD_INT_FIELD_FLAGS_LOGICAL_CREATE = 14	-- 业务逻辑binlog是否创建
 PLAYER_APPD_INT_FIELD_FLAGS_SPELL_CREATE = 15	-- 技能binlog是否创建
+PLAYER_APPD_INT_FIELD_FLAGS_PASSIVE_CREATE = 16	-- 被动技能binlog是否创建
 -- 基本潜力点属性
 QIANLI_TYPE_LILIANG = 0	-- 力量
 QIANLI_TYPE_TIZHI = 1	-- 体质
@@ -1112,6 +1095,16 @@ FUNCTIONAL_QING_GONG = 1	-- 轻功
 FUNCTIONAL_TI_YUN_ZONG = 2	-- 梯云纵
 FUNCTIONAL_RIDE = 3	-- 骑乘
 FUNCTIONAL_DA_ZUO = 4	-- 打坐
+PLAYER_SLOT_SPELL_MAX_COUNT = 10	-- 玩家技能槽信息上限
+PLAYER_IMPORTANT_CD_COUNT = 20	-- 玩家重要技能的CD
+--  玩家技能槽的技能信息
+SHORT_SLOT_SPELL_ID = 0	-- 技能槽中的技能id	占一个short
+BYTE_SLOT_SPELL_LV = 2	-- 技能槽中的技能lv	占一个byte
+BYTE_SLOT = 3	-- 技能槽的位置		占一个byte
+--  要在binlog中存CD的重要技能CD信息
+IMPORTANT_SPELL_ID = 0	-- 技能id
+IMPORTANT_SPELL_CD = 1	-- 技能CD
+MAX_IMPORTANT_SPELL_ATTR_COUNT = 2
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 玩家下标
 -- //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1220,15 +1213,15 @@ PLAYER_APPD_INT_FIELD_END = 500
 PLAYER_SCENED_INT_FLAGS = 501	-- 玩家场景服标志位
 --  只显示装备的主动技能
 PLAYER_INT_FIELD_SPELL_START = 509
-PLAYER_INT_FIELD_SPELL_END = 521
+PLAYER_INT_FIELD_SPELL_END = 519
 -- 重要技能的CD
-PLAYER_INT_FIELD_IMPORTANT_SPELL_CD_START = 521
-PLAYER_INT_FIELD_IMPORTANT_SPELL_CD_END = 561
-PLAYER_EXPAND_KILL_MONSTER = 561	-- 杀怪数
+PLAYER_INT_FIELD_IMPORTANT_SPELL_CD_START = 519
+PLAYER_INT_FIELD_IMPORTANT_SPELL_CD_END = 559
+PLAYER_EXPAND_KILL_MONSTER = 559	-- 杀怪数
 -- 跨服
-PLAYER_APPD_INT_FIELD_KUAFU_WARID = 562	-- 跨服场次id
-PLAYER_INT_FIELD_KUAFU_NUMBER = 563	-- 0:玩家报名跨服时收到匹配信息中给的编号 1:跨服类型（值参照枚举：EKUAFU_TYPE）
-PLAYER_HT_INT_FIELD_MAIN_QUEST_ID = 564	-- 当前主线任务
+PLAYER_APPD_INT_FIELD_KUAFU_WARID = 560	-- 跨服场次id
+PLAYER_INT_FIELD_KUAFU_NUMBER = 561	-- 0:玩家报名跨服时收到匹配信息中给的编号 1:跨服类型（值参照枚举：EKUAFU_TYPE）
+PLAYER_HT_INT_FIELD_MAIN_QUEST_ID = 562	-- 当前主线任务
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 字符串部分
 PLAYER_STRING_FIELD_ACCOUNT = 4	-- 账号
@@ -1240,16 +1233,35 @@ PLAYER_STRING_FIELD_CREATE_LOGIN_IP = 28	-- 玩家创建IP
 PLAYER_APPD_STRING_FIELD_PINGTAI_INFO = 29	-- 平台信息
 PLAYER_STRING_FIELD_DB_KUAFU_INFO = 30	-- 玩家跨服信息,是否为跨服玩家依据这个下标是不是空串
 PLAYER_STRING_FIELD_FACTION_GUID = 31	-- 帮派guid
+PLAYER_BASIC_SPELL_CAPACITY = 30	-- 玩家基础技能的上限
+PLAYER_JUEXUE_SPELL_CAPACITY = 30	-- 玩家绝学技能的上限
+PLAYER_DIVINE_SPELL_CAPACITY = 50	-- 玩家神兵个数的上限
+--  玩家拥有的基本技能属性信息
+SHORT_SPELL_ID = 0	-- 技能id short
+SHORT_SPELL_LV = 1	-- 技能等级 short
+--  绝学属性
+JUEXUE_INFO = 0	-- 绝学信息
+UPGRADE_INFO = 1	-- 进阶信息
+MAX_JUEXUE_INFO_COUNT = 2
+-- 绝学信息字段属性
+SHORT_JUEXUE_ID = 0	-- 绝学id short
+BYTE_SPELL_LEVEL = 2	-- 技能等级	byte
+BYTE_XINFA_STARS = 3	-- 心法等级	byte
+-- 进阶信息字段属性
+SHORT_BELSS = 0	-- 心法进阶祝福值
+SHORT_STATE = 1	-- 心法进阶状态
 -- 玩家技能信息
---  玩家拥有的主动技能
-SPELL_INT_FIELD_INITIATIVE_SPELL_START = 0
-SPELL_INT_FIELD_INITIATIVE_SPELL_END = 24
---  玩家拥有的辅助技能
-SPELL_INT_FIELD_SUPPORT_SPELL_START = 24
-SPELL_INT_FIELD_SUPPORT_SPELL_END = 2024
--- 被动技能
-SPELL_INT_FIELD_PASSIVE_SPELL = 2024
-SPELL_INT_FIELD_PASSIVE_SPELL_END = 4024
+SPELL_BASE_COUNT = 0	-- 基础技能个数
+SPELL_JUEXUE_COUNT = 1	-- 绝学技能个数
+SPELL_DIVINE_COUNT = 2	-- 神兵个数
+SPELL_INT_FIELD_BASE_SPELL_START = 3	-- 基础技能开始
+SPELL_INT_FIELD_BASE_SPELL_END = 33
+SPELL_INT_FIELD_JUEXUE_SPELL_START = 33	-- 绝学技能开始
+SPELL_INT_FIELD_JUEXUE_SPELL_END = 93
+SPELL_INT_FIELD_DIVINE_START = 93	-- 神兵开始
+SPELL_INT_FIELD_DIVINE_END = 143
+PASSIVE_SPELL_COUNT = 0	-- 被动技能的个数
+PASSIVE_SPELL_START = 1	-- 被动技能开始
 -- 游戏配置专用的状态下标枚举
 GAME_CONFIG_FIELD_FLAGS_SHOW_PLATFORM_NAME = 0	-- 是否显示平台名
 GAME_CONFIG_FIELD_FLAGS_SHOW_SERVER_ID = 1	-- 是否显示服务器ID
@@ -1333,6 +1345,13 @@ TAOHUA_STR_FIELD_REAL_BOSS_GUID = 5	-- BOSS真身GUID
 TOWER_MAX_FLOOR = 2
 -- 塔怪每层击杀数量
 TAGUAI_INT_FIELD_FIRST_FLOOR = 9	-- 第一层的信息
+-- 战斗信息整形字符型枚举
+-- 貌似没必要,随便留一个吧
+FIGHTING_INFO_STRING_CASTER = 0	-- 施法者
+FIGHTING_INFO_STRING_TARGET = 1	-- 目标
+MAX_FIGHTING_INFO_STRING = 2
+-- 战斗信息最大数量
+MAX_FIGHTING_INFO_COUNT = 100
 -- 战斗信息整形字段枚举
 FIGHTING_INFO_INT_VALUES = 0	-- 伤害或者治疗 治疗发负数
 FIGHTING_INFO_INT_UINT8 = 2	-- 0:是否被杀 1:施法者生物类型（玩家还是生物）2:目标生物类型（玩家还是生物） 3:伤害类型(暴击、闪避之类的)
@@ -1343,13 +1362,6 @@ FIGHTING_INFO_INT_RESERVE_1 = 6	-- 预留
 FIGHTING_INFO_INT_RESERVE_2 = 7	-- 预留
 FIGHTING_INFO_INT_RESERVE_3 = 8	-- 预留	
 MAX_FIGHTING_INFO_INT = 9
--- 战斗信息整形字符型枚举
--- 貌似没必要,随便留一个吧
-FIGHTING_INFO_STRING_CASTER = 0	-- 施法者
-FIGHTING_INFO_STRING_TARGET = 1	-- 目标
-MAX_FIGHTING_INFO_STRING = 2
--- 战斗信息最大数量
-MAX_FIGHTING_INFO_COUNT = 100
 -- 战斗信息字段
 MAX_FIGHTING_INFO_INT_NOW_INDEX = 0	-- 当前战斗力信息下标用到第几个战斗信息了
 MAX_FIGHTING_INFO_INT_START = 1
