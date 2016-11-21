@@ -77,7 +77,7 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 	local spellTable = {}
 	
 	-- 在技能槽的修改技能槽数据(怒气技能也是主动技能)
-	if self:isInitiativeSpell(spellId) or self:isAngerSpell(spellId) then
+	if self:isInitiativeSpell(config.is_initiative) or self:isAngerSpell(spellId) then
 		--同步主动技能到p对象
 		if self:isSloted(spellId) then
 			local slot = config.skill_slot
@@ -91,7 +91,7 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 				table.insert(spellTable, {id, spellLv})
 			end
 		end
-	elseif self:isPassiveSpell(spellId) then
+	elseif self:isPassiveSpell(config.is_initiative) then
 		--同步被动技能到p对象中
 		self:updatePassive(spellId, spellLv)
 		table.insert(spellTable, {spellId, spellLv})
@@ -330,7 +330,6 @@ end
 -- 是否已经在技能槽
 function PlayerInfo:isSloted(spellId)
 	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
-		print(i, self:GetUInt16(i, SHORT_SLOT_SPELL_ID))
 		if self:GetUInt16(i, SHORT_SLOT_SPELL_ID) == spellId then
 			return true
 		end

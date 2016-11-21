@@ -839,7 +839,6 @@ end
 
 -- 设置怒气
 function UnitInfo:SetSP(value)
-	print("current anger", value)
 	self:SetUInt32(UNIT_FIELD_ANGER, value)
 end
 
