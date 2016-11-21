@@ -49,13 +49,15 @@ function unpack_quest_add_item( pkt )
 end
 
 function unpack_player_upgrade( pkt )
-	local ret, player_guid, player_lv
+	local ret, player_guid, prevLevel, player_lv
 	ret, player_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, prevLevel = pkt:readU32()
 	if not ret then return false end
 	ret, player_lv = pkt:readU32()
 	if not ret then return false end
 
-	return true, player_guid, player_lv
+	return true, player_guid, prevLevel, player_lv
 end
 
 function unpack_add_gift_packs( pkt )

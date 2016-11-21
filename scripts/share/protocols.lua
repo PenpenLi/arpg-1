@@ -154,6 +154,8 @@ CMSG_FORCEINTO		= 141	-- /*强制进入*/
 CMSG_CREATE_FACTION		= 142	-- /*创建帮派*/	
 CMSG_FACTION_UPGRADE		= 143	-- /*升级帮派*/	
 CMSG_FACTION_JOIN		= 144	-- /*申请加入帮派*/	
+CMSG_RAISE_BASE_SPELL		= 145	-- /*申请升级技能*/	
+CMSG_UPGRADE_ANGER_SPELL		= 146	-- /*申请升阶愤怒技能*/	
 
 
 ---------------------------------------------------------------------
@@ -5320,6 +5322,64 @@ function Protocols.unpack_faction_join (pkt)
 end
 
 
+-- /*申请升级技能*/	
+function Protocols.pack_raise_base_spell ( spellId)
+	local output = Packet.new(CMSG_RAISE_BASE_SPELL)
+	output:writeI16(spellId)
+	return output
+end
+
+-- /*申请升级技能*/	
+function Protocols.call_raise_base_spell ( playerInfo, spellId)
+	local output = Protocols.	pack_raise_base_spell ( spellId)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*申请升级技能*/	
+function Protocols.unpack_raise_base_spell (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.spellId = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*申请升阶愤怒技能*/	
+function Protocols.pack_upgrade_anger_spell ( spellId)
+	local output = Packet.new(CMSG_UPGRADE_ANGER_SPELL)
+	output:writeI16(spellId)
+	return output
+end
+
+-- /*申请升阶愤怒技能*/	
+function Protocols.call_upgrade_anger_spell ( playerInfo, spellId)
+	local output = Protocols.	pack_upgrade_anger_spell ( spellId)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*申请升阶愤怒技能*/	
+function Protocols.unpack_upgrade_anger_spell (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.spellId = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -5466,6 +5526,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_create_faction = self.call_create_faction
 	playerInfo.call_faction_upgrade = self.call_faction_upgrade
 	playerInfo.call_faction_join = self.call_faction_join
+	playerInfo.call_raise_base_spell = self.call_raise_base_spell
+	playerInfo.call_upgrade_anger_spell = self.call_upgrade_anger_spell
 end
 
 local unpack_handler = {
@@ -5609,6 +5671,8 @@ local unpack_handler = {
 [CMSG_CREATE_FACTION] =  Protocols.unpack_create_faction,
 [CMSG_FACTION_UPGRADE] =  Protocols.unpack_faction_upgrade,
 [CMSG_FACTION_JOIN] =  Protocols.unpack_faction_join,
+[CMSG_RAISE_BASE_SPELL] =  Protocols.unpack_raise_base_spell,
+[CMSG_UPGRADE_ANGER_SPELL] =  Protocols.unpack_upgrade_anger_spell,
 
 }
 

@@ -71,7 +71,7 @@ function GetGmCommandKey(gm_str)
 	elseif(gm_str == '@关闭地图'        or gm_str=='@CloseMap')then
 		return GM_COMMAND_GUANBIDITU					
     
-	elseif(gm_str == '@等级'            or gm_str=='@SetLevel')then
+	elseif(gm_str == '@等级'            or gm_str=='@SetLevel' or gm_str=='@Rank')then
 		return GM_COMMAND_DENGJI						
     
 	elseif(gm_str == '@清理任务物品'    or gm_str=='@ClearQuestItem')then

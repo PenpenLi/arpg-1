@@ -425,9 +425,9 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	end
 	
 	while(distance > 0)do
-		dst_x = cas_x + distance * math.cos(angle)
-		dst_y = cas_y + distance * math.sin(angle)
-		if mapLib.IsCanRun(map_ptr, dst_x, dst_y) == 1 then
+		local dstx = cas_x + distance * math.cos(angle)
+		local dsty = cas_y + distance * math.sin(angle)
+		if mapLib.IsCanRun(map_ptr, dstx, dsty) == 1 then
 			break
 		else
 			distance = distance - 0.3

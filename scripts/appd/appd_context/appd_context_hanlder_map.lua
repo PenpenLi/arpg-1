@@ -24,6 +24,8 @@ hanlders[CMSG_STRENGTH] = PlayerInfo.Handle_Strength
 hanlders[CMSG_CREATE_FACTION] = PlayerInfo.Handle_Faction_Create
 hanlders[CMSG_FACTION_UPGRADE] = PlayerInfo.Handle_Faction_Upgrade
 hanlders[CMSG_FACTION_JOIN] = PlayerInfo.Hanlde_Faction_Apply
+hanlders[CMSG_RAISE_BASE_SPELL] = PlayerInfo.Handle_Raise_BaseSpell
+hanlders[CMSG_UPGRADE_ANGER_SPELL] = PlayerInfo.Handle_Upgrade_AngleSpell
 
 
 return hanlders

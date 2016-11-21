@@ -660,3 +660,11 @@ faction_upgrade,c2s,143,/*升级帮派*/,STATUS_NEVER,False
 #
 faction_join,c2s,144,/*申请加入帮派*/,STATUS_NEVER,False
 	id,String,False,/*帮派guid*/
+
+#
+raise_base_spell,c2s,145,/*申请升级技能*/,STATUS_NEVER,False
+	spellId,uint16,False,/*技能ID*/
+
+#
+upgrade_anger_spell,c2s,146,/*申请升阶愤怒技能*/,STATUS_NEVER,False
+	spellId,uint16,False,/*技能ID*/

@@ -15,7 +15,7 @@ require 'scened.scened_internal_pack'
 --初始化一些东西，例如BUFF对游戏操作的限制 用数字的说明是一些特殊的东西
 config = {
 	--以下来自原来的配置文件
-	max_player_level = 200					,--最大等级
+	max_player_level = 100					,--最大等级
 	nomal_attack_time =  1300				,--默认攻击时间
 	nomal_move_speed = 180					,--默认移动速度
 	nomal_attack_distance	= 4				,--默认攻击距离

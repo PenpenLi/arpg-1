@@ -87,6 +87,24 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		end
 	end
 	
+	-- 如果是愤怒技能 检测愤怒值是否满了
+	if config.skill_slot == SLOT_ANGER then
+		local cas = playerLib.GetAngerSpell(caster)
+		-- 怒气技能id是否正确
+		if cas ~= spell_id then
+			outFmtDebug("DoHandleSpellStart current anger spellId = %d but cast is %d", cas, spell_id)
+			return false
+		end
+		
+		-- 判断怒气值
+		local angerLimit = tb_anger_limit[spell_id].limit
+		local currAnger = casterInfo:GetSP()
+		if currAnger < angerLimit then
+			outFmtDebug("DoHandleSpellStart spellId = %d anger is not full", spell_id)
+			return false
+		end
+	end
+	
 	local spell_type = tb_skill_base[spell_id].type   --获得目标类型
 	if spell_type == TARGET_TYPE_ONESELF then	--目标为自己
 		if not casterInfo:IsAlive() then
@@ -618,7 +636,13 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 	local _m_count = 0
 	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
 	local max_count = tb_skill_uplevel[index].num	--施放数量
-	local buff_table = tb_skill_uplevel[index].type_effect	--buff效果类型	
+	local buff_table = tb_skill_uplevel[index].type_effect	--buff效果类型
+	
+	
+	-- 如果是怒气技能 先扣除
+	if tb_skill_base[spell_id].skill_slot == SLOT_ANGER then
+		casterInfo:SetSP(0)
+	end
 	
 	if shifang == SPELL_SHIFANG_DAN then--目标单体
 		-- 判断释放距离
@@ -772,6 +796,11 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 	
 	--处理技能触发buff
 	handle_cast_monomer_spell_addbuff(caster,target,buff_table)
+	
+	-- 连招技能攒怒气
+	if tb_skill_base[spell_id].skill_slot == SLOT_COMBO then
+		casterInfo:AddSP(100)
+	end
 	
 	--[[
 	if tb_skill_base[spell_id].is_initiative == 0 then

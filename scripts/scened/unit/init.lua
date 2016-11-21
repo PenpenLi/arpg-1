@@ -832,6 +832,34 @@ function UnitInfo:GetExitanceDBMapid()
 	return self:GetPlayerUInt32(PLAYER_EXPAND_INT_DB_MAP)
 end
 
+-- 获得怒气
+function UnitInfo:GetSP()
+	return self:GetUInt32(UNIT_FIELD_ANGER)
+end
+
+-- 设置怒气
+function UnitInfo:SetSP(value)
+	print("current anger", value)
+	self:SetUInt32(UNIT_FIELD_ANGER, value)
+end
+
+-- 增加怒气
+function UnitInfo:AddSP(value)
+	local cas = playerLib.GetAngerSpell(self.ptr)
+	if cas > 0 then
+		local angerLimit = tb_anger_limit[cas].limit
+		local currAnger = self:GetSP()
+		if currAnger >= angerLimit then
+			return
+		end
+		local nextAnger = currAnger + value
+		if nextAnger > angerLimit then
+			nextAnger = angerLimit
+		end
+		self:SetSP(nextAnger)
+	end
+end
+
 --设置玩家退出副本时的地图id
 function UnitInfo:SetExitanceDBMapid(val)
 	self:SetPlayerUInt32(PLAYER_EXPAND_INT_DB_MAP, val)
@@ -1351,14 +1379,6 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 			end
 		end
 	end
-end
-
--- 通过等级解锁
-function DoPlayerUnlock(player, prevLevel)
-	--[[
-		local unitInfo = UnitInfo:new {ptr = player}
-		local level = unitInfo:GetLevel()
-	]]
 end
 
 

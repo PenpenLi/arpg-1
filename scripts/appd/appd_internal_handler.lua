@@ -48,7 +48,7 @@ end
 
 --场景服通知应用服玩家升级了
 local function on_scened_player_upgrade( pkt )
-	local ret, player_guid, player_lv = unpack_player_upgrade(pkt)
+	local ret, player_guid, prevLevel, player_lv = unpack_player_upgrade(pkt)
 	if not ret then
 		return
 	end
@@ -58,14 +58,23 @@ local function on_scened_player_upgrade( pkt )
 		outFmtDebug("on_scened_player_upgrade:player %s not online player_lv %d", player_guid, player_lv)
 		return
 	end
-
 	
-	-- TODO:处理升级以后的逻辑
+	-- 处理升级以后的逻辑
+	local gender = player:GetGender()
+	local config = tb_char_skill[gender]
+	for _, info in pairs(config.unlocks) do
+		if prevLevel < info[ 1 ] and info[ 1 ] <= player_lv then
+			player:activeBaseSpell(info[ 2 ], SPELL_ACTIVE_BY_LEVEL)
+		end
+	end
+	
+	--[[
 	-- 如技能解锁
 	local socialSysInfo = player:getSocialSystem()
 	if socialSysInfo then
 		socialSysInfo:ProceedUpgrade(player, FRIEND_OPT_PLAYER_UPGRADE, player_lv)
 	end
+	]]
 end
 
 local function on_scened_add_gift_packs( pkt )

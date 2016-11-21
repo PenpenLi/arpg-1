@@ -84,6 +84,8 @@ config = {
 		CMSG_CREATE_FACTION,
 		CMSG_FACTION_UPGRADE,
 		CMSG_FACTION_JOIN,
+		CMSG_RAISE_BASE_SPELL,
+		CMSG_UPGRADE_ANGER_SPELL
 	},
 	--pk服命令表
 	pk_external_router_map = {

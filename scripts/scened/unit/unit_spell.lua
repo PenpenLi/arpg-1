@@ -6,20 +6,6 @@
 ]]
 
 -- 技能类型is_initiative
-SPELL_SUPPORT = 0 -- 辅助
-
-SPELL_INITIATIVE_DAMAGE  = 1 -- 主动（伤害）
-SPELL_INITIATIVE_PROTECT = 2 -- 主动（防护）
-SPELL_INITIATIVE_CONTROL = 3 -- 主动（控制）
-SPELL_INITIATIVE_CURE 	 = 4 -- 主动（回复）
-SPELL_INITIATIVE_BUFF = 5 -- 主动（增益）
-
-SPELL_PASSIVE_DAMAGE = 6 -- 被动（伤害）
-SPELL_PASSIVE_PROTECT = 7 -- 被动（防护）
-SPELL_PASSIVE_CONTROL = 8 -- 被动（控制）
-SPELL_PASSIVE_CURE = 9 -- 被动（回复）
-SPELL_PASSIVE_BUFF = 10 -- 被动（增益）
-
 SPELL_INITIATIVE = {
 	[SPELL_INITIATIVE_DAMAGE]  = 1, -- 主动（伤害）
 	[SPELL_INITIATIVE_PROTECT] = 2, -- 主动（防护）
@@ -182,7 +168,7 @@ function UnitInfo:SetSpellCD(spell_id, nowtime)
 	if config ~= nil and spell_lv > 0 then
 		local levelIndex = self:GetSpellLvIndex(spell_id)
 		local upConfig = tb_skill_uplevel[levelIndex]
-		local category_cd = config.groupCD - upConfig.mcd
+		local category_cd = config.groupCD
 		local single_cd = config.singleCD - upConfig.mcd
 		local group = config.group	--技能族(同一技能族共享公共CD)
 		
@@ -196,9 +182,7 @@ function UnitInfo:SetSpellCD(spell_id, nowtime)
 				if tb_skill_base[temp_id] ~= nil and group == tb_skill_base[temp_id].group then
 					local tcd = category_cd
 					if temp_id == spell_id then
-						if category_cd < single_cd then
-							tcd = single_cd
-						end
+						tcd = single_cd
 					end
 					self:FinalSetSpellCD(temp_id, tcd + nowtime)
 				end

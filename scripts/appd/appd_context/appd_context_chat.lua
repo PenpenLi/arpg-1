@@ -185,10 +185,12 @@ function PlayerInfo:GmCommand(str)
 		end
 		call_opt_command(0, 0, temp)
 	else
+		--[[
 		if(gm_level < GM_LEVEL_1)then
 			self:call_chat_whisper(self:GetGuid(), self:GetFaction(), self:GetName(), whisper_str)
 			return
 		end
+		]]
 		--outFmtInfo("DoGMScripts")
 		DoGMScripts(self.ptr, str)
 	end

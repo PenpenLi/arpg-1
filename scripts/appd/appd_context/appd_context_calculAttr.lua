@@ -241,6 +241,11 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	-- 装备
 	
+	--[[
+	TODO: 到时候决定要不要设置回去
+	因为p对象一旦修改, 客户端, 场景服, 登录服都会进行数据同步, 有必要实时设置么?
+	登录服在登录的时候会重新计算属性, 但是不能确保场景服收到数据一定有用(万一场景服的p对象还没到达呢)
+	]]
 	-- 设置到playerBase中
 	for attrId, val in pairs(attrs) do
 		local func = PlayerInfo_Set_Attr_Func[attrId]

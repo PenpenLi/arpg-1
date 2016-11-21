@@ -40,3 +40,12 @@ function PlayerInfo:getLogicalMgr()
 	end
 	return self:getObj(self.guid_logicalMgr)	
 end
+
+--根据玩家guid获得技能管理器
+function PlayerInfo:getSpellMgr()
+	if not self.guid_spellMgr then
+		self.guid_spellMgr = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeSpell)
+	end
+	return self:getObj(self.guid_spellMgr)	
+end
+

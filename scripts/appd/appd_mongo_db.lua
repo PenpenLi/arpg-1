@@ -230,6 +230,7 @@ end
 --获取交易大分类型
 function AppdMongoDB:getTradeBigType()
 	local need_table = {}
+	--[[
 	for _,trade in ipairs(tb_trade) do
 		local isExist = false
 		for _,typed in ipairs(need_table) do
@@ -241,7 +242,8 @@ function AppdMongoDB:getTradeBigType()
 		if not isExist then
 			table.insert(need_table,trade.paging_big)
 		end
-	end	
+	end
+	]]
 	return need_table
 end
 
