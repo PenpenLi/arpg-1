@@ -505,6 +505,8 @@ function ScenedContext:Hanlde_Mount_Riding(packet)
 	end
 end
 
+
+
 --客户端发起传送
 function ScenedContext:Hanlde_Teleport( pkt )
 	Script_WorldMap_Teleport(self, pkt.map_id, pkt.pos_x, pkt.pos_y)

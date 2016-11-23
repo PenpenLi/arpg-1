@@ -370,5 +370,48 @@ function ItemMgrBase:getOwner()
 	return app.objMgr:getObj(self.owner_guid)	
 end
 
+--判断一组物品的数量是否够{{entry,count},{entry,count} ...} 
+function AppItemMgr:hasMulItem(costItemTable,multiple)
+	multiple = multiple or 1
+	local map = {}
+
+	--判断key是否重复
+	for _, costItem in pairs(costItemTable) do
+
+		if map[costItem[1]] ~= nil then
+			outFmtError("count mulItem key repeat %d", costItem[1])
+			return false
+		else 
+			map[costItem[1]] = 1
+		end
+	end
+
+	for _, costItem in pairs(costItemTable) do
+		local count = self:countItem(self.default_bag_type,costItem[1])
+
+		if count < (costItem[2]*multiple) then
+			return false
+		end
+	end
+
+	return true
+
+end
+--使用一组物品{{entry,count},{entry,count} ...} 
+function AppItemMgr:useMulItem(costItemTable,multiple)
+	multiple = multiple or 1
+
+	if not self:hasMulItem(costItemTable,multiple) then
+		return false
+	end
+	
+	for _, costItem in pairs(costItemTable) do
+		if self:delItem(costItem[1],costItem[2]*multiple,self.default_bag_type) == 0 then
+			return false
+		end
+	end
+
+	return true
+end
 
 return AppItemMgr

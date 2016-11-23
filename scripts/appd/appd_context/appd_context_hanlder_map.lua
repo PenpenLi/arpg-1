@@ -27,5 +27,10 @@ hanlders[CMSG_FACTION_JOIN] = PlayerInfo.Hanlde_Faction_Apply
 hanlders[CMSG_RAISE_BASE_SPELL] = PlayerInfo.Handle_Raise_BaseSpell
 hanlders[CMSG_UPGRADE_ANGER_SPELL] = PlayerInfo.Handle_Upgrade_AngleSpell
 
+hanlders[CMSG_RAISE_MOUNT] = PlayerInfo.Handle_Raise_Mount
+hanlders[CMSG_UPGRADE_MOUNT] = PlayerInfo.Handle_Upgrade_Mount
+hanlders[CMSG_UPGRADE_MOUNT_ONE_STEP] = PlayerInfo.Handle_Upgrade_Mount_One_Step
+hanlders[CMSG_ILLUSION_MOUNT_ACTIVE] = PlayerInfo.Handle_Illusion_Active
+hanlders[CMSG_ILLUSION_MOUNT] = PlayerInfo.Handle_Illusion
 
 return hanlders

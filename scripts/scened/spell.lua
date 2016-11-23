@@ -799,7 +799,7 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 	
 	-- 连招技能攒怒气
 	if tb_skill_base[spell_id].skill_slot == SLOT_COMBO then
-		casterInfo:AddSP(100)
+		casterInfo:AddSP(10)
 	end
 	
 	--[[

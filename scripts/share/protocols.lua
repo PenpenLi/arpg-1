@@ -156,6 +156,12 @@ CMSG_FACTION_UPGRADE		= 143	-- /*Éı¼¶°ïÅÉ*/
 CMSG_FACTION_JOIN		= 144	-- /*ÉêÇë¼ÓÈë°ïÅÉ*/	
 CMSG_RAISE_BASE_SPELL		= 145	-- /*ÉêÇëÉı¼¶¼¼ÄÜ*/	
 CMSG_UPGRADE_ANGER_SPELL		= 146	-- /*ÉêÇëÉı½×·ßÅ­¼¼ÄÜ*/	
+CMSG_RAISE_MOUNT		= 147	-- /*ÉêÇëÉı¼¶×øÆï*/	
+CMSG_UPGRADE_MOUNT		= 148	-- /*ÉêÇëÉı½××øÆï*/	
+CMSG_UPGRADE_MOUNT_ONE_STEP		= 149	-- /*ÉêÇëÒ»¼üÉı½××øÆï*/	
+CMSG_ILLUSION_MOUNT_ACTIVE		= 150	-- /*ÉêÇë½âËø»Ã»¯×øÆï*/	
+CMSG_ILLUSION_MOUNT		= 151	-- /*ÉêÇë»Ã»¯×øÆï*/	
+CMSG_RIDE_MOUNT		= 152	-- /*ÉêÇëÆï³Ë*/	
 
 
 ---------------------------------------------------------------------
@@ -5380,6 +5386,164 @@ function Protocols.unpack_upgrade_anger_spell (pkt)
 end
 
 
+-- /*ÉêÇëÉı¼¶×øÆï*/	
+function Protocols.pack_raise_mount (  )
+	local output = Packet.new(CMSG_RAISE_MOUNT)
+	return output
+end
+
+-- /*ÉêÇëÉı¼¶×øÆï*/	
+function Protocols.call_raise_mount ( playerInfo )
+	local output = Protocols.	pack_raise_mount (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*ÉêÇëÉı¼¶×øÆï*/	
+function Protocols.unpack_raise_mount (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*ÉêÇëÉı½××øÆï*/	
+function Protocols.pack_upgrade_mount (  )
+	local output = Packet.new(CMSG_UPGRADE_MOUNT)
+	return output
+end
+
+-- /*ÉêÇëÉı½××øÆï*/	
+function Protocols.call_upgrade_mount ( playerInfo )
+	local output = Protocols.	pack_upgrade_mount (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*ÉêÇëÉı½××øÆï*/	
+function Protocols.unpack_upgrade_mount (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*ÉêÇëÒ»¼üÉı½××øÆï*/	
+function Protocols.pack_upgrade_mount_one_step (  )
+	local output = Packet.new(CMSG_UPGRADE_MOUNT_ONE_STEP)
+	return output
+end
+
+-- /*ÉêÇëÒ»¼üÉı½××øÆï*/	
+function Protocols.call_upgrade_mount_one_step ( playerInfo )
+	local output = Protocols.	pack_upgrade_mount_one_step (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*ÉêÇëÒ»¼üÉı½××øÆï*/	
+function Protocols.unpack_upgrade_mount_one_step (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*ÉêÇë½âËø»Ã»¯×øÆï*/	
+function Protocols.pack_illusion_mount_active ( illuId)
+	local output = Packet.new(CMSG_ILLUSION_MOUNT_ACTIVE)
+	output:writeI16(illuId)
+	return output
+end
+
+-- /*ÉêÇë½âËø»Ã»¯×øÆï*/	
+function Protocols.call_illusion_mount_active ( playerInfo, illuId)
+	local output = Protocols.	pack_illusion_mount_active ( illuId)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*ÉêÇë½âËø»Ã»¯×øÆï*/	
+function Protocols.unpack_illusion_mount_active (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.illuId = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*ÉêÇë»Ã»¯×øÆï*/	
+function Protocols.pack_illusion_mount ( illuId)
+	local output = Packet.new(CMSG_ILLUSION_MOUNT)
+	output:writeI16(illuId)
+	return output
+end
+
+-- /*ÉêÇë»Ã»¯×øÆï*/	
+function Protocols.call_illusion_mount ( playerInfo, illuId)
+	local output = Protocols.	pack_illusion_mount ( illuId)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*ÉêÇë»Ã»¯×øÆï*/	
+function Protocols.unpack_illusion_mount (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.illuId = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*ÉêÇëÆï³Ë*/	
+function Protocols.pack_ride_mount (  )
+	local output = Packet.new(CMSG_RIDE_MOUNT)
+	return output
+end
+
+-- /*ÉêÇëÆï³Ë*/	
+function Protocols.call_ride_mount ( playerInfo )
+	local output = Protocols.	pack_ride_mount (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*ÉêÇëÆï³Ë*/	
+function Protocols.unpack_ride_mount (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -5528,6 +5692,12 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_faction_join = self.call_faction_join
 	playerInfo.call_raise_base_spell = self.call_raise_base_spell
 	playerInfo.call_upgrade_anger_spell = self.call_upgrade_anger_spell
+	playerInfo.call_raise_mount = self.call_raise_mount
+	playerInfo.call_upgrade_mount = self.call_upgrade_mount
+	playerInfo.call_upgrade_mount_one_step = self.call_upgrade_mount_one_step
+	playerInfo.call_illusion_mount_active = self.call_illusion_mount_active
+	playerInfo.call_illusion_mount = self.call_illusion_mount
+	playerInfo.call_ride_mount = self.call_ride_mount
 end
 
 local unpack_handler = {
@@ -5673,6 +5843,12 @@ local unpack_handler = {
 [CMSG_FACTION_JOIN] =  Protocols.unpack_faction_join,
 [CMSG_RAISE_BASE_SPELL] =  Protocols.unpack_raise_base_spell,
 [CMSG_UPGRADE_ANGER_SPELL] =  Protocols.unpack_upgrade_anger_spell,
+[CMSG_RAISE_MOUNT] =  Protocols.unpack_raise_mount,
+[CMSG_UPGRADE_MOUNT] =  Protocols.unpack_upgrade_mount,
+[CMSG_UPGRADE_MOUNT_ONE_STEP] =  Protocols.unpack_upgrade_mount_one_step,
+[CMSG_ILLUSION_MOUNT_ACTIVE] =  Protocols.unpack_illusion_mount_active,
+[CMSG_ILLUSION_MOUNT] =  Protocols.unpack_illusion_mount,
+[CMSG_RIDE_MOUNT] =  Protocols.unpack_ride_mount,
 
 }
 

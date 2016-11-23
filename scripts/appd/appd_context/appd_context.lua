@@ -214,6 +214,58 @@ function PlayerInfo:GetPingTaiInfo ()
 	return self:GetStr(PLAYER_APPD_STRING_FIELD_PINGTAI_INFO)
 end
 
+-- 判断钱是否足够
+function PlayerInfo:checkMoneyEnough(moneyType, cost)
+	local value = self:GetMoney(moneyType)
+	return value >= cost and cost >= 0
+end
+
+-- 判断钱是否足够
+function PlayerInfo:checkMoneyEnoughs(costTable, times)
+	times = times or 1
+	
+	-- 判断重复
+	local reps = {} 	
+	for _, res in pairs(costTable) do
+		if reps[res[ 1 ]] ~= nil then
+			outFmtError("designer has type invalid data")
+			return false
+		end
+		reps[res[ 1 ]] = 1
+	end
+	
+	-- 检测是否可扣
+	for _, res in pairs(costTable) do
+		if not self:checkMoneyEnough(res[ 1 ], res[ 2 ] * times) then
+			return false
+		end
+	end
+	
+	return true
+end
+
+-- 扣除钱
+function PlayerInfo:costMoneys(oper_type, costTable, times)
+	times = times or 1
+	
+	-- 判断重复
+	local reps = {} 	
+	for _, res in pairs(costTable) do
+		if reps[res[ 1 ]] ~= nil then
+			outFmtError("designer has type invalid data")
+			return false
+		end
+		reps[res[ 1 ]] = 1
+	end
+	
+	-- 实际扣除
+	for _, res in pairs(costTable) do
+		self:SubMoney(res[ 1 ], oper_type, res[ 2 ] * times)
+	end
+	
+	return true
+end
+
 --获取金钱数量
 function PlayerInfo:GetMoney ( money_type)
 	return playerLib.GetMoney(self.ptr,money_type)
@@ -489,6 +541,18 @@ function PlayerInfo:AddItemByEntry(entry, count, money_log, item_log, item_bind,
 	local itemMgr = self:getItemMgr()						
 	itemMgr:addItem(entry, count, item_bind, isAppaisal, isSystem, strong_lv, fail_time, bag_type, pos)
 	WriteItemLog(self, item_log,entry,count, item_bind)
+end
+
+--使用多个物品
+function PlayerInfo:useMulItem(costItemTable,multiple)
+	local itemMgr = self:getItemMgr()						
+	return itemMgr:useMulItem(costItemTable,multiple)
+end
+
+--判断是否同时拥有多个物品
+function PlayerInfo:hasMulItem(costItemTable,multiple)
+	local itemMgr = self:getItemMgr()						
+	return itemMgr:hasMulItem(costItemTable,multiple)
 end
 
 -- 获取GM等级

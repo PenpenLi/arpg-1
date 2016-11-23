@@ -668,3 +668,23 @@ raise_base_spell,c2s,145,/*ÉêÇëÉı¼¶¼¼ÄÜ*/,STATUS_NEVER,False
 #
 upgrade_anger_spell,c2s,146,/*ÉêÇëÉı½×·ßÅ­¼¼ÄÜ*/,STATUS_NEVER,False
 	spellId,uint16,False,/*¼¼ÄÜID*/
+	
+#
+raise_mount,c2s,147,/*ÉêÇëÉı¼¶×øÆï*/,STATUS_NEVER,False
+
+#
+upgrade_mount,c2s,148,/*ÉêÇëÉı½××øÆï*/,STATUS_NEVER,False
+
+#
+upgrade_mount_one_step,c2s,149,/*ÉêÇëÒ»¼üÉı½××øÆï*/,STATUS_NEVER,False
+
+#
+illusion_mount_active,c2s,150,/*ÉêÇë½âËø»Ã»¯×øÆï*/,STATUS_NEVER,False
+	illuId,uint16,False,/*»Ã»¯×øÆïID*/
+		
+#
+illusion_mount,c2s,151,/*ÉêÇë»Ã»¯×øÆï*/,STATUS_NEVER,False
+	illuId,uint16,False,/*»Ã»¯×øÆïID*/
+
+#
+ride_mount,c2s,152,/*ÉêÇëÆï³Ë*/,STATUS_NEVER,False
