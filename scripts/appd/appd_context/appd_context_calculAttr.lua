@@ -1,3 +1,4 @@
+--[[
 --获得当前生命
 function PlayerInfo:GetHealth()
 	return self:GetDouble(PLAYER_FIELD_HEALTH)
@@ -221,6 +222,7 @@ PlayerInfo_Set_Attr_Func = {
 [EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = PlayerInfo.SetDamageCritMultiple,
 [EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PlayerInfo.SetResistCritMultiple,
 }
+]]
 
 --属性重算入口
 function PlayerInfo:DoCalculAttr  ( attr_binlog)
@@ -248,16 +250,16 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	]]
 	-- 设置到playerBase中
 	for attrId, val in pairs(attrs) do
-		local func = PlayerInfo_Set_Attr_Func[attrId]
-		if func ~= nil then
+		--local func = PlayerInfo_Set_Attr_Func[attrId]
+		--if func ~= nil then
 			-- 设置到attr_binlog
 			local index = attrId - 1
 			binLogLib.SetUInt32(attr_binlog, index, val)
 			--设置到playerbase
-			func(self, val)
-		else
-			outFmtError("DoCalculAttr error, attrId = %d is not deal", attrId)
-		end
+			--func(self, val)
+		--else
+		--	outFmtError("DoCalculAttr error, attrId = %d is not deal", attrId)
+		--end
 	end
 	
 end

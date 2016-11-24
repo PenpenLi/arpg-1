@@ -4,7 +4,6 @@ local Packet = require 'util.packet'
 -------------------------------------------------技能-------------------------------------------------------------
 
 BASE_SKILL = 1				--基础技能
-MOUNT_SKILL = 1				--坐骑技能
 
 -- 升级基础(包括)技能
 function PlayerInfo:Handle_Raise_BaseSpell(pkt)
@@ -254,7 +253,7 @@ function PlayerInfo:onActiveSpell(spellId)
 	self:onActiveSpellWithoutInitiative(spellId)
 end
 
-
+-- 可适用坐骑激活技能
 function PlayerInfo:onActiveSpellWithoutInitiative(spellId)
 	local config   = tb_skill_base[spellId]
 	outFmtInfo("on active spell %d", spellId)
@@ -495,7 +494,7 @@ function PlayerInfo:Handle_Raise_Mount(pkt)
 	local seq = (level - 1) * 11 + star + 1
 	local trainConfig = tb_mount_train[seq]
 	local limit = trainConfig.exp
-
+	
 	-- 如果升星了
 	if addExp + trainExp >= limit then
 		local value = addExp + trainExp - limit
@@ -574,13 +573,21 @@ function PlayerInfo:Handle_Upgrade_Mount(pkt)
 	
 	local prev = spellMgr:getBlessExp()
 	local ret, added = self:upgradeOnce(prev)
+	
+	if not ret and added == 0 then
+		outFmtDebug("upgrade fail")
+		return
+	end
 	local now = prev + added
+	
 	if ret then
 		self:upgraded()
 		now = 0
 	end
 	
-	spellMgr:setBlessExp(now)
+	if prev ~= now then
+		spellMgr:setBlessExp(now)
+	end
 	
 	outFmtInfo("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
 end
@@ -640,8 +647,9 @@ function PlayerInfo:Handle_Upgrade_Mount_One_Step(pkt)
 	end
 	
 	-- 设置经验
-	spellMgr:setBlessExp(now)
-	
+	if prev ~= now then
+		spellMgr:setBlessExp(now)
+	end
 	outFmtInfo("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
 end
 
@@ -691,11 +699,12 @@ function PlayerInfo:DoAfterUpgrade(level)
 		self:activeMountSpell(spellId)
 	end
 	
-	-- 解锁幻化
+	--[[
 	local b = tb_mount_upgrade[level].illusions
 	for _, illuId in pairs(b) do
 		self:onActiveIllusion(illuId)
 	end
+	]]
 end
 
 -- 解锁坐骑技能
@@ -722,6 +731,10 @@ function PlayerInfo:activeMountSpell(spellId)
 end
 
 
+ILLUSION_ITEM_ACTIVE = 1		--消耗对应坐骑碎片
+ILLUSION_RESOURCE_ACTIVE = 2	--消耗一定数量元宝
+ILLUSION_EXPIRE_ACTIVE = 3		--有实现的激活
+
 -- 申请解锁幻化坐骑
 function PlayerInfo:Handle_Illusion_Active(pkt)
 	local illuId = pkt.illuId
@@ -733,7 +746,7 @@ function PlayerInfo:Handle_Illusion_Active(pkt)
 	end
 	
 	local config = tb_mount_illusion[illuId]
-	if config.condition == ILLUSION_LEVEL_ACTIVE or config.condition == ILLUSION_EXPIRE_ACTIVE then
+	if config.condition == ILLUSION_EXPIRE_ACTIVE then
 		outFmtError("Handle_Illusion_Active illusion id = %d cannot in this way", illuId)
 		return
 	end
@@ -745,13 +758,14 @@ function PlayerInfo:Handle_Illusion_Active(pkt)
 		return
 	end
 	
+	local level = spellMgr:getMountLevel()
+	if level < tb_mount_illusion[illuId].mountLevel then
+		outFmtError("Handle_Illusion_Active illusion id = %d need level = %d", illuId, tb_mount_illusion[illuId].mountLevel)
+		return
+	end
+	
 	self:onActiveIllusion(illuId)
 end
-
-ILLUSION_LEVEL_ACTIVE = 1		--进阶坐骑达到对应等级
-ILLUSION_ITEM_ACTIVE = 2		--消耗对应坐骑碎片
-ILLUSION_RESOURCE_ACTIVE = 3	--消耗一定数量元宝
-ILLUSION_EXPIRE_ACTIVE = 4		--有实现的激活
 
 -- 解锁幻化操作
 function PlayerInfo:onActiveIllusion(illuId)
@@ -783,9 +797,31 @@ end
 function PlayerInfo:Handle_Illusion(pkt)
 	local illuId = pkt.illuId
 	
-	if self:GetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 1) == illuId then
-		self:SetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 1, 0)
-	else
-		self:SetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 1, illuId)
+	local spellMgr = self:getSpellMgr()
+	-- 幻化是否存在
+	if not spellMgr:hasIllusion(illuId) then
+		outFmtError("player has no illusion id = %d", illuId)
+		return
 	end
+
+	local curr = 0
+	if self:GetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 1) ~= illuId then
+		curr = illuId
+	end
+	self:SetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 1, curr)
+	-- 发送到场景服
+	--[[
+	self:Send2ScenedIllusion(illuId)
+	]]
 end
+
+--[[
+-- 发送到场景服替换主动技能信息
+function PlayerInfo:Send2ScenedIllusion(illuId)
+	local pkt = Packet.new(INTERNAL_OPT_ILLUSION)
+	pkt:writeUTF(self:GetGuid())
+	pkt:writeU16(illuId)
+	app:sendToConnection(self:GetScenedFD(), pkt)
+	pkt:delete()
+end
+]]

@@ -184,7 +184,6 @@ function AppSpellMgr:onActiveIllusion(illuId)
 	if config.last > 0 then
 		expire = os.time() + config.last * 24 * 3600
 	end
-	self:SetUInt32(ILLUSION_ATTR_ID + size, illuId)
 	self:SetUInt32(ILLUSION_ATTR_EXPIRE + size, expire)
 	
 	-- ¼Ó¼¼ÄÜ
