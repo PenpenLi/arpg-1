@@ -389,13 +389,7 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 		return
 	end
 	
-	--如果是生化危机地图
-	local map_id = unitLib.GetMapID(player_ptr)
-	if map_id == SHWJ_INSTANCE_MAPID then
-		local mapInfo = Select_Instance_Script(map_id):new{ptr = map_ptr}
-		mapInfo:StartJump(self,dst_x,dst_y)
-		return
-	end
+	-- 骑乘状态不能跳跃?
 	
 	--如果是2段跳，判断是否激活了2段跳技能
 	if unitLib.HasBuff(player_ptr, BUFF_JUMP_JUMP) then
@@ -437,13 +431,16 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	
 	if mapLib.IsCanRun(map_ptr, dst_x, dst_y) == 1 then
 		Select_Instance_Script(self:GetMapID()):OnStartJump(self)
-		--增加BUFF
+		--增加BUFF, 通过BUFF来控制跳跃时间
 		SpelladdBuff(player_ptr, BUFF_JUMP_JUMP, player_ptr, 1,tb_buff_template[BUFF_JUMP_JUMP].duration)
+		
 		--移动
-		local move_path = {}
-		table.insert(move_path,dst_x)
-		table.insert(move_path,dst_y)
-		unitLib.MoveTo(player_ptr, #move_path,table.concat(move_path,","))
+		--local move_path = {}
+		--table.insert(move_path,dst_x)
+		--table.insert(move_path,dst_y)
+		--unitLib.MoveTo(player_ptr, #move_path,table.concat(move_path,","))
+		
+		-- TODO: 设置目的坐标 并 广播跳跃到目标点
 		unitLib.CallJumpStart(player_ptr, dst_x, dst_y)
 	else
 		outFmtError("error : MSG_JUMP_START is not can run x = %d  y = %d",dst_x, dst_y)
@@ -482,26 +479,37 @@ function ScenedContext:Hanlde_Jump_End(packet)
 end
 
 --坐骑骑乘
-function ScenedContext:Hanlde_Mount_Riding(packet)
+--
+--S = 1000 / 人物基础数值 + Add 码/秒
+--Q = 1000 / (1000 / 人物基础数值 + Add) ms/码
+--
+function ScenedContext:Handle_Ride(packet)
 	local player_ptr = self.ptr
-	if packet.type == 0 then	--上坐骑
+	
+	-- 坐骑未激活
+	if self:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0) == 0 then
+		outFmtError("mount not be actived")
+		return
+	end
+	
+	local prev = self:GetByte(UNIT_FIELD_MOUNT_LEVEL, 2)
+	if prev == 0 then	--上坐骑
 		--当前是战斗状态
 		local status = playerLib.GetPlayeCurFightStatus(player_ptr)
 		if status == COMBAT_STATE_ENTER then
 			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_FIGHT)
 			return
 		end
+		
 		--当前是跳跃状态
 		if unitLib.HasBuff(player_ptr, BUFF_JUMP_JUMP) then
 			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_JUMP)
 			return
 		end
-		if packet.mount_entry <= 0 then
-			return
-		end
-		playerLib.SendMountJumpDown(player_ptr,packet.mount_entry)
-	elseif packet.type == 1 then	--下坐骑
-		playerLib.SendMountJumpDown(player_ptr,0)
+
+		playerLib.SendMountJumpDown(player_ptr, 1)
+	elseif prev > 0 then	--下坐骑
+		playerLib.SendMountJumpDown(player_ptr, 0)
 	end
 end
 

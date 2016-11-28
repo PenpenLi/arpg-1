@@ -1378,6 +1378,13 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 			end
 		end
 	end
+	
+	
+	-- TODO: 如果是骑乘状态 速度就替换成坐骑的速度
+	local actived = unitInfo:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0)
+	if actived > 0 then
+		
+	end
 end
 
 

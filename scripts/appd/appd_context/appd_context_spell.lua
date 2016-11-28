@@ -1,66 +1,18 @@
 local Packet = require 'util.packet'
 
 
--------------------------------------------------¼¼ÄÜ-------------------------------------------------------------
+-------------------------------------------------æŠ€èƒ½-------------------------------------------------------------
 
-BASE_SKILL = 1				--»ù´¡¼¼ÄÜ
+BASE_SKILL = 1				--åŸºç¡€æŠ€èƒ½
 
--- Éı¼¶»ù´¡(°üÀ¨)¼¼ÄÜ
-function PlayerInfo:Handle_Raise_BaseSpell(pkt)
-	
-	local spellId  = pkt.spellId
+-- å‡çº§åŸºç¡€(åŒ…æ‹¬)æŠ€èƒ½
+function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
-	
-	-- ÅĞ¶Ï¼¼ÄÜÊÇ·ñ´æÔÚ
-	if not self:isSpellExist(spellId) then
-		outFmtError("spellId %d not exist", spellId)
-		return
-	end
-	
-	-- ÅĞ¶ÏÍæ¼ÒÊÇ·ñÓµÓĞÕâ¸ö¼¼ÄÜ
-	if not self:hasSpell(spellId) then
-		outFmtError("player has no spellId %d", spellId)
-		return
-	end
-	
-	-- ÅĞ¶ÏÊÇ·ñÂú¼¶ÁË
-	if self:isTopLevel(spellId) then
-		outFmtError("spellId %d is in topLevel", spellId)
-		return
-	end
-	
-	-- ÅĞ¶ÏÊÇ·ñÊÇ»ù´¡(Å­Æø)¼¼ÄÜ
-	if not self:isBaseSkill(spellId) and not self:isAngerSpell(spellId) then
-		outFmtError("spellId %d is cannot do in this way", spellId)
-		return
-	end
-	
-	-- ÅĞ¶ÏÈËÎïµÈ¼¶
 	local index = spellMgr:getSpellUpgradeIndex(spellId)
 	local upLevelConfig = tb_skill_uplevel[index]
-	if not self:checkPlayerLevel(upLevelConfig.need_level) then
-		outFmtError("spellId %d, player level not enough, need level = %d", spellId, upLevelConfig.need_level)
-		return
-	end
 	
-	-- ÅĞ¶ÏÏûºÄµÀ¾ß
-	if #upLevelConfig.uplevel_item > 0 then
-		if not self:hasMulItem(upLevelConfig.uplevel_item) then
-			outFmtError("item not enough")
-			return
-		end
-	end
-	
-	-- ÅĞ¶ÏÏûºÄ×ÊÔ´
-	if #upLevelConfig.uplevel_cost > 0 then
-		if not self:checkMoneyEnoughs(upLevelConfig.uplevel_cost) then
-			outFmtError("resouce not enough")
-			return
-		end
-	end
-	
-	-- ¿Û³ıµÀ¾ß
+	-- æ‰£é™¤é“å…·
 	if #upLevelConfig.uplevel_item > 0 then
 		if not self:useMulItem(upLevelConfig.uplevel_item) then
 			outFmtError("use item fail")
@@ -68,7 +20,7 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 		end
 	end
 	
-	-- ¿Û³ı×ÊÔ´
+	-- æ‰£é™¤èµ„æº
 	if #upLevelConfig.uplevel_cost > 0 then
 		if not self:costMoneys(MONEY_CHANGE_UP_ASSISTSPELL, upLevelConfig.uplevel_cost) then
 			outFmtError("sub resouce fail")
@@ -77,19 +29,19 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 	end
 	
 	local prev = spellMgr:getSpellLevel(spellId)
-	spellMgr:raiseBaseSpell(spellId)
+	spellMgr:onRaiseSpell(raiseType, spellId)
 	local spellLv = spellMgr:getSpellLevel(spellId)
 	local spellTable = {}
 	
-	-- ÔÚ¼¼ÄÜ²ÛµÄĞŞ¸Ä¼¼ÄÜ²ÛÊı¾İ(Å­Æø¼¼ÄÜÒ²ÊÇÖ÷¶¯¼¼ÄÜ)
+	-- åœ¨æŠ€èƒ½æ§½çš„ä¿®æ”¹æŠ€èƒ½æ§½æ•°æ®(æ€’æ°”æŠ€èƒ½ä¹Ÿæ˜¯ä¸»åŠ¨æŠ€èƒ½)
 	if self:isInitiativeSpell(config.is_initiative) or self:isAngerSpell(spellId) then
-		--Í¬²½Ö÷¶¯¼¼ÄÜµ½p¶ÔÏó
+		--åŒæ­¥ä¸»åŠ¨æŠ€èƒ½åˆ°på¯¹è±¡
 		if self:isSloted(spellId) then
 			local slot = config.skill_slot
 			self:replace(slot, spellId, spellLv)
 			table.insert(spellTable, {spellId, spellLv})
 			
-			-- Èç¹ûÊÇÁ¬ÕĞ
+			-- å¦‚æœæ˜¯è¿æ‹›
 			local arry = tb_skill_base[spellId].follow
 			for _, id in pairs(arry) do
 				self:replace(slot, id, spellLv)
@@ -97,95 +49,62 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 			end
 		end
 	elseif self:isPassiveSpell(config.is_initiative) then
-		--Í¬²½±»¶¯¼¼ÄÜµ½p¶ÔÏóÖĞ
+		--åŒæ­¥è¢«åŠ¨æŠ€èƒ½åˆ°på¯¹è±¡ä¸­
 		self:updatePassive(spellId, spellLv)
 		table.insert(spellTable, {spellId, spellLv})
 	elseif self:isSupportSpell(config.is_initiative) then
 		playerLib.SetSpellLevel(self.ptr, spellId, spellLv)
 	end
 	
-	-- ÊÇ·ñ·¢ËÍ³¡¾°·ş
+	-- æ˜¯å¦å‘é€åœºæ™¯æœ
 	self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
 	
 	outFmtInfo("raise spell %d success, from %d to %d", spellId, prev, spellLv)
 end
 
--- Å­Æø¼¼ÄÜ½ø½×
-function PlayerInfo:Handle_Upgrade_AngleSpell(pkt)
-	
-	local spellId  = pkt.spellId
+-- æ€’æ°”æŠ€èƒ½è¿›é˜¶
+function PlayerInfo:DoHandleUpgradeAngleSpell(spellId)
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
-	
-	-- ÅĞ¶Ï¼¼ÄÜÊÇ·ñ´æÔÚ
-	if not self:isSpellExist(spellId) then
-		outFmtError("spellId %d not exist", spellId)
-		return
-	end
-	
-	-- ÅĞ¶ÏÍæ¼ÒÊÇ·ñÓµÓĞÕâ¸ö¼¼ÄÜ
-	if not self:hasSpell(spellId) then
-		outFmtError("player has no spellId %d", spellId)
-		return
-	end
-	
-	-- ÅĞ¶ÏÊÇ·ñÂú¼¶ÁË
-	if not self:isTopLevel(spellId) then
-		outFmtError("spellId %d is not in topLevel, cannot upgrade", spellId)
-		return
-	end
-	
-	-- ÅĞ¶ÏÊÇ·ñÊÇÅ­Æø¼¼ÄÜ
-	if not self:isAngerSpell(spellId) then
-		outFmtError("spellId %d is not anger spell", spellId)
-		return
-	end
-	
-	-- ÅĞ¶Ï½ğ±ÒÊÇ·ñ³ä×ã
 	local upgradeConfig = tb_assistangerspell_upgrade[spellId]
 	local cost = upgradeConfig.cost
-	if not self:checkMoneyEnough(MONEY_TYPE_SILVER, cost) then
-		outFmtError("resouce %d not enough", MONEY_TYPE_SILVER)
-		return
-	end
-	
-	-- ÏûºÄ½ğ±Ò
+	-- æ¶ˆè€—é‡‘å¸
 	self:SubMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SPELL_UP, cost)
 
 	local nextId = upgradeConfig.nextid
-	--Í¬²½Ö÷¶¯¼¼ÄÜµ½p¶ÔÏó
+	--åŒæ­¥ä¸»åŠ¨æŠ€èƒ½åˆ°på¯¹è±¡
 	local slot = config.skill_slot
 	
-	--¼¤»î¼¼ÄÜ
+	--æ¿€æ´»æŠ€èƒ½
 	spellMgr:activeBaseSpell(nextId)
 	
 	self:replace(slot, nextId, 1)
 	
-	--·¢ËÍµ½³¡¾°·şÌæ»»Ö÷¶¯¼¼ÄÜĞÅÏ¢
+	--å‘é€åˆ°åœºæ™¯æœæ›¿æ¢ä¸»åŠ¨æŠ€èƒ½ä¿¡æ¯
 	self:Send2ScenedReplaceEquipedSpell(slot, nextId, 1)
 	
 	outFmtInfo("upgrade spell success, from %d to %d", spellId, nextId)
 end
 
--- ¿´¿´ÄÜ·ñ¼¤»î
+-- çœ‹çœ‹èƒ½å¦æ¿€æ´»
 function PlayerInfo:activeBaseSpell(spellId, activeType)
 	
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
 	
-	-- ÅĞ¶Ï¼¼ÄÜÊÇ·ñ´æÔÚ
+	-- åˆ¤æ–­æŠ€èƒ½æ˜¯å¦å­˜åœ¨
 	if not self:isSpellExist(spellId) then
 		outFmtError("spellId %d not exist", spellId)
 		return
 	end
 	
-	-- ÅĞ¶ÏÍæ¼ÒÊÇ·ñÓµÓĞÕâ¸ö¼¼ÄÜ
+	-- åˆ¤æ–­ç©å®¶æ˜¯å¦æ‹¥æœ‰è¿™ä¸ªæŠ€èƒ½
 	if self:hasSpell(spellId) then
 		outFmtError("player has exist spellId %d", spellId)
 		return
 	end
 	
-	-- µÈ¼¶ÊÇ·ñÂú×ãÌõ¼ş
+	-- ç­‰çº§æ˜¯å¦æ»¡è¶³æ¡ä»¶
 	local learnConfig = tb_learn_spell[spellId]
 	if learnConfig == nil then
 		outFmtError("spellId %d not in tb_learn_spell", spellId)
@@ -197,51 +116,51 @@ function PlayerInfo:activeBaseSpell(spellId, activeType)
 		return
 	end
 	
-	-- ÅĞ¶ÏÏûºÄµÀ¾ß
+	-- åˆ¤æ–­æ¶ˆè€—é“å…·
 	if #learnConfig.item > 0 then
 		outFmtError("no way to cost item")
 		return
 	end
 
-	-- ¼¤»î¼¼ÄÜ
+	-- æ¿€æ´»æŠ€èƒ½
 	spellMgr:activeBaseSpell(spellId)
 	
 	self:onActiveSpell(spellId)
 end
 
--- ÅĞ¶ÏÈËÎïµÈ¼¶ÊÇ·ñÂú×ãÌõ¼ş
+-- åˆ¤æ–­äººç‰©ç­‰çº§æ˜¯å¦æ»¡è¶³æ¡ä»¶
 function PlayerInfo:checkPlayerLevel(needLevel)
 	local level = self:GetLevel()
 	return level >= needLevel
 end
 
--- ÊÇ·ñÊÇÖ÷¶¯¼¼ÄÜ
+-- æ˜¯å¦æ˜¯ä¸»åŠ¨æŠ€èƒ½
 function PlayerInfo:isInitiativeSpell(initiative)
 	return initiative >= SPELL_INITIATIVE_DAMAGE and initiative <= SPELL_INITIATIVE_BUFF
 end
 
--- ÊÇ·ñÊÇ±»¶¯¼¼ÄÜ
+-- æ˜¯å¦æ˜¯è¢«åŠ¨æŠ€èƒ½
 function PlayerInfo:isPassiveSpell(initiative)
 	return initiative >= SPELL_PASSIVE_DAMAGE and initiative <= SPELL_PASSIVE_BUFF
 end
 
--- ÊÇ·ñÊÇ¸¨Öú¼¼ÄÜ
+-- æ˜¯å¦æ˜¯è¾…åŠ©æŠ€èƒ½
 function PlayerInfo:isSupportSpell(initiative)
 	return initiative == SPELL_SUPPORT
 end
 
--- ¼¤»î¼¼ÄÜ
+-- æ¿€æ´»æŠ€èƒ½
 function PlayerInfo:onActiveSpell(spellId)
 	local config   = tb_skill_base[spellId]
 	
-	-- Èç¹ûÊÇÖ÷¶¯¼¼ÄÜ
+	-- å¦‚æœæ˜¯ä¸»åŠ¨æŠ€èƒ½
 	if self:isInitiativeSpell(config.is_initiative) then
 		local config = tb_skill_base[spellId]
 		local slot = config.skill_slot
 		if not self:hasSkillBySlot(slot) then
-			-- Í¬²½Ö÷¶¯¼¼ÄÜµ½p¶ÔÏó
+			-- åŒæ­¥ä¸»åŠ¨æŠ€èƒ½åˆ°på¯¹è±¡
 			self:replace(slot, spellId, 1)
-			--·¢ËÍµ½³¡¾°·şÌæ»»Ö÷¶¯¼¼ÄÜĞÅÏ¢
+			--å‘é€åˆ°åœºæ™¯æœæ›¿æ¢ä¸»åŠ¨æŠ€èƒ½ä¿¡æ¯
 			self:Send2ScenedReplaceEquipedSpell(slot, spellId, 1)
 		else
 			playerLib.SetSpellLevel(self.ptr, spellId, 1)
@@ -253,24 +172,24 @@ function PlayerInfo:onActiveSpell(spellId)
 	self:onActiveSpellWithoutInitiative(spellId)
 end
 
--- ¿ÉÊÊÓÃ×øÆï¼¤»î¼¼ÄÜ
+-- å¯é€‚ç”¨åéª‘æ¿€æ´»æŠ€èƒ½
 function PlayerInfo:onActiveSpellWithoutInitiative(spellId)
 	local config   = tb_skill_base[spellId]
 	outFmtInfo("on active spell %d", spellId)
 	
-	-- ±»¶¯¼¼ÄÜ·¢ËÍ³¡¾°·ş
+	-- è¢«åŠ¨æŠ€èƒ½å‘é€åœºæ™¯æœ
 	if self:isPassiveSpell(config.is_initiative) then
-		--Í¬²½µ½p¶ÔÏóÖĞ
+		--åŒæ­¥åˆ°på¯¹è±¡ä¸­
 		self:updatePassive(spellId, 1)
 		local spellTable = {}
 		table.insert(spellTable, {spellId, 1})
-		-- ·¢ËÍµ½³¡¾°·ş¸üĞÂ±»¶¯¼¼ÄÜĞÅÏ¢
+		-- å‘é€åˆ°åœºæ™¯æœæ›´æ–°è¢«åŠ¨æŠ€èƒ½ä¿¡æ¯
 		self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
 		
 		return
 	end
 	
-	-- ¸¨Öú¼¼ÄÜ
+	-- è¾…åŠ©æŠ€èƒ½
 	if self:isSupportSpell(config.is_initiative) then
 		playerLib.AddSupportSpell(self.ptr, spellId)
 		
@@ -278,22 +197,22 @@ function PlayerInfo:onActiveSpellWithoutInitiative(spellId)
 	end
 end
 
--- ¼¼ÄÜÊÇ·ñ´æÔÚ
+-- æŠ€èƒ½æ˜¯å¦å­˜åœ¨
 function PlayerInfo:isSpellExist(spellId)
 	return tb_skill_base[spellId] ~= nil
 end
 
--- ÊÇ·ñÊÇÅ­Æø¼¼ÄÜ
+-- æ˜¯å¦æ˜¯æ€’æ°”æŠ€èƒ½
 function PlayerInfo:isAngerSpell(spellId)
 	return tb_skill_base[spellId].skill_slot == SLOT_ANGER
 end
 
--- ÊÇ·ñÊÇ»ù´¡¼¼ÄÜ
+-- æ˜¯å¦æ˜¯åŸºç¡€æŠ€èƒ½
 function PlayerInfo:isBaseSkill(spellId)
 	return tb_skill_base[spellId].skill_type == BASE_SKILL
 end
 
--- ÊÇ·ñ´ïµ½¶¥¼¶
+-- æ˜¯å¦è¾¾åˆ°é¡¶çº§
 function PlayerInfo:isTopLevel(spellId)
 	local spellMgr = self:getSpellMgr()
 	local spellLv  = self:GetSpellLevel(spellId)
@@ -302,61 +221,61 @@ function PlayerInfo:isTopLevel(spellId)
 	return spellLv == topLevel
 end
 
--- ÊÇ·ñÓµÓĞÕâ¸ö¼¼ÄÜ
+-- æ˜¯å¦æ‹¥æœ‰è¿™ä¸ªæŠ€èƒ½
 function PlayerInfo:hasSpell(spellId)
 	local spellLv = self:GetSpellLevel(spellId)
 	return spellLv > 0
 end
 
--- ¼¼ÄÜµÈ¼¶
+-- æŠ€èƒ½ç­‰çº§
 function PlayerInfo:GetSpellLevel(spellId)
 	local spellLv = playerLib.GetSpellLevel(self.ptr, spellId)
 	return spellLv
 end
 
 --[[
--- TODO: (ÒÔºó»áÓÃ ÔİÊ±²»ÓÃ) Ìæ»»¼¼ÄÜ²Û¼¼ÄÜ
+-- TODO: (ä»¥åä¼šç”¨ æš‚æ—¶ä¸ç”¨) æ›¿æ¢æŠ€èƒ½æ§½æŠ€èƒ½
 function PlayerInfo:HandleReplaceSlotSpell(pkt)
 	
 	local spellId  = pkt.spellId
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
 	
-	-- ÅĞ¶Ï¼¼ÄÜÊÇ·ñ´æÔÚ
+	-- åˆ¤æ–­æŠ€èƒ½æ˜¯å¦å­˜åœ¨
 	if not self:isSpellExist(spellId) then
 		return
 	end
 	
-	-- ÅĞ¶ÏÍæ¼ÒÊÇ·ñÓµÓĞÕâ¸ö¼¼ÄÜ
+	-- åˆ¤æ–­ç©å®¶æ˜¯å¦æ‹¥æœ‰è¿™ä¸ªæŠ€èƒ½
 	if not self:hasSpell(spellId) then
 		return
 	end	
 	
-	-- µ±Ç°¼¼ÄÜÊÇ·ñÎªÖ÷¶¯¼¼ÄÜ
+	-- å½“å‰æŠ€èƒ½æ˜¯å¦ä¸ºä¸»åŠ¨æŠ€èƒ½
 	if not self:isInitiativeSpell(config.is_initiative) then
 		return
 	end
 	
-	-- ÊÇ·ñÒÑ¾­ÔÚ¼¼ÄÜ²ÛÖĞ
+	-- æ˜¯å¦å·²ç»åœ¨æŠ€èƒ½æ§½ä¸­
 	if self:isSloted(spellId) then
 		return
 	end
 	
-	-- 	²ÛÎ»ÊÇ·ñºÏ·¨
+	-- 	æ§½ä½æ˜¯å¦åˆæ³•
 	local slot = config.skill_slot
 	if slot > SPELL_SLOT_COUNT or slot <= SLOT_COMBO then
 		return
 	end
 	
-	-- Í¬²½Ö÷¶¯¼¼ÄÜµ½p¶ÔÏó
+	-- åŒæ­¥ä¸»åŠ¨æŠ€èƒ½åˆ°på¯¹è±¡
 	self:replace(slot, spellId, spellLv)
 	
-	--·¢ËÍµ½³¡¾°·şÌæ»»Ö÷¶¯¼¼ÄÜĞÅÏ¢
+	--å‘é€åˆ°åœºæ™¯æœæ›¿æ¢ä¸»åŠ¨æŠ€èƒ½ä¿¡æ¯
 	self:Send2ScenedReplaceEquipedSpell(slot, spellId, spellLv)
 end
 ]]
 
--- ÊÇ·ñÒÑ¾­ÔÚ¼¼ÄÜ²Û
+-- æ˜¯å¦å·²ç»åœ¨æŠ€èƒ½æ§½
 function PlayerInfo:isSloted(spellId)
 	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
 		if self:GetUInt16(i, SHORT_SLOT_SPELL_ID) == spellId then
@@ -367,17 +286,17 @@ function PlayerInfo:isSloted(spellId)
 	return false
 end
 
--- Ìæ»»(°üÀ¨Éı¼¶Çé¿ö)
+-- æ›¿æ¢(åŒ…æ‹¬å‡çº§æƒ…å†µ)
 function PlayerInfo:replace(slot, spellId, spellLv)
 	playerLib.UpdateSlotSpell(self.ptr, slot, spellId, spellLv)
 end
 
--- ±»¶¯¼¼ÄÜÍ¬²½µ½PÊı¾İ
+-- è¢«åŠ¨æŠ€èƒ½åŒæ­¥åˆ°Pæ•°æ®
 function PlayerInfo:updatePassive(spellId, spellLv)
 	playerLib.UpdatePassive(self.ptr, spellId, spellLv)
 end
 
--- ÅĞ¶Ï¼¼ÄÜ²ÛÊÇ·ñÓĞ¼¼ÄÜ
+-- åˆ¤æ–­æŠ€èƒ½æ§½æ˜¯å¦æœ‰æŠ€èƒ½
 function PlayerInfo:hasSkillBySlot(slot)
 	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
 		local sl = self:GetByte(i, BYTE_SLOT)
@@ -393,21 +312,21 @@ function PlayerInfo:hasSkillBySlot(slot)
 	return false
 end
 
--- ÅĞ¶ÏÊÇ·ñĞèÒª·¢ËÍ³¡¾°·ş
+-- åˆ¤æ–­æ˜¯å¦éœ€è¦å‘é€åœºæ™¯æœ
 function PlayerInfo:sendSpellInfoIfEnabled(is_initiative, spellTable)
-	-- Ö÷¶¯¼¼ÄÜ
+	-- ä¸»åŠ¨æŠ€èƒ½
 	if self:isInitiativeSpell(is_initiative) then
 		if self:isSloted(spellId) then
 			self:Send2ScenedUpdateSpellInfo(spellTable)
 		end
 	elseif self:isPassiveSpell(is_initiative) then
-		--TODO: Èç¹û²»ÊÇÉñ±ø¼¼ÄÜ, »òÕßµ±Ç°¼¼ÄÜÊÇÒÑ¾­×°±¸µÄÉñ±ø¼¼ÄÜ
+		--TODO: å¦‚æœä¸æ˜¯ç¥å…µæŠ€èƒ½, æˆ–è€…å½“å‰æŠ€èƒ½æ˜¯å·²ç»è£…å¤‡çš„ç¥å…µæŠ€èƒ½
 		self:Send2ScenedUpdatePassiveInfo(spellTable)
 	end
 end
 
 
--- ·¢ËÍµ½³¡¾°·şÌæ»»Ö÷¶¯¼¼ÄÜĞÅÏ¢
+-- å‘é€åˆ°åœºæ™¯æœæ›¿æ¢ä¸»åŠ¨æŠ€èƒ½ä¿¡æ¯
 function PlayerInfo:Send2ScenedReplaceEquipedSpell(slot, spellId, spellLv)
 	local pkt = Packet.new(INTERNAL_OPT_REPLACE_EQUIPED_SPELL)
 	pkt:writeUTF(self:GetGuid())
@@ -418,7 +337,7 @@ function PlayerInfo:Send2ScenedReplaceEquipedSpell(slot, spellId, spellLv)
 	pkt:delete()
 end
 
--- ·¢ËÍµ½³¡¾°·ş¸üĞÂ¼¼ÄÜµÈ¼¶
+-- å‘é€åˆ°åœºæ™¯æœæ›´æ–°æŠ€èƒ½ç­‰çº§
 function PlayerInfo:Send2ScenedUpdateSpell(spellType, spellTable)
 	local pkt = Packet.new(INTERNAL_OPT_UPDATE_SPELL_INFO)
 	
@@ -439,13 +358,13 @@ end
 
 --INTERNAL_OPT_CHANGE_DIVINE_INFO	= 82
 
--- ·¢ËÍµ½³¡¾°·ş¸üĞÂ¼¼ÄÜ²Û¼¼ÄÜĞÅÏ¢
--- ·ßÅ­¼¼ÄÜĞŞ¸ÄÒ²·¢Õâ±ß
+-- å‘é€åˆ°åœºæ™¯æœæ›´æ–°æŠ€èƒ½æ§½æŠ€èƒ½ä¿¡æ¯
+-- æ„¤æ€’æŠ€èƒ½ä¿®æ”¹ä¹Ÿå‘è¿™è¾¹
 function PlayerInfo:Send2ScenedUpdateSpellInfo(spellTable)
 	self:Send2ScenedUpdateSpell(TYPE_SPELL_SLOT, spellTable)
 end
 
--- ·¢ËÍµ½³¡¾°·ş¸üĞÂ±»¶¯¼¼ÄÜĞÅÏ¢
+-- å‘é€åˆ°åœºæ™¯æœæ›´æ–°è¢«åŠ¨æŠ€èƒ½ä¿¡æ¯
 function PlayerInfo:Send2ScenedUpdatePassiveInfo(spellTable)
 	self:Send2ScenedUpdateSpell(TYPE_SPELL_PASSIVE, spellTable)
 end
@@ -455,121 +374,67 @@ end
 
 
 
-----------------------------------------------------------×øÆï--------------------------------------------------------
-UPGRADE_MODE_MANUAL = 1	-- ÊÖ¶¯½ø½×
+----------------------------------------------------------åéª‘--------------------------------------------------------
+UPGRADE_MODE_MANUAL = 1	-- æ‰‹åŠ¨è¿›é˜¶
 
--- ÉêÇëÉıĞÇ×øÆï
-function PlayerInfo:Handle_Raise_Mount(pkt)
-	local spellMgr = self:getSpellMgr()
-	-- µ±Ç°ÊÇ·ñÓĞ×øÆï
-	if not spellMgr:hasMount() then
-		outFmtError("player not active mount")
-		return
-	end
-	
-	-- ÊÇ·ñ¿ÉÒÔÔÙÉı(ÒÑµ½´ï10ĞÇ)
-	if not spellMgr:canRaise() then
-		outFmtError("player cannot raise star because of full stars")
-		return
-	end
-	
+-- ç”³è¯·å‡æ˜Ÿåéª‘
+function PlayerInfo:DoHandleRaiseMount()
+	local spellMgr = self:getSpellMgr()	
 	local level = spellMgr:getMountLevel()
 	local config = tb_mount_base[level]
 	
 	local star  = spellMgr:getMountStar()
 	local trainExp = spellMgr:getTrainExp()	
 	
-	-- ¿Û×ÊÔ´
-	if not self:costMoneys(MONEY_CHANGE_RAISE_MOUNT, config.traincost) then
-		outFmtError("resouce not enough")
-		return
-	end
-	
-	-- »ñµÃ±©»÷Öµ
+	-- è·å¾—æš´å‡»å€¼
 	local vip = false
 	local multi = self:randomMulti(config, vip)
 	local addExp = multi * config.addTrainExp
 	
-	-- ¼ÆËãÉıĞÇÉÏÏß
+	-- è®¡ç®—å‡æ˜Ÿä¸Šçº¿
 	local seq = (level - 1) * 11 + star + 1
 	local trainConfig = tb_mount_train[seq]
 	local limit = trainConfig.exp
 	
-	-- Èç¹ûÉıĞÇÁË
+	-- å¦‚æœå‡æ˜Ÿäº†
 	if addExp + trainExp >= limit then
 		local value = addExp + trainExp - limit
 		spellMgr:setTrainExp(value)
 		
 		local nextStar = star + 1
 		local upgradeConfg = tb_mount_upgrade[level]
-		-- ²»ÄÜ½ø½× »òÕß ÊÖ¶¯½ø½×
+		-- ä¸èƒ½è¿›é˜¶ æˆ–è€… æ‰‹åŠ¨è¿›é˜¶
 		if nextStar < 10 or upgradeConfg.upgradeMode == UPGRADE_MODE_MANUAL then
 			spellMgr:setMountStar(nextStar)
-		else -- ×Ô¶¯½ø½×
+		else -- è‡ªåŠ¨è¿›é˜¶
 			self:upgraded()
 		end
 	else
-		-- Î´ÉıĞÇ, Ö»¼Ó¾­Ñé
+		-- æœªå‡æ˜Ÿ, åªåŠ ç»éªŒ
 		spellMgr:addTrainExp(addExp)
 	end
 	
 	outFmtInfo("raise from (%d, %d, %d) to (%d, %d, %d)", level, star, trainExp, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getTrainExp())
 end
 
--- Ëæ»ú±©»÷Öµ
+-- éšæœºæš´å‡»å€¼
 function PlayerInfo:randomMulti(config, vip)
-	-- È·ÊµÊÇVIPµÄËæ»ú·½Ê½, »¹ÊÇÆÕÍ¨µÄ
+	-- ç¡®å®æ˜¯VIPçš„éšæœºæ–¹å¼, è¿˜æ˜¯æ™®é€šçš„
 	local plist = config.trainIds
+	local randList = tb_mount_train_type[plist[ 1 ]].range
 	if vip then
-		plist = config.trainVIPIds
+		randList = tb_mount_train_type[plist[ 2 ]].range
 	end
-	
-	-- »ñµÃËæ»úÉÏÏŞ
-	local sum = 0
-	for _, value in pairs(plist) do
-		sum = sum + tb_mount_train_type[value].rate
-	end
-	
-	-- »ñµÃËæ»úÖµ
-	local rd = randInt(1, sum)
 
-	-- Í¨¹ıËæ»úÖµÀ´»ñµÃËæ»úµ½µÄ±¶Êı
-	sum = 0
-	for _, value in pairs(plist) do
-		local config = tb_mount_train_type[value]
-		sum = sum + config.rate
-		if rd <= sum then
-			return config.mul
-		end
-	end
-	
-	return 1
+	-- é€šè¿‡éšæœºå€¼æ¥è·å¾—éšæœºåˆ°çš„å€æ•°
+	return GetRandomExp(randList)
 end
 
--- ÉêÇëÉı½××øÆï
-function PlayerInfo:Handle_Upgrade_Mount(pkt)
+-- ç”³è¯·å‡é˜¶åéª‘
+function PlayerInfo:DoHandleUpgradeMount()
 	local spellMgr = self:getSpellMgr()
-	-- µ±Ç°ÊÇ·ñÓĞ×øÆï
-	if not spellMgr:hasMount() then
-		outFmtError("player not active mount")
-		return
-	end
-	
-	-- ÊÇ·ñ¿ÉÒÔÉı½×
-	if not spellMgr:canUpgrade() then
-		outFmtError("player cannot upgrade")
-		return
-	end
 	
 	local level = spellMgr:getMountLevel()
-	local upgradeConfig = tb_mount_upgrade[level]
-	local cost = upgradeConfig.upgradecost
-	
-	-- Èç¹û¿Û³ıÎïÆ·Ê§°Ü, ·µ»Ø
-	if not self:useMulItem(cost) then
-		outFmtError("player has not enough item")
-		return
-	end
 	
 	local prev = spellMgr:getBlessExp()
 	local ret, added = self:upgradeOnce(prev)
@@ -592,21 +457,10 @@ function PlayerInfo:Handle_Upgrade_Mount(pkt)
 	outFmtInfo("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
 end
 
--- Ò»¼ü½ø½×
-function PlayerInfo:Handle_Upgrade_Mount_One_Step(pkt)
+-- ä¸€é”®è¿›é˜¶
+function PlayerInfo:DoHandleUpgradeMountOneStep(useItem)
 	local spellMgr = self:getSpellMgr()
-	-- µ±Ç°ÊÇ·ñÓĞ×øÆï
-	if not spellMgr:hasMount() then
-		outFmtError("player not active mount")
-		return
-	end
-	
-	-- ÊÇ·ñ¿ÉÒÔÉı½×
-	if not spellMgr:canUpgrade() then
-		outFmtError("player cannot upgrade")
-		return
-	end
-	
+
 	local level = spellMgr:getMountLevel()
 	local upgradeConfig = tb_mount_upgrade[level]
 	local cost = upgradeConfig.upgradecost
@@ -617,15 +471,22 @@ function PlayerInfo:Handle_Upgrade_Mount_One_Step(pkt)
 	local vist = false
 	
 	while true do
-		-- Èç¹û¿Û³ıÎïÆ·Ê§°Ü, break
-		-- ÅĞ¶ÏÊÇ·ñÍ¬Ê±ÓµÓĞ¶à¸öÎïÆ·
-		if not self:hasMulItem(cost, times+1) then
-			break
+		-- å¦‚æœæ‰£é™¤ç‰©å“å¤±è´¥, break
+		-- åˆ¤æ–­æ˜¯å¦åŒæ—¶æ‹¥æœ‰å¤šä¸ªç‰©å“
+		if useItem == 0 then
+			if not self:hasMulItem(cost, times+1) then
+				break
+			end
+		else
+			local ret, _, _ = checkItemEnoughIfCostMoneyEnabled(costItemTable, multiple)
+			if not ret then
+				break
+			end
 		end
-		-- ¼Ó¿Û³ı´ÎÊı
+		-- åŠ æ‰£é™¤æ¬¡æ•°
 		times = times + 1
 		
-		-- Èç¹ûÉı¼¶ÁË Ò²break
+		-- å¦‚æœå‡çº§äº† ä¹Ÿbreak
 		local ret, added = self:upgradeOnce(now)
 		if ret then
 			now = 0
@@ -636,51 +497,58 @@ function PlayerInfo:Handle_Upgrade_Mount_One_Step(pkt)
 		end
 	end
 	
-	-- ¿ÛµÀ¾ß
-	if not self:useMulItem(cost, times) then
+	-- æ‰£é“å…·
+	
+	if not self:useMulItemIfCostMoneyEnabled(cost) then
 		outFmtError("one step upgrade alarm!!!!!!!!!!!!!!!!")
+		return
 	end
 	
-	-- ½ø½×ÁË
+	if not self:useMulItem(cost, times) then
+		outFmtError("one step upgrade alarm!!!!!!!!!!!!!!!!")
+		return
+	end
+	
+	-- è¿›é˜¶äº†
 	if vist then
 		self:upgraded()
 	end
 	
-	-- ÉèÖÃ¾­Ñé
+	-- è®¾ç½®ç»éªŒ
 	if prev ~= now then
 		spellMgr:setBlessExp(now)
 	end
 	outFmtInfo("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
 end
 
--- ½øĞĞ½ø½×Ò»´Î
+-- è¿›è¡Œè¿›é˜¶ä¸€æ¬¡
 function PlayerInfo:upgradeOnce(blessExp)
 	local spellMgr = self:getSpellMgr()
 	local level = spellMgr:getMountLevel()
 	local upgradeConfig = tb_mount_upgrade[level]
 	local range = upgradeConfig.addBlessExpRange
 	local limit = upgradeConfig.upgradeExp
-	local rate  = upgradeConfig.upgradeSuccessRate
-
-	-- ÊÇ·ñ½ø½×³É¹¦
-	if randInt(1, 100) > rate then
-		return false, 0
-	end
 	
-	-- »ñµÃ¼ÓµÄ×£¸£Öµ
-	local added = randInt(range[ 1 ], range[ 2 ])
-	local now   = blessExp + added
+	local added = GetRandomExp(range)
 	
-	-- Èç¹û×£¸£ÖµÂú×ãÌõ¼ş
+	-- è·å¾—åŠ çš„ç¥ç¦å€¼
+	local now = blessExp + added
+	
+	-- å¦‚æœç¥ç¦å€¼æ»¡è¶³æ¡ä»¶
 	if now >= limit then
 		return true, 0
 	end
 	
 	return false, added
 end
-	
 
--- ½ø½×
+-- æ¿€æ´»åéª‘
+function PlayerInfo:activeMount()
+	self:SetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 0, 1)
+	self:upgraded()
+end
+
+-- è¿›é˜¶
 function PlayerInfo:upgraded()
 	local spellMgr = self:getSpellMgr()
 	local level = spellMgr:getMountLevel()
@@ -690,84 +558,44 @@ function PlayerInfo:upgraded()
 	self:DoAfterUpgrade(level+1)
 end
 
--- ½ø½×ºó×öÄ³Ğ©ÊÂ
+-- è¿›é˜¶ååšæŸäº›äº‹
 function PlayerInfo:DoAfterUpgrade(level)
 	
-	-- ½âËø¼¼ÄÜ
+	-- è§£é”æŠ€èƒ½
 	local a = tb_mount_base[level].skills
 	for _, spellId in pairs(a) do
 		self:activeMountSpell(spellId)
 	end
-	
-	--[[
-	local b = tb_mount_upgrade[level].illusions
-	for _, illuId in pairs(b) do
-		self:onActiveIllusion(illuId)
-	end
-	]]
 end
 
--- ½âËø×øÆï¼¼ÄÜ
+-- è§£é”åéª‘æŠ€èƒ½
 function PlayerInfo:activeMountSpell(spellId)
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
 	
-	-- ÅĞ¶Ï¼¼ÄÜÊÇ·ñ´æÔÚ
+	-- åˆ¤æ–­æŠ€èƒ½æ˜¯å¦å­˜åœ¨
 	if not self:isSpellExist(spellId) then
 		outFmtError("spellId %d not exist", spellId)
 		return
 	end
 	
-	-- ÅĞ¶ÏÍæ¼ÒÊÇ·ñÓµÓĞÕâ¸ö¼¼ÄÜ
+	-- åˆ¤æ–­ç©å®¶æ˜¯å¦æ‹¥æœ‰è¿™ä¸ªæŠ€èƒ½
 	if self:hasSpell(spellId) then
 		outFmtError("player has spellId %d", spellId)
 		return
 	end
 	
-	-- ¼¤»î¼¼ÄÜ
+	-- æ¿€æ´»æŠ€èƒ½
 	spellMgr:activeMountSpell(spellId)
 	
 	self:onActiveSpellWithoutInitiative(spellId)
 end
 
 
-ILLUSION_ITEM_ACTIVE = 1		--ÏûºÄ¶ÔÓ¦×øÆïËéÆ¬
-ILLUSION_RESOURCE_ACTIVE = 2	--ÏûºÄÒ»¶¨ÊıÁ¿Ôª±¦
-ILLUSION_EXPIRE_ACTIVE = 3		--ÓĞÊµÏÖµÄ¼¤»î
+ILLUSION_ITEM_ACTIVE = 1		--æ¶ˆè€—å¯¹åº”åéª‘ç¢ç‰‡
+ILLUSION_RESOURCE_ACTIVE = 2	--æ¶ˆè€—ä¸€å®šæ•°é‡å…ƒå®
 
--- ÉêÇë½âËø»Ã»¯×øÆï
-function PlayerInfo:Handle_Illusion_Active(pkt)
-	local illuId = pkt.illuId
-	
-	-- »Ã»¯´æÔÚ
-	if tb_mount_illusion[illuId] == nil then
-		outFmtError("illusion id = %d is not exist", illuId)
-		return
-	end
-	
-	local config = tb_mount_illusion[illuId]
-	if config.condition == ILLUSION_EXPIRE_ACTIVE then
-		outFmtError("Handle_Illusion_Active illusion id = %d cannot in this way", illuId)
-		return
-	end
-	
-	local spellMgr = self:getSpellMgr()
-	-- »Ã»¯ÊÇ·ñ´æÔÚ
-	if spellMgr:hasIllusion(illuId) then
-		outFmtError("player already has illusion id = %d", illuId)
-		return
-	end
-	
-	local level = spellMgr:getMountLevel()
-	if level < tb_mount_illusion[illuId].mountLevel then
-		outFmtError("Handle_Illusion_Active illusion id = %d need level = %d", illuId, tb_mount_illusion[illuId].mountLevel)
-		return
-	end
-	
-	self:onActiveIllusion(illuId)
-end
-
--- ½âËø»Ã»¯²Ù×÷
+-- è§£é”å¹»åŒ–æ“ä½œ
 function PlayerInfo:onActiveIllusion(illuId)
 	local config = tb_mount_illusion[illuId]
 	local spellMgr = self:getSpellMgr()
@@ -784,39 +612,32 @@ function PlayerInfo:onActiveIllusion(illuId)
 		end
 	end
 	
-	-- ¼¤»î»Ã»¯
+	-- æ¿€æ´»å¹»åŒ–
 	spellMgr:onActiveIllusion(illuId)
 	
-	-- ¼¤»î»Ã»¯µÄ¼¼ÄÜ
+	-- æ¿€æ´»å¹»åŒ–çš„æŠ€èƒ½
 	for _, spellId in pairs(config.spells) do
 		self:onActiveSpellWithoutInitiative(spellId)
 	end
 end
 
--- ÉêÇë»Ã»¯×øÆï
-function PlayerInfo:Handle_Illusion(pkt)
-	local illuId = pkt.illuId
-	
+-- ç”³è¯·å¹»åŒ–åéª‘
+function PlayerInfo:DoHandleIllusion(illuId)
 	local spellMgr = self:getSpellMgr()
-	-- »Ã»¯ÊÇ·ñ´æÔÚ
-	if not spellMgr:hasIllusion(illuId) then
-		outFmtError("player has no illusion id = %d", illuId)
-		return
-	end
 
 	local curr = 0
-	if self:GetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 1) ~= illuId then
+	if self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3) ~= illuId then
 		curr = illuId
 	end
-	self:SetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 1, curr)
-	-- ·¢ËÍµ½³¡¾°·ş
+	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3, curr)
+	-- å‘é€åˆ°åœºæ™¯æœ
 	--[[
 	self:Send2ScenedIllusion(illuId)
 	]]
 end
 
 --[[
--- ·¢ËÍµ½³¡¾°·şÌæ»»Ö÷¶¯¼¼ÄÜĞÅÏ¢
+-- å‘é€åˆ°åœºæ™¯æœæ›¿æ¢ä¸»åŠ¨æŠ€èƒ½ä¿¡æ¯
 function PlayerInfo:Send2ScenedIllusion(illuId)
 	local pkt = Packet.new(INTERNAL_OPT_ILLUSION)
 	pkt:writeUTF(self:GetGuid())

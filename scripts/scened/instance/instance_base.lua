@@ -632,8 +632,8 @@ Instance_base = {
 					local index = skillConfig.uplevel_id[ 1 ]
 					local upgradeConfig = tb_skill_uplevel[index]
 					local dist = upgradeConfig.distance
-					local groupCD = skillConfig.groupCD - upgradeConfig.mcd
-					local singleCD = skillConfig.singleCD - upgradeConfig.mcd
+					local groupCD = skillConfig.groupCD
+					local singleCD = spells[i+1]
 					local targetType = skillConfig.target_type
 					creatureLib.MonsterAddSpell(creature_ptr, spells[i], spells[i+1], spells[i+2], dist, groupCD, singleCD, targetType)
 				end

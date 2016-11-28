@@ -75,6 +75,12 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		unitLib.SpellStop(caster)
 	end
 	
+	--当前是跳跃状态
+	if unitLib.HasBuff(caster, BUFF_JUMP_JUMP) then
+		outFmtDebug("DoHandleSpellStart cannot cast in jumping")
+		return false
+	end
+	
 	-- 检测拥有技能族的技能释放顺序
 	if config.group ~= 0 then
 		local lastSpellId = playerLib.GetSpellStyle(caster, config.group)

@@ -33,4 +33,7 @@ hanlders[CMSG_UPGRADE_MOUNT_ONE_STEP] = PlayerInfo.Handle_Upgrade_Mount_One_Step
 hanlders[CMSG_ILLUSION_MOUNT_ACTIVE] = PlayerInfo.Handle_Illusion_Active
 hanlders[CMSG_ILLUSION_MOUNT] = PlayerInfo.Handle_Illusion
 
+hanlders[CMSG_STRENGTH] = PlayerInfo.strength
+hanlders[CMSG_GEM] = PlayerInfo.gem
+
 return hanlders

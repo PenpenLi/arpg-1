@@ -244,8 +244,12 @@ function PlayerInfo:checkMoneyEnoughs(costTable, times)
 	return true
 end
 
--- 扣除钱
-function PlayerInfo:costMoneys(oper_type, costTable, times)
+
+-- 判断钱是否足够(绑定元宝不够用元宝)
+-- 返回
+-- true, costTable
+-- false, nil
+function PlayerInfo:checkMoneyEnoughIfUseGoldIngot(costTable, times)
 	times = times or 1
 	
 	-- 判断重复
@@ -253,9 +257,56 @@ function PlayerInfo:costMoneys(oper_type, costTable, times)
 	for _, res in pairs(costTable) do
 		if reps[res[ 1 ]] ~= nil then
 			outFmtError("designer has type invalid data")
-			return false
+			return false, nil
 		end
 		reps[res[ 1 ]] = 1
+	end
+	
+	
+	-- 先把不能扣的绑定元宝转成元宝
+	local cost2 = {}
+	-- 检测是否可扣
+	for _, res in pairs(costTable) do
+		-- 不能有负的
+		if res[ 2 ] < 0 then
+			return false, nil
+		end
+		if not self:checkMoneyEnough(res[ 1 ], res[ 2 ] * times) then
+			if res[ 1 ] ~= MONEY_TYPE_BIND_GOLD then
+				return false, nil
+			end
+			local prev = self:GetMoney(res[ 1 ])
+			local need = res[ 2 ] * times - prev
+			-- 加元宝的
+			AddTempInfoIfExist(cost2, MONEY_TYPE_GOLD_INGOT, need)
+			-- 加绑定元宝
+			if prev > 0 then
+				AddTempInfoIfExist(cost2, MONEY_TYPE_BIND_GOLD , prev)
+			end
+		else
+			AddTempInfoIfExist(cost2, res[ 1 ], res[ 2 ] * times)
+		end
+	end
+	
+	
+	-- 检测是否可扣
+	for _, res in pairs(cost2) do
+		if not self:checkMoneyEnough(res[ 1 ], res[ 2 ]) then
+			return false, nil
+		end
+	end
+	
+	return true, cost2
+end
+
+
+-- 扣除钱
+function PlayerInfo:costMoneys(oper_type, costTable, times)
+	times = times or 1
+	
+	-- 判断是否可扣除
+	if not self:checkMoneyEnoughs(costTable, times) then
+		return false
 	end
 	
 	-- 实际扣除
@@ -554,6 +605,51 @@ function PlayerInfo:hasMulItem(costItemTable,multiple)
 	local itemMgr = self:getItemMgr()						
 	return itemMgr:hasMulItem(costItemTable,multiple)
 end
+
+-- 扣除多个物品 不够用钱换
+function PlayerInfo:useMulItemIfCostMoneyEnabled(costItemTable, multiple)
+	multiple = multiple or 1
+	
+	local ret, items, res = self:checkItemEnoughIfCostMoneyEnabled(costItemTable, multiple)
+	if not ret then
+		return false
+	end
+	if not self:useMulItem(items) then
+		return false
+	end
+	if not self:costMoneys(MONEY_CHANGE_USE_ITEM, res) then
+		return false
+	end
+	
+	return true
+end
+
+-- 判断材料不够花元宝能否满足条件
+-- 返回
+--	true, realCostItemTable, costMoneyTable
+-- false, nil, nil
+function PlayerInfo:checkItemEnoughIfCostMoneyEnabled(costItemTable, multiple)
+	local itemMgr = self:getItemMgr()	
+	
+	-- 找一种扣除方案
+	local ret, costItem, costIngot = itemMgr:costMoneyEnabledSolution(costItemTable, multiple)
+	if not ret then
+		return false, nil, nil
+	end
+	
+	-- 如果需要扣钱
+	local costResouce = {}
+	if costIngot > 0 then
+		-- 返回实际的扣除资源值
+		ret, costResouce = self:checkMoneyEnoughIfUseGoldIngot({{MONEY_TYPE_BIND_GOLD, costIngot}})
+		if not ret then
+			return false, nil, nil
+		end
+	end
+	
+	return true, costItem, costResouce
+end
+
 
 -- 获取GM等级
 function PlayerInfo:GetGmNum()
