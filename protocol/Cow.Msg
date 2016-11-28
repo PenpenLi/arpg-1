@@ -663,6 +663,7 @@ faction_join,c2s,144,/*申请加入帮派*/,STATUS_NEVER,False
 
 #
 raise_base_spell,c2s,145,/*申请升级技能*/,STATUS_NEVER,False
+	raiseType,uint8,False,/*技能类型*/
 	spellId,uint16,False,/*技能ID*/
 
 #
@@ -674,9 +675,11 @@ raise_mount,c2s,147,/*申请升级坐骑*/,STATUS_NEVER,False
 
 #
 upgrade_mount,c2s,148,/*申请升阶坐骑*/,STATUS_NEVER,False
+	useItem,uint8,False,/*是否自动使用道具*/
 
 #
 upgrade_mount_one_step,c2s,149,/*申请一键升阶坐骑*/,STATUS_NEVER,False
+	useItem,uint8,False,/*是否自动使用道具*/
 
 #
 illusion_mount_active,c2s,150,/*申请解锁幻化坐骑*/,STATUS_NEVER,False
@@ -688,3 +691,11 @@ illusion_mount,c2s,151,/*申请幻化坐骑*/,STATUS_NEVER,False
 
 #
 ride_mount,c2s,152,/*申请骑乘*/,STATUS_NEVER,False
+
+#
+grid_unit_jump,s2c,153,/*grid中的unit跳跃*/,STATUS_NEVER,True
+
+#
+gem,c2s,154,/*宝石*/,STATUS_NEVER,False
+	part,uint8,False,/*宝石位置*/
+

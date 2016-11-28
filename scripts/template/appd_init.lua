@@ -17,3 +17,16 @@ require("template.tables.tb_mount_illusion")
 require("template.tables.tb_mount_train")
 require("template.tables.tb_mount_train_type")
 require("template.tables.tb_mount_upgrade")
+require("template.tables.tb_shop")
+
+--强化表
+require("template.tables.tb_strengthen_base")
+require("template.tables.tb_strengthen_bless")
+require("template.tables.tb_strengthen_mul")
+
+--宝石表
+require("template.tables.tb_gem_base")
+require("template.tables.tb_gem_cost")
+require("template.tables.tb_gem_mul")
+require("template.tables.tb_gem_pos")
+require("template.tables.tb_gem_rate")

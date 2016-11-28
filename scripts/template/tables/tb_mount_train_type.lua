@@ -5,11 +5,7 @@
 
 tb_mount_train_type = {
 	--  id:int	培养编号
-	--  rate:int	概率
-	--  mul:int	经验倍数
-	[1] = {id = 1,rate = 80,mul = 1,},
-	[2] = {id = 2,rate = 20,mul = 2,},
-	[3] = {id = 3,rate = 75,mul = 1,},
-	[4] = {id = 4,rate = 20,mul = 2,},
-	[5] = {id = 5,rate = 5,mul = 3,},
+	--  range:array	随机取值范围
+	[1] = {id = 1,range = {{1,8000},{2,2000}},},
+	[2] = {id = 2,range = {{1,7500},{2,2000},{3,500}},},
 }

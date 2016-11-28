@@ -397,6 +397,57 @@ function AppItemMgr:hasMulItem(costItemTable,multiple)
 	return true
 
 end
+
+-- 生成一种能买材料的扣资源和钱方案
+-- 返回
+--	true, realCostItemTable, costMoney
+-- false, nil, 0
+function AppItemMgr:costMoneyEnabledSolution(costItemTable, multiple)
+	multiple = multiple or 1
+	local map = {}
+
+	--判断key是否重复
+	for _, costItem in pairs(costItemTable) do
+
+		if map[costItem[1]] ~= nil then
+			outFmtError("count mulItem key repeat %d", costItem[1])
+			return false, nil, 0
+		else 
+			map[costItem[1]] = 1
+		end
+	end
+	
+	local costMoney = 0
+	local realCostItem = {}
+	for _, costItem in pairs(costItemTable) do
+		local count = self:countItem(self.default_bag_type, costItem[ 1 ])
+		if count < (costItem[ 2 ] * multiple) then
+			local buyed = costItem[ 2 ] * multiple - count
+			local id = MONEY_TYPE_BIND_GOLD * 100000 + costItem[ 1 ]
+			-- 是否在商城可以买到
+			if not tb_shop[id] then
+				return false, nil, 0
+			end
+			-- 单价不能 < 0
+			local price = tb_shop[id].costResource[ 1 ][ 2 ]
+			if price < 0 then
+				return false, nil, 0
+			end 
+			costMoney = costMoney + buyed * price
+			if count > 0 then
+				AddTempInfoIfExist(realCostItem, costItem[ 1 ], count)
+			end
+		else
+			AddTempInfoIfExist(realCostItem, costItem[ 1 ], costItem[ 2 ] * multiple)
+		end
+	end
+
+	return true, realCostItem, costMoney
+end
+
+
+
+
 --使用一组物品{{entry,count},{entry,count} ...} 
 function AppItemMgr:useMulItem(costItemTable,multiple)
 	multiple = multiple or 1

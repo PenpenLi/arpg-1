@@ -91,7 +91,7 @@ config = {
 		CMSG_UPGRADE_MOUNT_ONE_STEP,
 		CMSG_ILLUSION_MOUNT_ACTIVE,
 		CMSG_ILLUSION_MOUNT,
-		CMSG_RAISE_MOUNT_SPELL
+		CMSG_GEM
 	},
 	--pk服命令表
 	pk_external_router_map = {

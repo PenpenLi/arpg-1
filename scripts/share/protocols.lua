@@ -162,6 +162,8 @@ CMSG_UPGRADE_MOUNT_ONE_STEP		= 149	-- /*ÉêÇëÒ»¼üÉý½××øÆï*/
 CMSG_ILLUSION_MOUNT_ACTIVE		= 150	-- /*ÉêÇë½âËø»Ã»¯×øÆï*/	
 CMSG_ILLUSION_MOUNT		= 151	-- /*ÉêÇë»Ã»¯×øÆï*/	
 CMSG_RIDE_MOUNT		= 152	-- /*ÉêÇëÆï³Ë*/	
+SMSG_GRID_UNIT_JUMP		= 153	-- /*gridÖÐµÄunitÌøÔ¾*/	
+CMSG_GEM		= 154	-- /*±¦Ê¯*/	
 
 
 ---------------------------------------------------------------------
@@ -5329,15 +5331,16 @@ end
 
 
 -- /*ÉêÇëÉý¼¶¼¼ÄÜ*/	
-function Protocols.pack_raise_base_spell ( spellId)
+function Protocols.pack_raise_base_spell ( raiseType ,spellId)
 	local output = Packet.new(CMSG_RAISE_BASE_SPELL)
+	output:writeByte(raiseType)
 	output:writeI16(spellId)
 	return output
 end
 
 -- /*ÉêÇëÉý¼¶¼¼ÄÜ*/	
-function Protocols.call_raise_base_spell ( playerInfo, spellId)
-	local output = Protocols.	pack_raise_base_spell ( spellId)
+function Protocols.call_raise_base_spell ( playerInfo, raiseType ,spellId)
+	local output = Protocols.	pack_raise_base_spell ( raiseType ,spellId)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -5347,6 +5350,10 @@ function Protocols.unpack_raise_base_spell (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.raiseType = input:readByte()
+	if not ret then
+		return false
+	end
 	ret,param_table.spellId = input:readU16()
 	if not ret then
 		return false
@@ -5412,14 +5419,15 @@ end
 
 
 -- /*ÉêÇëÉý½××øÆï*/	
-function Protocols.pack_upgrade_mount (  )
+function Protocols.pack_upgrade_mount ( useItem)
 	local output = Packet.new(CMSG_UPGRADE_MOUNT)
+	output:writeByte(useItem)
 	return output
 end
 
 -- /*ÉêÇëÉý½××øÆï*/	
-function Protocols.call_upgrade_mount ( playerInfo )
-	local output = Protocols.	pack_upgrade_mount (  )
+function Protocols.call_upgrade_mount ( playerInfo, useItem)
+	local output = Protocols.	pack_upgrade_mount ( useItem)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -5429,22 +5437,26 @@ function Protocols.unpack_upgrade_mount (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.useItem = input:readByte()
+	if not ret then
+		return false
+	end
 
-	return true,{}
-	
+	return true,param_table	
 
 end
 
 
 -- /*ÉêÇëÒ»¼üÉý½××øÆï*/	
-function Protocols.pack_upgrade_mount_one_step (  )
+function Protocols.pack_upgrade_mount_one_step ( useItem)
 	local output = Packet.new(CMSG_UPGRADE_MOUNT_ONE_STEP)
+	output:writeByte(useItem)
 	return output
 end
 
 -- /*ÉêÇëÒ»¼üÉý½××øÆï*/	
-function Protocols.call_upgrade_mount_one_step ( playerInfo )
-	local output = Protocols.	pack_upgrade_mount_one_step (  )
+function Protocols.call_upgrade_mount_one_step ( playerInfo, useItem)
+	local output = Protocols.	pack_upgrade_mount_one_step ( useItem)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -5454,9 +5466,12 @@ function Protocols.unpack_upgrade_mount_one_step (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.useItem = input:readByte()
+	if not ret then
+		return false
+	end
 
-	return true,{}
-	
+	return true,param_table	
 
 end
 
@@ -5540,6 +5555,60 @@ function Protocols.unpack_ride_mount (pkt)
 
 	return true,{}
 	
+
+end
+
+
+-- /*gridÖÐµÄunitÌøÔ¾*/	
+function Protocols.pack_grid_unit_jump (  )
+	local output = Packet.new(SMSG_GRID_UNIT_JUMP)
+	return output
+end
+
+-- /*gridÖÐµÄunitÌøÔ¾*/	
+function Protocols.call_grid_unit_jump ( playerInfo )
+	local output = Protocols.	pack_grid_unit_jump (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*gridÖÐµÄunitÌøÔ¾*/	
+function Protocols.unpack_grid_unit_jump (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*±¦Ê¯*/	
+function Protocols.pack_gem ( part)
+	local output = Packet.new(CMSG_GEM)
+	output:writeByte(part)
+	return output
+end
+
+-- /*±¦Ê¯*/	
+function Protocols.call_gem ( playerInfo, part)
+	local output = Protocols.	pack_gem ( part)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*±¦Ê¯*/	
+function Protocols.unpack_gem (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.part = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
 
 end
 
@@ -5698,6 +5767,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_illusion_mount_active = self.call_illusion_mount_active
 	playerInfo.call_illusion_mount = self.call_illusion_mount
 	playerInfo.call_ride_mount = self.call_ride_mount
+	playerInfo.call_grid_unit_jump = self.call_grid_unit_jump
+	playerInfo.call_gem = self.call_gem
 end
 
 local unpack_handler = {
@@ -5849,6 +5920,8 @@ local unpack_handler = {
 [CMSG_ILLUSION_MOUNT_ACTIVE] =  Protocols.unpack_illusion_mount_active,
 [CMSG_ILLUSION_MOUNT] =  Protocols.unpack_illusion_mount,
 [CMSG_RIDE_MOUNT] =  Protocols.unpack_ride_mount,
+[SMSG_GRID_UNIT_JUMP] =  Protocols.unpack_grid_unit_jump,
+[CMSG_GEM] =  Protocols.unpack_gem,
 
 }
 

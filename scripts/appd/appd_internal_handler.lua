@@ -68,6 +68,11 @@ local function on_scened_player_upgrade( pkt )
 		end
 	end
 	
+	-- FIXME:解锁坐骑 先在这里处理
+	if prevLevel < 8 and 8 <= player_lv then
+		player:activeMount()
+	end
+	
 	--[[
 	-- 如技能解锁
 	local socialSysInfo = player:getSocialSystem()
