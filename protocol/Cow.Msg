@@ -699,3 +699,6 @@ grid_unit_jump,s2c,153,/*grid中的unit跳跃*/,STATUS_NEVER,True
 gem,c2s,154,/*宝石*/,STATUS_NEVER,False
 	part,uint8,False,/*宝石位置*/
 
+#
+change_battle_mode,c2s,155,/*请求切换模式*/,STATUS_NEVER,True
+	mode,uint8,False,/*需要切换的模式*/
