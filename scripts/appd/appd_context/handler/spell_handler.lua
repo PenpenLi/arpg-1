@@ -89,7 +89,8 @@ function PlayerInfo:Handle_Upgrade_AngleSpell(pkt)
 	-- 判断金币是否充足
 	local upgradeConfig = tb_assistangerspell_upgrade[spellId]
 	local cost = upgradeConfig.cost
-	if not self:checkMoneyEnough(MONEY_TYPE_SILVER, cost) then
+	
+	if not self:costMoneys(MONEY_CHANGE_SPELL_UP, cost) then
 		outFmtError("resouce %d not enough", MONEY_TYPE_SILVER)
 		return
 	end

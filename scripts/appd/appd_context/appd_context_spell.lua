@@ -67,9 +67,6 @@ function PlayerInfo:DoHandleUpgradeAngleSpell(spellId)
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
 	local upgradeConfig = tb_assistangerspell_upgrade[spellId]
-	local cost = upgradeConfig.cost
-	-- 消耗金币
-	self:SubMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SPELL_UP, cost)
 
 	local nextId = upgradeConfig.nextid
 	--同步主动技能到p对象
@@ -118,8 +115,34 @@ function PlayerInfo:activeBaseSpell(spellId, activeType)
 	
 	-- 判断消耗道具
 	if #learnConfig.item > 0 then
-		outFmtError("no way to cost item")
-		return
+		if not self:hasMulItem(learnConfig.item) then
+			outFmtError("item not enough")
+			return
+		end
+	end
+	
+	if #learnConfig.resource > 0 then
+		if not self:checkMoneyEnoughs(learnConfig.resource) then
+			outFmtError("resouce not enough")
+			return
+		end
+	end
+	
+	
+	-- 扣除道具
+	if #learnConfig.item > 0 then
+		if not self:useMulItem(learnConfig.item) then
+			outFmtError("use item fail")
+			return
+		end
+	end
+	
+	-- 扣除资源
+	if #learnConfig.resource > 0 then
+		if not self:costMoneys(MONEY_CHANGE_ACTIVE_SPELL, learnConfig.resource) then
+			outFmtError("sub resouce fail")
+			return
+		end
 	end
 
 	-- 激活技能
