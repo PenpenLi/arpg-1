@@ -48,7 +48,5 @@ require("template.tables.tb_quest_Point_Info")
 require("template.tables.tb_quest_talk")
 require("template.tables.tb_quest_template")
 require("template.tables.tb_quest_wo_relation")
-
-
-
-
+require("template.tables.tb_battle_mode")
+require("template.tables.tb_battle_killed_drop")

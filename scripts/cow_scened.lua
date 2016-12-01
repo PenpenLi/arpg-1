@@ -16,9 +16,23 @@ require 'scened.scened_internal_pack'
 config = {
 	--以下来自原来的配置文件
 	max_player_level = 100					,--最大等级
+	new_player_protected_level = 10			,--新手保护最大等级
+		
+	jump_cd = 3000							,--跳cd
+	jump_max_distance = 16					,--最大跳跃距离
+	
+	nomal_attack_distance	= 4				,--默认攻击距离
+	
+	can_change_mode	= {PEACE_MODE, FAMILY_MODE, ALL_MODE} ,--允许手动切换的模式
+	
+	peace_mode_cd = 9						,--和平模式CD(秒)
+	
+	evil_max_value = 10						,--恶人值最大值					
+	
 	nomal_attack_time =  1300				,--默认攻击时间
 	nomal_move_speed = 180					,--默认移动速度
-	nomal_attack_distance	= 4				,--默认攻击距离
+	
+	
 	update_ownership_time = 1500			,--更新怪物所有者的间隔
 	left_fighting_time = 6000				,--脱离战斗时间
 	left_cast_time = 3000					,--脱离施法战斗（即备战）时间
@@ -29,8 +43,7 @@ config = {
 	endurance_auto_recovery_cycle = 60000	,--回精力时间
 	endurance_auto_recovery_values = 1 		,--回精力值
 	error_distance = 7						,--服务端允许客户端距离误差
-	jump_cd = 3000							,--跳cd
-	jump_max_distance = 16					,--最大跳跃距离
+
 	jump_need_energy = 20					,--跳跃消耗体力
 	notice_distance = 6						,--地图触发点通知距离
 	zodiac = 12								,--生肖数量
@@ -64,6 +77,7 @@ config = {
 	cant_jump						= {BUFF_YUNXUAN,BUFF_DINGSHEN,BUFF_ZHIKONG,BUFF_HDQS_NET},--限制跳跃的BUFF
 	cant_teleport					= {},							--限制传送的BUFF
 	cant_use_item					= {},							--限制使用物品的BUFF
+	
 	--注：羊羊无敌不可见仅用于怪物。客户端无视
 	cant_see						= {},							--隐身的BUFF
 	invincible						= {},							--无敌的BUFF
@@ -103,6 +117,7 @@ config = {
 		MSG_QUERY_QUEST_STATUS,
 		CMSG_INSTANCE_ENTER,
 		CMSG_RIDE_MOUNT,
+		CMSG_CHANGE_BATTLE_MODE,
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
@@ -193,10 +208,16 @@ function load_lua_scripts()
 		{'怪物智能脚本'		,'scened/script_ai'},
 		{'NPC智能脚本'		,'scened/npc_ai'},
 		{"战利品脚本"		,'scened/loot_manager'},
-		{'副本脚本'			,'scened/instance/instance_base'},
-		{'九重天脚本1'		,'scened/instance/instanceTower1'},
-		{'九重天脚本2'		,'scened/instance/instanceTower2'},
-		{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
+		
+		{'地图基础脚本'		,'scened/instance/instance_base'},
+		
+		{'地图基础主城脚本'		,'scened/instance/instance_main_base'},
+		{'地图基础副本脚本'		,'scened/instance/instance_inst_base'},
+		{'地图基础野外脚本'		,'scened/instance/instance_field_base'},
+		
+		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
+		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
+		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
 		{'LUA之GM命令'		,'scened/gm_command'},
 	}
 	local i = 0
@@ -210,9 +231,12 @@ load_lua_scripts()
 
 -- 映射mapid和脚本关系
 INSTANCE_SCRIPT_TABLE = {
-	[101] = InstanceTower1,
-	[102] = InstanceTower2,
-	[103] = InstanceTaoHua,
+	--TODO: 补全
+	
+	[ 1 ] = InstanceFieldBase,
+	--[101] = InstanceTower1,
+	--[102] = InstanceTower2,
+	--[103] = InstanceTaoHua,
 }
 
 -- 复活点坐标

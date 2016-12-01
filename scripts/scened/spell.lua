@@ -142,6 +142,32 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		end
 	end
 	
+	-- 判断新手保护
+	if casterInfo:GetTypeID() == TYPEID_PLAYER then
+		if target then
+			local targetInfo = UnitInfo:new{ptr = target}
+			if targetInfo:GetTypeID() == TYPEID_PLAYER then
+				--自己在新手保护
+				if unitLib.HasBuff(caster, BUFF_NEW_PLAYER_PROTECTED) then
+					outFmtDebug("DoHandleSpellStart => in BUFF_NEW_PLAYER_PROTECTED cannot cast other")
+					return false
+				end
+				--对方在新手保护
+				if unitLib.HasBuff(target, BUFF_NEW_PLAYER_PROTECTED) then
+					outFmtDebug("DoHandleSpellStart => target in BUFF_NEW_PLAYER_PROTECTED")
+					return false
+				end
+				--对方在死亡保护
+				if unitLib.HasBuff(target, BUFF_DEATH_PROTECTED) then
+					outFmtDebug("DoHandleSpellStart => target in BUFF_DEATH_PROTECTED")
+					return false
+				end
+			end
+		end
+	end
+
+	--当前是跳跃状态
+	
 	--[[
 	--local index = casterInfo:GetSpellLvIndex(spell_id)
 	local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
@@ -306,12 +332,24 @@ end
 -- 释放技能入口
 --（@caster：施法者，@target：攻击目标，@dst_x@dst_y：技能坐标点，@spellid：技能id，@spell_lv：技能等级，@unit：技能用精灵，@data：预留参数）
 function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, unit, data)
+	
+	DoSpellCastBefore()
+	
 	local allTargets = {}
 	--落雁斩1
 	if spell_id >= 5 and spell_id <= 65536 then
 		SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 	end
 	return true
+end
+
+-- 受到伤害前需要进行的操作
+function DoSpellCastBefore()
+	--[[
+	1、取消骑乘状态
+	2、取消打坐状态
+	3、取消采集状态
+	]]
 end
 
 -- 处理被动技能
@@ -697,7 +735,7 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 				attack_mast[1] = pos[1]
 				attack_mast[2] = pos[2]
 				local isfriend = unitLib.IsFriendlyTo(caster, target)
-				if CalHitTest(attack_mast)[1] and isfriend == 0 then
+				if CalHitTest(attack_mast)[1] and isfriend == 0 and not isAngerSpellHitPlayer(spell_id, target) then
 					handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTargets, buff_table, px, py)
 					_m_count = _m_count + 1
 					hit_target = true
@@ -712,7 +750,7 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 						local pos = GetHitAreaPostion({cast_x,cast_y,shifa_x,shifa_y,tar_x,tar_y,angle})
 						attack_mast[1] = pos[1]
 						attack_mast[2] = pos[2]
-						if CalHitTest(attack_mast)[1] then
+						if CalHitTest(attack_mast)[1] and not isAngerSpellHitPlayer(spell_id, attack_target)  then
 							-- TODO: 这里修改技能
 							handle_cast_monomer_spell(caster, attack_target, spell_id, spell_lv, allTargets, buff_table, px, py)
 							_m_count = _m_count + 1
@@ -737,6 +775,15 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 	end
 	
 	-- 设置技能族当前技能
+	SetSkillStype(caster, spell_id)
+end
+
+-- 是否是愤怒技能打到人
+function isAngerSpellHitPlayer(spellId, target)
+	return tb_skill_base[spellId].skill_slot == SLOT_ANGER and GetUnitTypeID(target) == TYPEID_PLAYER
+end
+
+function SetSkillStype(caster, spell_id)
 	if GetUnitTypeID(caster) == TYPEID_PLAYER then
 		local config = tb_skill_base[spell_id]
 		if config.group ~= 0 then
@@ -1195,7 +1242,7 @@ function handle_cast_monomer_shwj_spell(caster,target,spell_id,spell_lv,dst_x,ds
 		end
 	end
 	local targetintguid = 0
-	if(target ~= nil)then
+	if target then
 		local targetInfo = UnitInfo:new{ptr = target}
 		targetintguid = targetInfo:GetIntGuid()
 	end

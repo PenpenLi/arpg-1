@@ -219,6 +219,12 @@ end
 
 -----------------------------------------------------------------
 --脚本调用脚本
+
+--------------------------------系统给玩家增加buff------------------------------------
+function SystemAddBuff(unit, buffId, bonus_time)
+	unitLib.SystemAddBuff(unit, buffId, bonus_time)
+end
+
 -------------------增加Buff----------------------
 function SpelladdBuff(unit, buff_id, buff_giver, lv, bonus_time, reserve)
 	if unit == nil then

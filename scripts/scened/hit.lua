@@ -61,6 +61,21 @@ function    bit._rshift(a,n)
     return  bit._b2d(op1)
 end
 
+function    bit._lshift(a,n)
+    local   op1=bit._d2b(a)
+    n = n <= 32 and n or 32
+    n = n >= 0 and n or 0
+
+    for i=1, 32-n do
+        op1[i] = op1[i+n]
+    end
+    for i=32-n+1, 32 do
+        op1[i] = 0
+    end
+
+    return  bit._b2d(op1)
+end
+
 function    bit._not(a)
     local   op1=bit._d2b(a)
     local   r={}
@@ -112,6 +127,7 @@ end
 
 bit.band = bit.band or bit._and
 bit.rshift = bit.rshift or bit._rshift
+bit.lshift = bit.lshift or bit._lshift
 bit.bnot = bit.bnot or bit._not
 
 ------------------------------------------

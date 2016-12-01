@@ -24,8 +24,16 @@ function DosometingScript(player)
 	
 end
 
---玩家PVP时的一些处理
+--玩家PVP时目标方的一些处理
 function DOPlayerPvP(player,target)
+	--[[
+		1、取消骑乘状态并锁定为不可使用
+		2、取消打坐状态并锁定为不可使用
+		3、取消采集状态
+		
+		假如当前为和平模式，则切换为自卫模式
+	]]
+	
 	--取消打坐
 	--[[
 	local playerInfo = UnitInfo:new{ptr = target}

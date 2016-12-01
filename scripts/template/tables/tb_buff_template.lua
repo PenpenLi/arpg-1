@@ -27,4 +27,7 @@ tb_buff_template = {
 	[108] = {id = 108,name = "钢刺",duration = 6,frequency = 0,recalculation = 0,die_clear = 1,skill_id = 5002,},
 	[109] = {id = 109,name = "定身",duration = 6,frequency = 0,recalculation = 0,die_clear = 1,skill_id = 0,},
 	[110] = {id = 110,name = "晕眩",duration = 3,frequency = 0,recalculation = 0,die_clear = 1,skill_id = 0,},
+	
+	[148] = {id = 148,name = "新手保护",duration = 0,frequency = 0,recalculation = 0,die_clear = 0,skill_id = 0,},
+	[149] = {id = 149,name = "死亡保护",duration = 0,frequency = 0,recalculation = 0,die_clear = 0,skill_id = 0,},
 }

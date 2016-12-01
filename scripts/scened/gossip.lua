@@ -7,6 +7,13 @@ function Script_Teleport_Check(player_ptr, entry, x, y)
 		return false
 	end
 	
+	-- 在战斗状态不能传送
+	local status = playerLib.GetPlayeCurFightStatus(player_ptr)
+	if status == COMBAT_STATE_ENTER then
+		--self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_FIGHT)
+		return
+	end
+	
 	-- 左上
 	local lx = x - config.trigger_width
 	local ly = y - config.trigger_height

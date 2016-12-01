@@ -164,6 +164,8 @@ CMSG_ILLUSION_MOUNT		= 151	-- /*申请幻化坐骑*/
 CMSG_RIDE_MOUNT		= 152	-- /*申请骑乘*/	
 SMSG_GRID_UNIT_JUMP		= 153	-- /*grid中的unit跳跃*/	
 CMSG_GEM		= 154	-- /*宝石*/	
+CMSG_CHANGE_BATTLE_MODE		= 155	-- /*请求切换模式*/	
+SMSG_PEACE_MODE_CD		= 156	-- /*请求切换模式*/	
 
 
 ---------------------------------------------------------------------
@@ -5613,6 +5615,64 @@ function Protocols.unpack_gem (pkt)
 end
 
 
+-- /*请求切换模式*/	
+function Protocols.pack_change_battle_mode ( mode)
+	local output = Packet.new(CMSG_CHANGE_BATTLE_MODE)
+	output:writeByte(mode)
+	return output
+end
+
+-- /*请求切换模式*/	
+function Protocols.call_change_battle_mode ( playerInfo, mode)
+	local output = Protocols.	pack_change_battle_mode ( mode)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求切换模式*/	
+function Protocols.unpack_change_battle_mode (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.mode = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*请求切换模式*/	
+function Protocols.pack_peace_mode_cd ( mode)
+	local output = Packet.new(SMSG_PEACE_MODE_CD)
+	output:writeByte(mode)
+	return output
+end
+
+-- /*请求切换模式*/	
+function Protocols.call_peace_mode_cd ( playerInfo, mode)
+	local output = Protocols.	pack_peace_mode_cd ( mode)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求切换模式*/	
+function Protocols.unpack_peace_mode_cd (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.mode = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -5769,6 +5829,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_ride_mount = self.call_ride_mount
 	playerInfo.call_grid_unit_jump = self.call_grid_unit_jump
 	playerInfo.call_gem = self.call_gem
+	playerInfo.call_change_battle_mode = self.call_change_battle_mode
+	playerInfo.call_peace_mode_cd = self.call_peace_mode_cd
 end
 
 local unpack_handler = {
@@ -5922,6 +5984,8 @@ local unpack_handler = {
 [CMSG_RIDE_MOUNT] =  Protocols.unpack_ride_mount,
 [SMSG_GRID_UNIT_JUMP] =  Protocols.unpack_grid_unit_jump,
 [CMSG_GEM] =  Protocols.unpack_gem,
+[CMSG_CHANGE_BATTLE_MODE] =  Protocols.unpack_change_battle_mode,
+[SMSG_PEACE_MODE_CD] =  Protocols.unpack_peace_mode_cd,
 
 }
 

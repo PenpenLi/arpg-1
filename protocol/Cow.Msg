@@ -702,3 +702,7 @@ gem,c2s,154,/*宝石*/,STATUS_NEVER,False
 #
 change_battle_mode,c2s,155,/*请求切换模式*/,STATUS_NEVER,True
 	mode,uint8,False,/*需要切换的模式*/
+
+#
+peace_mode_cd,s2c,156,/*请求切换模式*/,STATUS_NEVER,True
+	mode,uint8,False,/*和平模式CD*/

@@ -336,6 +336,19 @@ function  DoGMScripts(player_ptr, gm_commands)
 		num = player:GetMoney(MONEY_TYPE_SILVER)
 		player:SubMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_MLWY_GET_GIFT, num)
 	
+	elseif (tokens[1] == "@Resource")then
+		local id = tonumber(tokens[ 2 ])
+		local value = tonumber(tokens[ 3 ])
+		if id < 0 or id >= MAX_MONEY_TYPE then
+			return
+		end
+		local num = player:GetMoney(id)
+		if value < num then
+			player:SubMoney(id, MONEY_CHANGE_GM_COMMAND, num-value)
+		else
+			player:AddMoney(id, MONEY_CHANGE_GM_COMMAND, value-num)
+		end
+		
 	elseif(tokens[1] == "@付费等级")then
 		local level = 0
 		if(#tokens >= 2)then

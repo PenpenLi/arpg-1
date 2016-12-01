@@ -75,7 +75,7 @@ function UnitInfo:GetPlayerBit(index, offset)
 end
 
 function UnitInfo:GetPlayerByte(index, offset)
-	--self:CheckPlayer(string.format("GetPlayerByte-- index = %d offset = %d", index, offset))
+	self:CheckPlayer(string.format("GetPlayerByte-- index = %d offset = %d", index, offset))
 	return binLogLib.GetByte(self.ptr_player_data, index, offset)
 end
 
@@ -244,6 +244,11 @@ end
 function UnitInfo:CancelDaZuo()
 	--TODO: 取消以后的一些逻辑
 	playerLib.SetDaZuoStartTime(self.ptr, 0)
+end
+
+-- 是否在战斗中
+function UnitInfo:isInBattle()
+	
 end
 
 
@@ -1140,6 +1145,123 @@ function UnitInfo:ActivedSystemToDoSomething(questid)
 	end
 end
 
+-- 同一个队伍返回1, 否则返回0
+function UnitInfo:sameTeamCode(playerInfo)
+	return 0
+end
+
+-- 同一个家族返回1, 否则返回0
+function UnitInfo:sameFamilyCode(playerInfo)
+	return 0
+end
+
+-- 生成是否能成为攻击目标的掩码
+function UnitInfo:generateBattleMask(killerInfo)
+	local bbit = self:GetBattleMode() * 4 + self:sameTeamCode(killerInfo) * 2 + self:sameFamilyCode(killerInfo)
+	return bit.lshift(1, bbit)
+end
+
+-- 获得和平模式CD
+function UnitInfo:GetPeaceModeCD()
+	return self:GetPlayerUInt32(PLAYER_FIELD_PEACE_MODE_CD)
+end
+
+-- 设置和平模式CD
+function UnitInfo:SetPeaceModeCD(cd)
+	self:SetPlayerUInt32(PLAYER_FIELD_PEACE_MODE_CD, cd)
+end
+
+-- 获得战斗模式
+function UnitInfo:GetBattleMode()
+	return self:GetPlayerUInt16(PLAYER_FIELD_NOTORIETY, 0)
+end
+
+-- 设置战斗模式
+function UnitInfo:SetBattleMode(value)
+	self:SetPlayerUInt16(PLAYER_FIELD_NOTORIETY, 0, value)
+end
+
+-- 变成和平模式
+function UnitInfo:ChangeToPeaceModeAfterTeleport()
+	if self:GetBattleMode() ~= WICKED_MODE then
+		self:SetBattleMode(PEACE_MODE)
+	end
+end
+
+-- 获得恶名值
+function UnitInfo:GetNotoriety()
+	return self:GetPlayerUInt16(PLAYER_FIELD_NOTORIETY, 1)
+end
+
+-- 是否是和平模式
+function UnitInfo:isPeaceMode()
+	return self:GetBattleMode() == PEACE_MODE
+end
+
+-- 是否是全体模式
+function UnitInfo:isAllMode()
+	return self:GetBattleMode() == ALL_MODE
+end
+
+-- 设置恶名值
+function UnitInfo:SetNotoriety(value)
+	self:SetPlayerUInt16(PLAYER_FIELD_NOTORIETY, 1, value)
+end
+
+-- 获得自卫反击的GUID
+function UnitInfo:GetSelfProtectedUIntGuid()
+	return self:GetUInt32(UNIT_FIELD_SELF_DEFENSE_GUID)
+end
+
+-- 设置自卫反击的GUID
+function UnitInfo:SetSelfProtectedUIntGuid(uintGuid)
+	self:SetUInt32(UNIT_FIELD_SELF_DEFENSE_GUID, uintGuid)
+end
+
+-- 修改恶名值
+function UnitInfo:ModifyNotoriety(value)
+	local prev = self:GetNotoriety()
+	local curr = prev + value
+	if curr < 0 then curr = 0 end
+	if curr > config.evil_max_value then curr = config.evil_max_value end
+	
+	-- 把自卫反击的对象消掉
+	if self:GetSelfProtectedUIntGuid() > 0 then
+		self:SetSelfProtectedUIntGuid(0)
+	end
+	
+	if prev ~= curr then
+		self:SetNotoriety(curr)
+		-- 有恶名值的玩家被杀掉经验
+		if curr < prev then
+			if prev > 0 then
+				local rate = tb_battle_killed_drop[prev].rate
+				playerLib.LostExpOnDead(self.ptr, rate)
+			end
+		end
+		-- 从恶人模式到和平模式
+		if prev == config.evil_max_value then
+			self:SetBattleMode(PEACE_MODE)
+			return
+		end
+		-- 从其他模式到恶人模式
+		if curr == config.evil_max_value then
+			self:SetBattleMode(WICKED_MODE)
+			return
+		end
+	end
+end
+
+-- 模式转换
+function UnitInfo:modeChange(mode)
+	local prev = self:GetBattleMode()
+	if mode == prev then
+		return
+	end
+	
+	self:SetBattleMode(mode)
+end
+
 --获得当前生命	
 function UnitInfo:GetHealth()
 	return self:GetUInt32(UNIT_FIELD_HEALTH)
@@ -1371,12 +1493,17 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 		local index = attrId - 1
 		local value = binLogLib.GetUInt32(attrBinlog, index)
 		func(unitInfo, value)
+		
+		-- 如果血量上限 < 当前血量, 就同步
+		
+		--[[ 只有升级的时候 当前血量才会满
 		-- 如果是重算的话当前血量也得加, 另外一种是BUFF计算当前血量不需要改, 当然如果大于上线还是得改
 		if bRecal then
 			if attrId == EQUIP_ATTR_MAXHEALTH then
 				unitInfo:SetHealth(value)
 			end
 		end
+		]]
 	end
 	
 	
@@ -1385,6 +1512,25 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 	if actived > 0 then
 		
 	end
+end
+
+
+-- PVP战斗死亡的逻辑
+function OnPVPKilled(killer, target)
+	local killerInfo = UnitInfo:new{ptr = killer}
+	local targetInfo = UnitInfo:new{ptr = target}
+	
+	-- 如果targetInfo为和平模式,
+	if targetInfo:isPeaceMode() then
+		-- killer, 是全体模式的恶名值+1
+		if killerInfo:isAllMode() then
+			killerInfo:ModifyNotoriety(1)
+			-- 给死者加个死亡保护
+			SystemAddBuff(targetInfo.ptr, BUFF_DEATH_PROTECTED, 3600)
+		end
+	end
+	-- target, 恶名值-1
+	targetInfo:ModifyNotoriety(-1)
 end
 
 

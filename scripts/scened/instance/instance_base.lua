@@ -9,7 +9,7 @@ OPT_MARK	 = 0x10	--注释
 --地图初始化时在这里取得剧情脚本
 function Select_Instance_Script(mapid)
 	local ret = INSTANCE_SCRIPT_TABLE[mapid]
-	
+
 	if ret ~= nil then
 		return ret
 	end
@@ -468,8 +468,10 @@ Instance_base = {
 	
 	--玩家升级触发
 	OnPlayerUpgrage = 
-		function(self, player_ptr, lv)
-
+		function(self, player_ptr, prev, lv)
+			if prev <= config.new_player_protected_level and config.new_player_protected_level < lv then
+				unitLib.RemoveBuff(player_ptr, BUFF_NEW_PLAYER_PROTECTED)
+			end
 		end,
 	--进入副本前的判断
 	DoInstancEnter = function(self, player, cur_mapid, to_mapid)
@@ -487,7 +489,11 @@ Instance_base = {
 	--当玩家加入后触发
 	OnAfterJoinPlayer =
 		function(self,player)
-			
+			local playerInfo = UnitInfo:new{ptr = player}
+			-- 如果等级是新手保护等级, 则加个BUFF
+			if playerInfo:GetLevel() <= config.new_player_protected_level then
+				SystemAddBuff(player, BUFF_NEW_PLAYER_PROTECTED, MAX_BUFF_DURATION)
+			end
 		end,
 	
 	--属性重算的时候是否删除buff
@@ -535,21 +541,7 @@ Instance_base = {
 	--是否友好（友好1，不友好0）
 	DoIsFriendly = 
 		function(self, killer_ptr, target_ptr)
-			local killerInfo = UnitInfo:new{ptr = killer_ptr}
-			local targetInfo = UnitInfo:new{ptr = target_ptr}
-
-			-- 先判断
-			local ret = false
-			if killerInfo:GetTypeID() == TYPEID_PLAYER then
-				ret = targetInfo:GetTypeID() ~= TYPEID_UNIT or targetInfo:GetNpcFlags() ~= 0
-			elseif killerInfo:GetTypeID() == TYPEID_UNIT then
-				ret = targetInfo:GetTypeID() ~= TYPEID_PLAYER
-			end
-			
-			if ret then
-				return 1
-			end
-			return 0
+			return 1
 		end,
 	
 	--复活处理

@@ -1,5 +1,46 @@
 local protocols = require('share.protocols')
 
+-- 切换战斗模式
+function ScenedContext:Hanlde_Change_Battle_Mode( pkt )
+	
+	local mode = pkt.mode
+	local prev = self:GetBattleMode()
+	
+	-- 判断传过来的传过来的参数合法性
+	if mode < 0 or mode >= MAX_BATTLE_MODE or mode == prev then
+		return
+	end
+	
+	-- 判断要切换的模式是否在切换列表中
+	if not table.find(config.can_change_mode, mode) then
+		return
+	end
+	
+	-- 判断原来的模式是否在切换列表中
+	if not table.find(config.can_change_mode, prev) then
+		return
+	end
+	
+	-- 如果在战斗中不能切换和平模式
+	local status = playerLib.GetPlayeCurFightStatus(self.ptr)
+	if status == COMBAT_STATE_ENTER and mode == curr then
+		outFmtDebug("cannot change to peaceMode in battle")
+		return
+	end
+	
+	-- 如果是切换到和平模式, 判断CD
+	if mode == PEACE_MODE then
+		local curr = os.time()
+		local cd = self:GetPeaceModeCD()
+		if curr < cd then
+			outFmtError("battle mode change to peace mode is in cd")
+			return
+		end
+	end
+		
+	self:SetBattleMode(mode)
+end
+
 --进入打坐
 function ScenedContext:Hanlde_Dazuo_Start( pkt )
 	if not self:IsAlive() then --死亡不允许打坐
@@ -8,18 +49,13 @@ function ScenedContext:Hanlde_Dazuo_Start( pkt )
 	--在跨服地图不允许打坐
 	local mapid = self:GetMapID()
 	if IsKuafuMapID(mapid) then
-		return
+		return	
 	end
 	if self:GetDaZuoTime() == 0 then	--不在打坐，则打坐
 		self:StartDaZuo()
 	else
 		self:CancelDaZuo()
 	end
-end
-
---领取打坐的经验韬略奖励
-function ScenedContext:Hanlde_Dazuo_Receive(pkt)
-	self:ReceiveDaZuo()
 end
 
 --开始挂机
@@ -55,189 +91,10 @@ function ScenedContext:Hanlde_Stop_Hung_Up(pkt)
 	end
 end
 
---转生
-function ScenedContext:Hanlde_Zhuan_Sheng(packet)
-	local player_level = self:GetLevel()
-	local zhuan = packet.zhuan
-	if zhuan < 1 and zhuan > 5 then 
-		outFmtError("player %s zhuan %d param is wrong!", self:GetPlayerGuid(), zhuan)
-		return 
-	end
-	
-	--等级没达到
-	if player_level ~= tb_grade_up[zhuan].need_level then
-		return					
-	end
-	
-	--一转
-	if zhuan == 1 then
-		for i = 1, #tb_grade_up_1 do
-			local quest_id = tb_grade_up_1[i].guide_mission_id
-			if not self:GetQuestCompleteListFlag(quest_id) then
-				return --还有任务没有完成
-			end
-		end
-	--二转
-	elseif zhuan == 2 then
-		if self:GetYuanshenCount() < #tb_grade_up_2 then
-			return	--还没满级
-		end
-
-	--三转
-	elseif zhuan == 3 then
-		if not self:IsWuxingMaxLevel() then
-			return --还没满级
-		end
-
-	--四转
-	elseif zhuan == 4 then
-		local leijie_count = self:GetLeijieCount()
-		if leijie_count < #tb_grade_up_set_4 then
-			return
-		end
-
-	--五转
-	elseif zhuan == 5 then
-		local dianmai_count = self:GetDianmaiCount()
-		if dianmai_count < #tb_grade_up_5 then
-			return
-		end
-	end
-	--恭喜校验通过，可以转生了
-	--设置下最大等级
-	local max_level = self:GetMaxLevel()
-	if zhuan < 5 then
-		self:SetMaxLevel( tb_grade_up[zhuan+1].need_level )
-	elseif zhuan == 5 then
-		self:SetMaxLevel( #tb_char_level )
-	end
-	if not playerLib.Upgrade(self.ptr, 1) then		-- 转生失败
-		self:SetMaxLevel(max_level)
-	end
-
-	--发公告
-	onSendNotice(20, self:GetPlayerGuid(), self:GetName(), zhuan, tb_grade_up[zhuan].name)
-	--下发错误提示
-	self:CallOptResult(OPERTE_TYPE_ZHUANSHENG, ZHUANSHENG_OPERATE_BREAK_SUCCESS, zhuan)
-end
-
---进入飞升之路
-function ScenedContext:Hanlde_Enter_Feishengzhilu(packet)	
-	local player_ptr = self.ptr
-	local map_ptr = unitLib.GetMap(player_ptr)
-	if not map_ptr then return end
-	local mapid = unitLib.GetMapID(player_ptr)
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	--玩家不在世界地图,不让传
-	if mapInfo:GetInstanceType() ~= 0 then
-		outFmtError("CMSG_ENTER_FEISHENGZHILU player %s not in worldmap, curmapid %d!", self:GetPlayerGuid(), mapid)
-		return
-	end
-	--玩家必须还活着
-	if not self:IsAlive() then
-		outFmtError("CMSG_ENTER_FEISHENGZHILU player %s is not alive!", self:GetPlayerGuid())
-		return 
-	end
-	
-	--pvp状态下一律不准进
-	if(self:GetPVPState())then
-		outFmtError("CMSG_ENTER_FEISHENGZHILU player %s is pvp state!", self:GetPlayerGuid())
-		return
-	end
-	local level = self:GetFszlLevel() + 1
-	--校验下参数对不对
-	if level < 1 or level > #tb_feishengzhilu then
-		outFmtError("CMSG_ENTER_FEISHENGZHILU player %s level %d is wrong", self:GetPlayerGuid(), level)
-		return
-	end
-	
-	local to_mapid = tb_feishengzhilu[level].map_id
-	playerLib.Teleport(player_ptr, to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2])		
-end
-
 --副本挂机操作
 function ScenedContext:Hanlde_Fuben_Hung_Up(packet)	
 	self:DoFubenHungUp(packet.ntype, packet.count, packet.param)
 end
-
---进入奇遇
-function ScenedContext:Hanlde_Enter_Qiyu(packet)
-	local player_ptr = self.ptr
-	local map_ptr = unitLib.GetMap(player_ptr)
-	if not map_ptr then return end
-	local mapid = unitLib.GetMapID(player_ptr)
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	--玩家不在世界地图,不让传
-	if mapInfo:GetInstanceType() ~= 0 then
-		outFmtError("CMSG_ENTER_QIYU player %s not in worldmap, curmapid %d!", self:GetPlayerGuid(), mapid)
-		return
-	end
-	--玩家必须还活着
-	if not self:IsAlive() then
-		outFmtError("CMSG_ENTER_QIYU player %s is not alive!", self:GetPlayerGuid())
-		return 
-	end
-	
-	--pvp状态下一律不准进
-	if(self:GetPVPState())then
-		outFmtError("CMSG_ENTER_QIYU player %s is pvp state!", self:GetPlayerGuid())
-		return
-	end
-	local tb = tb_qiyu[packet.qiyu_id]
-	if(tb == nil)then
-		outFmtError("CMSG_ENTER_QIYU params is wrong!")
-		return
-	end
-	local to_mapid = tb.map
-	local qiyu_type = tb.type
-	if(qiyu_type == 0)then--单人
-		playerLib.Teleport(player_ptr, to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2])
-	else--多人
-		playerLib.Teleport(player_ptr, to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2],0,string.format("qiyu_more_%d",packet.qiyu_id))
-	end
-			
-end
-
---进入武神擂台
-function ScenedContext:Hanlde_Enter_WuShen_LeiTai(packet)
-	local player_ptr = self.ptr
-	local map_ptr = unitLib.GetMap(player_ptr)
-	if not map_ptr then return end
-	local mapid = unitLib.GetMapID(player_ptr)
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	--玩家不在世界地图,不让传
-	if mapInfo:GetInstanceType() ~= 0 then
-		outFmtError("Hanlde_Enter_WuShen_LeiTai player %s not in worldmap, curmapid %d!", self:GetPlayerGuid(), mapid)
-		return
-	end
-	--玩家必须还活着
-	if not self:IsAlive() then
-		outFmtError("Hanlde_Enter_WuShen_LeiTai player %s is not alive!", self:GetPlayerGuid())
-		return 
-	end
-	
-	--pvp状态下一律不准进
-	if self:GetPVPState() then
-		outFmtError("Hanlde_Enter_WuShen_LeiTai player %s is pvp state!", self:GetPlayerGuid())
-		return
-	end
-	local config = tb_wushen_map[packet.leitai_id]
-	if not config then
-		outFmtError("Hanlde_Enter_WuShen_LeiTai config is wrong!")
-		return
-	end
-	--等级限制
-	local player_level = self:GetLevel()
-	if player_level < config.level[1] or player_level > config.level[2] then
-		outFmtError("Hanlde_Enter_WuShen_LeiTai player_level is wrong!")
-		return
-	end
-	
-	
-	--发到应用服扣除材料
-	playerLib.SendToAppdDoSomething(player_ptr, SCENED_APPD_ENTER_WUSHEN_LEITAI_COST,packet.leitai_id)
-end
-
 
 -- 查询副本信息
 function ScenedContext:Hanlde_Query_Fuben_Info(packet)
@@ -265,33 +122,6 @@ function ScenedContext:Hanlde_Query_Fuben_Info(packet)
 		-- 下发数据给客户端显示		
 		self:call_query_fuben_info_result(type, result)
 	end
-end
-
---进入蟠桃园
-function ScenedContext:Hanlde_Enter_Pantaoyuan(packet)
-	local player_ptr = self.ptr
-	local map_ptr = unitLib.GetMap(player_ptr)
-	if not map_ptr then return end
-	local mapid = unitLib.GetMapID(player_ptr)
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	--玩家不在世界地图,不让传
-	if mapInfo:GetInstanceType() ~= 0 then
-		outFmtError("CMSG_ENTER_PANTAOYUAN player %s not in worldmap, curmapid %d!", self:GetPlayerGuid(), mapid)
-		return
-	end
-	--玩家必须还活着
-	if not self:IsAlive() then
-		outFmtError("CMSG_ENTER_PANTAOYUAN player %s is not alive!", self:GetPlayerGuid())
-		return 
-	end
-	--人数不能太多
-	if globalValue:GetPantaoyuanNum() >200 then
-		outFmtError("CMSG_ENTER_PANTAOYUAN player %s is to more!", self:GetPlayerGuid())
-		return
-	end
-	
-	local to_mapid = 30
-	playerLib.Teleport(player_ptr, to_mapid, Instance_pantaoyuan.PLAYER_POSX, Instance_pantaoyuan.PLAYER_POSY)		
 end
 
 -- 开始使用游戏对象
@@ -326,34 +156,6 @@ function ScenedContext:Hanlde_Instance_All_Kill_Opt(packet)
 		--下发错误提示
 		self:CallOptResult(OPERTE_TYPE_FUBEN, FUBEN_OPRATE_NO_CREATURES)
 	end
-end
-
---进入风流镇酒馆
-function ScenedContext:Hanlde_Enter_Fengliuzhen_Pub(packet)
-	local player_ptr = self.ptr
-	local map_ptr = unitLib.GetMap(player_ptr)
-	if not map_ptr then return end
-	local mapid = unitLib.GetMapID(player_ptr)
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	--玩家不在世界地图,不让传
-	-- if mapInfo:GetInstanceType() ~= 0 then
-		-- outFmtError("CMSG_ENTER_FENGLIUZHEN_PUB player %s not in worldmap, curmapid %d!", self:GetPlayerGuid(), mapid)
-		-- return
-	-- end
-	--玩家必须还活着
-	if not self:IsAlive() then
-		outFmtError("CMSG_ENTER_FENGLIUZHEN_PUB player %s is not alive!", self:GetPlayerGuid())
-		return 
-	end
-	
-	--pvp状态下一律不准进
-	if(self:GetPVPState())then
-		outFmtError("CMSG_ENTER_FENGLIUZHEN_PUB player %s is pvp state!", self:GetPlayerGuid())
-		return
-	end
-	
-	local to_mapid = 33
-	playerLib.Teleport(player_ptr, to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2])		
 end
 
 --跳跃	
@@ -555,49 +357,6 @@ function ScenedContext:Hanlde_DaBoss_Teleport( pkt )
 	
 end
 
---进入武林秘境
-function ScenedContext:Hanlde_Enter_Wulin( pkt )
-	local player_ptr = self.ptr
-	local map_ptr = unitLib.GetMap(player_ptr)
-	if not map_ptr then return end
-	local mapid = unitLib.GetMapID(player_ptr)
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	--玩家不在世界地图,不让传
-	if mapInfo:GetInstanceType() ~= 0 then
-		outFmtError("CMSG_ENTER_WULIN player %s not in worldmap, curmapid %d!", self:GetPlayerGuid(), mapid)
-		return
-	end
-	--玩家必须还活着
-	if not self:IsAlive() then
-		outFmtError("CMSG_ENTER_WULIN player %s is not alive!", self:GetPlayerGuid())
-		return 
-	end
-	
-	--pvp状态下一律不准进
-	if(self:GetPVPState())then
-		outFmtError("CMSG_ENTER_WULIN player %s is pvp state!", self:GetPlayerGuid())
-		return
-	end
-	
-	--vip限制 --先不做限制
-	local is_vip = false
-	for i = 1,MAX_GAME_VIP_TYPE do
-		if self:GetVipEndTime(i) > os.time() then
-			is_vip = true
-		end
-	end
-	
-	if not is_vip then
-		if self:GetEntryWuLinCount() >= 1 then
-			outFmtError("CMSG_ENTER_WULIN not is_vip and GetEntryWuLinCount = %d", self:GetEntryWuLinCount())
-			return
-		else
-			self:SetEntryWuLinCount(1)
-		end
-	end
-	local to_mapid = pkt.map_id
-	playerLib.Teleport(player_ptr, to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2])
-end
 
 --BOSS掉落记录查询
 function ScenedContext:Handle_Boss_Drop_Record_Query( pkt )
@@ -719,96 +478,6 @@ function ScenedContext:Hanlde_Get_Swfj_Instance_Reward( pkt )
 	end
 	--发到应用服其他校验、及扣除材料
 	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_SWFJ_INSTANCE_AWARD_SUB_MONEY, pkt.get_type)
-end
-
---塞外伏击建造
-function ScenedContext:Hanlde_Swfj_Instance_Jianzao( pkt )
-	local mapid = unitLib.GetMapID(self.ptr)
-	if not tb_swfj[mapid] then return end
-	--判断勇士数量
-	local map_ptr = unitLib.GetMap(self.ptr)
-	if not map_ptr then return end
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	if mapInfo:GetFubenYongShiCount() >= mapInfo.MAX_YONGSHI_COUNT then
-		return
-	end
-	local cas_x, cas_y = unitLib.GetPos(self.ptr)
-	local targets = mapLib.GetCircleTargets(cas_x, cas_y, mapInfo.TA_AND_TA_DISTANCE, self.ptr, TARGET_TYPE_FRIENDLY)
-	if #targets > 1 then
-		local casterInfo = UnitInfo:new{ptr = self.ptr}
-		casterInfo:CallOptResult(OPRATE_TYPE_SWFJ, SWFJ_RESON_HAS_YONGSHI)		
-		return
-	end
-	--发到应用服其他校验、及扣除材料
-	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_SWFJ_INSTANCE_JIANZAO, pkt.jianzao_type)
-end
-
---风流镇-荒岛求生操作
-function ScenedContext:Hanlde_Hdqs_Other_Opt( pkt )
-	local mapid = unitLib.GetMapID(self.ptr)
-	if mapid ~= FLZ_INSTANCE_HDQS_MAPID then return end
-	local map_ptr = unitLib.GetMap(self.ptr)
-	if not map_ptr then return end
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	mapInfo:HdqsPlayerOtherOpt(self.ptr, pkt.opt_type, pkt.opt_data, pkt.reserve)
-end
-
---风流镇生化危机升级科技
-function ScenedContext:Hanlde_Shwj_Instance_KeJi_LevelUp( pkt )
-	local mapid = unitLib.GetMapID(self.ptr)
-	if mapid ~= SHWJ_INSTANCE_MAPID then return end
-	local map_ptr = unitLib.GetMap(self.ptr)
-	if not map_ptr then return end
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	mapInfo:KeJiLevelUp(self,pkt.opt_type)
-end
-
---风流镇生化危机换子弹
-function ScenedContext:Hanlde_Shwj_Instance_HuanZiDan( pkt )
-	local mapid = unitLib.GetMapID(self.ptr)
-	if mapid ~= SHWJ_INSTANCE_MAPID then return end
-	local map_ptr = unitLib.GetMap(self.ptr)
-	if not map_ptr then return end
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	mapInfo:HuanZiDan(self)
-end
-
---进入奇遇
-function ScenedContext:Hanlde_Faction_FuBen(packet)
-	local player_ptr = self.ptr
-	local map_ptr = unitLib.GetMap(player_ptr)
-	if not map_ptr then return end
-	local mapid = unitLib.GetMapID(player_ptr)
-	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	--玩家不在世界地图,不让传
-	if mapInfo:GetInstanceType() ~= 0 then
-		outFmtError("CMSG_ENTER_FACTION_FUBEN player %s not in worldmap, curmapid %d!", self:GetPlayerGuid(), mapid)
-		return
-	end
-	--玩家必须还活着
-	if not self:IsAlive() then
-		outFmtError("CMSG_ENTER_FACTION_FUBEN player %s is not alive!", self:GetPlayerGuid())
-		return 
-	end
-	
-	--pvp状态下一律不准进
-	if(self:GetPVPState())then
-		outFmtError("CMSG_ENTER_FACTION_FUBEN player %s is pvp state!", self:GetPlayerGuid())
-		return
-	end
-	local lv = self:GetFactionFbCount() + 1
-	local tb = tb_bangpai_boss[lv]
-	if(tb == nil)then
-		outFmtError("CMSG_ENTER_FACTION_FUBEN params is wrong!")
-		return
-	end
-	local to_mapid = tb.map
-	playerLib.Teleport(player_ptr, to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2],0,string.format("faction_boss_%d",lv))
-end
-
-function ScenedContext:Handle_ForceInto(pkt)
-	print("force into")
-	DoForceInto(self)
 end
 
 
