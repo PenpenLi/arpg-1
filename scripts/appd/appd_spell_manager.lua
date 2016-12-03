@@ -177,13 +177,7 @@ end
 -- 是否存在当前幻化坐骑
 function AppSpellMgr:hasIllusion(illuId)
 	
-	local count = self:GetUInt32(SPELL_INT_FIELD_MOUNT_ILLUSION_COUNT)
-	local size = SPELL_INT_FIELD_MOUNT_ILLUSION_START + SPELL_INT_FIELD_MOUNT_ILLUSION_COUNT * MAX_ILLUSION_ATTR_COUNT
-	
-	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, size, MAX_ILLUSION_ATTR_COUNT do
-		if self:GetUInt32(ILLUSION_ATTR_ID + i) == 0 then
-			return false
-		end
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
 		if self:GetUInt32(ILLUSION_ATTR_ID + i) == illuId then
 			return true
 		end
@@ -195,12 +189,9 @@ end
 
 -- 激活幻化
 function AppSpellMgr:onActiveIllusion(illuId)
-
-	local count = self:GetUInt32(SPELL_INT_FIELD_MOUNT_ILLUSION_COUNT)
-	
 	-- 加幻化id
-	local size = SPELL_INT_FIELD_MOUNT_ILLUSION_START + count * MAX_ILLUSION_ATTR_COUNT
-	self:SetUInt32(ILLUSION_ATTR_ID + size, illuId)
+	local indx = self:findEmptyIllusionSlot()
+	self:SetUInt32(ILLUSION_ATTR_ID + indx, illuId)
 	
 	outFmtInfo("active illusion %d", illuId)
 
@@ -210,32 +201,43 @@ function AppSpellMgr:onActiveIllusion(illuId)
 	if config.last > 0 then
 		expire = os.time() + config.last * 24 * 3600
 	end
-	self:SetUInt32(ILLUSION_ATTR_EXPIRE + size, expire)
+	self:SetUInt32(ILLUSION_ATTR_EXPIRE + indx, expire)
 	
 	-- 加技能
 	local config = tb_mount_illusion[illuId]
-	local st = size + ILLUSION_ATTR_SPELL_START
+	local st = indx + ILLUSION_ATTR_SPELL_START
 	for _, spellId in pairs(config.spells) do
 		self:SetUInt16(st, SHORT_SPELL_ID, spellId)
 		self:SetUInt16(st, SHORT_SPELL_LV, 1)
 		st = st + 1
 	end
+	
+	-- 如果是有过期时间的幻化, 就加到过期字典中
+	if expire > 0 then
+		playerLib.SetToExpireMap(self.ptr, EXPIRE_TYPE_ILLUSION, illuId, expire)
+	end
+end
 
-	self:SetUInt32(SPELL_INT_FIELD_MOUNT_ILLUSION_COUNT, count + 1)
+function AppSpellMgr:findEmptyIllusionSlot()
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
+		if self:GetUInt32(ILLUSION_ATTR_ID + i) == 0 then
+			return i
+		end
+	end
+	
+	return -1
 end
 
 
 -- 升级坐骑技能
 function AppSpellMgr:raiseIlluSpell(spellId)
-	local count = self:GetUInt32(SPELL_INT_FIELD_MOUNT_ILLUSION_COUNT)
-	
-	local size = SPELL_INT_FIELD_MOUNT_ILLUSION_START + count * MAX_ILLUSION_ATTR_COUNT
+
 	local prev = self:getSpellLevel(spellId)
 
-	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, size, MAX_ILLUSION_ATTR_COUNT do	
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do	
 		for j = ILLUSION_ATTR_SPELL_START + i, ILLUSION_ATTR_SPELL_END + i do
 			if self:GetUInt16(j, SHORT_SPELL_ID) == 0 then
-				return
+				break
 		elseif self:GetUInt16(j, SHORT_SPELL_ID) == spellId then
 				self:SetUInt16(j, SHORT_SPELL_LV, prev + 1)
 				self:SetSpellLevel(spellId, prev+1)
@@ -244,7 +246,59 @@ function AppSpellMgr:raiseIlluSpell(spellId)
 		end
 	end
 end
+----------------------------------------------神兵-----------------------------------------------
+-- 是否存在神兵
+function AppSpellMgr:hasDivine(divineId)
+	
+	--local count = self:GetUInt32(SPELL_DIVINE_COUNT)
+	--local size = SPELL_DIVINE_START + count * MAX_DIVINE_COUNT
+	
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		--outFmtInfo("divine %d",i)
+		if self:GetByte(i,0) == divineId then
+			return true
+		end
+	end
+	
+	return false
+end
+--添加神兵
+function AppSpellMgr:addDivine(divineId,time)
+	if self:hasDivine(divineId) then
+		return
+	end
 
+	--outFmtInfo("add divine %d,%d",divineId,time)
+
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) == 0 then
+			self:SetByte(i,0,divineId)
+			self:SetUInt32(i + DIVINE_TIME,time)
+			return true;
+		end
+	end
+
+	return false;
+end
+--获得神兵的index、等级和祝福值
+function AppSpellMgr:getDivinIdxLevBless(divineId)
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) == divineId then
+			return i,self:GetByte(i,1),self:GetByte(i,2)
+		end
+	end
+	return 0
+end
+function AppSpellMgr:setDivinLevBless(index,lev,bless)
+	self:SetByte(index,1,lev)
+	self:SetUInt16(index,1,bless)
+end
+
+function AppSpellMgr:GetDivineInitiativeSpellInfo(divineId)
+	local config = tb_divine_base[divineId]
+end
+
+----------------------------------------------神兵结束-------------------------------------------
 
 ----------------------------------------------强化宝石-----------------------------------------------
 -- 获取部位强化等级
@@ -267,6 +321,11 @@ end
 function AppSpellMgr:setStrengMul(val)
 	return self:SetUInt32(SPELL_STRENGTHEN_ALLMUL,val)
 end
+-- 获取全身强化等级加成
+function AppSpellMgr:getStrengMul()
+	return self:GetUInt32(SPELL_STRENGTHEN_ALLMUL)
+end
+
 -- 获取部位当前宝石的等级
 function AppSpellMgr:getGemCurLev(part)
 	local gemid = SPELL_GEM_START + (part-1) * MAX_GEM_COUNT
@@ -286,7 +345,7 @@ function AppSpellMgr:getGemMinLev(part)
 	local gemid = SPELL_GEM_START + (part-1) * MAX_GEM_COUNT
 	local minval = 10000
 
-	for i=0,3 do
+	for i=0,2 do
 		local lev = self:GetUInt32(gemid + i)
 		if lev < minval then
 			minval = lev
@@ -322,6 +381,10 @@ end
 -- 设置全身宝石等级加成
 function AppSpellMgr:setGemMul(val)
 	return self:SetUInt32(SPELL_GEM_ALLMUL,val)
+end
+-- 获取全身宝石等级加成
+function AppSpellMgr:getGemMul()
+	return self:GetUInt32(SPELL_GEM_ALLMUL)
 end
 ----------------------------------------------强化宝石结束-------------------------------------------
 

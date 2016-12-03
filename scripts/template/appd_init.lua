@@ -30,3 +30,8 @@ require("template.tables.tb_gem_cost")
 require("template.tables.tb_gem_mul")
 require("template.tables.tb_gem_pos")
 require("template.tables.tb_gem_rate")
+
+--神兵表
+require("template.tables.tb_divine_base")
+require("template.tables.tb_divine_streng")
+require("template.tables.tb_divine_bless")

@@ -70,11 +70,6 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		return false
 	end
 	
-	if(unitLib.HasUnitState(caster, UNIT_STAT_CAST_SPELL) or unitLib.HasUnitState(caster, UNIT_STAT_SPELL_PROCESS))then
-		--已经在施法，则停止施法
-		unitLib.SpellStop(caster)
-	end
-	
 	--当前是跳跃状态
 	if unitLib.HasBuff(caster, BUFF_JUMP_JUMP) then
 		outFmtDebug("DoHandleSpellStart cannot cast in jumping")
@@ -127,6 +122,12 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		end
 	end
 	
+	if(unitLib.HasUnitState(caster, UNIT_STAT_CAST_SPELL) or unitLib.HasUnitState(caster, UNIT_STAT_SPELL_PROCESS))then
+		--已经在施法，则停止施法
+		unitLib.SpellStop(caster)
+	end
+	
+	--[[
 	--非单点和自身周围释放的技能都得判断距离
 	if target_type ~= SPELL_SHIFANG_DAN and target_type ~= SPELL_SHIFANG_QUN then
 		local dis = casterInfo:GetDistance(tar_x, tar_y)
@@ -141,8 +142,10 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 			return false
 		end
 	end
+	]]
 	
 	-- 判断新手保护
+	--[[
 	if casterInfo:GetTypeID() == TYPEID_PLAYER then
 		if target then
 			local targetInfo = UnitInfo:new{ptr = target}
@@ -165,7 +168,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 			end
 		end
 	end
-
+	]]
 	--当前是跳跃状态
 	
 	--[[
@@ -690,7 +693,7 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 	
 	if shifang == SPELL_SHIFANG_DAN then--目标单体
 		-- 判断释放距离
-		if target then
+		if target and not isInProtected(caster, target) then
 			local isfriend = unitLib.IsFriendlyTo(caster, target)
 			if isfriend == 0 then
 				local tar_x, tar_y = unitLib.GetPos(target)
@@ -728,7 +731,7 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 		end
 		local target = unitLib.GetTarget(caster)	--获得攻击目标
 		if max_count >= 1 then
-			if target then
+			if target and not isInProtected(caster, target) then
 				--目标点
 				local tar_x, tar_y = unitLib.GetPos(target)
 				local pos = GetHitAreaPostion({cast_x,cast_y,shifa_x,shifa_y,tar_x,tar_y,angle})
@@ -744,7 +747,7 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 			if _m_count < max_count then
 				local targets = mapLib.GetCircleTargets(cast_x, cast_y, 20, caster, TARGET_TYPE_ENEMY, true)
 				for _, attack_target in pairs(targets) do
-					if attack_target ~= nil and attack_target ~= target and unitLib.IsCanHit(attack_target) == 0 then
+					if attack_target ~= nil and attack_target ~= target and unitLib.IsCanHit(attack_target) == 0 and not isInProtected(caster, attack_target) then
 						--目标点
 						local tar_x, tar_y = unitLib.GetPos(attack_target)
 						local pos = GetHitAreaPostion({cast_x,cast_y,shifa_x,shifa_y,tar_x,tar_y,angle})
@@ -781,6 +784,30 @@ end
 -- 是否是愤怒技能打到人
 function isAngerSpellHitPlayer(spellId, target)
 	return tb_skill_base[spellId].skill_slot == SLOT_ANGER and GetUnitTypeID(target) == TYPEID_PLAYER
+end
+
+function isInProtected(killer, target)
+	if GetUnitTypeID(killer) ~= TYPEID_PLAYER or GetUnitTypeID(target) ~= TYPEID_PLAYER then
+		return false
+	end
+	
+	--自己在新手保护
+	if unitLib.HasBuff(killer, BUFF_NEW_PLAYER_PROTECTED) then
+		return true
+	end
+	
+	
+	--对方在新手保护
+	if unitLib.HasBuff(target, BUFF_NEW_PLAYER_PROTECTED) then
+		return true
+	end
+	
+	--对方在死亡保护
+	if unitLib.HasBuff(target, BUFF_DEATH_PROTECTED) then
+		return true
+	end
+	
+	return false
 end
 
 function SetSkillStype(caster, spell_id)

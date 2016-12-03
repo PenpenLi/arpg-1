@@ -700,9 +700,26 @@ gem,c2s,154,/*宝石*/,STATUS_NEVER,False
 	part,uint8,False,/*宝石位置*/
 
 #
-change_battle_mode,c2s,155,/*请求切换模式*/,STATUS_NEVER,True
+change_battle_mode,c2s,155,/*请求切换模式*/,STATUS_NEVER,False
 	mode,uint8,False,/*需要切换的模式*/
 
 #
-peace_mode_cd,s2c,156,/*请求切换模式*/,STATUS_NEVER,True
+peace_mode_cd,s2c,156,/*和平模式CD*/,STATUS_NEVER,True
 	mode,uint8,False,/*和平模式CD*/
+
+#
+divine_active,c2s,157,/*激活神兵*/,STATUS_NEVER,False
+	id,uint8,False,/*神兵ID*/
+	
+#
+divine_uplev,c2s,158,/*激活神兵*/,STATUS_NEVER,False
+	id,uint8,False,/*神兵ID*/
+
+#
+divine_switch,c2s,159,/*切换神兵*/,STATUS_NEVER,False
+	id,uint8,False,/*神兵ID*/
+
+#
+jump_start,c2s,160,/*请求跳跃*/,STATUS_NEVER,False
+	pos_x,uint16,False,/*坐标x*/
+	pos_y,uint16,False,/*坐标x*/

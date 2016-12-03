@@ -1519,14 +1519,14 @@ end
 function OnPVPKilled(killer, target)
 	local killerInfo = UnitInfo:new{ptr = killer}
 	local targetInfo = UnitInfo:new{ptr = target}
-	
+		
 	-- 如果targetInfo为和平模式,
 	if targetInfo:isPeaceMode() then
 		-- killer, 是全体模式的恶名值+1
 		if killerInfo:isAllMode() then
 			killerInfo:ModifyNotoriety(1)
-			-- 给死者加个死亡保护
-			SystemAddBuff(targetInfo.ptr, BUFF_DEATH_PROTECTED, 3600)
+			
+			playerLib.SetNeedProtectBuff(targetInfo.ptr)
 		end
 	end
 	-- target, 恶名值-1

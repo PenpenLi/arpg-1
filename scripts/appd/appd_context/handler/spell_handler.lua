@@ -233,3 +233,47 @@ function PlayerInfo:Handle_Illusion(pkt)
 	
 	self:DoHandleIllusion(illuId)
 end
+
+-- 激活神兵
+function PlayerInfo:Handle_Divine_Active(pkt)
+	local id = pkt.id
+	--outFmtInfo("divine active id %d",id)
+	if tb_divine_base[id] == nil then
+		outFmtError("table has no divine id = %d", id)
+		return
+	end
+
+	local spellMgr = self:getSpellMgr()
+
+	if spellMgr:hasDivine(id) then
+		outFmtError("player has already active divine id = %d", id)
+		return
+	end
+
+	self:DivineActive(id)
+
+end
+
+-- 升级神兵
+function PlayerInfo:Handle_Divine_UpLev(pkt)
+	local id = pkt.id
+	local spellMgr = self:getSpellMgr()
+
+	if not spellMgr:hasDivine(id) then
+		outFmtError("player has not already active divine id = %d", id)
+		return
+	end
+
+	self:DivineUpLev(id)
+end
+
+function PlayerInfo:Handle_Divine_Switch(pkt)
+	local id = pkt.id
+	local spellMgr = self:getSpellMgr()
+
+	if not spellMgr:hasDivine(id) then
+		outFmtError("swich divine - player has not already active divine id = %d", id)
+		return
+	end
+	self:switchDivine(id)
+end

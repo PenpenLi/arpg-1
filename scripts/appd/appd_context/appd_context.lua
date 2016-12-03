@@ -678,6 +678,20 @@ function PlayerInfo:GetGirlGM()
 	return math.floor(self:GetGmNum() / 100)
 end
 
+
+-- 移除过期物品
+function PlayerInfo:OnRemoveExpire(expireType, id)
+	-- 幻化和神兵
+	if expireType == EXPIRE_TYPE_ILLUSION or expireType == EXPIRE_TYPE_DIVINE then
+		local spellMgr = self:getSpellMgr()	
+		--TODO:
+		--------------这里是幻化----------------
+		------------------这里是神兵----------------------
+	end
+end
+
+
+
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)
 	if is_force == nil then is_force = false end

@@ -58,14 +58,18 @@ function PlayerInfo:setStrengthMul()
 			minLev = lev
 		end
 	end
+	
 	local allmulID = 0
-	for _, strenmul in pairs(tb_strengthen_mul) do
+	for _, strenmul in ipairs(tb_strengthen_mul) do
 		if strenmul.allstrent <= minLev then
 			allmulID = strenmul.id
 		end
 	end
 
-	spellMgr:setStrengMul(allmulID)
+	local curMul = spellMgr:getStrengMul()
+	if curMul ~= allmulID then
+		spellMgr:setStrengMul(allmulID)
+	end
 
 end
 
@@ -91,15 +95,15 @@ function PlayerInfo:gem (pkt)
 
 	--宝石升满
 	if gemCurLev >= maxLev then
-		outFmtError("gem maxlev %d,%d",curlev,part)
+		outFmtError("gem maxlev %d,%d",gemCurLev,part)
 		return
 	end
 
 	--outFmtInfo("gem type %d",gemtype)
 
 	local gemCurBless = spellMgr:getGemCurBless(part)
-	local config = tb_gem_base[(gemtype-1)*maxLev + gemCurLev + 1]
-	local costConfig = tb_gem_cost[gemtype]
+	--local config = tb_gem_base[(gemtype-1)*maxLev + gemCurLev + 1]
+	local costConfig = tb_gem_cost[gemCurLev + 1]
 
 	--是否有足够的资源
 	if not self:checkMoneyEnoughs(costConfig.cost) then
@@ -115,10 +119,12 @@ function PlayerInfo:gem (pkt)
 		bless = bless * mul
 		local now = gemCurBless + bless
 
-		if now >= config.exp then 
+		--outFmtInfo("gem %d,%d",bless,costConfig.maxexp)
+
+		if now >= costConfig.maxexp then 
 			-- 设置等级 祝福值 切换id 宝石加成
 			spellMgr:setGemCurLev(part,gemCurLev+1)
-			spellMgr:setGemCurBless(part,now-config.exp)
+			spellMgr:setGemCurBless(part,now-costConfig.maxexp)
 			spellMgr:setGemChgID(part)
 			self:setGemMul()
 		else
@@ -139,19 +145,28 @@ function PlayerInfo:setGemMul()
 	local spellMgr = self:getSpellMgr()
 	for i = 1, EQUIPMENT_COUNT do
 		local lev = spellMgr:getGemMinLev(i)
+		outFmtInfo("gem clev %d",lev)
 		if lev < minLev then
 			minLev = lev
 		end
 	end
+
+	--outFmtInfo("gem mul %d",minLev)
 	
 	local allmulID = 0
-	for _, gemmul in pairs(tb_gem_mul) do
+	for _, gemmul in ipairs(tb_gem_mul) do
 		if gemmul.allgem <= minLev then
 			allmulID = gemmul.id
 		end
 	end
+
+	--outFmtInfo("gem mul -- %d",allmulID)
+
+	local curMul = spellMgr:getGemMul()
+	if curMul ~= allmulID then
+		spellMgr:setGemMul(allmulID)
+	end
 	
-	spellMgr:setGemMul(allmulID)
 end
 -- function PlayerInfo:strength (part, isUseMaterial)
 -- 	if part < 0 or part >= MAX_EQUIP_PART_NUMBER then

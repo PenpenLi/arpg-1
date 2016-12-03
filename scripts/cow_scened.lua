@@ -16,16 +16,18 @@ require 'scened.scened_internal_pack'
 config = {
 	--以下来自原来的配置文件
 	max_player_level = 100					,--最大等级
-	new_player_protected_level = 10			,--新手保护最大等级
+	new_player_protected_level = 30			,--新手保护最大等级
 		
-	jump_cd = 3000							,--跳cd
+	jump_cd = 4000							,--跳cd
 	jump_max_distance = 16					,--最大跳跃距离
 	
 	nomal_attack_distance	= 4				,--默认攻击距离
 	
 	can_change_mode	= {PEACE_MODE, FAMILY_MODE, ALL_MODE} ,--允许手动切换的模式
 	
-	peace_mode_cd = 9						,--和平模式CD(秒)
+	peace_mode_cd = 60						,--和平模式CD(秒)
+	
+	dead_protect_CD = 3600					,--死亡保护时间
 	
 	evil_max_value = 10						,--恶人值最大值					
 	
@@ -118,12 +120,13 @@ config = {
 		CMSG_INSTANCE_ENTER,
 		CMSG_RIDE_MOUNT,
 		CMSG_CHANGE_BATTLE_MODE,
+		CMSG_JUMP_START	,-- /*跳跃开始*/
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
 		MSG_SYNC_MSTIME,--同步时间 29
 		MSG_TEST_NETD_SCENED,
-		MSG_JUMP_START	,-- /*跳跃开始*/
+		
 		MSG_JUMP_END	,-- /*跳跃结束*/
 		CMSG_CLIENT_UPDATE_SCENED,	--/*客户端热更场景模块后获取uint*/
 		CMSG_LOOT_SELECT,

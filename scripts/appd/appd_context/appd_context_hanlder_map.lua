@@ -36,4 +36,7 @@ hanlders[CMSG_ILLUSION_MOUNT] = PlayerInfo.Handle_Illusion
 hanlders[CMSG_STRENGTH] = PlayerInfo.strength
 hanlders[CMSG_GEM] = PlayerInfo.gem
 
+hanlders[CMSG_DIVINE_ACTIVE] = PlayerInfo.Handle_Divine_Active
+hanlders[CMSG_DIVINE_UPLEV] = PlayerInfo.Handle_Divine_UpLev
+
 return hanlders

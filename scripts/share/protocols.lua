@@ -165,7 +165,11 @@ CMSG_RIDE_MOUNT		= 152	-- /*申请骑乘*/
 SMSG_GRID_UNIT_JUMP		= 153	-- /*grid中的unit跳跃*/	
 CMSG_GEM		= 154	-- /*宝石*/	
 CMSG_CHANGE_BATTLE_MODE		= 155	-- /*请求切换模式*/	
-SMSG_PEACE_MODE_CD		= 156	-- /*请求切换模式*/	
+SMSG_PEACE_MODE_CD		= 156	-- /*和平模式CD*/	
+CMSG_DIVINE_ACTIVE		= 157	-- /*激活神兵*/	
+CMSG_DIVINE_UPLEV		= 158	-- /*激活神兵*/	
+CMSG_DIVINE_SWITCH		= 159	-- /*切换神兵*/	
+CMSG_JUMP_START		= 160	-- /*请求跳跃*/	
 
 
 ---------------------------------------------------------------------
@@ -5644,26 +5648,147 @@ function Protocols.unpack_change_battle_mode (pkt)
 end
 
 
--- /*请求切换模式*/	
+-- /*和平模式CD*/	
 function Protocols.pack_peace_mode_cd ( mode)
 	local output = Packet.new(SMSG_PEACE_MODE_CD)
 	output:writeByte(mode)
 	return output
 end
 
--- /*请求切换模式*/	
+-- /*和平模式CD*/	
 function Protocols.call_peace_mode_cd ( playerInfo, mode)
 	local output = Protocols.	pack_peace_mode_cd ( mode)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
--- /*请求切换模式*/	
+-- /*和平模式CD*/	
 function Protocols.unpack_peace_mode_cd (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.mode = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*激活神兵*/	
+function Protocols.pack_divine_active ( id)
+	local output = Packet.new(CMSG_DIVINE_ACTIVE)
+	output:writeByte(id)
+	return output
+end
+
+-- /*激活神兵*/	
+function Protocols.call_divine_active ( playerInfo, id)
+	local output = Protocols.	pack_divine_active ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*激活神兵*/	
+function Protocols.unpack_divine_active (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*激活神兵*/	
+function Protocols.pack_divine_uplev ( id)
+	local output = Packet.new(CMSG_DIVINE_UPLEV)
+	output:writeByte(id)
+	return output
+end
+
+-- /*激活神兵*/	
+function Protocols.call_divine_uplev ( playerInfo, id)
+	local output = Protocols.	pack_divine_uplev ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*激活神兵*/	
+function Protocols.unpack_divine_uplev (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*切换神兵*/	
+function Protocols.pack_divine_switch ( id)
+	local output = Packet.new(CMSG_DIVINE_SWITCH)
+	output:writeByte(id)
+	return output
+end
+
+-- /*切换神兵*/	
+function Protocols.call_divine_switch ( playerInfo, id)
+	local output = Protocols.	pack_divine_switch ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*切换神兵*/	
+function Protocols.unpack_divine_switch (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*请求跳跃*/	
+function Protocols.pack_jump_start ( pos_x ,pos_y)
+	local output = Packet.new(CMSG_JUMP_START)
+	output:writeI16(pos_x)
+	output:writeI16(pos_y)
+	return output
+end
+
+-- /*请求跳跃*/	
+function Protocols.call_jump_start ( playerInfo, pos_x ,pos_y)
+	local output = Protocols.	pack_jump_start ( pos_x ,pos_y)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求跳跃*/	
+function Protocols.unpack_jump_start (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.pos_x = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.pos_y = input:readU16()
 	if not ret then
 		return false
 	end
@@ -5831,6 +5956,10 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_gem = self.call_gem
 	playerInfo.call_change_battle_mode = self.call_change_battle_mode
 	playerInfo.call_peace_mode_cd = self.call_peace_mode_cd
+	playerInfo.call_divine_active = self.call_divine_active
+	playerInfo.call_divine_uplev = self.call_divine_uplev
+	playerInfo.call_divine_switch = self.call_divine_switch
+	playerInfo.call_jump_start = self.call_jump_start
 end
 
 local unpack_handler = {
@@ -5986,6 +6115,10 @@ local unpack_handler = {
 [CMSG_GEM] =  Protocols.unpack_gem,
 [CMSG_CHANGE_BATTLE_MODE] =  Protocols.unpack_change_battle_mode,
 [SMSG_PEACE_MODE_CD] =  Protocols.unpack_peace_mode_cd,
+[CMSG_DIVINE_ACTIVE] =  Protocols.unpack_divine_active,
+[CMSG_DIVINE_UPLEV] =  Protocols.unpack_divine_uplev,
+[CMSG_DIVINE_SWITCH] =  Protocols.unpack_divine_switch,
+[CMSG_JUMP_START] =  Protocols.unpack_jump_start,
 
 }
 

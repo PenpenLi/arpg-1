@@ -29,7 +29,7 @@ function InstanceFieldBase:DoIsFriendly(killer_ptr, target_ptr)
 			
 			-- 如果都是友好的 且 我是自卫反击模式
 			if ret then
-				if killerMode == SELF_DEFENSE_MODE and killerInfo:GetSelfProtectedUIntGuid() == targetInfo:GetIntGuid() then
+				if killerMode == SELF_DEFENSE_MODE and killerInfo:GetSelfProtectedUIntGuid() == targetInfo:GetIntGuid() and targetMode ~= PEACE_MODE and targetMode ~= SELF_DEFENSE_MODE then
 					ret = false
 				end
 			end

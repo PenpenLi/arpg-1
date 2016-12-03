@@ -11,7 +11,7 @@ function Script_Teleport_Check(player_ptr, entry, x, y)
 	local status = playerLib.GetPlayeCurFightStatus(player_ptr)
 	if status == COMBAT_STATE_ENTER then
 		--self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_FIGHT)
-		return
+		return false
 	end
 	
 	-- 左上

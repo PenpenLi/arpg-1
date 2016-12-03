@@ -31,7 +31,7 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 	local prev = spellMgr:getSpellLevel(spellId)
 	spellMgr:onRaiseSpell(raiseType, spellId)
 	local spellLv = spellMgr:getSpellLevel(spellId)
-	local spellTable = {}
+	--local spellTable = {}
 	
 	-- 在技能槽的修改技能槽数据(怒气技能也是主动技能)
 	if self:isInitiativeSpell(config.is_initiative) or self:isAngerSpell(spellId) then
@@ -39,27 +39,39 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 		if self:isSloted(spellId) then
 			local slot = config.skill_slot
 			self:replace(slot, spellId, spellLv)
-			table.insert(spellTable, {spellId, spellLv})
+			--table.insert(spellTable, {spellId, spellLv})
 			
 			-- 如果是连招
 			local arry = tb_skill_base[spellId].follow
 			for _, id in pairs(arry) do
 				self:replace(slot, id, spellLv)
-				table.insert(spellTable, {id, spellLv})
+			--	table.insert(spellTable, {id, spellLv})
 			end
+		else
+			self:SetSpellInfo(spellId, spellLv)
 		end
 	elseif self:isPassiveSpell(config.is_initiative) then
-		--同步被动技能到p对象中
-		self:updatePassive(spellId, spellLv)
-		table.insert(spellTable, {spellId, spellLv})
+		--同步非神兵的被动技能到p对象中
+		if not self:isDivineSpell(spellId) then
+			self:updatePassive(spellId, spellLv)
+		else
+			-- 同步神兵被动
+			self:updateDivinePassive(spellId, spellLv)
+		end
+		--table.insert(spellTable, {spellId, spellLv})
 	elseif self:isSupportSpell(config.is_initiative) then
-		playerLib.SetSpellLevel(self.ptr, spellId, spellLv)
+		self:SetSpellInfo(spellId, spellLv)
 	end
 	
 	-- 是否发送场景服
-	self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
+	--self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
 	
 	outFmtInfo("raise spell %d success, from %d to %d", spellId, prev, spellLv)
+end
+
+-- 设置技能信息
+function PlayerInfo:SetSpellInfo(spellId, spellLv)
+	playerLib.SetSpellLevel(self.ptr, spellId, spellLv)
 end
 
 -- 怒气技能进阶
@@ -78,7 +90,7 @@ function PlayerInfo:DoHandleUpgradeAngleSpell(spellId)
 	self:replace(slot, nextId, 1)
 	
 	--发送到场景服替换主动技能信息
-	self:Send2ScenedReplaceEquipedSpell(slot, nextId, 1)
+	--self:Send2ScenedReplaceEquipedSpell(slot, nextId, 1)
 	
 	outFmtInfo("upgrade spell success, from %d to %d", spellId, nextId)
 end
@@ -184,9 +196,9 @@ function PlayerInfo:onActiveSpell(spellId)
 			-- 同步主动技能到p对象
 			self:replace(slot, spellId, 1)
 			--发送到场景服替换主动技能信息
-			self:Send2ScenedReplaceEquipedSpell(slot, spellId, 1)
+			--self:Send2ScenedReplaceEquipedSpell(slot, spellId, 1)
 		else
-			playerLib.SetSpellLevel(self.ptr, spellId, 1)
+			self:SetSpellInfo(spellId, 1)
 		end
 		outFmtInfo("on active spell %d", spellId)
 		return
@@ -207,7 +219,7 @@ function PlayerInfo:onActiveSpellWithoutInitiative(spellId)
 		local spellTable = {}
 		table.insert(spellTable, {spellId, 1})
 		-- 发送到场景服更新被动技能信息
-		self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
+		--self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
 		
 		return
 	end
@@ -228,6 +240,10 @@ end
 -- 是否是怒气技能
 function PlayerInfo:isAngerSpell(spellId)
 	return tb_skill_base[spellId].skill_slot == SLOT_ANGER
+end
+
+function PlayerInfo:isDivineSpell(spellId)
+	return tb_skill_base[spellId].skill_type == SKILL_TYPE_DIVINE
 end
 
 -- 是否是基础技能
@@ -323,10 +339,6 @@ end
 function PlayerInfo:hasSkillBySlot(slot)
 	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
 		local sl = self:GetByte(i, BYTE_SLOT)
-		if sl == 0 then
-			break
-		end
-		
 		if sl == slot then
 			return true
 		end
@@ -335,6 +347,7 @@ function PlayerInfo:hasSkillBySlot(slot)
 	return false
 end
 
+--[[
 -- 判断是否需要发送场景服
 function PlayerInfo:sendSpellInfoIfEnabled(is_initiative, spellTable)
 	-- 主动技能
@@ -391,8 +404,7 @@ end
 function PlayerInfo:Send2ScenedUpdatePassiveInfo(spellTable)
 	self:Send2ScenedUpdateSpell(TYPE_SPELL_PASSIVE, spellTable)
 end
-
-
+]]
 
 
 
@@ -657,6 +669,160 @@ function PlayerInfo:DoHandleIllusion(illuId)
 	--[[
 	self:Send2ScenedIllusion(illuId)
 	]]
+end
+
+
+--同步神兵被动
+function PlayerInfo:updateDivinePassive(spellId, spellLv)
+	--如果是装备的被动技能
+	for i = PLAYER_INT_FIELD_DIVINE_PASSIVE_START, PLAYER_INT_FIELD_DIVINE_PASSIVE_END do
+		local id = self:GetUInt16(i, 0)
+		if id == spellId then
+			self:SetUInt16(i, 1, spellLv)
+			return
+		end
+	end
+	
+	-- 被动没装备
+	self:SetSpellInfo(spellId, spellLv)
+end
+
+
+-- 神兵的技能解锁
+function PlayerInfo:onDivineActivedSpell(divineId, spellId)
+	playerLib.ActiveDivineSpell(self.ptr, divineId, spellId)
+end
+
+-- 替换神兵
+function PlayerInfo:switchDivine(divineId)
+	if self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID) == divineId then
+		return
+	end
+	
+	local spellMgr = self:getSpellMgr()
+	
+	-- TODO, 这个方法需要自己去写
+	local spell, lv = spellMgr:GetDivineInitiativeSpellInfo(divineId)
+	
+	self:replace(SLOT_DIVINE, spell, lv)
+	
+	-- TODO, 这个方法需要自己去写, 返回格式 {{spellId, lv},...}
+	local passiveInfoTable = spellMgr:GetDivinePassiveSpellInfoTable(divineId)
+	local indx = 0
+	for i = 1, #passiveInfoTable do
+		indx = PLAYER_INT_FIELD_DIVINE_PASSIVE_START + i - 1
+		self:SetUInt16(indx, 0, passiveInfoTable[ i ][ 1 ])
+		self:SetUInt16(indx, 1, passiveInfoTable[ i ][ 2 ])
+	end
+	
+	-- 把其余的位置置空
+	for i = indx + 1, PLAYER_INT_FIELD_DIVINE_PASSIVE_END do
+		if self:GetUInt32(i) > 0 then
+			self:SetUInt32(i, 0)
+		end
+	end
+end
+
+-------------------------------------神兵------------------------------------------
+-- 申请激活神兵
+function PlayerInfo:DivineActive(divineId)
+
+	local config = tb_divine_base[divineId]
+
+	local activeType = config.avtivetype
+	local activeData = config.avtivedata
+
+	local spellMgr = self:getSpellMgr()
+
+	--道具激活
+	if activeType == 1 then
+		if self:useMulItem(activeData) then
+			return self:ApplyDivineActive(config.id,config.time)
+		else 
+			outFmtError("active divine has not enough item");
+			return false;
+		end
+
+	--资源激活
+	elseif activeType == 2 then
+		local tf,tab = self:checkMoneyEnoughIfUseGoldIngot(activeData)
+
+		if tf then 
+			if self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
+				return self:ApplyDivineActive(config.id,config.time)
+			else
+				outFmtError("active divine has not enough money");
+			end
+		else 
+			outFmtError("active divine has not enough money");
+		end
+	--累计登录激活
+	elseif activeType == 3 then
+
+	--累计pvp激活
+	elseif activeType == 4 then
+
+	--vip激活
+	elseif activeType == 5 then
+
+	end
+end
+--应用激活
+function PlayerInfo:ApplyDivineActive(id,t)
+	local time = 0
+	if t > 0 then
+		time = os.time() + t  * 3600 -- FIXME 需要自动移除
+	end
+	local spellMgr = self:getSpellMgr()
+	if spellMgr:addDivine(id,time) then
+		--激活主动技能
+		local config = tb_divine_base[id]
+		self:onDivineActivedSpell(id,config.skill)
+		return true
+	end
+	return false
+end
+--升级神兵
+function PlayerInfo:DivineUpLev(divineId)
+	local spellMgr = self:getSpellMgr()
+	local idx,curlev,curbless = spellMgr:getDivinIdxLevBless(divineId)
+
+	if curlev >= #tb_divine_bless then
+		outFmtError("divine is max lev already")
+		return 
+	end
+
+	local config = tb_divine_bless[curlev + 1]
+
+	--是否有足够的道具
+	if not self:hasMulItem(config.cost) then
+		outFmtError("divine up lev resouce not enough")
+		return
+	end
+
+	--扣除道具加祝福值
+	if self:useMulItem(config.cost) then
+		local bless = GetRandomExp(config.blessrate)
+	 	local now = curbless + bless
+	 	--祝福值满，升级
+	 	if now >= config.bless then
+	 		local nowLev = curlev + 1
+	 		spellMgr:setDivinLevBless(idx,nowLev,now-config.bless)
+
+	 		--激活对应的被动技能
+	 		local slist = tb_divine_base[divineId].passiveskill
+	 		for _, skill in pairs(slist) do
+	 			if skill[2] == nowLev then
+	 				self:onDivineActivedSpell(divineId,skill[1])
+	 			end
+	 		end
+
+	 	else
+	 		spellMgr:setDivinLevBless(idx,curlev,now)
+	 	end
+	end
+
+
 end
 
 --[[

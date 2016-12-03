@@ -36,6 +36,9 @@ function ScenedContext:Hanlde_Change_Battle_Mode( pkt )
 			outFmtError("battle mode change to peace mode is in cd")
 			return
 		end
+	else
+		-- 删除死亡保护
+		unitLib.RemoveBuff(self.ptr, BUFF_DEATH_PROTECTED)
 	end
 		
 	self:SetBattleMode(mode)
@@ -191,8 +194,9 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 		return
 	end
 	
-	-- 骑乘状态不能跳跃?
+	-- 骑乘状态下坐骑, 然后跳跃? 还是不能跳跃
 	
+	--[[
 	--如果是2段跳，判断是否激活了2段跳技能
 	if unitLib.HasBuff(player_ptr, BUFF_JUMP_JUMP) then
 		if not self:IsActiveSpell(5) then
@@ -201,9 +205,10 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 			return
 		end
 	end 
+	]]
 	
 	--验证cd
-	local cur_time = getMsTime()			--获取服务器运行时间
+	local cur_time = os.time()			--获取服务器运行时间
 	local cd_time = self:GetPlayerJumpCd()	-- 玩家跳跃技能cd
 	if cur_time < cd_time then
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_SPELL_CD)
@@ -212,18 +217,17 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	
 	
 	--距离验证
-	local MAX_CAST_DISTANCE = 20
 	local angle = self:GetAngle(dst_x, dst_y)
 	local distance = self:GetDistance(dst_x, dst_y)
 	local cas_x, cas_y = unitLib.GetPos(player_ptr)
-	if distance > MAX_CAST_DISTANCE then
-		distance = MAX_CAST_DISTANCE
+	if distance > config.jump_max_distance then
+		distance = config.jump_max_distance
 	end
 	
 	while(distance > 0)do
-		local dstx = cas_x + distance * math.cos(angle)
-		local dsty = cas_y + distance * math.sin(angle)
-		if mapLib.IsCanRun(map_ptr, dstx, dsty) == 1 then
+		dst_x = cas_x + distance * math.cos(angle)
+		dst_y = cas_y + distance * math.sin(angle)
+		if mapLib.IsCanRun(map_ptr, dst_x, dst_y) == 1 then
 			break
 		else
 			distance = distance - 0.3
@@ -272,8 +276,8 @@ function ScenedContext:Hanlde_Jump_End(packet)
 	end
 	
 	--设置cd
-	local cur_time = getMsTime()
-	local cd = tb_skill_base[4].singleCD
+	local cur_time = os.time()
+	local cd = config.jump_cd
 	self:SetPlayerJumpCd(cur_time + cd)
 	--移除BUFF
 	unitLib.RemoveBuff(player_ptr, BUFF_JUMP_JUMP)
@@ -495,7 +499,7 @@ packet.register_on_external_packet(function ( player_ptr, pkt )
 	else
 		args.__optcode = optcode		
 		if OpcodeHandlerFuncTable[optcode] then
-			OpcodeHandlerFuncTable[optcode](_player, args)
+			doxpcall(OpcodeHandlerFuncTable[optcode], _player, args)
 		end
 	end
 end)
