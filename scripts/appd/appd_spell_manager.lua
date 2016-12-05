@@ -246,6 +246,48 @@ function AppSpellMgr:raiseIlluSpell(spellId)
 		end
 	end
 end
+
+-- 获得幻化的binlogindex
+function AppSpellMgr:getIllusionBinLogIndex(illuId)
+	local indx = -1
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
+		if self:GetUInt32(ILLUSION_ATTR_ID + i) == illuId then
+			indx = i
+			break
+		end
+	end
+	
+	return indx
+end
+
+-- 移除幻化
+function AppSpellMgr:removeIllusion(illuId)
+	-- 清空幻化
+	local indx = self:getIllusionBinLogIndex(illuId)
+	if indx > -1 then
+		self:SetUInt32(ILLUSION_ATTR_ID + indx, 0)
+		for i = ILLUSION_ATTR_SPELL_START, ILLUSION_ATTR_SPELL_END-1 do
+			self:SetUInt32(i + indx, 0)		
+		end
+		self:SetUInt32(ILLUSION_ATTR_EXPIRE + indx, 0)
+	end
+end
+
+-- 获得坐骑幻化技能
+function AppSpellMgr:getIllusionSkill(illuId)
+	local indx = self:getIllusionBinLogIndex(illuId)
+	local skillTable = {}
+	
+	if indx > -1 then
+		for i = ILLUSION_ATTR_SPELL_START, ILLUSION_ATTR_SPELL_END-1 do
+			local spellId = self:GetUInt16(i + indx, 0)
+			table.insert(skillTable, spellId)
+		end
+	end
+	
+	return skillTable
+end
+
 ----------------------------------------------神兵-----------------------------------------------
 -- 是否存在神兵
 function AppSpellMgr:hasDivine(divineId)
@@ -280,6 +322,34 @@ function AppSpellMgr:addDivine(divineId,time)
 
 	return false;
 end
+
+function AppSpellMgr:addDivineSkill(divineId,skill,isPassive)
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) == divineId then
+			outFmtInfo("add skill %d,%d,%d",i,divineId,skill)
+			if isPassive then -- 添加被动技能
+				for j = 0,2 do 
+					local pid = self:GetUInt16(i+DIVINE_PASSIVE_SKILL+j,0)
+					if pid == skill then -- 已经存在被动技能
+						outFmtError("divine passive skill has exist")
+						return
+					end
+
+					if pid == 0 then
+						self:SetUInt16(i+DIVINE_PASSIVE_SKILL+j,0,skill)
+						self:SetUInt16(i+DIVINE_PASSIVE_SKILL+j,1,1)
+						return
+					end
+				end
+				outFmtError("divine passive skill canot add")
+			else --添加主动技能
+				self:SetUInt16(i+DIVINE_SKILL,0,skill)
+				self:SetUInt16(i+DIVINE_SKILL,1,1)
+			end
+		end
+	end
+
+end
 --获得神兵的index、等级和祝福值
 function AppSpellMgr:getDivinIdxLevBless(divineId)
 	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
@@ -295,7 +365,28 @@ function AppSpellMgr:setDivinLevBless(index,lev,bless)
 end
 
 function AppSpellMgr:GetDivineInitiativeSpellInfo(divineId)
-	local config = tb_divine_base[divineId]
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) == divineId then
+			local sid = self:GetUInt16(i+DIVINE_SKILL,0)
+			local lev = self:GetUInt16(i+DIVINE_SKILL,1)
+			return sid,lev
+		end
+	end
+	return 0,0
+end 
+function AppSpellMgr:GetDivinePassiveSpellInfoTable(divineId)
+	
+	local tab = {}
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) == divineId then
+			for j=0,2 do
+				local sid = self:GetUInt16(i+DIVINE_PASSIVE_SKILL+j,0)
+				local lev = self:GetUInt16(i+DIVINE_PASSIVE_SKILL+j,1)
+				table.insert(tab, {sid, lev})
+			end
+		end
+	end
+	return tab
 end
 
 ----------------------------------------------神兵结束-------------------------------------------

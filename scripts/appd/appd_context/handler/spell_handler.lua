@@ -266,7 +266,7 @@ function PlayerInfo:Handle_Divine_UpLev(pkt)
 
 	self:DivineUpLev(id)
 end
-
+--切换神兵
 function PlayerInfo:Handle_Divine_Switch(pkt)
 	local id = pkt.id
 	local spellMgr = self:getSpellMgr()

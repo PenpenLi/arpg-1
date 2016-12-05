@@ -681,13 +681,33 @@ end
 
 -- 移除过期物品
 function PlayerInfo:OnRemoveExpire(expireType, id)
-	-- 幻化和神兵
-	if expireType == EXPIRE_TYPE_ILLUSION or expireType == EXPIRE_TYPE_DIVINE then
+	-- 幻化
+	if expireType == EXPIRE_TYPE_ILLUSION then
+		local spellMgr = self:getSpellMgr()
+		
+		-- 移除幻化数据
+		self:RemoveIllusion(id)
+		
+		-- 移除数据
+		spellMgr:removeIllusion(id)
+		
+		-- 重算属性
+		playerLib.SendAttr(self.ptr)
+		
+	-- 神兵
+	elseif expireType == EXPIRE_TYPE_DIVINE then
 		local spellMgr = self:getSpellMgr()	
-		--TODO:
-		--------------这里是幻化----------------
-		------------------这里是神兵----------------------
+		
+		if self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID) == id then
+			self:switchDivine(0)
+		else
+			--TODO:删除神兵
+		end
+		
+		playerLib.SendAttr(self.ptr)
 	end
+	
+	
 end
 
 

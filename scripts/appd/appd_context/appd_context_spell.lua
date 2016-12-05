@@ -51,13 +51,7 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 			self:SetSpellInfo(spellId, spellLv)
 		end
 	elseif self:isPassiveSpell(config.is_initiative) then
-		--同步非神兵的被动技能到p对象中
-		if not self:isDivineSpell(spellId) then
-			self:updatePassive(spellId, spellLv)
-		else
-			-- 同步神兵被动
-			self:updateDivinePassive(spellId, spellLv)
-		end
+		self:updatePassive(spellId, spellLv)
 		--table.insert(spellTable, {spellId, spellLv})
 	elseif self:isSupportSpell(config.is_initiative) then
 		self:SetSpellInfo(spellId, spellLv)
@@ -160,7 +154,7 @@ function PlayerInfo:activeBaseSpell(spellId, activeType)
 	-- 激活技能
 	spellMgr:activeBaseSpell(spellId)
 	
-	self:onActiveSpell(spellId)
+	self:onActiveSpell(spellId, true)
 end
 
 -- 判断人物等级是否满足条件
@@ -185,18 +179,28 @@ function PlayerInfo:isSupportSpell(initiative)
 end
 
 -- 激活技能
-function PlayerInfo:onActiveSpell(spellId)
+function PlayerInfo:onActiveSpell(spellId, autoEquip)
 	local config   = tb_skill_base[spellId]
+	
+	-- 判断技能是否存在
+	if not self:isSpellExist(spellId) then
+		outFmtError("spellId %d not exist", spellId)
+		return
+	end
+	
+	-- 判断玩家是否拥有这个技能
+	if self:hasSpell(spellId) then
+		outFmtError("player has exist spellId %d", spellId)
+		return
+	end
 	
 	-- 如果是主动技能
 	if self:isInitiativeSpell(config.is_initiative) then
 		local config = tb_skill_base[spellId]
 		local slot = config.skill_slot
-		if not self:hasSkillBySlot(slot) then
+		if not self:hasSkillBySlot(slot) and autoEquip then
 			-- 同步主动技能到p对象
 			self:replace(slot, spellId, 1)
-			--发送到场景服替换主动技能信息
-			--self:Send2ScenedReplaceEquipedSpell(slot, spellId, 1)
 		else
 			self:SetSpellInfo(spellId, 1)
 		end
@@ -210,24 +214,31 @@ end
 -- 可适用坐骑激活技能
 function PlayerInfo:onActiveSpellWithoutInitiative(spellId)
 	local config   = tb_skill_base[spellId]
-	outFmtInfo("on active spell %d", spellId)
+	
+	-- 判断技能是否存在
+	if not self:isSpellExist(spellId) then
+		outFmtError("spellId %d not exist", spellId)
+		return
+	end
+	
+	-- 判断玩家是否拥有这个技能
+	if self:hasSpell(spellId) then
+		outFmtError("player has exist spellId %d", spellId)
+		return
+	end
 	
 	-- 被动技能发送场景服
 	if self:isPassiveSpell(config.is_initiative) then
 		--同步到p对象中
 		self:updatePassive(spellId, 1)
-		local spellTable = {}
-		table.insert(spellTable, {spellId, 1})
-		-- 发送到场景服更新被动技能信息
-		--self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
-		
+		outFmtInfo("on active spell %d", spellId)
 		return
 	end
 	
 	-- 辅助技能
 	if self:isSupportSpell(config.is_initiative) then
 		playerLib.AddSupportSpell(self.ptr, spellId)
-		
+		outFmtInfo("on active spell %d", spellId)
 		return
 	end
 end
@@ -671,55 +682,80 @@ function PlayerInfo:DoHandleIllusion(illuId)
 	]]
 end
 
-
---同步神兵被动
-function PlayerInfo:updateDivinePassive(spellId, spellLv)
-	--如果是装备的被动技能
-	for i = PLAYER_INT_FIELD_DIVINE_PASSIVE_START, PLAYER_INT_FIELD_DIVINE_PASSIVE_END do
-		local id = self:GetUInt16(i, 0)
-		if id == spellId then
-			self:SetUInt16(i, 1, spellLv)
-			return
-		end
+function PlayerInfo:RemoveIllusion(illuId)
+	-- 如果是幻化的需要除去幻化
+	if self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3) == illuId then
+		self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3, 0)
 	end
 	
-	-- 被动没装备
-	self:SetSpellInfo(spellId, spellLv)
+	-- 移除技能
+	local spellTable = spellMgr:getIllusionSkill(illuId)
+	for _, spellId in pairs(spellTable) do
+		local config = tb_skill_base[spellId]
+		if self:isPassiveSpell(config.is_initiative) then
+			self:updatePassive(spellId, 0)
+		elseif self:isSupportSpell(config.is_initiative) then
+			self:SetSpellInfo(spellId, 0)
+		end
+	end
 end
 
 
 -- 神兵的技能解锁
-function PlayerInfo:onDivineActivedSpell(divineId, spellId)
-	playerLib.ActiveDivineSpell(self.ptr, divineId, spellId)
+
+function PlayerInfo:onDivineActivedSpell(divineId, spellId,isPassive)
+	
+	-- 判断技能是否存在
+	if not self:isSpellExist(spellId) then
+		outFmtError("spellId %d not exist", spellId)
+		return
+	end
+	
+	-- 判断玩家是否拥有这个技能
+	if self:hasSpell(spellId) then
+		outFmtError("player has spellId %d", spellId)
+		return
+	end
+
+	local spellMgr = self:getSpellMgr()
+	spellMgr:addDivineSkill(divineId, spellId,isPassive)
+
+	self:onActiveSpell(spellId)
+	
 end
 
 -- 替换神兵
 function PlayerInfo:switchDivine(divineId)
-	if self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID) == divineId then
+	local prev = self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID)
+	if prev == divineId then
+
 		return
 	end
+
+	self:SetUInt32(PLAYER_INT_FIELD_DIVINE_ID, divineId)
 	
 	local spellMgr = self:getSpellMgr()
+	local spell = 0
+	local lv = 0
 	
-	-- TODO, 这个方法需要自己去写
-	local spell, lv = spellMgr:GetDivineInitiativeSpellInfo(divineId)
-	
+	if divineId > 0 then
+		-- TODO, 这个方法需要自己去写
+		spell, lv = spellMgr:GetDivineInitiativeSpellInfo(divineId)
+	end
 	self:replace(SLOT_DIVINE, spell, lv)
 	
 	-- TODO, 这个方法需要自己去写, 返回格式 {{spellId, lv},...}
-	local passiveInfoTable = spellMgr:GetDivinePassiveSpellInfoTable(divineId)
-	local indx = 0
-	for i = 1, #passiveInfoTable do
-		indx = PLAYER_INT_FIELD_DIVINE_PASSIVE_START + i - 1
-		self:SetUInt16(indx, 0, passiveInfoTable[ i ][ 1 ])
-		self:SetUInt16(indx, 1, passiveInfoTable[ i ][ 2 ])
+	local prevPassiveInfoTable = spellMgr:GetDivinePassiveSpellInfoTable(prev)
+	for i = 1, #prevPassiveInfoTable do
+		local spellId = prevPassiveInfoTable[ i ][ 1 ]
+		self:updatePassive(spellId, 0)
 	end
 	
-	-- 把其余的位置置空
-	for i = indx + 1, PLAYER_INT_FIELD_DIVINE_PASSIVE_END do
-		if self:GetUInt32(i) > 0 then
-			self:SetUInt32(i, 0)
-		end
+	local passiveInfoTable = spellMgr:GetDivinePassiveSpellInfoTable(divineId)
+	for i = 1, #passiveInfoTable do
+		local spellId = passiveInfoTable[ i ][ 1 ]
+		local spellLv = passiveInfoTable[ i ][ 2 ]
+		self:updatePassive(spellId, spellLv)
 	end
 end
 
@@ -777,7 +813,7 @@ function PlayerInfo:ApplyDivineActive(id,t)
 	if spellMgr:addDivine(id,time) then
 		--激活主动技能
 		local config = tb_divine_base[id]
-		self:onDivineActivedSpell(id,config.skill)
+		self:onDivineActivedSpell(id,config.skill,false)
 		return true
 	end
 	return false
@@ -811,9 +847,12 @@ function PlayerInfo:DivineUpLev(divineId)
 
 	 		--激活对应的被动技能
 	 		local slist = tb_divine_base[divineId].passiveskill
+	 		--outFmtInfo("skill lengt",#slist)
 	 		for _, skill in pairs(slist) do
+	 			--outFmtInfo("passive skill %d,%d",skill[1],skill[2])
 	 			if skill[2] == nowLev then
-	 				self:onDivineActivedSpell(divineId,skill[1])
+	 				--outFmtInfo("mingzhong passive skill %d",skill[1])
+	 				self:onDivineActivedSpell(divineId,skill[1],true)
 	 			end
 	 		end
 

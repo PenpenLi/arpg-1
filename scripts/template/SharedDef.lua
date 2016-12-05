@@ -1106,8 +1106,9 @@ FUNCTIONAL_QING_GONG = 1	-- 轻功
 FUNCTIONAL_TI_YUN_ZONG = 2	-- 梯云纵
 FUNCTIONAL_RIDE = 3	-- 骑乘
 FUNCTIONAL_DA_ZUO = 4	-- 打坐
-PLAYER_SLOT_SPELL_MAX_COUNT = 12	-- 玩家技能槽信息上限
-PLAYER_IMPORTANT_CD_COUNT = 20	-- 玩家重要技能的CD
+PLAYER_SLOT_SPELL_MAX_COUNT = 12	--  玩家技能槽信息上限
+PLAYER_IMPORTANT_CD_COUNT = 20	--  玩家重要技能的CD
+PLAYER_PASSIVE_SPELL_MAX_COUNT = 50	--  被动技能个数
 --  玩家技能槽的技能信息
 SHORT_SLOT_SPELL_ID = 0	-- 技能槽中的技能id	占一个short
 BYTE_SLOT_SPELL_LV = 2	-- 技能槽中的技能lv	占一个byte
@@ -1243,10 +1244,8 @@ PLAYER_INT_FIELD_KUAFU_NUMBER = 563	-- 0:玩家报名跨服时收到匹配信息
 PLAYER_INT_FIELD_MAIN_QUEST_ID = 564	-- 当前主线任务
 PLAYER_INT_FIELD_MOUNT_LEVEL = 565	-- 1个short, 2个bytes(0:是否激活, 2:当前坐骑是否骑乘，3:当前幻化id)
 PLAYER_INT_FIELD_DIVINE_ID = 566	-- 当前装备的神兵id
-PLAYER_INT_FIELD_DIVINE_PASSIVE_START = 567	-- 神兵被动技能开始
-PLAYER_INT_FIELD_DIVINE_PASSIVE_END = 570	-- 神兵被动技能结束
-PLAYER_INT_FIELD_PASSIVE_SPELL_COUNT = 570	-- 被动技能的个数(暂时没用)
-PLAYER_INT_FIELD_PASSIVE_SPELL_START = 571	-- 被动技能开始
+PLAYER_INT_FIELD_PASSIVE_SPELL_START = 567	-- 被动技能开始
+PLAYER_INT_FIELD_PASSIVE_SPELL_END = 617	-- 被动技能个数
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 字符串部分
 PLAYER_STRING_FIELD_ACCOUNT = 4	-- 账号
@@ -1273,6 +1272,7 @@ SKILL_TYPE_DIVINE = 4	-- 神兵技能
 MOUNT_UPGRADE_SKILL_COUNT = 10
 MOUNT_ILLUSION_COUNT = 30
 EQUIPMENT_COUNT = 10
+DIVINE_PASSIVE_SKILL_COUNT = 3
 --  幻化属性
 ILLUSION_ATTR_ID = 0	-- 幻化id
 ILLUSION_ATTR_SPELL_START = 1	-- 幻化技能开始
@@ -1288,7 +1288,9 @@ GEM_CURID_BLESS = 3	-- 当前宝石  1short 宝石祝福值 0short
 MAX_GEM_COUNT = 4
 DIVINE_ID_LEV_BLESS = 0	-- 神兵 id_8 等级lev_8 祝福值bless_16
 DIVINE_TIME = 1	-- 神兵到期时间
-MAX_DIVINE_COUNT = 2
+DIVINE_SKILL = 2
+DIVINE_PASSIVE_SKILL = 3
+MAX_DIVINE_COUNT = 6
 --  升级技能类型
 RAISE_BASE_SKILL = 1	-- 基础技能
 RAISE_MOUNT_SKILL = 2	-- 坐骑技能
@@ -1312,7 +1314,7 @@ SPELL_GEM_END = 217	-- 宝石结束
 SPELL_GEM_ALLMUL = 218	-- 全身宝石标记
 SPELL_DIVINE_COUNT = 219	-- 神兵个数
 SPELL_DIVINE_START = 220	-- 神兵开始
-SPELL_DIVINE_END = 250	-- 神兵结束
+SPELL_DIVINE_END = 310	-- 神兵结束
 --  战斗模式
 PEACE_MODE = 0	-- 和平模式
 FAMILY_MODE = 1	-- 家族模式
