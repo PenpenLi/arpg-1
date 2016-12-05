@@ -541,7 +541,22 @@ Instance_base = {
 	--是否友好（友好1，不友好0）
 	DoIsFriendly = 
 		function(self, killer_ptr, target_ptr)
-			return 1
+			local killerInfo = UnitInfo:new{ptr = killer_ptr}
+			local targetInfo = UnitInfo:new{ptr = target_ptr}
+
+			-- 先判断
+			local ret = false
+			if killerInfo:GetTypeID() == TYPEID_PLAYER then
+				ret = targetInfo:GetTypeID() ~= TYPEID_UNIT or targetInfo:GetNpcFlags() ~= 0
+			elseif killerInfo:GetTypeID() == TYPEID_UNIT then
+				ret = targetInfo:GetTypeID() ~= TYPEID_PLAYER
+			end
+
+			if ret then
+				return 1
+			end
+
+			return 0
 		end,
 	
 	--复活处理
