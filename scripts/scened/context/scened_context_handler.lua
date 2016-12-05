@@ -161,6 +161,8 @@ function ScenedContext:Hanlde_Instance_All_Kill_Opt(packet)
 	end
 end
 
+JUMP_SKILL = 1
+
 --跳跃	
 function ScenedContext:Hanlde_Jump_Start(packet)
 	local player_ptr = self.ptr
@@ -211,9 +213,13 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	local cur_time = os.time()			--获取服务器运行时间
 	local cd_time = self:GetPlayerJumpCd()	-- 玩家跳跃技能cd
 	if cur_time < cd_time then
+		outFmtDebug(" in cd")
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_SPELL_CD)
 		return
 	end
+	
+	local cd = math.ceil(tb_skill_base[JUMP_SKILL].singleCD / 1000)
+	self:SetPlayerJumpCd(cur_time + cd)
 	
 	
 	--距离验证

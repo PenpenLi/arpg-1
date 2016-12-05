@@ -229,19 +229,32 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	-- TODO: 应用服计算属性
 	local attrs = {}
 	
-	-- 基础属性
-	local level = self:GetLevel()
-	local config = tb_char_level[level]
-	if config then
-		for _, val in ipairs(config.prop)do
-			if attrs[val[ 1 ]] == nil then
-				attrs[val[ 1 ]] = 0
+	-- 基础属性(去场景服计算)
+
+	-- 装备
+	
+	-- 坐骑
+	local spellMgr = self:getSpellMgr()
+	local level = spellMgr:getMountLevel()
+	local star  = spellMgr:getMountStar()
+	local seq = (level - 1) * 11 + star + 1
+	
+	local trainConfig = tb_mount_train[seq]
+	if trainConfig then
+		for _, val in ipairs(trainConfig.pros)do
+			local indx = val[ 1 ]
+			-- 速度属性就不在这里计算了
+			if indx ~= EQUIP_ATTR_MOVE_SPEED then
+				if attrs[indx] == nil then
+					attrs[indx] = 0
+				end
+				attrs[indx] = attrs[indx] + val[ 2 ]
 			end
-			attrs[val[ 1 ]] = attrs[val[ 1 ]] + val[ 2 ]
 		end
 	end
 	
-	-- 装备
+	-- 神兵
+	
 	
 	--[[
 	TODO: 到时候决定要不要设置回去

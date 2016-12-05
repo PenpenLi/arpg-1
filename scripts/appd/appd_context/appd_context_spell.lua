@@ -455,6 +455,7 @@ function PlayerInfo:DoHandleRaiseMount()
 		else -- 自动进阶
 			self:upgraded()
 		end
+		playerLib.SendAttr(self.ptr)
 	else
 		-- 未升星, 只加经验
 		spellMgr:addTrainExp(addExp)

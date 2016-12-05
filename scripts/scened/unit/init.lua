@@ -1488,24 +1488,39 @@ UnitInfo_Set_Attr_Func = {
 --属性重算（场景服）
 function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 	local unitInfo = UnitInfo:new {ptr = player}
-	--TODO: 场景服计算属性
-	for attrId, func in pairs(UnitInfo_Set_Attr_Func) do
-		local index = attrId - 1
-		local value = binLogLib.GetUInt32(attrBinlog, index)
-		func(unitInfo, value)
-		
-		-- 如果血量上限 < 当前血量, 就同步
-		
-		--[[ 只有升级的时候 当前血量才会满
-		-- 如果是重算的话当前血量也得加, 另外一种是BUFF计算当前血量不需要改, 当然如果大于上线还是得改
-		if bRecal then
-			if attrId == EQUIP_ATTR_MAXHEALTH then
-				unitInfo:SetHealth(value)
+
+	local attrs = {}
+	
+	-- 先把基础属性加上去
+	local level = unitInfo:GetLevel()
+	local config = tb_char_level[level]
+	if config then
+		for _, val in ipairs(config.prop)do
+			local indx = val[ 1 ]
+			if attrs[indx] == nil then
+				attrs[indx] = 0
 			end
+			attrs[indx] = attrs[indx] + val[ 2 ]
 		end
-		]]
 	end
 	
+	local size = binLogLib.GetUInt32Len(attrBinlog)
+	for attrId, func in pairs(UnitInfo_Set_Attr_Func) do
+		local index = attrId - 1
+		local value = 0
+		if index < size then
+			value = binLogLib.GetUInt32(attrBinlog, index)
+		end
+		if attrs[attrId] then
+			value = value + attrs[attrId]
+		end
+		func(unitInfo, value)
+	end
+	
+	-- 如果当前血量 > 血量上限, 就同步
+	if unitInfo:GetHealth() > unitInfo:GetMaxhealth() then
+		unitInfo:SetHealth(unitInfo:GetMaxhealth())
+	end
 	
 	-- TODO: 如果是骑乘状态 速度就替换成坐骑的速度
 	local actived = unitInfo:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0)
