@@ -23,11 +23,11 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 		return
 	end
 	
-	-- 判断是否是基础(怒气)技能
+--[[	-- 判断是否是基础(怒气)技能
 	if not self:isBaseSkill(spellId) and not self:isAngerSpell(spellId) then
 		outFmtError("spellId %d is cannot do in this way", spellId)
 		return
-	end
+	end--]]
 	
 	-- 判断人物等级
 	local index = spellMgr:getSpellUpgradeIndex(spellId)

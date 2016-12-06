@@ -16,6 +16,8 @@ function AppSpellMgr:onRaiseSpell(raiseType, spellId)
 		self:raiseMountSpell(spellId)
 	elseif raiseType == RAISE_ILLUSION_SKILL then
 		self:raiseIlluSpell(spellId)
+	elseif raiseType == RAISE_DIVINE_SKILL then
+		self:DivineSkillUpLev(spellId)
 	end
 end
 
@@ -236,9 +238,7 @@ function AppSpellMgr:raiseIlluSpell(spellId)
 
 	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do	
 		for j = ILLUSION_ATTR_SPELL_START + i, ILLUSION_ATTR_SPELL_END + i do
-			if self:GetUInt16(j, SHORT_SPELL_ID) == 0 then
-				break
-		elseif self:GetUInt16(j, SHORT_SPELL_ID) == spellId then
+			if self:GetUInt16(j, SHORT_SPELL_ID) == spellId then
 				self:SetUInt16(j, SHORT_SPELL_LV, prev + 1)
 				self:SetSpellLevel(spellId, prev+1)
 				return
@@ -359,11 +359,12 @@ function AppSpellMgr:getDivinIdxLevBless(divineId)
 	end
 	return 0
 end
+--设置神兵的等级和祝福值
 function AppSpellMgr:setDivinLevBless(index,lev,bless)
 	self:SetByte(index,1,lev)
 	self:SetUInt16(index,1,bless)
 end
-
+--设置神兵的初始主动饥饿ngn
 function AppSpellMgr:GetDivineInitiativeSpellInfo(divineId)
 	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) == divineId then
@@ -374,6 +375,7 @@ function AppSpellMgr:GetDivineInitiativeSpellInfo(divineId)
 	end
 	return 0,0
 end 
+--获取神兵被动技能列表
 function AppSpellMgr:GetDivinePassiveSpellInfoTable(divineId)
 	
 	local tab = {}
@@ -387,6 +389,36 @@ function AppSpellMgr:GetDivinePassiveSpellInfoTable(divineId)
 		end
 	end
 	return tab
+end
+
+--设置神兵技能等级
+function AppSpellMgr:DivineSkillUpLev(skillid)
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) ~= 0 then
+			local sid = self:GetUInt16(i+DIVINE_SKILL,0)
+			local lev = self:GetUInt16(i+DIVINE_SKILL,1)
+			--主动技能
+			if sid == skillid then
+				self:SetUInt16(i+DIVINE_SKILL,1,lev+1)
+				-- 同步映射关系
+				self:SetSpellLevel(skillid, lev+1)
+				return true
+			end
+			--被动技能
+			for j=0,2 do
+				sid = self:GetUInt16(i+DIVINE_PASSIVE_SKILL+j,0)
+				lev = self:GetUInt16(i+DIVINE_PASSIVE_SKILL+j,1)
+				if sid == skillid then
+					self:SetUInt16(i+DIVINE_PASSIVE_SKILL+j,1,lev+1)
+					
+					-- 同步映射关系
+					self:SetSpellLevel(skillid, lev+1)
+					return true
+				end
+			end
+		end
+	end
+	return false
 end
 
 ----------------------------------------------神兵结束-------------------------------------------

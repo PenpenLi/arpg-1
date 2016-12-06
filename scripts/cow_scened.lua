@@ -19,7 +19,7 @@ config = {
 	new_player_protected_level = 30			,--新手保护最大等级
 		
 	jump_cd = 4								,--跳cd
-	jump_max_distance = 16					,--最大跳跃距离
+	jump_max_distance = 10					,--最大跳跃距离
 	
 	nomal_attack_distance	= 4				,--默认攻击距离
 	

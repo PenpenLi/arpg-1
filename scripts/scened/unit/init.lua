@@ -488,12 +488,12 @@ end
 
 --设置战斗力
 function UnitInfo:SetForce(val)
-	self:SetUInt32(UNIT_FIELD_FORCE, val)
+	self:SetDouble(UNIT_FIELD_FORCE, val)
 end
 
 --获取战斗力
 function UnitInfo:GetForce()
-	return self:GetUInt32(UNIT_FIELD_FORCE)
+	return self:GetDouble(UNIT_FIELD_FORCE)
 end
 
 --设置npc标志
@@ -1485,11 +1485,58 @@ UnitInfo_Set_Attr_Func = {
 	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = UnitInfo.SetResistCritMultiple,
 }
 
+-- UnitInfo的属性映射方法
+UnitInfo_Get_Attr_Func = {
+	[EQUIP_ATTR_MAXHEALTH] = UnitInfo.GetMaxhealth,
+	[EQUIP_ATTR_DAMAGE] = UnitInfo.GetDamage,
+	[EQUIP_ATTR_ARMOR] = UnitInfo.GetArmor,
+	[EQUIP_ATTR_HIT] = UnitInfo.GetHit,
+	[EQUIP_ATTR_DODGE] = UnitInfo.GetDodge,
+	[EQUIP_ATTR_CRIT] = UnitInfo.GetCrit,
+	[EQUIP_ATTR_TOUGH] = UnitInfo.GetTough,
+	[EQUIP_ATTR_ATTACK_SPEED] = UnitInfo.GetAttackSpeed,
+	[EQUIP_ATTR_MOVE_SPEED] = UnitInfo.GetMoveSpeed,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = UnitInfo.GetAmplifyDamage,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = UnitInfo.GetIgnoreDefense,
+	[EQUIP_ATTR_DAMAGE_RESIST] = UnitInfo.GetDamageResist,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = UnitInfo.GetDamageReturned,
+	[EQUIP_ATTR_HIT_RATE] = UnitInfo.GetHitRate,
+	[EQUIP_ATTR_DODGE_RATE] = UnitInfo.GetDodgeRate,
+	[EQUIP_ATTR_CRIT_RATE] = UnitInfo.GetCritRate,
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = UnitInfo.GetCriticalResistRate,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = UnitInfo.GetDamageCritMultiple,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = UnitInfo.GetResistCritMultiple,
+}
+
+-- PlayerInfo的属性换算战力
+UnitInfo_Battle_Point_Rate = {
+	[EQUIP_ATTR_MAXHEALTH] = 2,
+	[EQUIP_ATTR_DAMAGE] = 3,
+	[EQUIP_ATTR_ARMOR] = 2,
+	[EQUIP_ATTR_HIT] = 2,
+	[EQUIP_ATTR_DODGE] = 2,
+	[EQUIP_ATTR_CRIT] = 1,
+	[EQUIP_ATTR_TOUGH] = 1,
+	[EQUIP_ATTR_ATTACK_SPEED] = 1,
+	[EQUIP_ATTR_MOVE_SPEED] = 0,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = 1,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = 1,
+	[EQUIP_ATTR_DAMAGE_RESIST] = 1,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = 1,
+	[EQUIP_ATTR_HIT_RATE] = 1,
+	[EQUIP_ATTR_DODGE_RATE] = 1,
+	[EQUIP_ATTR_CRIT_RATE] = 1,
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = 1,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = 1,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = 1,
+}
+
 --属性重算（场景服）
 function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 	local unitInfo = UnitInfo:new {ptr = player}
 
 	local attrs = {}
+	local battlePoint = 0
 	
 	-- 先把基础属性加上去
 	local level = unitInfo:GetLevel()
@@ -1515,12 +1562,17 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 			value = value + attrs[attrId]
 		end
 		func(unitInfo, value)
+		
+		if UnitInfo_Battle_Point_Rate[attrId] then
+			battlePoint = battlePoint + value * UnitInfo_Battle_Point_Rate[attrId]
+		end
 	end
 	
-	-- 如果当前血量 > 血量上限, 就同步
-	if unitInfo:GetHealth() > unitInfo:GetMaxhealth() then
-		unitInfo:SetHealth(unitInfo:GetMaxhealth())
-	end
+	local nonePorpPoint = binLogLib.GetUInt32(attrBinlog, #UnitInfo_Battle_Point_Rate)
+	battlePoint = battlePoint + nonePorpPoint
+	
+	battlePoint = math.floor(battlePoint)
+	unitInfo:SetForce(battlePoint)
 	
 	-- TODO: 如果是骑乘状态 速度就替换成坐骑的速度
 	local actived = unitInfo:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0)

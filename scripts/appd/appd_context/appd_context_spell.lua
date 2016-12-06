@@ -57,6 +57,8 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 		self:SetSpellInfo(spellId, spellLv)
 	end
 	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 	-- 是否发送场景服
 	--self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
 	
@@ -83,6 +85,8 @@ function PlayerInfo:DoHandleUpgradeAngleSpell(spellId)
 	
 	self:replace(slot, nextId, 1)
 	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 	--发送到场景服替换主动技能信息
 	--self:Send2ScenedReplaceEquipedSpell(slot, nextId, 1)
 	
@@ -155,6 +159,9 @@ function PlayerInfo:activeBaseSpell(spellId, activeType)
 	spellMgr:activeBaseSpell(spellId)
 	
 	self:onActiveSpell(spellId, true)
+	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 end
 
 -- 判断人物等级是否满足条件
@@ -455,7 +462,9 @@ function PlayerInfo:DoHandleRaiseMount()
 		else -- 自动进阶
 			self:upgraded()
 		end
-		playerLib.SendAttr(self.ptr)
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
 	else
 		-- 未升星, 只加经验
 		spellMgr:addTrainExp(addExp)
@@ -613,6 +622,9 @@ function PlayerInfo:DoAfterUpgrade(level)
 	for _, spellId in pairs(a) do
 		self:activeMountSpell(spellId)
 	end
+	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 end
 
 -- 解锁坐骑技能
@@ -636,6 +648,9 @@ function PlayerInfo:activeMountSpell(spellId)
 	spellMgr:activeMountSpell(spellId)
 	
 	self:onActiveSpellWithoutInitiative(spellId)
+	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 end
 
 
@@ -666,6 +681,9 @@ function PlayerInfo:onActiveIllusion(illuId)
 	for _, spellId in pairs(config.spells) do
 		self:onActiveSpellWithoutInitiative(spellId)
 	end
+	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 end
 
 -- 申请幻化坐骑
@@ -699,6 +717,9 @@ function PlayerInfo:RemoveIllusion(illuId)
 			self:SetSpellInfo(spellId, 0)
 		end
 	end
+	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 end
 
 
@@ -723,6 +744,8 @@ function PlayerInfo:onDivineActivedSpell(divineId, spellId,isPassive)
 
 	self:onActiveSpell(spellId)
 	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 end
 
 -- 替换神兵
@@ -758,6 +781,9 @@ function PlayerInfo:switchDivine(divineId)
 		local spellLv = passiveInfoTable[ i ][ 2 ]
 		self:updatePassive(spellId, spellLv)
 	end
+	
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
 end
 
 -------------------------------------神兵------------------------------------------
@@ -815,6 +841,10 @@ function PlayerInfo:ApplyDivineActive(id,t)
 		--激活主动技能
 		local config = tb_divine_base[id]
 		self:onDivineActivedSpell(id,config.skill,false)
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+	
 		return true
 	end
 	return false
@@ -856,7 +886,8 @@ function PlayerInfo:DivineUpLev(divineId)
 	 				self:onDivineActivedSpell(divineId,skill[1],true)
 	 			end
 	 		end
-
+			-- 重算战斗力(当前和属性绑定在一起)
+			self:RecalcAttrAndBattlePoint()
 	 	else
 	 		spellMgr:setDivinLevBless(idx,curlev,now)
 	 	end
