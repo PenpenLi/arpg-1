@@ -275,5 +275,13 @@ function PlayerInfo:Handle_Divine_Switch(pkt)
 		outFmtError("swich divine - player has not already active divine id = %d", id)
 		return
 	end
-	self:switchDivine(id)
+
+	local prev = self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID)
+	if prev == id then
+		self:switchDivine(0)
+	else 
+		self:switchDivine(id)
+	end
+
+	
 end

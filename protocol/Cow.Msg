@@ -723,3 +723,7 @@ divine_switch,c2s,159,/*切换神兵*/,STATUS_NEVER,False
 jump_start,c2s,160,/*请求跳跃*/,STATUS_NEVER,False
 	pos_x,uint16,False,/*坐标x*/
 	pos_y,uint16,False,/*坐标x*/
+
+#
+enter_vip_instance,c2s,161,/*请求进入vip副本*/,STATUS_NEVER,False
+	id,uint16,False,/*vip副本地图id*/

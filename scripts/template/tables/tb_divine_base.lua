@@ -14,6 +14,4 @@ tb_divine_base = {
 	[1] = {id = 1,skill = 1011,passiveskill = {{1012,3}},avtivetype = 3,avtivedata = {},time = 5,strength = 0,},
 	[2] = {id = 2,skill = 1011,passiveskill = {{1012,3},{11004,5}},avtivetype = 1,avtivedata = {{101,10}},time = -1,strength = 1,},
 	[3] = {id = 3,skill = 1013,passiveskill = {{1014,3}},avtivetype = 2,avtivedata = {{1,700}},time = -1,strength = 1,},
-	[4] = {id = 4,skill = 1002,passiveskill = {{11004,3}},avtivetype = 4,avtivedata = {},time = -1,strength = 1,},
-	[5] = {id = 5,skill = 1002,passiveskill = {{11004,3}},avtivetype = 1,avtivedata = {{102,10}},time = -1,strength = 1,},
 }

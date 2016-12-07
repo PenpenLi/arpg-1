@@ -722,7 +722,7 @@ function PlayerInfo:RemoveIllusion(illuId)
 	self:RecalcAttrAndBattlePoint()
 end
 
-
+-------------------------------------神兵------------------------------------------
 -- 神兵的技能解锁
 
 function PlayerInfo:onDivineActivedSpell(divineId, spellId,isPassive)
@@ -748,14 +748,10 @@ function PlayerInfo:onDivineActivedSpell(divineId, spellId,isPassive)
 	self:RecalcAttrAndBattlePoint()
 end
 
+
 -- 替换神兵
 function PlayerInfo:switchDivine(divineId)
-	local prev = self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID)
-	if prev == divineId then
-
-		return
-	end
-
+	
 	self:SetUInt32(PLAYER_INT_FIELD_DIVINE_ID, divineId)
 	
 	local spellMgr = self:getSpellMgr()
@@ -786,7 +782,7 @@ function PlayerInfo:switchDivine(divineId)
 	self:RecalcAttrAndBattlePoint()
 end
 
--------------------------------------神兵------------------------------------------
+
 -- 申请激活神兵
 function PlayerInfo:DivineActive(divineId)
 
