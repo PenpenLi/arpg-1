@@ -1273,16 +1273,30 @@ function UnitInfo:modeChange(mode)
 	self:SetBattleMode(mode)
 end
 
-
 -- 是否有坐骑
 function UnitInfo:IsMountActived()
-	local actived = self:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0)
+	local actived = self:GetMountLevel()
 	return actived > 0
+end
+
+-- 坐骑阶数
+function UnitInfo:GetMountLevel()
+	return self:GetByte(UNIT_FIELD_MOUNT_LEVEL, 0)
+end
+
+-- 坐骑星级
+function UnitInfo:GetMountStar()
+	return self:GetByte(UNIT_FIELD_MOUNT_LEVEL, 1)
 end
 
 -- 骑乘状态
 function UnitInfo:rideFlag()
 	return self:GetByte(UNIT_FIELD_MOUNT_LEVEL, 2)
+end
+
+-- 幻化id
+function UnitInfo:GetCurrIllusionId()
+	return self:GetByte(UNIT_FIELD_MOUNT_LEVEL, 3)
 end
 
 -- 是否骑乘
@@ -1576,20 +1590,26 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 
 	local attrs = {}
 	local battlePoint = 0
+	local speed = 0
 	
 	-- 先把基础属性加上去
 	local level = unitInfo:GetLevel()
 	local config = tb_char_level[level]
 	if config then
-		for _, val in ipairs(config.prop)do
+		for _, val in ipairs(config.prop) do
 			local indx = val[ 1 ]
-			if attrs[indx] == nil then
-				attrs[indx] = 0
+			-- 不是速度属性
+			if indx ~= EQUIP_ATTR_MOVE_SPEED then
+				attrs[indx] = val[ 2 ]
+			else
+				if not unitInfo:isRide() then
+					speed = val[ 2 ]
+				end
 			end
-			attrs[indx] = attrs[indx] + val[ 2 ]
 		end
 	end
 	
+	-- 设置属性
 	local size = binLogLib.GetUInt32Len(attrBinlog)
 	for attrId, func in pairs(UnitInfo_Set_Attr_Func) do
 		local index = attrId - 1
@@ -1597,7 +1617,21 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 		if index < size then
 			value = binLogLib.GetUInt32(attrBinlog, index)
 		end
-		if attrs[attrId] then
+		
+		if attrId == EQUIP_ATTR_MOVE_SPEED then
+			-- 坐骑幻化速度
+			if unitInfo:isRide() then
+				local illusionId = unitInfo:GetCurrIllusionId()
+				if illusionId > 0 then
+					local speed = tb_mount_illusion[illusionId].speed
+					if value < speed then
+						value = speed
+					end
+				end
+			else
+				value = speed
+			end
+		elseif attrs[attrId] then
 			value = value + attrs[attrId]
 		end
 		func(unitInfo, value)
@@ -1605,18 +1639,13 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 		if UnitInfo_Battle_Point_Rate[attrId] then
 			battlePoint = battlePoint + value * UnitInfo_Battle_Point_Rate[attrId]
 		end
-	end
+	end	
 	
 	local nonePorpPoint = binLogLib.GetUInt32(attrBinlog, #UnitInfo_Battle_Point_Rate)
 	battlePoint = battlePoint + nonePorpPoint
 	
 	battlePoint = math.floor(battlePoint)
 	unitInfo:SetForce(battlePoint)
-	
-	-- TODO: 如果是骑乘状态 速度就替换成坐骑的速度
-	if unitInfo:isRide() then
-		
-	end
 end
 
 

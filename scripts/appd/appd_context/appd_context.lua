@@ -34,6 +34,39 @@ function PlayerInfo:GetScenedFD()
 	return self:GetUInt32(PLAYER_FIELD_FD)
 end
 
+-- 是否有坐骑
+function PlayerInfo:IsMountActived()
+	local level = self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 0)
+	return level > 0
+end
+
+function PlayerInfo:SetMountLevel(level)
+	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 0, level)
+end
+
+function PlayerInfo:SetMountStar(star)
+	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 1, star)
+end
+
+-- 骑乘状态
+function PlayerInfo:rideFlag()
+	return self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 2)
+end
+
+-- 幻化id
+function PlayerInfo:GetCurrIllusionId()
+	return self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3)
+end
+
+-- 设置幻化id
+function PlayerInfo:SetCurrIllusionId(illuId)
+	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3, illuId)
+end
+
+-- 是否骑乘
+function PlayerInfo:isRide()
+	return self:IsMountActived() and self:rideFlag() > 0
+end
 
 
 -- 玩家是否还活着

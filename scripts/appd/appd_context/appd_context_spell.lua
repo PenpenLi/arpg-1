@@ -459,6 +459,7 @@ function PlayerInfo:DoHandleRaiseMount()
 		-- 不能进阶 或者 手动进阶
 		if nextStar < 10 or upgradeConfg.upgradeMode == UPGRADE_MODE_MANUAL then
 			spellMgr:setMountStar(nextStar)
+			self:SetMountStar(nextStar)
 		else -- 自动进阶
 			self:upgraded()
 		end
@@ -600,7 +601,6 @@ end
 
 -- 激活坐骑
 function PlayerInfo:activeMount()
-	self:SetUInt16(PLAYER_INT_FIELD_MOUNT_LEVEL, 0, 1)
 	self:upgraded()
 end
 
@@ -610,6 +610,10 @@ function PlayerInfo:upgraded()
 	local level = spellMgr:getMountLevel()
 		
 	spellMgr:setMountLevel(level + 1)
+
+	self:SetMountLevel(level+1)
+	self:SetMountStar(0)
+	
 	spellMgr:setMountStar(0)
 	self:DoAfterUpgrade(level+1)
 end
@@ -691,10 +695,11 @@ function PlayerInfo:DoHandleIllusion(illuId)
 	local spellMgr = self:getSpellMgr()
 
 	local curr = 0
-	if self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3) ~= illuId then
+	if self:GetCurrIllusionId() ~= illuId then
 		curr = illuId
 	end
-	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3, curr)
+	
+	self:SetCurrIllusionId(curr)
 	-- 发送到场景服
 	--[[
 	self:Send2ScenedIllusion(illuId)
@@ -703,8 +708,8 @@ end
 
 function PlayerInfo:RemoveIllusion(illuId)
 	-- 如果是幻化的需要除去幻化
-	if self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3) == illuId then
-		self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 3, 0)
+	if self:GetCurrIllusionId() == illuId then
+		self:SetCurrIllusionId(0)
 	end
 	
 	-- 移除技能

@@ -47,37 +47,55 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 
 	-- 装备
 	
+	
 	-- 坐骑
+	
 	local level = spellMgr:getMountLevel()
 	local star  = spellMgr:getMountStar()
 	local seq = (level - 1) * 11 + star + 1
 	
 	local trainConfig = tb_mount_train[seq]
-	if trainConfig then
+	if trainConfig then	
+		attrs[EQUIP_ATTR_MOVE_SPEED] = tb_mount_base[level].speed
 		-- 属性
 		for _, val in ipairs(trainConfig.pros)do
 			local indx = val[ 1 ]
 			-- 速度属性就不在这里计算了
-			if indx ~= EQUIP_ATTR_MOVE_SPEED then
-				if attrs[indx] == nil then
-					attrs[indx] = 0
+			if attrs[indx] == nil then
+				attrs[indx] = 0
+			end
+			attrs[indx] = attrs[indx] + val[ 2 ]
+		end
+	end
+	
+	-- 坐骑进阶技能战力
+	for i = SPELL_INT_FIELD_MOUNT_SPELL_START, SPELL_INT_FIELD_MOUNT_SPELL_END - 1 do
+		local spellID	= spellMgr:GetUInt16(i, 0)
+		local lv 		= spellMgr:GetUInt16(i, 1)
+		if spellID > 0 then
+			local bp = self:GetSkillBattlePoint(spellID, lv)
+			nonePropBattlePoint = nonePropBattlePoint + bp
+		end
+	end
+	
+	-- 幻化
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
+		local illusionId = spellMgr:GetUInt32(i+ILLUSION_ATTR_ID)
+		if illusionId > 0 then
+			local illuConfig = tb_mount_illusion[illusionId]
+			-- 属性
+			for _, val in ipairs(illuConfig.pros)do
+				local indx = val[ 1 ]
+				-- 速度属性就不在这里计算了
+				if indx ~= EQUIP_ATTR_MOVE_SPEED then
+					if attrs[indx] == nil then
+						attrs[indx] = 0
+					end
+					attrs[indx] = attrs[indx] + val[ 2 ]
 				end
-				attrs[indx] = attrs[indx] + val[ 2 ]
 			end
-		end
-		
-		--TODO 坐骑进阶技能战力
-		for i = SPELL_INT_FIELD_MOUNT_SPELL_START, SPELL_INT_FIELD_MOUNT_SPELL_END - 1 do
-			local spellID	= spellMgr:GetUInt16(i, 0)
-			local lv 		= spellMgr:GetUInt16(i, 1)
-			if spellID > 0 then
-				local bp = self:GetSkillBattlePoint(spellID, lv)
-				nonePropBattlePoint = nonePropBattlePoint + bp
-			end
-		end
-		
-		--TODO 坐骑幻化技能战力
-		for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do	
+			
+			-- 坐骑幻化技能战力
 			for j = ILLUSION_ATTR_SPELL_START + i, ILLUSION_ATTR_SPELL_END + i - 1 do
 				local spellID	= spellMgr:GetUInt16(j, 0)
 				local lv		= spellMgr:GetUInt16(j, 1)
@@ -87,8 +105,8 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 				end
 			end
 		end
-		
 	end
+	
 	
 	-- 神兵
 	

@@ -6,8 +6,8 @@ MAX_MONEY = 2e+015	-- 最大金额数，超过下线再上就白瞎
 MAX_MONEY_TRUE = 4e+015	-- 最大金额数.真。超过就不再往上加
 MAX_BUFF_DURATION = 65535	-- 无限BUFF时间
 ZHUCHENG_DITU_ID = 1	-- 主城地图ID
-ZHUCHENG_FUHUO_X = 56	-- 主城复活点
-ZHUCHENG_FUHUO_Y = 92	-- 主城复活点
+ZHUCHENG_FUHUO_X = 55	-- 主城复活点
+ZHUCHENG_FUHUO_Y = 19	-- 主城复活点
 MAX_RMB_PLAYER_LEVEL = 6	-- 最大的RMB等级
 -- 服务器类型枚举
 WORLD_SERVER_TYPE_GAME = 0	-- 游戏服
@@ -985,7 +985,7 @@ UNIT_FIELD_BYTE_1 = 1	-- 0：角色类型，1：阵营，2：种族，3：职业
 UNIT_FIELD_BYTE_2 = 2	-- 0：灰名时间，1：付费等级，2：免费复活，3：玩家称号
 UNIT_FIELD_BYTE_3 = 3	-- 0: 头像，1：发型，2：GM等级，3：下次复活是否有保护buff
 UNIT_FIELD_BYTE_4 = 4	-- 0：预留，1：当前坐骑模板id，2：皮肤类型 3：预留
-UNIT_FIELD_MOUNT_LEVEL = 5	-- 1个short, 2个bytes(0:是否激活, 2:当前坐骑是否骑乘，3:当前幻化id)
+UNIT_FIELD_MOUNT_LEVEL = 5	-- 4个bytes(0:当前坐骑阶数 1:当前坐骑星级,2:当前坐骑是否骑乘，3:当前幻化id)
 UNIT_FIELD_DIVINE_ID = 6	-- 神兵id
 UNIT_FIELD_UINT16_0 = 7	-- 0：精灵模板，1：精灵等级
 UNIT_FIELD_UINT16_1 = 8	-- 0：地图ID，1：跨服1v1连胜次数
@@ -1247,7 +1247,7 @@ PLAYER_EXPAND_KILL_MONSTER = 561	-- 杀怪数
 PLAYER_APPD_INT_FIELD_KUAFU_WARID = 562	-- 跨服场次id
 PLAYER_INT_FIELD_KUAFU_NUMBER = 563	-- 0:玩家报名跨服时收到匹配信息中给的编号 1:跨服类型（值参照枚举：EKUAFU_TYPE）
 PLAYER_INT_FIELD_MAIN_QUEST_ID = 564	-- 当前主线任务
-PLAYER_INT_FIELD_MOUNT_LEVEL = 565	-- 1个short, 2个bytes(0:是否激活, 2:当前坐骑是否骑乘，3:当前幻化id)
+PLAYER_INT_FIELD_MOUNT_LEVEL = 565	-- 4个bytes(0:当前坐骑阶数 1:当前坐骑星级,2:当前坐骑是否骑乘，3:当前幻化id)
 PLAYER_INT_FIELD_DIVINE_ID = 566	-- 当前装备的神兵id
 PLAYER_INT_FIELD_PASSIVE_SPELL_START = 567	-- 被动技能开始
 PLAYER_INT_FIELD_PASSIVE_SPELL_END = 617	-- 被动技能个数
@@ -1322,7 +1322,7 @@ SPELL_DIVINE_COUNT = 219	-- 神兵个数
 SPELL_DIVINE_START = 220	-- 神兵开始
 SPELL_DIVINE_END = 310	-- 神兵结束
 --  玩家副本信息
-INSTANCE_INT_FIELD_VIP_START = 0	-- vip副本开始	每个信息4个byte[0:通关难度,1:当前难度,2:挑战次数,3:购买次数]
+INSTANCE_INT_FIELD_VIP_START = 0	-- vip副本开始	每个信息4个byte[0:下次需要通关难度,1:当前难度,2:挑战次数,3:购买次数]
 INSTANCE_INT_FIELD_VIP_END = 4	-- vip副本结束	
 --  战斗模式
 PEACE_MODE = 0	-- 和平模式
