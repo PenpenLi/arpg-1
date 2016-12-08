@@ -15,8 +15,9 @@ tb_map_vip = {
 	--  times:int	挑战次数
 	--  cost:array	购买所需花费
 	--  creatures:array	不同难度怪物id
+	--  rewards:array	不同难度奖励
 	--  bossx:int	boss坐标x
 	--  bossy:int	boss坐标y
 	--  time:int	所需时限
-	[2003] = {id = 2003,x = 32,y = 21,indx = 1,vip = 1,hard = 0,hardlimit = 2,raiseHardBattlePoints = {999,2000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},bossx = 25,bossy = 25,time = 120,},
+	[2003] = {id = 2003,x = 32,y = 21,indx = 1,vip = 1,hard = 0,hardlimit = 2,raiseHardBattlePoints = {999,2000},times = 10,cost = {20,30,40},creatures = {3001,3001,3001},rewards = {1,1,1},bossx = 25,bossy = 25,time = 120,},
 }

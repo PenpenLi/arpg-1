@@ -250,6 +250,53 @@ function DoQuestRewardScript(player, quest_id, xp, silver, taolue, bind_gold, al
 		
 end
 
+
+--[[// 资源类道具
+enum Item_Loot_Resource 
+{
+	Item_Loot_Gold_Ingot = 1,	//元宝
+	Item_Loot_Bind_Gold = 2,	//绑定元宝
+	Item_Loot_Silver = 3,	//银币
+	
+	Item_Loot_Renown = 5,	//声望
+	Item_Loot_Honor = 6,	//荣誉
+	Item_Loot_Exploit  = 7,	//功勋
+	Item_Loot_Contrib = 8,	//家族贡献
+	Item_Loot_Exp = 9,		//经验
+	Item_Loot_Mount_Exp = 10,	//坐骑经验
+	Item_Loot_QI = 13,	//真气
+	Item_Loot_BEAST = 14,	//兽灵
+	Item_Loot_GEM = 15,	//宝石精华
+};
+
+//货币类型
+enum Money_Type
+{
+				= 0,	//元宝
+	MONEY_TYPE_BIND_GOLD			= 1,	//绑定元宝
+	MONEY_TYPE_SILVER				= 2,	//身上的银子
+
+	MONEY_TYPE_SILVER_WAREHOUSE		= 3,	//仓库的银子
+	MONEY_TYPE_GOLD_WAREHOUSE		= 4,	//仓库元宝
+	MONEY_TYPE_BIND_GOLD_WAREHOUSE	= 5,	//仓库的绑元
+
+	MONEY_TYPE_QI					= 6,	//真气
+	MONEY_TYPE_BEAST				= 7,	//兽灵
+	MONEY_TYPE_GEM				    = 8,	//宝石精华
+
+	MAX_MONEY_TYPE					= 12,
+};--]]
+
+ItemToResoureceTable = {
+	[Item_Loot_Gold_Ingot] = MONEY_TYPE_GOLD_INGOT,
+	[Item_Loot_Bind_Gold ] = MONEY_TYPE_BIND_GOLD,
+	[Item_Loot_Silver	 ] = MONEY_TYPE_SILVER,
+	
+	[Item_Loot_QI		 ] = MONEY_TYPE_QI,
+	[Item_Loot_BEAST	 ] = MONEY_TYPE_BEAST,
+	[Item_Loot_GEM		 ] = MONEY_TYPE_GEM,
+}
+
 function DoRandomDrop(player, dropId, moneyOperType, itemOperType)
 	
 	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
@@ -266,12 +313,18 @@ function DoRandomDrop(player, dropId, moneyOperType, itemOperType)
 		local bind  = packConfig.binds[indx][ 1 ]
 		
 		table.insert(dict, {itemId, count})
+		
+		if ItemToResoureceTable[itemId] ~= nil then
+			-- 加人物资源
+			playerInfo:AddMoney(ItemToResoureceTable[itemId], moneyOperType, count)
+		elseif itemId == Item_Loot_Exp then
+			-- 加经验
+			playerLib.AddExp(player, count)
+		else
+			-- 加道具
+			playerLib.AddItem(player, itemId, count, bind, itemOperType)
+		end
 	end
 	
-	--MONEY_CHANGE_SELECT_LOOT
-	--LOG_ITEM_OPER_TYPE_LOOT
-	--playerLib.AddItem(player, loot_entry, 1, ITEM_BIND_NONE, LOG_ITEM_OPER_TYPE_LOOT)
-	--playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, drop_item_config[2])
-	
-	-- 加到道具里面去
+	return dict
 end

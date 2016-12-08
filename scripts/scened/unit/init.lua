@@ -1306,12 +1306,12 @@ end
 
 -- 骑乘
 function UnitInfo:MountRide()
-	playerLib.SendMountJumpDown(player_ptr, 1)
+	playerLib.SendMountJumpDown(self.ptr, 1)
 end
 
 -- 下骑
 function UnitInfo:MountUnride()
-	playerLib.SendMountJumpDown(player_ptr, 0)
+	playerLib.SendMountJumpDown(self.ptr, 0)
 end
 
 

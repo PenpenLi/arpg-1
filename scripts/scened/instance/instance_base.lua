@@ -638,16 +638,17 @@ Instance_base = {
 
 			--给怪物添加技能
 			local spells = config.spell
-			for i = 1, #spells, 3 do
-				local skillConfig = tb_skill_base[spells[i]]
+			for i = 1, #spells do
+				local spellInfo = spells[ i ]
+				local skillConfig = tb_skill_base[spellInfo[ 1 ]]
 				if skillConfig then
 					local index = skillConfig.uplevel_id[ 1 ]
 					local upgradeConfig = tb_skill_uplevel[index]
 					local dist = upgradeConfig.distance
 					local groupCD = skillConfig.groupCD
-					local singleCD = spells[i+1]
+					local singleCD = skillConfig.singleCD
 					local targetType = skillConfig.target_type
-					creatureLib.MonsterAddSpell(creature_ptr, spells[i], spells[i+1], spells[i+2], dist, groupCD, singleCD, targetType)
+					creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], dist, groupCD, singleCD, targetType)
 				end
 			end
 			creature:SetBaseAttrs(config.pro, bRecal)

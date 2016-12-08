@@ -879,6 +879,19 @@ BAG_EXTENSION_TYPE_GOLD = 1	-- 元宝开启
 -- 安全码修改类型
 SAFETY_CODE_MODIFY_TYPE_CODE = 0	-- 密码修改
 SAFETY_CODE_MODIFY_TYPE_QUESTION = 1	-- 安全问题修改
+--  资源类道具
+Item_Loot_Gold_Ingot = 1	-- 元宝
+Item_Loot_Bind_Gold = 2	-- 绑定元宝
+Item_Loot_Silver = 3	-- 银币
+Item_Loot_Renown = 5	-- 声望
+Item_Loot_Honor = 6	-- 荣誉
+Item_Loot_Exploit = 7	-- 功勋
+Item_Loot_Contrib = 8	-- 家族贡献
+Item_Loot_Exp = 9	-- 经验
+Item_Loot_Mount_Exp = 10	-- 坐骑经验
+Item_Loot_QI = 13	-- 真气
+Item_Loot_BEAST = 14	-- 兽灵
+Item_Loot_GEM = 15	-- 宝石精华
 -- 货币类型
 MONEY_TYPE_GOLD_INGOT = 0	-- 元宝
 MONEY_TYPE_BIND_GOLD = 1	-- 绑定元宝
