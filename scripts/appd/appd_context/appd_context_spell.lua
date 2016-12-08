@@ -751,7 +751,12 @@ end
 
 -- 替换神兵
 function PlayerInfo:switchDivine(divineId)
-	
+	local prev = self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID)
+	if prev == divineId then
+
+		return
+	end
+
 	self:SetUInt32(PLAYER_INT_FIELD_DIVINE_ID, divineId)
 	
 	local spellMgr = self:getSpellMgr()

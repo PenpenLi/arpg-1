@@ -213,8 +213,18 @@ end
 -- 包括重要技能和一般技能的CD
 function UnitInfo:IsSpellCD(spell_id, nowtime)
 	--print("IsSpellCD, spellID:"..spell_id)
-	local cd = playerLib.GetSpellCD(self.ptr, spell_id)
-	return nowtime < cd;
+	local futureTimestamp = playerLib.GetSpellCD(self.ptr, spell_id)
+	return nowtime < futureTimestamp;
+end
+
+function UnitInfo:GetSpellCD(spellId)
+	local futureTimestamp = playerLib.GetSpellCD(self.ptr, spellId)
+	local now = os.time()
+	if now >= futureTimestamp then
+		return 0
+	end
+	
+	return futureTimestamp - now
 end
 
 -- 判断是否有装备某个技能

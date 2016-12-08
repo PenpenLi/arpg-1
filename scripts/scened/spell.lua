@@ -336,7 +336,7 @@ end
 --（@caster：施法者，@target：攻击目标，@dst_x@dst_y：技能坐标点，@spellid：技能id，@spell_lv：技能等级，@unit：技能用精灵，@data：预留参数）
 function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, unit, data)
 	
-	DoSpellCastBefore()
+	DoSpellCastBefore(caster)
 	
 	local allTargets = {}
 	--落雁斩1
@@ -347,7 +347,12 @@ function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, uni
 end
 
 -- 受到伤害前需要进行的操作
-function DoSpellCastBefore()
+function DoSpellCastBefore(caster)
+	
+	local casterInfo = UnitInfo:new{ptr = caster}
+	if casterInfo:isRide() then
+		casterInfo:MountUnride()
+	end
 	--[[
 	1、取消骑乘状态
 	2、取消打坐状态

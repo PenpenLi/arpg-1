@@ -8,6 +8,8 @@ outString('load template')
 require("template/scened_init")
 require("template/conditions")
 
+require("util/utils")
+
 outString('load share.tick_name script')
 require("share/tick_name")
 require 'scened.scened_internal_pack'
@@ -121,6 +123,7 @@ config = {
 		CMSG_RIDE_MOUNT,
 		CMSG_CHANGE_BATTLE_MODE,
 		CMSG_JUMP_START	,-- /*跳跃开始*/
+		CMSG_ENTER_VIP_INSTANCE, --请求进入vip副本
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
@@ -218,6 +221,8 @@ function load_lua_scripts()
 		{'地图基础副本脚本'		,'scened/instance/instance_inst_base'},
 		{'地图基础野外脚本'		,'scened/instance/instance_field_base'},
 		
+		
+		{'地图VIP副本脚本'		,'scened/instance/instance_vip'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -235,8 +240,9 @@ load_lua_scripts()
 -- 映射mapid和脚本关系
 INSTANCE_SCRIPT_TABLE = {
 	--TODO: 补全
-	
-	[ 1 ] = InstanceFieldBase,
+	[ 1 ] = InstanceMainBase,
+	[1001] = InstanceFieldBase,
+	[2003] = InstanceVIP,
 	--[101] = InstanceTower1,
 	--[102] = InstanceTower2,
 	--[103] = InstanceTaoHua,
@@ -244,7 +250,7 @@ INSTANCE_SCRIPT_TABLE = {
 
 -- 复活点坐标
 function GetRespawnPos()
-	return {108, 77}
+	return {55,19}
 end
 
 -- 获取地图模板名称

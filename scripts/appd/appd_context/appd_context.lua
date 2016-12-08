@@ -734,6 +734,7 @@ require("appd/appd_context/appd_context_resetdaily")
 require("appd/appd_context/appd_context_scened_dosomething")
 require("appd/appd_context/appd_context_other_binlog")
 require("appd/appd_context/appd_context_chat")
+require("appd/appd_context/appd_context_instance")
 require("appd/appd_context/appd_context_equip_part_opt")
 require("appd/appd_context/appd_context_spell")
 
@@ -741,6 +742,7 @@ require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/chat_handler")
 require("appd/appd_context/handler/equip_part_opt_handler")
 require("appd/appd_context/handler/spell_handler")
+require("appd/appd_context/handler/instance_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

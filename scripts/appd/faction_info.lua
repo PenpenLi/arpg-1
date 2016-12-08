@@ -1,5 +1,5 @@
 --帮派管理
-FactionInfo = class('FactionInfo', BinLogObject)
+local FactionInfo = class('FactionInfo', BinLogObject)
 
 --获取帮派标志位
 function FactionInfo:GetFactionFlags(index)

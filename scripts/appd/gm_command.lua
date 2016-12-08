@@ -339,14 +339,24 @@ function  DoGMScripts(player_ptr, gm_commands)
 	elseif (tokens[1] == "@Resource")then
 		local id = tonumber(tokens[ 2 ])
 		local value = tonumber(tokens[ 3 ])
-		if id < 0 or id >= MAX_MONEY_TYPE then
+		if id < -1 or id >= MAX_MONEY_TYPE then
 			return
 		end
-		local num = player:GetMoney(id)
-		if value < num then
-			player:SubMoney(id, MONEY_CHANGE_GM_COMMAND, num-value)
-		else
-			player:AddMoney(id, MONEY_CHANGE_GM_COMMAND, value-num)
+		
+		local a = id
+		local b = id
+		if id == -1 then
+			a = 0
+			b = MAX_MONEY_TYPE - 1
+		end
+		
+		for id = a, b do
+			local num = player:GetMoney(id)
+			if value < num then
+				player:SubMoney(id, MONEY_CHANGE_GM_COMMAND, num-value)
+			else
+				player:AddMoney(id, MONEY_CHANGE_GM_COMMAND, value-num)
+			end
 		end
 		
 	elseif(tokens[1] == "@付费等级")then

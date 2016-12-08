@@ -10,6 +10,8 @@ GuidManager.ObjectTypeUnit					= 'U'	--//生物
 GuidManager.ObjectTypePlayer				= 'p'	--//玩家
 GuidManager.ObjectTypeItemMgr				= 'I'	--//物品
 
+
+GuidManager.ObjectTypeInstance				= 'C'	--//副本
 GuidManager.ObjectTypeFaction				= 'L'	--//帮派
 GuidManager.ObjectTypeSpell					= 'X'	--//技能
 GuidManager.ObjectTypeLimit					= 'l'	--//限时活动对象

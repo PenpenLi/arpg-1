@@ -49,3 +49,10 @@ function PlayerInfo:getSpellMgr()
 	return self:getObj(self.guid_spellMgr)	
 end
 
+--根据玩家guid获得副本管理器
+function PlayerInfo:getInstanceMgr()
+	if not self.guid_instanceMgr then
+		self.guid_instanceMgr = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeInstance)
+	end
+	return self:getObj(self.guid_instanceMgr)
+end

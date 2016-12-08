@@ -35,3 +35,6 @@ require("template.tables.tb_gem_rate")
 require("template.tables.tb_divine_base")
 require("template.tables.tb_divine_streng")
 require("template.tables.tb_divine_bless")
+
+--副本
+require("template.tables.tb_map_vip")

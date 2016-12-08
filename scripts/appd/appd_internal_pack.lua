@@ -171,8 +171,8 @@ function call_appd_teleport( scened_fd, guid, x, y, mapid, genal_guid, instancei
 	pkt:writeU16(x)
 	pkt:writeU16(y)
 	pkt:writeU32(mapid)
-	pkt:writeUTF(genal_guid or '')
 	pkt:writeU32(instanceid or 0)
+	pkt:writeUTF(genal_guid or '')
 	app:sendToConnection(scened_fd, pkt)
 	pkt:delete()
 end

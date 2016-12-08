@@ -1,5 +1,9 @@
 InstanceMainBase = class("InstanceMainBase", Instance_base)
 
+InstanceMainBase.Name = "InstanceMainBase"
+InstanceMainBase.player_auto_respan = 0
+
+
 function InstanceMainBase:ctor(  )
 	
 end
@@ -11,7 +15,7 @@ end
 
 --当玩家加入后触发
 function InstanceMainBase:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(player)
+	Instance_base.OnAfterJoinPlayer(self, player)
 	
 	local playerInfo = UnitInfo:new{ptr = player}
 	-- 进城修改模式

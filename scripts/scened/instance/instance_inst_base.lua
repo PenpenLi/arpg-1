@@ -1,5 +1,7 @@
 InstanceInstBase = class("InstanceInstBase", Instance_base)
 
+InstanceInstBase.Name = "InstanceInstBase"
+
 function InstanceInstBase:ctor(  )
 	
 end
@@ -11,9 +13,11 @@ end
 
 --当玩家加入后触发
 function InstanceInstBase:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(player)
+	Instance_base.OnAfterJoinPlayer(self, player)
 	
 	local playerInfo = UnitInfo:new{ptr = player}
 	-- 进城修改模式
 	playerInfo:ChangeToPeaceModeAfterTeleport()
 end
+
+return InstanceInstBase

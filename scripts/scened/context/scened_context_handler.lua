@@ -299,12 +299,12 @@ function ScenedContext:Handle_Ride(packet)
 	local player_ptr = self.ptr
 	
 	-- 坐骑未激活
-	if self:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0) == 0 then
+	if not self:IsMountActived() then
 		outFmtError("mount not be actived")
 		return
 	end
 	
-	local prev = self:GetByte(UNIT_FIELD_MOUNT_LEVEL, 2)
+	local prev = self:rideFlag()
 	if prev == 0 then	--上坐骑
 		--当前是战斗状态
 		local status = playerLib.GetPlayeCurFightStatus(player_ptr)
@@ -318,10 +318,10 @@ function ScenedContext:Handle_Ride(packet)
 			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_JUMP)
 			return
 		end
-
-		playerLib.SendMountJumpDown(player_ptr, 1)
+		
+		self:MountRide()
 	elseif prev > 0 then	--下坐骑
-		playerLib.SendMountJumpDown(player_ptr, 0)
+		self:MountUnride()
 	end
 end
 
@@ -488,6 +488,57 @@ function ScenedContext:Hanlde_Get_Swfj_Instance_Reward( pkt )
 	end
 	--发到应用服其他校验、及扣除材料
 	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_SWFJ_INSTANCE_AWARD_SUB_MONEY, pkt.get_type)
+end
+
+
+--进入VIP副本
+function ScenedContext:Hanlde_Enter_VIP_Instance( pkt )
+	
+	local id = pkt.id
+	if tb_map_vip[id] == nil then
+		return
+	end
+	
+	local map_ptr = unitLib.GetMap(self.ptr)
+	if not map_ptr then 
+		return
+	end
+	
+	local toMapId = id
+	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		outFmtError("CMSG_ENTER_DAILY_INSTANCE player %s is not alive!", self:GetPlayerGuid())
+		return 
+	end
+
+	-- 该地图是否存在
+	if tb_map[toMapId] == nil then
+		return
+	end
+	
+	-- 是否允许传送
+	if not self:makeEnterTest(toMapId) then
+		outFmtError("CMSG_ENTER_DAILY_INSTANCE player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
+		return
+	end
+	
+	--pvp状态下一律不准进
+	if self:GetPVPState() then
+		outFmtError("CMSG_ENTER_DAILY_INSTANCE player %s is pvp state!", self:GetPlayerGuid())
+		return
+	end
+	
+	--发到应用服其他校验、及扣除材料
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_VIP_INSTANCE, id)
+end
+
+function ScenedContext:makeEnterTest(toMapId)
+	
+end
+
+function ScenedContext:Handle_ForceInto(pkt)
+	DoForceInto(self)
 end
 
 

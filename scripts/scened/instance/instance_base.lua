@@ -490,7 +490,7 @@ Instance_base = {
 	OnAfterJoinPlayer =
 		function(self,player)
 			local playerInfo = UnitInfo:new{ptr = player}
-			-- 如果等级是新手保护等级, 则加个BUFF
+			-- TODO: (这个得另外找个)如果等级是新手保护等级, 则加个BUFF
 			if playerInfo:GetLevel() <= config.new_player_protected_level then
 				SystemAddBuff(player, BUFF_NEW_PLAYER_PROTECTED, MAX_BUFF_DURATION)
 			end
@@ -583,6 +583,11 @@ Instance_base = {
 		local playerInfo = UnitInfo:new{ptr = killer}
 		--增加击杀玩家次数
 		--playerInfo:AddKillPlayerCount(1)
+		return 0
+	end,
+	
+	-- 当玩家死亡(在OnPlayerKilled之后触发)
+	OnPlayerDeath = function(self, player)
 		return 0
 	end,
 

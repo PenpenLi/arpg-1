@@ -10,6 +10,8 @@ outString('load template')
 require("template/appd_init")
 require("template/conditions")
 
+require("util/utils")
+
 outString('load share.tick_name script')
 require("share/tick_name")
 

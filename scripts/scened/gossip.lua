@@ -60,21 +60,17 @@ end
 
 -- 找到本地图的所有人传送到某一个组队副本中
 function DoForceInto(playerInfo)
-	--[[
-	local toMapId = 103
-	local toX = 25
-	local toY = 21
+	local toMapId = 2003
+	local toX = 32
+	local toY = 27
 
 	--local ownerGuid = playerInfo:GetPlayerGuid()
 
 	local map_ptr = unitLib.GetMap(playerInfo.ptr)
-	local mapId = mapLib.GetMapID(map_ptr)
-	local targetUnits = mapLib.GetAllPlayer(map_ptr)
 
-	for _, target in pairs(targetUnits) do
-		playerLib.Teleport(target, toMapId, toX, toY, 0, "")
-	end
-	]]
+
+
+	playerLib.Teleport(playerInfo.ptr, toMapId, toX, toY, 0, "")
 end
 
 
@@ -254,3 +250,28 @@ function DoQuestRewardScript(player, quest_id, xp, silver, taolue, bind_gold, al
 		
 end
 
+function DoRandomDrop(player, dropId, moneyOperType, itemOperType)
+	
+	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
+	itemOperType  = itemOperType  or LOG_ITEM_OPER_TYPE_LOOT
+	
+	local dict = {}
+	local config = tb_drop_reward[dropId]
+	for _, packetId in pairs(config.reward) do
+		local packConfig = tb_drop_packet[packetId]
+		
+		local indx = GetRandomIndex(packConfig.items)
+		local itemId = packConfig.items[indx][ 1 ]
+		local count = GetRandomExp(packConfig.counts[indx])
+		local bind  = packConfig.binds[indx][ 1 ]
+		
+		table.insert(dict, {itemId, count})
+	end
+	
+	--MONEY_CHANGE_SELECT_LOOT
+	--LOG_ITEM_OPER_TYPE_LOOT
+	--playerLib.AddItem(player, loot_entry, 1, ITEM_BIND_NONE, LOG_ITEM_OPER_TYPE_LOOT)
+	--playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, drop_item_config[2])
+	
+	-- 加到道具里面去
+end

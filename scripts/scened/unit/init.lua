@@ -21,6 +21,16 @@ function UnitInfo:GetIntGuid(  )
 	return unitLib.GetIntGuid(self.ptr)
 end
 
+-- 判断大的进入条件是否满足
+function UnitInfo:makeEnterTest(toMapId)
+	local mapid = unitLib.GetMapID(self.ptr)
+	local bbit  = tb_map[mapid].type
+	local value = bit.lshift(1, bbit)
+	
+	local mask = tb_map[toMapId].enter_mask
+	return bit.band(mask, value) > 0
+end
+
 --最重要的操作结果
 function UnitInfo:CallOptResult( typed, reason, data )
 	if GetUnitTypeID(self.ptr) ~= TYPEID_PLAYER then 
@@ -767,17 +777,18 @@ end
 
 --获得pvp状态
 function UnitInfo:GetPVPState()
-	return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_PVP)
+	return false
+	--TODO: return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_PVP)
 end
 
 --获得pve状态
 function UnitInfo:GetPVEState()
-	return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_PVE)
+	--TODO: return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_PVE)
 end
 
 --获得备战状态
 function UnitInfo:GetCastState(  )
-	return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_CAST)
+	--TODO: return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_CAST)
 end
 
 --取消备战标识
@@ -1262,6 +1273,34 @@ function UnitInfo:modeChange(mode)
 	self:SetBattleMode(mode)
 end
 
+
+-- 是否有坐骑
+function UnitInfo:IsMountActived()
+	local actived = self:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0)
+	return actived > 0
+end
+
+-- 骑乘状态
+function UnitInfo:rideFlag()
+	return self:GetByte(UNIT_FIELD_MOUNT_LEVEL, 2)
+end
+
+-- 是否骑乘
+function UnitInfo:isRide()
+	return self:IsMountActived() and self:rideFlag() > 0
+end
+
+-- 骑乘
+function UnitInfo:MountRide()
+	playerLib.SendMountJumpDown(player_ptr, 1)
+end
+
+-- 下骑
+function UnitInfo:MountUnride()
+	playerLib.SendMountJumpDown(player_ptr, 0)
+end
+
+
 --获得当前生命	
 function UnitInfo:GetHealth()
 	return self:GetUInt32(UNIT_FIELD_HEALTH)
@@ -1575,8 +1614,7 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 	unitInfo:SetForce(battlePoint)
 	
 	-- TODO: 如果是骑乘状态 速度就替换成坐骑的速度
-	local actived = unitInfo:GetUInt16(UNIT_FIELD_MOUNT_LEVEL, 0)
-	if actived > 0 then
+	if unitInfo:isRide() then
 		
 	end
 end
