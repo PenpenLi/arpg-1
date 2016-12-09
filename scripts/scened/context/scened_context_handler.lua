@@ -242,6 +242,11 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	
 	
 	if mapLib.IsCanRun(map_ptr, dst_x, dst_y) == 1 then
+		
+		if self:isRide() then
+			self:MountUnride() 
+		end
+		
 		Select_Instance_Script(self:GetMapID()):OnStartJump(self)
 		--增加BUFF, 通过BUFF来控制跳跃时间
 		SpelladdBuff(player_ptr, BUFF_JUMP_JUMP, player_ptr, 1,tb_buff_template[BUFF_JUMP_JUMP].duration)
