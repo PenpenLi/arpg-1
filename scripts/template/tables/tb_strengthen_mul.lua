@@ -8,13 +8,13 @@ tb_strengthen_mul = {
 	--  allstrent:int	全身强化
 	--  mulpro:array	加成属性
 	[1] = {id = 1,allstrent = 10,mulpro = {{1,100}},},
-	[2] = {id = 2,allstrent = 20,mulpro = {{2,100}},},
-	[3] = {id = 3,allstrent = 30,mulpro = {{3,100}},},
-	[4] = {id = 4,allstrent = 40,mulpro = {{4,100}},},
-	[5] = {id = 5,allstrent = 50,mulpro = {{5,100}},},
-	[6] = {id = 6,allstrent = 60,mulpro = {{6,100}},},
-	[7] = {id = 7,allstrent = 70,mulpro = {{7,100}},},
-	[8] = {id = 8,allstrent = 80,mulpro = {{1,100}},},
-	[9] = {id = 9,allstrent = 90,mulpro = {{2,100}},},
-	[10] = {id = 10,allstrent = 100,mulpro = {{3,100}},},
+	[2] = {id = 2,allstrent = 20,mulpro = {{3,100}},},
+	[3] = {id = 3,allstrent = 30,mulpro = {{2,100}},},
+	[4] = {id = 4,allstrent = 40,mulpro = {{1,300}},},
+	[5] = {id = 5,allstrent = 50,mulpro = {{3,300}},},
+	[6] = {id = 6,allstrent = 60,mulpro = {{2,300}},},
+	[7] = {id = 7,allstrent = 70,mulpro = {{1,500}},},
+	[8] = {id = 8,allstrent = 80,mulpro = {{3,500}},},
+	[9] = {id = 9,allstrent = 90,mulpro = {{2,500}},},
+	[10] = {id = 10,allstrent = 100,mulpro = {{1,800}},},
 }

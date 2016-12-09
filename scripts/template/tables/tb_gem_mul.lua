@@ -7,14 +7,14 @@ tb_gem_mul = {
 	--  id:int	编号
 	--  allgem:int	全身宝石
 	--  mulpro:array	加成属性
-	[1] = {id = 1,allgem = 1,mulpro = {{1,100}},},
-	[2] = {id = 2,allgem = 2,mulpro = {{2,100}},},
-	[3] = {id = 3,allgem = 3,mulpro = {{3,100}},},
-	[4] = {id = 4,allgem = 4,mulpro = {{4,100}},},
-	[5] = {id = 5,allgem = 5,mulpro = {{5,100}},},
-	[6] = {id = 6,allgem = 6,mulpro = {{6,100}},},
-	[7] = {id = 7,allgem = 7,mulpro = {{7,100}},},
-	[8] = {id = 8,allgem = 8,mulpro = {{1,200}},},
-	[9] = {id = 9,allgem = 9,mulpro = {{2,200}},},
-	[10] = {id = 10,allgem = 10,mulpro = {{3,200}},},
+	[1] = {id = 1,allgem = 1,mulpro = {{1,200}},},
+	[2] = {id = 2,allgem = 2,mulpro = {{3,200}},},
+	[3] = {id = 3,allgem = 3,mulpro = {{2,200}},},
+	[4] = {id = 4,allgem = 4,mulpro = {{1,400}},},
+	[5] = {id = 5,allgem = 5,mulpro = {{3,400}},},
+	[6] = {id = 6,allgem = 6,mulpro = {{2,400}},},
+	[7] = {id = 7,allgem = 7,mulpro = {{1,600}},},
+	[8] = {id = 8,allgem = 8,mulpro = {{3,600}},},
+	[9] = {id = 9,allgem = 9,mulpro = {{2,600}},},
+	[10] = {id = 10,allgem = 10,mulpro = {{6,600}},},
 }
