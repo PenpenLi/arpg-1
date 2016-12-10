@@ -28,6 +28,8 @@ end
 
 --玩家加入地图
 function InstanceVIP:OnJoinPlayer(player)
+	--[[
+	
 	InstanceInstBase.OnJoinPlayer(self, player)
 	
 	local playerInfo = UnitInfo:new{ptr = player}
@@ -40,10 +42,14 @@ function InstanceVIP:OnJoinPlayer(player)
 	
 	-- 刷新BOSS
 	self:OnRefreshBoss(player)
+	
+	]]
 end
 
 --刷怪
 function InstanceVIP:OnRefreshBoss(player)
+	--[[
+	
 	local boss = mapLib.AliasCreature(self.ptr, InstanceVIP.BOSS_NAME)
 	
 	if boss then
@@ -66,6 +72,7 @@ function InstanceVIP:OnRefreshBoss(player)
 		}
 	)
 	
+	]]
 end
 
 --当玩家加入后触发

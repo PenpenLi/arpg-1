@@ -218,10 +218,6 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 		return
 	end
 	
-	local cd = math.ceil(tb_skill_base[JUMP_SKILL].singleCD / 1000)
-	self:SetPlayerJumpCd(cur_time + cd)
-	
-	
 	--距离验证
 	local angle = self:GetAngle(dst_x, dst_y)
 	local distance = self:GetDistance(dst_x, dst_y)
@@ -243,6 +239,9 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	
 	if mapLib.IsCanRun(map_ptr, dst_x, dst_y) == 1 then
 		
+		local cd = math.ceil(tb_skill_base[JUMP_SKILL].singleCD / 1000)
+		self:SetPlayerJumpCd(cur_time + cd)
+	
 		if self:isRide() then
 			self:MountUnride() 
 		end
