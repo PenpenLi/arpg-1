@@ -3,6 +3,8 @@ InstanceVIP = class("InstanceVIP", InstanceInstBase)
 InstanceVIP.Name = "InstanceVIP"
 InstanceVIP.player_auto_respan = 120
 
+InstanceVIP.BOSS_NAME = "meichaofeng"
+
 function InstanceVIP:ctor(  )
 	
 end
@@ -37,29 +39,33 @@ function InstanceVIP:OnJoinPlayer(player)
 	end
 	
 	-- 刷新BOSS
+	self:OnRefreshBoss(player)
+end
+
+--刷怪
+function InstanceVIP:OnRefreshBoss(player)
+	local boss = mapLib.AliasCreature(self.ptr, InstanceVIP.BOSS_NAME)
+	
+	if boss then
+		return
+	end
+	
 	local teleId = playerLib.GetTeleportID(player)
 	local hard   = tonumber(teleId) + 1
 	local mapId  = self:GetMapId()
 	local entry  = tb_map_vip[mapId].creatures[hard]
 	
-	self:OnRefreshBoss(entry)
-end
-
---刷怪
-function InstanceVIP:OnRefreshBoss(entry)
 	local config = tb_creature_template[entry]
 	local mapId  = self:GetMapId()
 	local bornX = tb_map_vip[mapId].bossx
 	local bornY = tb_map_vip[mapId].bossy
 
-	local boss = mapLib.AliasCreature(self.ptr, config.name)
-	if not boss then
-		mapLib.AddCreature(self.ptr, {
-				templateid = entry, x = bornX, y = bornY, 
-				active_grid = true, alias_name = config.name, ainame = config.ainame, npcflag = {}
-			}
-		)
-	end
+	mapLib.AddCreature(self.ptr, {
+			templateid = entry, x = bornX, y = bornY, 
+			active_grid = true, alias_name = InstanceVIP.BOSS_NAME, ainame = config.ainame, npcflag = {}
+		}
+	)
+	
 end
 
 --当玩家加入后触发
@@ -69,7 +75,6 @@ end
 
 --当玩家死亡后触发()
 function InstanceVIP:OnPlayerDeath(player)
-	print("player death")
 	self:SetMapState(self.STATE_FAIL)
 end
 
@@ -78,19 +83,26 @@ function InstanceVIP:OnLeavePlayer( player, is_offline)
 	self:SetMapEndTime(os.time())
 end
 
-
-
 -------------------------------- BOSS
 AI_meichaofei = class("AI_meichaofei", AI_Base)
 AI_meichaofei.ainame = "AI_meichaofei"
 --死亡
 function AI_meichaofei:JustDied( map_ptr,owner,killer_ptr )
+	
+	--[[
 	AI_Base.JustDied(self,map_ptr,owner,killer_ptr)
 	
 	local instanceInfo = InstanceVIP:new{ptr = map_ptr}
 	instanceInfo:SetMapState(instanceInfo.STATE_FINISH)
 	
 	-- 随机奖励
+	local teleId = playerLib.GetTeleportID(killer_ptr)
+	local hard   = tonumber(teleId) + 1
+	local mapId  = instanceInfo:GetMapId()
+	
+	local dropId = tb_map_vip[mapId].rewards[hard]
+	local reward = DoRandomDrop(killer_ptr, dropId)
+	]]
 	
 	
 	return 0

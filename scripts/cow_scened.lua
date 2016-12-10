@@ -242,6 +242,8 @@ INSTANCE_SCRIPT_TABLE = {
 	--TODO: 补全
 	[ 1 ] = InstanceMainBase,
 	[1001] = InstanceFieldBase,
+	[2001] = InstanceInstBase,
+	[2002] = InstanceInstBase,
 	[2003] = InstanceVIP,
 	--[101] = InstanceTower1,
 	--[102] = InstanceTower2,

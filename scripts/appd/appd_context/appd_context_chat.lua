@@ -107,6 +107,62 @@ function PlayerInfo:GmCommand(str)
 			return
 		end
 		call_opt_command(0, 0, "reload_template")
+		
+	elseif gm_key == GM_COMMAND_CUSTOM then	--@CUSTOM
+		-- 应用服需要加的
+		-- 发一套装备和武器, 背包中在需要一个替换衣服
+		local vv = {
+			{
+				10001,
+				10002,
+				10003,
+				10004,
+				10005,
+				10006,
+				10007,
+				10008,
+				10009,
+				10010,
+			
+				10022
+			},
+			{
+				10011,
+				10012,
+				10013,
+				10014,
+				10015,
+				10016,
+				10017,
+				10018,
+				10019,
+				10020,
+			
+				10032
+			},
+		
+		}
+		
+		
+		local gender = self:GetGender()
+		local entrys = vv[gender]
+		local itemMgr = self:getItemMgr()	
+		
+		for _, id in pairs(entrys) do
+			itemMgr:addItem(id,1,1,true,true,0,0)
+		end
+		
+		-- 穿戴装备和武器
+		for i = 1, #entrys-1 do
+			itemMgr:exchangePos(BAG_TYPE_MAIN_BAG, i-1, BAG_TYPE_EQUIP, tb_item_template[entrys[i]].pos)
+		end
+		
+		-- 激活神兵和装备
+		itemMgr:addItem(101,10,1,true,true,0,0)
+		local divineId = 1
+		self:DivineActive(divineId)
+		self:switchDivine(divineId)
+		
 	elseif(gm_key == GM_COMMAND_JIAOBEN)then		-- @脚本
 		--[[
 		if(gm_level < GM_LEVEL_3)then

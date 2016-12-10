@@ -3,7 +3,10 @@
 function GetGmCommandKey(gm_str)
 	local gm_key = -1
 	if(gm_str == '@ClientInfo')then	
-		return GM_COMMAND_JIULONGCHAO    	 		
+		return GM_COMMAND_JIULONGCHAO
+	
+	elseif gm_str == '@CUSTOM' then
+		return GM_COMMAND_CUSTOM
     
 	elseif(gm_str == '@素材'  or gm_str == '@Material')then
 		return GM_COMMAND_SUCAI    					
