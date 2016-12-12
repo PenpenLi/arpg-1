@@ -727,3 +727,7 @@ jump_start,c2s,160,/*请求跳跃*/,STATUS_NEVER,False
 #
 enter_vip_instance,c2s,161,/*请求进入vip副本*/,STATUS_NEVER,False
 	id,uint16,False,/*vip副本地图id*/
+
+#
+reset_vip_instance_times,c2s,162,/*请求购买进入vip副本次数*/,STATUS_NEVER,False
+	id,uint16,False,/*vip副本地图id*/

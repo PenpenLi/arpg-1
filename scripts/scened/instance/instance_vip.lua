@@ -22,13 +22,20 @@ end
 function InstanceVIP:OnSetState(fromstate,tostate)
 	if tostate == self.STATE_FINISH or tostate == self.STATE_FAIL then
 		--10s后结束副本
-		self:SetMapEndTime(os.time() + 10)
+		local timestamp = os.time() + 10
+		mapLib.AddTimeStampTimer(self.ptr, "prepareToLeave", timestamp)
+		self:SetMapEndTime(timestamp)
 	end
 end
 
+-- 准备退出
+function InstanceVIP:prepareToLeave()
+	mapLib.ExitInstance(self.ptr)
+end
+
+
 --玩家加入地图
 function InstanceVIP:OnJoinPlayer(player)
-	--[[
 	
 	InstanceInstBase.OnJoinPlayer(self, player)
 	
@@ -43,12 +50,10 @@ function InstanceVIP:OnJoinPlayer(player)
 	-- 刷新BOSS
 	self:OnRefreshBoss(player)
 	
-	]]
 end
 
 --刷怪
 function InstanceVIP:OnRefreshBoss(player)
-	--[[
 	
 	local boss = mapLib.AliasCreature(self.ptr, InstanceVIP.BOSS_NAME)
 	
@@ -56,8 +61,8 @@ function InstanceVIP:OnRefreshBoss(player)
 		return
 	end
 	
-	local teleId = playerLib.GetTeleportID(player)
-	local hard   = tonumber(teleId) + 1
+	local generalId = self:GetMapGeneralId()
+	local hard   = tonumber(generalId) + 1
 	local mapId  = self:GetMapId()
 	local entry  = tb_map_vip[mapId].creatures[hard]
 	
@@ -72,7 +77,6 @@ function InstanceVIP:OnRefreshBoss(player)
 		}
 	)
 	
-	]]
 end
 
 --当玩家加入后触发
@@ -94,23 +98,29 @@ end
 AI_meichaofei = class("AI_meichaofei", AI_Base)
 AI_meichaofei.ainame = "AI_meichaofei"
 --死亡
-function AI_meichaofei:JustDied( map_ptr,owner,killer_ptr )
+function AI_meichaofei:JustDied( map_ptr,owner,killer_ptr )	
 	
-	--[[
+	-- 先判断是不是本副本的	
+	local instanceInfo = InstanceVIP:new{ptr = map_ptr}
+	local mapId  = instanceInfo:GetMapId()
+	
+	if tb_map_vip[mapId] == nil then
+		return
+	end
+	
+	
+	instanceInfo:SetMapState(instanceInfo.STATE_FINISH)
 	AI_Base.JustDied(self,map_ptr,owner,killer_ptr)
 	
-	local instanceInfo = InstanceVIP:new{ptr = map_ptr}
-	instanceInfo:SetMapState(instanceInfo.STATE_FINISH)
-	
 	-- 随机奖励
-	local teleId = playerLib.GetTeleportID(killer_ptr)
-	local hard   = tonumber(teleId) + 1
-	local mapId  = instanceInfo:GetMapId()
+	local generalId = instanceInfo:GetMapGeneralId()
+	local hard   = tonumber(generalId) + 1
 	
 	local dropId = tb_map_vip[mapId].rewards[hard]
 	local reward = DoRandomDrop(killer_ptr, dropId)
-	]]
+	local data = string.join(",", reward)
 	
+	instanceInfo:SetStr(VIP_INSTANCE_FIELD_REWARD, data)
 	
 	return 0
 end

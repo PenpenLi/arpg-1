@@ -68,6 +68,21 @@ function PlayerInfo:isRide()
 	return self:IsMountActived() and self:rideFlag() > 0
 end
 
+-- 设置VIP等级
+function PlayerInfo:SetVIP(vipLevel, time)
+	
+	if vipLevel > VIP_MAX_LEVEL then
+		return
+	end
+	
+	self:SetUInt32(PLAYER_FIELD_VIP_LEVEL, vipLevel)
+	self:SetUInt32(PLAYER_FIELD_VIP_TIME_OUT, time)
+end
+
+-- 是否达到该vip等级
+function PlayerInfo:isVIP(vipLevel)
+	return self:GetUInt32(PLAYER_FIELD_VIP_LEVEL) >= vipLevel and self:GetUInt32(PLAYER_FIELD_VIP_TIME_OUT) >= os.time()
+end
 
 -- 玩家是否还活着
 function PlayerInfo:IsAlive ()

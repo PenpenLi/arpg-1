@@ -1,6 +1,6 @@
 
 --[[
-Ëæ»ú»ñµÃÀàËÆ {{Öµ1, Íò·Ö±È¸ÅÂÊ1},{Öµ2, Íò·Ö±È¸ÅÂÊ2},...}µÄÖµ
+éšæœºè·å¾—ç±»ä¼¼ {{å€¼1, ä¸‡åˆ†æ¯”æ¦‚ç‡1},{å€¼2, ä¸‡åˆ†æ¯”æ¦‚ç‡2},...}çš„å€¼
 ]]
 function GetRandomExp(expTable)
 	local index = GetRandomIndex(expTable)
@@ -12,7 +12,7 @@ function GetRandomExp(expTable)
 end
 
 --[[
-Ëæ»ú»ñµÃÀàËÆ {{Öµ1, Íò·Ö±È¸ÅÂÊ1},{Öµ2, Íò·Ö±È¸ÅÂÊ2},...}µÄÏÂ±ê
+éšæœºè·å¾—ç±»ä¼¼ {{å€¼1, ä¸‡åˆ†æ¯”æ¦‚ç‡1},{å€¼2, ä¸‡åˆ†æ¯”æ¦‚ç‡2},...}çš„ä¸‹æ ‡
 ]]
 function GetRandomIndex(randTable)
 	local rd = randInt(1, 10000)
@@ -28,8 +28,31 @@ function GetRandomIndex(randTable)
 	return 0
 end
 
+-- ä»è¿ç»­çš„sizeä¸ªæ•°é‡Œé¢éšæœºcountä¸ªæ•°, ä¿è¯æƒŸä¸€
+function GetRandomIndexTable(size, count)
+	assert(size >= count)
+	
+	local ret = {}
+	
+	local dict = {}
+	for i = 1, size do
+		table.insert(dict, i)
+	end
+	
+	for i = 1, count do
+		local indx = randInt(1, #dict)
+		table.insert(ret, dict[indx])
+		-- æ›¿æ¢åˆ°æœ€åä¸ªå¹¶ç½®ç©º
+		local last = dict[#dict]
+		dict[#dict] = nil
+		dict[indx] = last
+	end
+	
+	return ret
+end
 
---ºÏ²¢ÀàËÆ{{key1, value1}, {key2, value2}...}µÄtable
+
+--åˆå¹¶ç±»ä¼¼{{key1, value1}, {key2, value2}...}çš„table
 function AddTempInfoIfExist(map, key, value)
 	for _, info in pairs(map) do
 		if info[ 1 ] == key then

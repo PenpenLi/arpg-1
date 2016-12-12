@@ -27,6 +27,11 @@ function  DoGMScripts(player_ptr, gm_commands)
 			player:SetDouble(PLAYER_FIELD_POWERS + POWER_MANA*2, paras[2])
 			player:SetDouble(PLAYER_FIELD_AUTO_MP, paras[2])			
 		end
+	elseif tokens[1] == '@VIP' then	
+		local lv = paras[2] or 1
+		local tm = os.time() + 30 * 24 * 3600
+		player:SetVIP(lv, tm)
+		
 	elseif(tokens[1] == '@hp')then
 		if(#paras >= 2)then			
 			player:SetDouble(PLAYER_FIELD_AUTO_HP, paras[2])

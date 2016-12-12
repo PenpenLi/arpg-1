@@ -312,7 +312,7 @@ function DoRandomDrop(player, dropId, moneyOperType, itemOperType)
 		local count = GetRandomExp(packConfig.counts[indx])
 		local bind  = packConfig.binds[indx][ 1 ]
 		
-		table.insert(dict, {itemId, count})
+		table.insert(dict, itemId..":"..count)
 		
 		if ItemToResoureceTable[itemId] ~= nil then
 			-- 加人物资源

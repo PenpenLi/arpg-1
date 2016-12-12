@@ -123,7 +123,7 @@ end
 
 --是否需要提供传送generalid,通过地图id判断
 function DoIsNeedGeneralid(mapid)
-	local tbl = {102}--地图：奇遇多人副本
+	local tbl = {2003}
 	local flag = false
 	for _, val in ipairs(tbl) do
 		if mapid == val then
@@ -131,13 +131,13 @@ function DoIsNeedGeneralid(mapid)
 			break
 		end
 	end
-	return flag == true
+	return flag
 end
 
 --地图管理器，查找或创建地图
 function FindOrCreateMap(mapid, inst_type, general_id, lineno)
 	if(inst_type == MAP_INST_TYP_SINGLETON)then	--单人副本
-		return createInstance(mapid, "", lineno)
+		return createInstance(mapid, general_id, lineno)
 	end
 
 	--找一下真正该去的分线号

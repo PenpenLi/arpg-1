@@ -96,7 +96,8 @@ config = {
 		CMSG_GEM,
 		CMSG_DIVINE_ACTIVE,
 		CMSG_DIVINE_UPLEV,
-		CMSG_DIVINE_SWITCH
+		CMSG_DIVINE_SWITCH,
+		CMSG_RESET_VIP_INSTANCE_TIMES,
 	},
 	--pk服命令表
 	pk_external_router_map = {

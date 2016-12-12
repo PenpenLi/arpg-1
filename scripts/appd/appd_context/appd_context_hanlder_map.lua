@@ -39,4 +39,8 @@ hanlders[CMSG_GEM] = PlayerInfo.gem
 hanlders[CMSG_DIVINE_ACTIVE] = PlayerInfo.Handle_Divine_Active
 hanlders[CMSG_DIVINE_UPLEV] = PlayerInfo.Handle_Divine_UpLev
 hanlders[CMSG_DIVINE_SWITCH] = PlayerInfo.Handle_Divine_Switch
+
+
+hanlders[CMSG_RESET_VIP_INSTANCE_TIMES] = PlayerInfo.Handle_Reset_Vip_Instance_Times
+
 return hanlders

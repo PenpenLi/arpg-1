@@ -994,11 +994,7 @@ function  DoGMScripts(player_ptr, gm_commands, runtime)
 	elseif tokens[1] == '@技能cd' then	
 		local playerInfo = UnitInfo:new{ptr = player_ptr}
 		playerInfo:PrintSpellSlotInfo()	--打印技能槽信息
-	elseif tokens[1] == '@vip' then	
-		local playerInfo = UnitInfo:new{ptr = player_ptr}
-		local lv = paras[2] or 1
-		local tm = paras[3] or (os.time() + 2592000)
-		playerInfo:SetVipEndTime(lv,tm)	
+		
 	elseif tokens[1] == '@清理武林秘境' then
 		globalValue:ClearWulinMijing()
 	elseif tokens[1] == '@清理江湖奇侠' then

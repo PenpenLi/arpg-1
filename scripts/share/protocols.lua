@@ -171,6 +171,7 @@ CMSG_DIVINE_UPLEV		= 158	-- /*激活神兵*/
 CMSG_DIVINE_SWITCH		= 159	-- /*切换神兵*/	
 CMSG_JUMP_START		= 160	-- /*请求跳跃*/	
 CMSG_ENTER_VIP_INSTANCE		= 161	-- /*请求进入vip副本*/	
+CMSG_RESET_VIP_INSTANCE_TIMES		= 162	-- /*请求购买进入vip副本次数*/	
 
 
 ---------------------------------------------------------------------
@@ -5828,6 +5829,35 @@ function Protocols.unpack_enter_vip_instance (pkt)
 end
 
 
+-- /*请求购买进入vip副本次数*/	
+function Protocols.pack_reset_vip_instance_times ( id)
+	local output = Packet.new(CMSG_RESET_VIP_INSTANCE_TIMES)
+	output:writeI16(id)
+	return output
+end
+
+-- /*请求购买进入vip副本次数*/	
+function Protocols.call_reset_vip_instance_times ( playerInfo, id)
+	local output = Protocols.	pack_reset_vip_instance_times ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求购买进入vip副本次数*/	
+function Protocols.unpack_reset_vip_instance_times (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -5991,6 +6021,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_divine_switch = self.call_divine_switch
 	playerInfo.call_jump_start = self.call_jump_start
 	playerInfo.call_enter_vip_instance = self.call_enter_vip_instance
+	playerInfo.call_reset_vip_instance_times = self.call_reset_vip_instance_times
 end
 
 local unpack_handler = {
@@ -6151,6 +6182,7 @@ local unpack_handler = {
 [CMSG_DIVINE_SWITCH] =  Protocols.unpack_divine_switch,
 [CMSG_JUMP_START] =  Protocols.unpack_jump_start,
 [CMSG_ENTER_VIP_INSTANCE] =  Protocols.unpack_enter_vip_instance,
+[CMSG_RESET_VIP_INSTANCE_TIMES] =  Protocols.unpack_reset_vip_instance_times,
 
 }
 
