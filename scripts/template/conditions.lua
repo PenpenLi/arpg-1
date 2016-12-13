@@ -360,7 +360,8 @@ function GetXianRenSomeAttr(tParam)
 	return tParam.selfAttr * tParam.xx/100
 end
 
-
+equip_attr_base = "a"
+equip_attr_spit = ","
 
 equip_attr_type = {
 

@@ -130,6 +130,10 @@ end
 function AppItem:setAttr( attr_type, val )
 	 self.item:SetAttr(GetAttrKey({[1] = attr_type})[1], val)
 end
+--设置附加属性
+function AppItem:setAddAttr(key,val)
+	 self.item:SetAttr(key, val)
+end
 
 --遍历属性对
 function AppItem:forEachAttr( func )

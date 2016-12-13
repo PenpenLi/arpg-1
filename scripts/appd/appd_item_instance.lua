@@ -9,14 +9,16 @@ function AppItemInstance:itemAppaisal(item)
 	local item_tempate = tb_item_template[entry]
 	if not item_tempate then return end
 	
-	local attr_config = item_tempate.basic_properties
+	local attr_config = item_tempate.forge_pro
+	local attr_length = item_tempate.forge_pro_max[1]
 
 	if item_tempate.type == ITEM_TYPE_EQUIP then
 		--生成基础属性
-		self:createBaseAtrr(item, item_tempate.type, attr_config)
+		--self:createBaseAtrr(item, item_tempate.type, attr_config)
+		self:createAddAtrr(item,attr_config,attr_length)
 
 		--重算下战斗力
-		self:resetItemForce(item)
+		--self:resetItemForce(item)
 	end
 	
 	
@@ -134,6 +136,22 @@ function AppItemInstance:createBaseAtrr(item, typed, attr_config)
 		--outFmtDebug("att config %s,%s",attr_config[i][1],attr_config[i][2])
 		item:setAttr(attr_config[i][1], attr_config[i][2])
 	end
+end
+
+function AppItemInstance:createAddAtrr(item, attr_config, length)
+	self:clearBaseAtrr(item)	--清除老的基础属性
+	if length < 1 then return end
+	local ary = GetRandomIndexTable(#attr_config,length)
+	for i = 1,#ary do
+		local lev = randInt(0, 6)
+		local idx = ary[i]
+		item:setAddAttr(self:getAddAttKey(attr_config[idx][1],lev), attr_config[idx][2])
+	end
+
+end
+-- 附加属性前缀字符串  标示,属性类型,品质
+function AppItemInstance:getAddAttKey(type,lev)
+	return  equip_attr_base .. equip_attr_spit  .. type .. equip_attr_spit .. lev
 end
 
 --清空物品基础属性
