@@ -4,14 +4,19 @@ function AppInstanceMgr:ctor()
 	
 end
 
-function AppInstanceMgr:checkIfCanEnter(mapid)
+function AppInstanceMgr:checkIfCanEnter(mapid, hard)
 
 	local config = tb_map_vip[mapid]
 
-	-- TODO:判断VIP是否满足条件
+	-- 判断VIP是否满足条件
 	local player = self:getOwner()
 	if not player:isVIP(config.vip) then
 		outFmtError("vip level not satisfy")
+		return
+	end
+	
+	if not self:isEnoughForceByHard(mapid, hard, player:GetForce()) then
+		outFmtError("no force to enter hard = %s", hard)
 		return
 	end
 	
@@ -30,25 +35,14 @@ function AppInstanceMgr:checkIfCanEnter(mapid)
 	
 	self:AddByte(indx, 2, 1)
 	
-	local hard = self:GetHard(mapid, player)
 	-- 发起传送
-	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, ""..hard)
+	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, hard)
 end
 
-function AppInstanceMgr:GetHard(mapid, playerInfo)
-	
-	playerInfo = playerInfo or self:getOwner()
+function AppInstanceMgr:isEnoughForceByHard(mapid, hard, force)
+	hard = tonumber(hard)
 	local config = tb_map_vip[mapid]
-	local force = playerInfo:GetForce()
-	local hard = 0
-	
-	for i = 1, #config.forces do
-		if force >= config.forces[ i ] then
-			hard = i
-		end
-	end
-	
-	return hard
+	return force >= config.forces[hard]
 end
 
 

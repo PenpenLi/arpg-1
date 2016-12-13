@@ -727,7 +727,18 @@ jump_start,c2s,160,/*请求跳跃*/,STATUS_NEVER,False
 #
 enter_vip_instance,c2s,161,/*请求进入vip副本*/,STATUS_NEVER,False
 	id,uint16,False,/*vip副本地图id*/
+	hard,uint8,False,/*vip副本难度*/
 
 #
 reset_vip_instance_times,c2s,162,/*请求购买进入vip副本次数*/,STATUS_NEVER,False
 	id,uint16,False,/*vip副本地图id*/
+	
+#
+hang_up,c2s,163,/*进行挂机*/,STATUS_NEVER,False
+
+#
+hang_up_setting,c2s,164,/*进行挂机设置*/,STATUS_NEVER,False
+	value0,uint32,False,/*同PLAYER_FIELD_HOOK_BYTE0*/
+	value1,uint32,False,/*同PLAYER_FIELD_HOOK_BYTE1*/
+	value2,uint32,False,/*同PLAYER_FIELD_HOOK_BYTE2*/
+	value3,uint32,False,/*同PLAYER_FIELD_HOOK_BYTE3*/

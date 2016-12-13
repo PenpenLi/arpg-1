@@ -499,7 +499,12 @@ end
 function ScenedContext:Hanlde_Enter_VIP_Instance( pkt )
 	
 	local id = pkt.id
+	local hard = pkt.hard
 	if tb_map_vip[id] == nil then
+		return
+	end
+	
+	if hard < 1 or hard > #tb_map_vip[id].forces then
 		return
 	end
 	
@@ -534,7 +539,7 @@ function ScenedContext:Hanlde_Enter_VIP_Instance( pkt )
 	end
 	
 	--发到应用服其他校验、及扣除材料
-	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_VIP_INSTANCE, id)
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_VIP_INSTANCE, id, ""..hard)
 end
 
 function ScenedContext:makeEnterTest(toMapId)

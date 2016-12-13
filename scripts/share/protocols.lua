@@ -172,6 +172,8 @@ CMSG_DIVINE_SWITCH		= 159	-- /*切换神兵*/
 CMSG_JUMP_START		= 160	-- /*请求跳跃*/	
 CMSG_ENTER_VIP_INSTANCE		= 161	-- /*请求进入vip副本*/	
 CMSG_RESET_VIP_INSTANCE_TIMES		= 162	-- /*请求购买进入vip副本次数*/	
+CMSG_HANG_UP		= 163	-- /*进行挂机*/	
+CMSG_HANG_UP_SETTING		= 164	-- /*进行挂机设置*/	
 
 
 ---------------------------------------------------------------------
@@ -5801,15 +5803,16 @@ end
 
 
 -- /*请求进入vip副本*/	
-function Protocols.pack_enter_vip_instance ( id)
+function Protocols.pack_enter_vip_instance ( id ,hard)
 	local output = Packet.new(CMSG_ENTER_VIP_INSTANCE)
 	output:writeI16(id)
+	output:writeByte(hard)
 	return output
 end
 
 -- /*请求进入vip副本*/	
-function Protocols.call_enter_vip_instance ( playerInfo, id)
-	local output = Protocols.	pack_enter_vip_instance ( id)
+function Protocols.call_enter_vip_instance ( playerInfo, id ,hard)
+	local output = Protocols.	pack_enter_vip_instance ( id ,hard)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -5820,6 +5823,10 @@ function Protocols.unpack_enter_vip_instance (pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.id = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.hard = input:readByte()
 	if not ret then
 		return false
 	end
@@ -5852,6 +5859,75 @@ function Protocols.unpack_reset_vip_instance_times (pkt)
 	if not ret then
 		return false
 	end
+
+	return true,param_table	
+
+end
+
+
+-- /*进行挂机*/	
+function Protocols.pack_hang_up (  )
+	local output = Packet.new(CMSG_HANG_UP)
+	return output
+end
+
+-- /*进行挂机*/	
+function Protocols.call_hang_up ( playerInfo )
+	local output = Protocols.	pack_hang_up (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*进行挂机*/	
+function Protocols.unpack_hang_up (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*进行挂机设置*/	
+function Protocols.pack_hang_up_setting ( value0 ,value1 ,value2 ,value3)
+	local output = Packet.new(CMSG_HANG_UP_SETTING)
+	output:writeU32(value0)
+	output:writeU32(value1)
+	output:writeU32(value2)
+	output:writeU32(value3)
+	return output
+end
+
+-- /*进行挂机设置*/	
+function Protocols.call_hang_up_setting ( playerInfo, value0 ,value1 ,value2 ,value3)
+	local output = Protocols.	pack_hang_up_setting ( value0 ,value1 ,value2 ,value3)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*进行挂机设置*/	
+function Protocols.unpack_hang_up_setting (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.value0 = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.value1 = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.value2 = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.value3 = input:readU32()
+	if not ret then
+		return false
+	end	
 
 	return true,param_table	
 
@@ -6022,6 +6098,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_jump_start = self.call_jump_start
 	playerInfo.call_enter_vip_instance = self.call_enter_vip_instance
 	playerInfo.call_reset_vip_instance_times = self.call_reset_vip_instance_times
+	playerInfo.call_hang_up = self.call_hang_up
+	playerInfo.call_hang_up_setting = self.call_hang_up_setting
 end
 
 local unpack_handler = {
@@ -6183,6 +6261,8 @@ local unpack_handler = {
 [CMSG_JUMP_START] =  Protocols.unpack_jump_start,
 [CMSG_ENTER_VIP_INSTANCE] =  Protocols.unpack_enter_vip_instance,
 [CMSG_RESET_VIP_INSTANCE_TIMES] =  Protocols.unpack_reset_vip_instance_times,
+[CMSG_HANG_UP] =  Protocols.unpack_hang_up,
+[CMSG_HANG_UP_SETTING] =  Protocols.unpack_hang_up_setting,
 
 }
 

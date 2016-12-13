@@ -759,6 +759,25 @@ function PlayerInfo:OnRemoveExpire(expireType, id)
 end
 
 
+-- 是否自动购买血瓶
+function PlayerInfo:isAutoBuyHpItem()
+	return self:GetByte(PLAYER_FIELD_HOOK_BYTE1, 2) > 0
+end
+
+-- 自动购买血瓶时银两不够是否用元宝
+function PlayerInfo:isAutoBuyHpItemUseGold()
+	return self:GetByte(PLAYER_FIELD_HOOK_BYTE1, 3) > 0
+end
+
+-- 是否 自动使用绑银购买复活丹
+function PlayerInfo:isBuyRespawnByBindGold()
+	return self:GetByte(PLAYER_FIELD_HOOK_BYTE3, 1) > 0
+end
+
+-- 自动购买复活丹时, 绑银不足用元宝
+function PlayerInfo:isBuyRespawnByGold()
+	return self:GetByte(PLAYER_FIELD_HOOK_BYTE3, 2) > 0
+end
 
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)

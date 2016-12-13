@@ -144,6 +144,7 @@ function ItemMgrBase:getItemByEntry(bag_type, entry)
 	return items
 end
 
+
 --获得指定背包的所有物品
 function ItemMgrBase:getBagAllItem(bag_type)
 	local items = {}

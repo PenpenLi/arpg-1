@@ -1,7 +1,7 @@
 -- 检测能否进入VIP副本
-function PlayerInfo:checkVipMapTeleport(id)
+function PlayerInfo:checkVipMapTeleport(id, hard)
 	local instMgr = self:getInstanceMgr()
-	instMgr:checkIfCanEnter(id)
+	instMgr:checkIfCanEnter(id, hard)
 end
 
 -- 进行购买进入次数

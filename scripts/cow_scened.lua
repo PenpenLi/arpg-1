@@ -122,8 +122,8 @@ config = {
 		CMSG_INSTANCE_ENTER,
 		CMSG_RIDE_MOUNT,
 		CMSG_CHANGE_BATTLE_MODE,
-		CMSG_JUMP_START	,-- /*跳跃开始*/
-		CMSG_ENTER_VIP_INSTANCE, --请求进入vip副本
+		CMSG_JUMP_START	,			-- /*跳跃开始*/
+		CMSG_ENTER_VIP_INSTANCE,	-- 请求进入vip副本	
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
@@ -245,6 +245,8 @@ INSTANCE_SCRIPT_TABLE = {
 	[2001] = InstanceInstBase,
 	[2002] = InstanceInstBase,
 	[2003] = InstanceVIP,
+	[2004] = InstanceVIP,
+	[2005] = InstanceVIP,
 	--[101] = InstanceTower1,
 	--[102] = InstanceTower2,
 	--[103] = InstanceTaoHua,

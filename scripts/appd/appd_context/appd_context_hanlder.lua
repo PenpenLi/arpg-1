@@ -194,6 +194,22 @@ function PlayerInfo:Hanlde_Bag_Exchange_Pos(pkt)
 	itemMgr:exchangePos(src_bag,src_pos,dst_bag,dst_pos)
 end
 
+-- 进行挂机
+function PlayerInfo:Handle_Hang_Up(pkt)
+	local prev = self:GetUInt32(PLAYER_FIELD_HOOK)
+	self:SetUInt32(PLAYER_FIELD_HOOK, 1 - prev)
+end
+
+-- 挂机设置
+-- 不进行任何验证(自己作弊怪谁呀)
+function PlayerInfo:Handle_Hang_Up_Setting(pkt)
+	self:SetUInt32(PLAYER_FIELD_HOOK_BYTE0, pkt.value0)
+	self:SetUInt32(PLAYER_FIELD_HOOK_BYTE1, pkt.value1)
+	self:SetUInt32(PLAYER_FIELD_HOOK_SHORT, pkt.value2)
+	self:SetUInt32(PLAYER_FIELD_HOOK_BYTE3, pkt.value3)
+end
+
+
 --函数包路由表
 local OpcodeHandlerFuncTable = require 'appd.appd_context.appd_context_hanlder_map'
 

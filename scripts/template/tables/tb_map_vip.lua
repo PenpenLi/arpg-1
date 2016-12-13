@@ -17,5 +17,7 @@ tb_map_vip = {
 	--  bossx:int	boss坐标x
 	--  bossy:int	boss坐标y
 	--  time:int	所需时限
-	[2003] = {id = 2003,x = 32,y = 21,indx = 1,vip = 1,forces = {2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},rewards = {1,1,1},bossx = 25,bossy = 25,time = 120,},
+	[2003] = {id = 2003,x = 32,y = 21,indx = 1,vip = 1,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},rewards = {1,1,1},bossx = 25,bossy = 25,time = 120,},
+	[2004] = {id = 2004,x = 32,y = 21,indx = 2,vip = 3,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},rewards = {1,1,1},bossx = 25,bossy = 25,time = 120,},
+	[2005] = {id = 2005,x = 32,y = 21,indx = 3,vip = 5,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},rewards = {1,1,1},bossx = 25,bossy = 25,time = 120,},
 }

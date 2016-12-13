@@ -98,6 +98,8 @@ config = {
 		CMSG_DIVINE_UPLEV,
 		CMSG_DIVINE_SWITCH,
 		CMSG_RESET_VIP_INSTANCE_TIMES,
+		CMSG_HANG_UP,				-- /*进行挂机*/	
+		CMSG_HANG_UP_SETTING,		-- /*进行挂机设置*/
 	},
 	--pk服命令表
 	pk_external_router_map = {

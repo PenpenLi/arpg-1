@@ -43,4 +43,9 @@ hanlders[CMSG_DIVINE_SWITCH] = PlayerInfo.Handle_Divine_Switch
 
 hanlders[CMSG_RESET_VIP_INSTANCE_TIMES] = PlayerInfo.Handle_Reset_Vip_Instance_Times
 
+hanlders[CMSG_HANG_UP] = PlayerInfo.Handle_Hang_Up
+
+hanlders[CMSG_HANG_UP_SETTING] = PlayerInfo.Handle_Hang_Up_Setting
+
+
 return hanlders
