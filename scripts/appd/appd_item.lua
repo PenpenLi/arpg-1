@@ -134,6 +134,23 @@ end
 function AppItem:setAddAttr(key,val)
 	 self.item:SetAttr(key, val)
 end
+--设置基础属性
+function AppItem:setBaseAttr(pos,key,val)
+	self.item:SetBaseAttr(pos,key,val)
+end
+--添加基础属性
+function AppItem:addBaseAttr(key,val)
+	self.item:AddBaseAttr(key,val)
+end
+--清空基础属性
+function AppItem:clearBaseAttr()
+	self.item:ClearBaseAttr()
+end
+--遍历基础属性
+function AppItem:forEachBaseAttr( func )
+	self.item:ForEachBaseAttr(func)
+end
+
 
 --遍历属性对
 function AppItem:forEachAttr( func )

@@ -67,7 +67,7 @@ end
 
 ScenedUseItem = {
 	--还魂丹
-	[191] = function(self, userInfo, item_entry, count)
+	[50003] = function(self, userInfo, item_entry, count)
 		if(userInfo:IsAlive() == false and userInfo:GetLevel() > 0)then
 			unitLib.Respawn(userInfo.ptr, RESURRPCTION_HUANHUNDAN, 5)	--原地复活
 			return true

@@ -44,8 +44,10 @@ function GetRandomIndexTable(size, count)
 		table.insert(ret, dict[indx])
 		-- 替换到最后个并置空
 		local last = dict[#dict]
+		if indx ~= #dict then
+			dict[indx] = last
+		end
 		dict[#dict] = nil
-		dict[indx] = last
 	end
 	
 	return ret
@@ -72,4 +74,13 @@ function TPrint(map)
 		out = out.."{"..map[ i ][ 1 ]..", "..map[ i ][ 2 ].."}"
 	end
 	out = out.."}"
+end
+
+function Ttab( tab )
+	local out = "{"
+	for i,v in ipairs(tab) do
+		out = out .."{" .. i .. "," .. v .."}"
+	end
+	out = out.."}"
+	outFmtInfo(out)
 end

@@ -7,13 +7,14 @@ local AppLogicalMgr = require('appd.appd_logical_mgr')
 local FactionInfo = require('appd.faction_info')
 local AppSpellMgr = require('appd.appd_spell_manager')
 local AppInstanceMgr = require('appd.appd_instance_manager')
+local AppSocialMgr = require('appd.appd_social_manager')
 
 function AppObjectManager:ctor( )
 	self.binlogTypes = {}
 
 	--binlog对象对照类型前缀索引
 	self.binlogTypes[guidMgr.ObjectTypePlayer]   = PlayerInfo	--玩家
-	--self.binlogTypes[guidMgr.ObjectTypeSocial] = SocialSystem		--社交
+	self.binlogTypes[guidMgr.ObjectTypeSocial] = AppSocialMgr		--社交
 	self.binlogTypes[guidMgr.ObjectTypeGiftPacks] = GiftPacksInfo	--礼包对象
 	--self.binlogTypes[guidMgr.ObjectTypeLimit] = LimitActivityBase	--限时活动
 	self.binlogTypes[guidMgr.ObjectTypeItemMgr]  = AppItemMgr 	--道具

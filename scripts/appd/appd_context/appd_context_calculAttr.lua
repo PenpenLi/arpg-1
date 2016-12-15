@@ -31,6 +31,9 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	-- TODO: 应用服计算属性
 	local attrs = {}
 	local nonePropBattlePoint = 0
+	for _, attrId in pairs(PlayerInfo_Set_Attr) do
+		attrs[attrId] = 0
+	end
 	
 	-- 技能管理类
 	local spellMgr = self:getSpellMgr()
@@ -47,7 +50,11 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 
 	-- 装备
 	
-	
+	local itemMgr = self:getItemMgr()
+	if itemMgr then 
+		itemMgr:itemCalculAttr(attrs) 
+	end
+
 	-- 坐骑
 	
 	local level = spellMgr:getMountLevel()
@@ -109,7 +116,7 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	
 	-- 神兵
-	
+	spellMgr:calculDivineAttr(attrs)
 	
 	-- 设置到playerBase中
 	for attrId, val in pairs(attrs) do

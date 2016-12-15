@@ -16,6 +16,17 @@ function UnitInfo:ctor( )
 	end
 end
 
+-- 是否在挂机
+function UnitInfo:isInHook()
+	return self:GetPlayerUInt32(PLAYER_FIELD_HOOK) > 0
+end
+
+-- 是否自动使用复活丹(原地复活)
+function UnitInfo:isUseRespawnItem()
+	return self:GetPlayerByte(PLAYER_FIELD_HOOK_BYTE3, 0) > 0
+end
+
+
 --获得int guid
 function UnitInfo:GetIntGuid(  )
 	return unitLib.GetIntGuid(self.ptr)

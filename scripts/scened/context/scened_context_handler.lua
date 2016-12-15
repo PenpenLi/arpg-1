@@ -513,7 +513,7 @@ function ScenedContext:Hanlde_Enter_VIP_Instance( pkt )
 		return
 	end
 	
-	local toMapId = id
+	local toMapId = tb_map_vip[id].mapid
 	
 	-- 玩家必须还活着
 	if not self:IsAlive() then

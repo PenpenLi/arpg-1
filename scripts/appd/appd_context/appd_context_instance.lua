@@ -5,10 +5,10 @@ function PlayerInfo:checkVipMapTeleport(id, hard)
 end
 
 -- 进行购买进入次数
-function PlayerInfo:buyVipMapTimes(mapid)
+function PlayerInfo:buyVipMapTimes(id)
 	-- 每个信息4个byte[0:下次需要通关难度,1:当前难度,2:挑战次数,3:购买次数]
-	local config = tb_map_vip[mapid]
-	local indx = INSTANCE_INT_FIELD_VIP_START + config.indx - 1
+	local config = tb_map_vip[id]
+	local indx = INSTANCE_INT_FIELD_VIP_START + id - 1
 	local instMgr = self:getInstanceMgr()
 	
 	-- 判断是否需要购买

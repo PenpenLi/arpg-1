@@ -49,6 +49,14 @@ function PlayerInfo:getSpellMgr()
 	return self:getObj(self.guid_spellMgr)	
 end
 
+--根据玩家guid获得社交管理器
+function PlayerInfo:getSocialMgr()
+	if not self.guid_socialMgr then
+		self.guid_socialMgr = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeSocial)
+	end
+	return self:getObj(self.guid_socialMgr)	
+end
+
 --根据玩家guid获得副本管理器
 function PlayerInfo:getInstanceMgr()
 	if not self.guid_instanceMgr then

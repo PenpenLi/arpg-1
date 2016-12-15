@@ -41,10 +41,11 @@ function PlayerInfo:strength (pkt)
 	 		spellMgr:setStrengLev(part,curlev + 1)
 	 		spellMgr:setStrengBlessExp(part,now-config.bless)
 	 		self:setStrengthMul()
+	 		self:RecalcAttrAndBattlePoint()
 	 	else
 	 		spellMgr:setStrengBlessExp(part,now)
 	 	end
-	 
+	 	
 	 end
 
 end
@@ -127,6 +128,7 @@ function PlayerInfo:gem (pkt)
 			spellMgr:setGemCurBless(part,now-costConfig.maxexp)
 			spellMgr:setGemChgID(part)
 			self:setGemMul()
+			self:RecalcAttrAndBattlePoint()
 		else
 			-- 添加祝福值
 			spellMgr:setGemCurBless(part,now)

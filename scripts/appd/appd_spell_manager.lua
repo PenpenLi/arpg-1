@@ -289,6 +289,32 @@ function AppSpellMgr:getIllusionSkill(illuId)
 end
 
 ----------------------------------------------神兵-----------------------------------------------
+--获取神兵列表
+function AppSpellMgr:getDivineList()
+	local tab = {}
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		--outFmtInfo("divine %d",i)
+		local id = self:GetByte(i,0)
+		if id ~= 0  then
+			local lev = self:GetByte(i,1)
+			tab[id] = lev
+		end
+	end
+	return tab
+end
+--神兵属性加成
+function AppSpellMgr:calculDivineAttr(attrs)
+	local tab = self:getDivineList()
+	--Ttab(attrs)
+	for k,v in pairs(tab) do
+		local id = (k-1) * #tb_divine_bless + v + 1
+		local config = tb_divine_streng[id].props
+		for i=1,#config do
+			attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
+		end
+	end
+	--Ttab(attrs)
+end
 -- 是否存在神兵
 function AppSpellMgr:hasDivine(divineId)
 	
@@ -476,6 +502,16 @@ function AppSpellMgr:getGemMinLev(part)
 	end
 
 	return minval
+end
+--获取所有宝石等级
+function AppSpellMgr:getGemAllLev(part)
+	local gemid = SPELL_GEM_START + (part-1) * MAX_GEM_COUNT
+	local tab = {}
+	for i=0,2 do
+		local lev = self:GetUInt32(gemid + i)
+		table.insert(tab,lev)
+	end
+	return tab
 end
 
 -- 获取部位当前宝石的祝福值

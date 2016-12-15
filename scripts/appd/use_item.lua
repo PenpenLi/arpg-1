@@ -91,7 +91,7 @@ end
 
 -- 购买自动复活道具
 function useRespawn(player)
-	local entry = 1000
+	local entry = 50003
 	local count = 1
 	
 	local itemMgr = player:getItemMgr()
@@ -169,7 +169,7 @@ end
 --	@item_data:	物品模板中的保留字段
 
 UseItemScripts = {
-	--需要发送到场景服的物品模板
+	--需要发送到场景服的物品模板(复活丹也写这里)
 	scened_use_items_array = {
 		191,171,201,202,203,204
 	},
@@ -204,7 +204,7 @@ UseItemScripts = {
 		else
 			---发送到场景服使用
 			--装备类型的物品不可以使用
-			if item_type == 1 then
+			if item_type == ITEM_TYPE_EQUIP then
 				outFmtError("item %d is equip, cant use!", item_entry)
 				return
 			end

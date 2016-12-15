@@ -367,6 +367,19 @@ Instance_base = {
 	GetRefreshCreatureCount = function(self)
 		return self:GetUInt32(MAP_INT_FIELD_REFRESH_CREATURE_COUNT)
 	end,
+	
+	
+	--获取地图任务的结束时间
+	GetMapQuestEndTime = function(self)
+		return self:GetUInt32(MAP_INT_FIELD_QUEST_END_TM)
+	end,
+	
+	--设置地图的任务结束时间
+	SetMapQuestEndTime = function(self, val)
+		self:SetUInt32(MAP_INT_FIELD_QUEST_END_TM, val)
+	end,
+	
+	
 	--获取地图的结束时间
 	GetMapEndTime = function(self)
 		return self:GetUInt32(MAP_INT_FIELD_END_TM)
@@ -376,6 +389,22 @@ Instance_base = {
 	SetMapEndTime = function(self, val)
 		self:SetUInt32(MAP_INT_FIELD_END_TM, val)
 	end,
+	
+	AddTimeOutCallback = 
+		function (self, funcName, timestamp)
+			mapLib.AddTimeStampTimer(self.ptr, funcName, timestamp)
+		end,
+
+	RemoveTimeOutCallback = 
+		function(self, funcName)
+			mapLib.DelTimeStampTimer(self.ptr, funcName)
+		end,
+	
+	SetMapReward = 
+		function(self, data)
+			self:SetStr(MAP_STR_REWARD, data)
+		end,
+	
 	--获取击杀怪物数量
 	GetMapKillNum = function(self)
 		return self:GetUInt32(MAP_INT_FIELD_KILL_NUM)
@@ -524,8 +553,6 @@ Instance_base = {
 	--玩家发送CMSG_INSTANCE_EXIT协议退出副本前的回调，预防发包
 	DoPlayerExitInstance = 
 		function(self, player)
-			local playerInfo = UnitInfo:new{ptr = player}
-			local mapid = playerInfo:GetMapID()
 			return 1	--返回1的话为正常退出，返回0则不让退出
 		end,
 	--玩家设置pk模式前的回调 ，预防发包

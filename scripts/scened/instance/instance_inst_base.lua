@@ -2,6 +2,9 @@ InstanceInstBase = class("InstanceInstBase", Instance_base)
 
 InstanceInstBase.Name = "InstanceInstBase"
 
+InstanceInstBase.Time_Out_Fail_Callback = "instanceFail"
+InstanceInstBase.Leave_Callback = "prepareToLeave"
+
 function InstanceInstBase:ctor(  )
 	
 end
@@ -10,6 +13,132 @@ end
 function InstanceInstBase:OnInitScript(  )
 	Instance_base.OnInitScript(self) --调用基类
 end
+
+-- 副本失败退出
+function InstanceInstBase:instanceFail()
+	local state = self.STATE_FAIL
+	if self:CheckQuestAfterTimeOut() then
+		state = self.STATE_FINISH
+	end
+	self:SetMapState(state)
+end
+
+-- 准备退出
+function InstanceInstBase:prepareToLeave()
+	mapLib.ExitInstance(self.ptr)
+end
+
+--增加任务
+function InstanceInstBase:OnAddQuests(questTable)
+	for _, quest in pairs(questTable) do
+		local instQuestType = quest[ 1 ]
+		if Quest_Func_Table[instQuestType] then
+			Quest_Func_Table[instQuestType](self, quest)
+		end
+	end
+end
+
+-- 获得任务空位置
+function InstanceInstBase:GetEmptySlot()
+	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
+		if self:GetByte(i, 0) == 0 then
+			return i
+		end
+	end
+	
+	return -1
+end
+
+-- 副本时间到了以后检测任务是否完成
+function InstanceInstBase:CheckQuestAfterTimeOut()
+	--[[
+	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
+		if self:GetByte(i, 0) == 0 then
+			return i
+		end
+	end
+	]]
+	
+	return false
+end
+
+-- 一个怪物被玩家杀了
+function InstanceInstBase:OneMonsterKilled(entry)
+	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
+		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_KILL_MONSTER and self:GetUInt16(i, 1) == entry then
+			local indx = (i - MAP_INT_FIELD_QUESTS_START) / 2
+			local prev = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx)
+			self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx, prev + 1)
+			return
+		end
+	end
+end
+
+--增加击杀怪物任务
+function InstanceInstBase:OnAddKillMonsterQuest(quest)
+	assert(#quest == 3)
+	
+	local indx = self:GetEmptySlot()
+	
+	if indx < 0 then
+		return
+	end
+	
+	self:SetByte(indx, 0, quest[ 1 ])
+	self:SetByte(indx, 1, quest[ 2 ])
+	self:SetUInt16(indx, 1, quest[ 3 ])
+end
+
+--增加收集物品任务
+function InstanceInstBase:OnAddPickItemQuest(quest)
+	
+end
+
+--增加激活机关任务
+function InstanceInstBase:OnAddActiveMachineQuest(quest)
+	
+end
+
+--增加守护NPC任务
+function InstanceInstBase:OnAddProtectNPCQuest(quest)
+	
+end
+
+--增加护送NPC任务
+function InstanceInstBase:OnAddEscortNPCQuest(quest)
+	
+end
+
+--增加防守任务
+function InstanceInstBase:OnAddDefenseQuest(quest)
+	
+end
+
+--增加闯关任务
+function InstanceInstBase:OnAddBreakThroughQuest(quest)
+	
+end
+
+
+
+--[[
+ = 1	-- 击杀怪物
+ = 2	-- 收集物品
+ = 3	-- 激活机关
+ = 4	-- 守护NPC
+ = 5	-- 护送NPC
+ = 6	-- 防守
+ = 7	-- 闯关
+]]
+Quest_Func_Table = {}
+Quest_Func_Table[INSTANCE_QUEST_TYPE_KILL_MONSTER]	= InstanceInstBase.OnAddKillMonsterQuest
+Quest_Func_Table[INSTANCE_QUEST_TYPE_PICK_ITEM]		= InstanceInstBase.OnAddPickItemQuest
+Quest_Func_Table[INSTANCE_QUEST_TYPE_ACTIVE_MACHINE]= InstanceInstBase.OnAddActiveMachineQuest
+Quest_Func_Table[INSTANCE_QUEST_TYPE_PROTECT_NPC]	= InstanceInstBase.OnAddProtectNPCQuest
+Quest_Func_Table[INSTANCE_QUEST_TYPE_ESCORT_NPC]	= InstanceInstBase.OnAddEscortNPCQuest
+Quest_Func_Table[INSTANCE_QUEST_TYPE_DEFENSE]		= InstanceInstBase.OnAddDefenseQuest
+Quest_Func_Table[INSTANCE_QUEST_TYPE_BREAK_THROUGH]	= InstanceInstBase.OnAddBreakThroughQuest
+
 
 --当玩家加入后触发
 function InstanceInstBase:OnAfterJoinPlayer(player)

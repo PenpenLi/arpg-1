@@ -1,10 +1,10 @@
 
 function PlayerInfo:Handle_Reset_Vip_Instance_Times(pkt)
-	local mapid = pkt.id
+	local id = pkt.id
 	
-	if tb_map_vip[mapid] == nil then
+	if tb_map_vip[id] == nil then
 		return
 	end
 	
-	self:buyVipMapTimes(mapid)
+	self:buyVipMapTimes(id)
 end
