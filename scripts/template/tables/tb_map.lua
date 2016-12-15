@@ -31,4 +31,5 @@ tb_map = {
 	[2002] = {id = 2002,parentid = 2002,type = 2,inst_type = 2,inst_sub_type = 0,is_instance = 1,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 0,inst_id = {1},is_cast = 0,is_PK = 0,is_jump = 0,is_ride = 0,is_sit = 0,},
 	[2003] = {id = 2003,parentid = 2003,type = 2,inst_type = 2,inst_sub_type = 1,is_instance = 1,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 3,inst_id = {},is_cast = 0,is_PK = 0,is_jump = 0,is_ride = 0,is_sit = 0,},
 	[3001] = {id = 3001,parentid = 3001,type = 4,inst_type = 1,inst_sub_type = 0,is_instance = 0,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 0,inst_id = {},is_cast = 0,is_PK = 0,is_jump = 0,is_ride = 0,is_sit = 0,},
+	[3002] = {id = 3002,parentid = 3002,type = 4,inst_type = 1,inst_sub_type = 0,is_instance = 0,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 0,inst_id = {},is_cast = 0,is_PK = 0,is_jump = 0,is_ride = 0,is_sit = 0,},
 }
