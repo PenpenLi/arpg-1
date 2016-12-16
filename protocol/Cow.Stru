@@ -55,3 +55,8 @@ item_cooldown_info,/*物品冷却*/
 quest_status,/*任务状态*/
 	quest_id,uint16,0,/*任务ID*/
 	status,uint8,0,/*任务状态*/
+
+#道具奖励信息
+item_reward_info,/*道具奖励信息*/
+	item_id,uint16,0,/*道具id*/
+	num,uint32,0,/*道具数量*/

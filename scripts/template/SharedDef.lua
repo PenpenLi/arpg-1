@@ -439,7 +439,8 @@ MONEY_CHANGE_BIND_INGOT_NOT_ENOUGH = 69	-- 购买道具绑银不足消耗元宝
 MONEY_CHANGE_ACTIVE_SPELL = 70	-- 激活技能
 MONEY_CHANGE_BUY_VIP_INSTANCE = 71	-- 购买VIP副本进入次数
 MONEY_CHANGE_BUY_HP_ITEM = 72	-- 购买回血药品
-MAX_MONEY_CHANGE_TYPE = 73
+MONEY_CHANGE_RESET_TRIAL = 73	-- 重置试炼塔
+MAX_MONEY_CHANGE_TYPE = 74
 -- 特殊包裹类型
 BAG_VIRTUAL_TYPE_STALL = -1	-- 摆摊
 BAG_VIRTUAL_TYPE_UNKNOWN = -2	-- 未知
@@ -1150,6 +1151,13 @@ SCENED_APPD_ENTER_DAILY_INSTANCE = 1	-- 进入日常副本
 SCENED_APPD_ENTER_VIP_INSTANCE = 2	-- 进入VIP副本
 SCENED_APPD_USE_ITEM = 3	-- 使用血瓶
 SCENED_APPD_USE_RESPAWN_ITEM = 4	-- 使用复活丹
+SCENED_APPD_ENTER_TRIAL_INSTANCE = 5	-- 进入试炼塔副本
+SCENED_APPD_PASS_TRIAL_INSTANCE = 6	-- 通关试炼塔副本
+SCENED_APPD_PASS_VIP_INSTANCE = 7	-- 通关VIP副本
+APPD_SCENED_SWEEP_TRIAL_INSTANCE = 1	-- 扫荡试炼塔副本
+APPD_SCENED_SWEEP_VIP_INSTANCE = 2	-- 扫荡VIP副本
+INSTANCE_SUB_TYPE_VIP = 1	-- vip副本
+INSTANCE_SUB_TYPE_TRIAL = 2	-- 试炼塔副本
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 玩家下标
 -- //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1350,9 +1358,16 @@ SPELL_GEM_ALLMUL = 218	-- 全身宝石标记
 SPELL_DIVINE_COUNT = 219	-- 神兵个数
 SPELL_DIVINE_START = 220	-- 神兵开始
 SPELL_DIVINE_END = 310	-- 神兵结束
+MAX_TRIAL_LAYER_COUNT = 256
+--  试炼塔状态系数
+TRIAL_STATE_FACTOR_ACTIVE = 1	-- 激活状态系数
+TRIAL_STATE_FACTOR_PASS = 10	-- 通关状态系数
+TRIAL_STATE_FACTOR_F_PASS = 100	-- 首通状态系数
 --  玩家副本信息
 INSTANCE_INT_FIELD_VIP_START = 0	-- vip副本开始	每个信息4个byte[0:预留,1:预留,2:挑战次数,3:购买次数]
-INSTANCE_INT_FIELD_VIP_END = 3	-- vip副本结束	
+INSTANCE_INT_FIELD_VIP_END = 3	-- vip副本结束
+INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT = 3	-- (0:今日可扫荡层数,1:历史通关层数)
+INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT = 4	-- (0:扫荡次数,1:可购买扫荡次数)
 --  战斗模式
 PEACE_MODE = 0	-- 和平模式
 FAMILY_MODE = 1	-- 家族模式
@@ -1465,6 +1480,8 @@ MAP_STR_GENERAL_ID = 4
 MAP_STR_REWARD = 5	-- 副本奖励物品字符串
 -- VIP BOSS
 VIP_INSTANCE_FIELD_ID = 37	--  0:VIP副本序号,1:副本难度
+-- 试炼塔
+TRIAL_INSTANCE_FIELD_ID = 37	--  当前层数
 --  桃花迷阵最大刷新次数
 TAOHUA_REFRESH_TIMES = 10
 -- 桃花迷阵地图数据

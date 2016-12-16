@@ -517,7 +517,7 @@ function ScenedContext:Hanlde_Enter_VIP_Instance( pkt )
 	
 	-- 玩家必须还活着
 	if not self:IsAlive() then
-		outFmtError("CMSG_ENTER_DAILY_INSTANCE player %s is not alive!", self:GetPlayerGuid())
+		outFmtError("Hanlde_Enter_VIP_Instance player %s is not alive!", self:GetPlayerGuid())
 		return 
 	end
 
@@ -528,22 +528,50 @@ function ScenedContext:Hanlde_Enter_VIP_Instance( pkt )
 	
 	-- 是否允许传送
 	if not self:makeEnterTest(toMapId) then
-		outFmtError("CMSG_ENTER_DAILY_INSTANCE player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
+--		outFmtError("Hanlde_Enter_VIP_Instance player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
 		return
 	end
 	
 	--pvp状态下一律不准进
 	if self:GetPVPState() then
-		outFmtError("CMSG_ENTER_DAILY_INSTANCE player %s is pvp state!", self:GetPlayerGuid())
+		outFmtError("Hanlde_Enter_VIP_Instance player %s is pvp state!", self:GetPlayerGuid())
 		return
 	end
 	
-	--发到应用服其他校验、及扣除材料
+	--发到应用服进行进入判断
 	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_VIP_INSTANCE, id, ""..hard)
 end
 
-function ScenedContext:makeEnterTest(toMapId)
+-- 进入试炼塔
+function ScenedContext:Hanlde_Enter_Trial_Instance(pkt)
 	
+	local toMapId = tb_map_trial[1].mapid
+	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		outFmtError("Hanlde_Enter_Trial_Instance player %s is not alive!", self:GetPlayerGuid())
+		return 
+	end
+
+	-- 该地图是否存在
+	if tb_map[toMapId] == nil then
+		return
+	end
+	
+	-- 是否允许传送
+	if not self:makeEnterTest(toMapId) then
+--		outFmtError("Hanlde_Enter_VIP_Instance player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
+		return
+	end
+	
+	--pvp状态下一律不准进
+	if self:GetPVPState() then
+		outFmtError("Hanlde_Enter_Trial_Instance player %s is pvp state!", self:GetPlayerGuid())
+		return
+	end
+	
+	--发到应用服进行进入判断
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_TRIAL_INSTANCE, 0)
 end
 
 function ScenedContext:Handle_ForceInto(pkt)

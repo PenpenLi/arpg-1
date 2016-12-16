@@ -1796,3 +1796,4 @@ function GetTwoPointDistance(pos_x, pos_y, tar_x, tar_y)
 end
 
 require 'scened.unit.unit_spell'
+require 'scened.unit.scened_appd_dosomething'

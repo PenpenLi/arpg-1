@@ -3,7 +3,7 @@ InstanceVIP = class("InstanceVIP", InstanceInstBase)
 InstanceVIP.Name = "InstanceVIP"
 InstanceVIP.player_auto_respan = 120
 InstanceVIP.exit_time = 10
-InstanceVIP.BOSS_NAME = "meichaofeng"
+InstanceVIP.BOSS_NAME = "VIP_BOSS"
 
 function InstanceVIP:ctor(  )
 	
@@ -91,8 +91,16 @@ end
 --刷怪
 function InstanceVIP:OnRefreshBoss(player)
 	
-	local boss = mapLib.AliasCreature(self.ptr, InstanceVIP.BOSS_NAME)
+	-- 由于是进副本就刷的, 判断如果进入时间比开始时间开始时间超过2秒以上则不刷了
+	-- 主要为了解决离线重连的问题
+	local time = os.time()
+	local startTime = self:GetMapCreateTime()
+	if time - startTime > 2 then
+		return
+	end
 	
+	-- 其实这里就没必要判断了
+	local boss = mapLib.AliasCreature(self.ptr, InstanceVIP.BOSS_NAME)
 	if boss then
 		return
 	end
@@ -120,6 +128,10 @@ end
 
 --当玩家死亡后触发()
 function InstanceVIP:OnPlayerDeath(player)
+	-- 如果状态已经改变, 即使死了也不再更新时间
+	if self:GetMapState() ~= self.STATE_START then
+		return
+	end
 	self:SetMapState(self.STATE_FAIL)
 end
 
@@ -127,6 +139,27 @@ end
 function InstanceVIP:OnLeavePlayer( player, is_offline)
 	if not is_offline then
 		self:SetMapEndTime(os.time())
+	end
+end
+
+-- 当进度更新时调用
+function InstanceVIP:AfterProcessUpdate(player)
+	-- 判断副本是否
+	if self:CheckQuestAfterTargetUpdate() then
+		-- 获得随机奖励dropIdTable
+		local id  = self:getIndex()
+		local hard   = self:getHard()
+		local dropIdTable = tb_map_vip[id].rewards[hard]
+
+		local data = self:RandomReward(player, dropIdTable)
+		
+		self:SetMapReward(data)
+		
+		-- 设置状态
+		self:SetMapState(self.STATE_FINISH)
+		
+		--发到应用服进行进入判断
+		playerLib.SendToAppdDoSomething(player, SCENED_APPD_PASS_VIP_INSTANCE, id, ""..hard)
 	end
 end
 
@@ -143,28 +176,23 @@ function AI_vipboss:JustDied( map_ptr,owner,killer_ptr )
 	end
 	
 	local instanceInfo = InstanceVIP:new{ptr = map_ptr}
-	local id  = instanceInfo:getIndex()
 	
-	if tb_map_vip[id] == nil then
+	-- 如果时间到了失败了 即使最后下杀死BOSS都没用
+	if instanceInfo:GetMapState() ~= instanceInfo.STATE_START then
 		return
 	end
 	
+	AI_Base.JustDied(self,map_ptr,owner,killer_ptr)
 	
-	-- 随机奖励
-	local hard   = instanceInfo:getHard()
-	
-	local dropId = tb_map_vip[id].rewards[hard]
-	local reward = DoRandomDrop(killer_ptr, dropId)
-	local data = string.join(",", reward)
-	
-	instanceInfo:SetMapReward(data)
-	
+	-- 更新杀怪进度
 	local ownerInfo = UnitInfo:new {ptr = owner}
 	local entry = ownerInfo:GetEntry()
-	InstanceInstBase.OneMonsterKilled(instanceInfo, entry)
+	local updated = instanceInfo:OneMonsterKilled(entry)
 	
-	instanceInfo:SetMapState(instanceInfo.STATE_FINISH)
-	AI_Base.JustDied(self,map_ptr,owner,killer_ptr)
+	-- 更新进度
+	if updated then
+		instanceInfo:AfterProcessUpdate(killer_ptr)
+	end
 	
 	return 0
 end

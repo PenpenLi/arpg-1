@@ -6,6 +6,12 @@ end
 function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 	if SCENED_APPD_ENTER_VIP_INSTANCE == ntype then
 		self:checkVipMapTeleport(data, str)
+	elseif SCENED_APPD_ENTER_TRIAL_INSTANCE == ntype then
+		self:checkTrialMapTeleport()
+	elseif SCENED_APPD_PASS_TRIAL_INSTANCE == ntype then
+		self:passTrialInstance(data)
+	elseif SCENED_APPD_PASS_VIP_INSTANCE == ntype then
+		self:passVipInstance(data, tonumber(str))
 	elseif SCENED_APPD_USE_ITEM == ntype then
 		-- 判断如果道具不是药品就不使用了
 		if tb_item_template[data].type == ITEM_TYPE_MEDICINE then

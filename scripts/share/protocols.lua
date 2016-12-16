@@ -171,9 +171,14 @@ CMSG_DIVINE_UPLEV		= 158	-- /*激活神兵*/
 CMSG_DIVINE_SWITCH		= 159	-- /*切换神兵*/	
 CMSG_JUMP_START		= 160	-- /*请求跳跃*/	
 CMSG_ENTER_VIP_INSTANCE		= 161	-- /*请求进入vip副本*/	
-CMSG_RESET_VIP_INSTANCE_TIMES		= 162	-- /*请求购买进入vip副本次数*/	
+CMSG_SWEEP_VIP_INSTANCE		= 162	-- /*请求扫荡vip副本*/	
 CMSG_HANG_UP		= 163	-- /*进行挂机*/	
 CMSG_HANG_UP_SETTING		= 164	-- /*进行挂机设置*/	
+CMSG_ENTER_TRIAL_INSTANCE		= 165	-- /*请求进入试炼塔副本*/	
+CMSG_SWEEP_TRIAL_INSTANCE		= 166	-- /*扫荡试炼塔副本*/	
+CMSG_RESET_TRIAL_INSTANCE		= 167	-- /*重置试炼塔*/	
+SMSG_SWEEP_INSTANCE_REWARD		= 168	-- /*扫荡副本奖励*/	
+CMSG_REENTER_INSTANCE		= 169	-- /*重进副本*/	
 
 
 ---------------------------------------------------------------------
@@ -644,6 +649,42 @@ function quest_status_t:write( output )
 		self.status = 0
 	end
 	output:writeByte(self.status)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*道具奖励信息*/
+
+item_reward_info_t = class('item_reward_info_t')
+
+function item_reward_info_t:read( input )
+
+	local ret
+	ret,self.item_id = input:readU16() --/*道具id*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.num = input:readU32() --/*道具数量*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function item_reward_info_t:write( output )
+	if(self.item_id == nil)then
+		self.item_id = 0
+	end
+	output:writeI16(self.item_id)
+	
+	if(self.num == nil)then
+		self.num = 0
+	end
+	output:writeU32(self.num)
 	
 	return output
 end
@@ -5836,22 +5877,22 @@ function Protocols.unpack_enter_vip_instance (pkt)
 end
 
 
--- /*请求购买进入vip副本次数*/	
-function Protocols.pack_reset_vip_instance_times ( id)
-	local output = Packet.new(CMSG_RESET_VIP_INSTANCE_TIMES)
+-- /*请求扫荡vip副本*/	
+function Protocols.pack_sweep_vip_instance ( id)
+	local output = Packet.new(CMSG_SWEEP_VIP_INSTANCE)
 	output:writeI16(id)
 	return output
 end
 
--- /*请求购买进入vip副本次数*/	
-function Protocols.call_reset_vip_instance_times ( playerInfo, id)
-	local output = Protocols.	pack_reset_vip_instance_times ( id)
+-- /*请求扫荡vip副本*/	
+function Protocols.call_sweep_vip_instance ( playerInfo, id)
+	local output = Protocols.	pack_sweep_vip_instance ( id)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
--- /*请求购买进入vip副本次数*/	
-function Protocols.unpack_reset_vip_instance_times (pkt)
+-- /*请求扫荡vip副本*/	
+function Protocols.unpack_sweep_vip_instance (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
@@ -5930,6 +5971,168 @@ function Protocols.unpack_hang_up_setting (pkt)
 	end	
 
 	return true,param_table	
+
+end
+
+
+-- /*请求进入试炼塔副本*/	
+function Protocols.pack_enter_trial_instance (  )
+	local output = Packet.new(CMSG_ENTER_TRIAL_INSTANCE)
+	return output
+end
+
+-- /*请求进入试炼塔副本*/	
+function Protocols.call_enter_trial_instance ( playerInfo )
+	local output = Protocols.	pack_enter_trial_instance (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求进入试炼塔副本*/	
+function Protocols.unpack_enter_trial_instance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*扫荡试炼塔副本*/	
+function Protocols.pack_sweep_trial_instance (  )
+	local output = Packet.new(CMSG_SWEEP_TRIAL_INSTANCE)
+	return output
+end
+
+-- /*扫荡试炼塔副本*/	
+function Protocols.call_sweep_trial_instance ( playerInfo )
+	local output = Protocols.	pack_sweep_trial_instance (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*扫荡试炼塔副本*/	
+function Protocols.unpack_sweep_trial_instance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*重置试炼塔*/	
+function Protocols.pack_reset_trial_instance (  )
+	local output = Packet.new(CMSG_RESET_TRIAL_INSTANCE)
+	return output
+end
+
+-- /*重置试炼塔*/	
+function Protocols.call_reset_trial_instance ( playerInfo )
+	local output = Protocols.	pack_reset_trial_instance (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*重置试炼塔*/	
+function Protocols.unpack_reset_trial_instance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*扫荡副本奖励*/	
+function Protocols.pack_sweep_instance_reward ( inst_sub_type ,data1 ,data2 ,data3 ,list)
+	local output = Packet.new(SMSG_SWEEP_INSTANCE_REWARD)
+	output:writeByte(inst_sub_type)
+	output:writeByte(data1)
+	output:writeByte(data2)
+	output:writeByte(data3)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*扫荡副本奖励*/	
+function Protocols.call_sweep_instance_reward ( playerInfo, inst_sub_type ,data1 ,data2 ,data3 ,list)
+	local output = Protocols.	pack_sweep_instance_reward ( inst_sub_type ,data1 ,data2 ,data3 ,list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*扫荡副本奖励*/	
+function Protocols.unpack_sweep_instance_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.inst_sub_type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.data1 = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.data2 = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.data3 = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*重进副本*/	
+function Protocols.pack_reenter_instance (  )
+	local output = Packet.new(CMSG_REENTER_INSTANCE)
+	return output
+end
+
+-- /*重进副本*/	
+function Protocols.call_reenter_instance ( playerInfo )
+	local output = Protocols.	pack_reenter_instance (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*重进副本*/	
+function Protocols.unpack_reenter_instance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
 
 end
 
@@ -6097,9 +6300,14 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_divine_switch = self.call_divine_switch
 	playerInfo.call_jump_start = self.call_jump_start
 	playerInfo.call_enter_vip_instance = self.call_enter_vip_instance
-	playerInfo.call_reset_vip_instance_times = self.call_reset_vip_instance_times
+	playerInfo.call_sweep_vip_instance = self.call_sweep_vip_instance
 	playerInfo.call_hang_up = self.call_hang_up
 	playerInfo.call_hang_up_setting = self.call_hang_up_setting
+	playerInfo.call_enter_trial_instance = self.call_enter_trial_instance
+	playerInfo.call_sweep_trial_instance = self.call_sweep_trial_instance
+	playerInfo.call_reset_trial_instance = self.call_reset_trial_instance
+	playerInfo.call_sweep_instance_reward = self.call_sweep_instance_reward
+	playerInfo.call_reenter_instance = self.call_reenter_instance
 end
 
 local unpack_handler = {
@@ -6260,9 +6468,14 @@ local unpack_handler = {
 [CMSG_DIVINE_SWITCH] =  Protocols.unpack_divine_switch,
 [CMSG_JUMP_START] =  Protocols.unpack_jump_start,
 [CMSG_ENTER_VIP_INSTANCE] =  Protocols.unpack_enter_vip_instance,
-[CMSG_RESET_VIP_INSTANCE_TIMES] =  Protocols.unpack_reset_vip_instance_times,
+[CMSG_SWEEP_VIP_INSTANCE] =  Protocols.unpack_sweep_vip_instance,
 [CMSG_HANG_UP] =  Protocols.unpack_hang_up,
 [CMSG_HANG_UP_SETTING] =  Protocols.unpack_hang_up_setting,
+[CMSG_ENTER_TRIAL_INSTANCE] =  Protocols.unpack_enter_trial_instance,
+[CMSG_SWEEP_TRIAL_INSTANCE] =  Protocols.unpack_sweep_trial_instance,
+[CMSG_RESET_TRIAL_INSTANCE] =  Protocols.unpack_reset_trial_instance,
+[SMSG_SWEEP_INSTANCE_REWARD] =  Protocols.unpack_sweep_instance_reward,
+[CMSG_REENTER_INSTANCE] =  Protocols.unpack_reenter_instance,
 
 }
 

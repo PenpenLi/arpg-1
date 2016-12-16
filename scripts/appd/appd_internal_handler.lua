@@ -149,7 +149,7 @@ local function on_scened_send_char_info( pkt )
 	if not ret then return end
 	local player = app.objMgr:getObj(guid)
 	if not player then 
-		outFmtDebug("AppdApp::on_scened_send_to_appd_do_something: player = null, %s", guid)
+		outFmtDebug("AppdApp::on_scened_send_char_info: player = null, %s", guid)
 		return 
 	end
 	player:SendChat(c_type, content, to_guid, to_name)

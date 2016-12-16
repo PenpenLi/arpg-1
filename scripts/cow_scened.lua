@@ -123,7 +123,8 @@ config = {
 		CMSG_RIDE_MOUNT,
 		CMSG_CHANGE_BATTLE_MODE,
 		CMSG_JUMP_START	,			-- /*跳跃开始*/
-		CMSG_ENTER_VIP_INSTANCE,	-- 请求进入vip副本	
+		CMSG_ENTER_VIP_INSTANCE,	-- 请求进入vip副本
+		CMSG_ENTER_TRIAL_INSTANCE,
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
@@ -223,6 +224,7 @@ function load_lua_scripts()
 		
 		
 		{'地图VIP副本脚本'		,'scened/instance/instance_vip'},
+		{'地图试炼塔副本脚本'	,'scened/instance/instance_trial'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -245,8 +247,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[2001] = InstanceInstBase,
 	[2002] = InstanceInstBase,
 	[2003] = InstanceVIP,
-	[2004] = InstanceVIP,
-	[2005] = InstanceVIP,
+	[2004] = InstanceTrial,
 	--[101] = InstanceTower1,
 	--[102] = InstanceTower2,
 	--[103] = InstanceTaoHua,

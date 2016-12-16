@@ -297,12 +297,11 @@ ItemToResoureceTable = {
 	[Item_Loot_GEM		 ] = MONEY_TYPE_GEM,
 }
 
-function DoRandomDrop(player, dropId, moneyOperType, itemOperType)
+function DoRandomDrop(player, dropId, dict, moneyOperType, itemOperType)
 	
 	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
 	itemOperType  = itemOperType  or LOG_ITEM_OPER_TYPE_LOOT
 	
-	local dict = {}
 	local config = tb_drop_reward[dropId]
 	for _, packetId in pairs(config.reward) do
 		local packConfig = tb_drop_packet[packetId]
@@ -312,7 +311,10 @@ function DoRandomDrop(player, dropId, moneyOperType, itemOperType)
 		local count = GetRandomExp(packConfig.counts[indx])
 		local bind  = packConfig.binds[indx][ 1 ]
 		
-		table.insert(dict, itemId..":"..count)
+		if dict[itemId] == nil then
+			dict[itemId] = 0
+		end
+		dict[itemId] = dict[itemId] + count
 		
 		if ItemToResoureceTable[itemId] ~= nil then
 			-- 加人物资源
@@ -326,5 +328,4 @@ function DoRandomDrop(player, dropId, moneyOperType, itemOperType)
 		end
 	end
 	
-	return dict
 end

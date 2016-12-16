@@ -17,7 +17,7 @@ end
 -- 副本失败退出
 function InstanceInstBase:instanceFail()
 	local state = self.STATE_FAIL
-	if self:CheckQuestAfterTimeOut() then
+	if self:CheckQuestAfterTargetUpdate() then
 		state = self.STATE_FINISH
 	end
 	self:SetMapState(state)
@@ -49,31 +49,8 @@ function InstanceInstBase:GetEmptySlot()
 	return -1
 end
 
--- 副本时间到了以后检测任务是否完成
-function InstanceInstBase:CheckQuestAfterTimeOut()
-	--[[
-	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
-		if self:GetByte(i, 0) == 0 then
-			return i
-		end
-	end
-	]]
-	
-	return false
-end
 
--- 一个怪物被玩家杀了
-function InstanceInstBase:OneMonsterKilled(entry)
-	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
-		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_KILL_MONSTER and self:GetUInt16(i, 1) == entry then
-			local indx = (i - MAP_INT_FIELD_QUESTS_START) / 2
-			local prev = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx)
-			self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx, prev + 1)
-			return
-		end
-	end
-end
-
+----------------------------------------增加任务 ------------------------------------------
 --增加击杀怪物任务
 function InstanceInstBase:OnAddKillMonsterQuest(quest)
 	assert(#quest == 3)
@@ -139,6 +116,130 @@ Quest_Func_Table[INSTANCE_QUEST_TYPE_ESCORT_NPC]	= InstanceInstBase.OnAddEscortN
 Quest_Func_Table[INSTANCE_QUEST_TYPE_DEFENSE]		= InstanceInstBase.OnAddDefenseQuest
 Quest_Func_Table[INSTANCE_QUEST_TYPE_BREAK_THROUGH]	= InstanceInstBase.OnAddBreakThroughQuest
 
+
+----------------------------------------任务进度更新情况 ------------------------------------------
+
+-- 一个怪物被玩家杀了
+function InstanceInstBase:OneMonsterKilled(entry)
+	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
+		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_KILL_MONSTER and self:GetUInt16(i, 1) == entry then
+			local indx = (i - MAP_INT_FIELD_QUESTS_START) / 2
+			local prev = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx)
+			self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx, prev + 1)
+			return true
+		end
+	end
+	
+	return false
+end
+
+
+-- 还有几个TODO
+
+
+----------------------------------------检查任务完成情况 ------------------------------------------
+
+-- 副本时间到了以后或者进度更新后检测任务是否完成
+function InstanceInstBase:CheckQuestAfterTargetUpdate(isTimeout)	
+	isTimeout = isTimeout or 0
+	
+	local ret = true
+	
+	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
+		local targetType = self:GetByte(i, 0)
+		if targetType > 0 then
+			if Quest_Check_Func_Table[targetType] then
+				local vist = Quest_Check_Func_Table[targetType](self, i-MAP_INT_FIELD_QUESTS_START, isTimeout)
+				if not vist then ret = false end
+			end
+		end
+	end
+	
+	return ret
+end
+
+--检查击杀怪物任务
+function InstanceInstBase:OnCheckKillMonsterQuest(indx, isTimeout)
+	local offset = MAP_INT_FIELD_QUESTS_START + indx * 2
+	local process = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx)
+	local target = self:GetByte(offset, 1)
+	
+	return process >= target
+end
+
+--检查收集物品任务
+function InstanceInstBase:OnCheckPickItemQuest(indx, isTimeout)
+	return false
+end
+
+--检查激活机关任务
+function InstanceInstBase:OnCheckActiveMachineQuest(indx, isTimeout)
+	return false
+end
+
+--检查守护NPC任务
+function InstanceInstBase:OnCheckProtectNPCQuest(indx, isTimeout)
+	return false
+end
+
+--检查护送NPC任务
+function InstanceInstBase:OnCheckEscortNPCQuest(indx, isTimeout)
+	return false
+end
+
+--检查防守任务
+function InstanceInstBase:OnCheckDefenseQuest(indx, isTimeout)
+	return false
+end
+
+--检查闯关任务
+function InstanceInstBase:OnCheckBreakThroughQuest(indx, isTimeout)
+	return false
+end
+
+--[[
+ = 1	-- 击杀怪物
+ = 2	-- 收集物品
+ = 3	-- 激活机关
+ = 4	-- 守护NPC
+ = 5	-- 护送NPC
+ = 6	-- 防守
+ = 7	-- 闯关
+]]
+Quest_Check_Func_Table = {}
+Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_KILL_MONSTER]	= InstanceInstBase.OnCheckKillMonsterQuest
+Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_PICK_ITEM]		= InstanceInstBase.OnCheckPickItemQuest
+Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_ACTIVE_MACHINE]= InstanceInstBase.OnCheckActiveMachineQuest
+Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_PROTECT_NPC]	= InstanceInstBase.OnCheckProtectNPCQuest
+Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_ESCORT_NPC]	= InstanceInstBase.OnCheckEscortNPCQuest
+Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_DEFENSE]		= InstanceInstBase.OnCheckDefenseQuest
+Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_BREAK_THROUGH]	= InstanceInstBase.OnCheckBreakThroughQuest
+
+
+
+
+----------------------------------------------随机奖励---------------------------------------------
+-- dropIdTable : {dropId1, dropId2}
+function InstanceInstBase:RandomReward(player, dropIdTable)
+	-- 获得奖励
+	local dict = {}
+	for _, dropId in pairs(dropIdTable) do
+		DoRandomDrop(player, dropId, dict)
+	end
+	
+	-- 压成字符串
+	local reward = {}
+	for itemId, count in pairs(dict) do
+		table.insert(reward, itemId..":"..count)
+	end
+	local data = string.join(",", reward)
+	
+	return data
+end
+
+
+
+-------------------------------------------------------------------------------------------
 
 --当玩家加入后触发
 function InstanceInstBase:OnAfterJoinPlayer(player)

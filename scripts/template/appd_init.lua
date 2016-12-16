@@ -38,3 +38,4 @@ require("template.tables.tb_divine_bless")
 
 --副本
 require("template.tables.tb_map_vip")
+require("template.tables.tb_map_trial")

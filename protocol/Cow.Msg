@@ -646,14 +646,14 @@ strength,c2s,139,/*强化*/,STATUS_NEVER,False
 #
 strength_success,s2c,140,/*强化成功*/,STATUS_NEVER,False
 	level,uint16,False,/*当前强化等级*/
-	
+
 #强制所有人员进入到一个组队副本中
 forceInto,c2s,141,/*强制进入*/,STATUS_NEVER,False
 
 #
 create_faction,c2s,142,/*创建帮派*/,STATUS_NEVER,False
 	name,String,False,/*帮派名称*/
-	
+
 #
 faction_upgrade,c2s,143,/*升级帮派*/,STATUS_NEVER,False
 
@@ -669,7 +669,7 @@ raise_base_spell,c2s,145,/*申请升级技能*/,STATUS_NEVER,False
 #
 upgrade_anger_spell,c2s,146,/*申请升阶愤怒技能*/,STATUS_NEVER,False
 	spellId,uint16,False,/*技能ID*/
-	
+
 #
 raise_mount,c2s,147,/*申请升级坐骑*/,STATUS_NEVER,False
 
@@ -684,7 +684,7 @@ upgrade_mount_one_step,c2s,149,/*申请一键升阶坐骑*/,STATUS_NEVER,False
 #
 illusion_mount_active,c2s,150,/*申请解锁幻化坐骑*/,STATUS_NEVER,False
 	illuId,uint16,False,/*幻化坐骑ID*/
-		
+
 #
 illusion_mount,c2s,151,/*申请幻化坐骑*/,STATUS_NEVER,False
 	illuId,uint16,False,/*幻化坐骑ID*/
@@ -710,7 +710,7 @@ peace_mode_cd,s2c,156,/*和平模式CD*/,STATUS_NEVER,True
 #
 divine_active,c2s,157,/*激活神兵*/,STATUS_NEVER,False
 	id,uint8,False,/*神兵ID*/
-	
+
 #
 divine_uplev,c2s,158,/*激活神兵*/,STATUS_NEVER,False
 	id,uint8,False,/*神兵ID*/
@@ -726,13 +726,13 @@ jump_start,c2s,160,/*请求跳跃*/,STATUS_NEVER,False
 
 #
 enter_vip_instance,c2s,161,/*请求进入vip副本*/,STATUS_NEVER,False
-	id,uint16,False,/*vip副本地图id*/
+	id,uint16,False,/*vip副本序号id*/
 	hard,uint8,False,/*vip副本难度*/
 
 #
-reset_vip_instance_times,c2s,162,/*请求购买进入vip副本次数*/,STATUS_NEVER,False
-	id,uint16,False,/*vip副本地图id*/
-	
+sweep_vip_instance,c2s,162,/*请求扫荡vip副本*/,STATUS_NEVER,False
+	id,uint16,False,/*vip副本序号id*/
+
 #
 hang_up,c2s,163,/*进行挂机*/,STATUS_NEVER,False
 
@@ -742,3 +742,24 @@ hang_up_setting,c2s,164,/*进行挂机设置*/,STATUS_NEVER,False
 	value1,uint32,False,/*同PLAYER_FIELD_HOOK_BYTE1*/
 	value2,uint32,False,/*同PLAYER_FIELD_HOOK_BYTE2*/
 	value3,uint32,False,/*同PLAYER_FIELD_HOOK_BYTE3*/
+
+#
+enter_trial_instance,c2s,165,/*请求进入试炼塔副本*/,STATUS_NEVER,False
+
+#
+sweep_trial_instance,c2s,166,/*扫荡试炼塔副本*/,STATUS_NEVER,False
+
+#
+reset_trial_instance,c2s,167,/*重置试炼塔*/,STATUS_NEVER,False
+
+#
+sweep_instance_reward,s2c,168,/*扫荡副本奖励*/,STATUS_NEVER,False
+	inst_sub_type,uint8,False,/*扫荡副本子类型*/
+	data1,uint8,False,/*扫荡副本数据1*/
+	data2,uint8,False,/*扫荡副本数据2*/
+	data3,uint8,False,/*扫荡副本数据3*/
+	list,item_reward_info,True,/*道具列表*/
+
+#
+reenter_instance,c2s,169,/*重进副本*/,STATUS_NEVER,False
+	
