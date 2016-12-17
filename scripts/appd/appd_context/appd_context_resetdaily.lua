@@ -11,16 +11,18 @@ end
 --每小时重置一次，看要做什么
 function PlayerInfo:DoResetDaily  ()
 	local itemMgr = self:getItemMgr()
-			
+
 	--0点重置
 	if(self:ResetDaily_Time(0))then
+	
+		self:onRealReset()
 		--重置下标时间设置下
 		self:SetResetDailyTime(0,os.time())
 	end
 	
 	--每日5点重置
 	if(self:ResetDaily_Time(5))then
-		is_reset = true
+		--is_reset = true
 		--重置下标时间设置下
 		self:SetResetDailyTime(5,os.time())
 	end
@@ -83,4 +85,9 @@ function PlayerInfo:IsWeeklyReset  ( last_zero_reset_time)
 		return true
 	end
 	return false
+end
+
+-- reset
+function PlayerInfo:onRealReset()
+	self:instanceDailyReset()
 end

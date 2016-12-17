@@ -762,4 +762,8 @@ sweep_instance_reward,s2c,168,/*扫荡副本奖励*/,STATUS_NEVER,False
 
 #
 reenter_instance,c2s,169,/*重进副本*/,STATUS_NEVER,False
+
+#
+social_add_friend,c2s,171,/*添加好友*/,STATUS_NEVER,False
+	guid,String,False,/*好友GUID*/
 	

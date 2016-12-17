@@ -220,12 +220,25 @@ Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_BREAK_THROUGH]	= InstanceInstBase.OnC
 
 ----------------------------------------------随机奖励---------------------------------------------
 -- dropIdTable : {dropId1, dropId2}
-function InstanceInstBase:RandomReward(player, dropIdTable)
-	-- 获得奖励
+function InstanceInstBase:RandomReward(player, dropIdTable, itemTable)
+	itemTable = itemTable or {}
 	local dict = {}
+	
+	-- 把里面的值拷贝过来
+	for _, itemInfo in pairs(itemTable) do
+		local itemId = itemInfo[ 1 ]
+		local count  = itemInfo[ 2 ]
+		if dict[itemId] == nil then
+			dict[itemId] = 0
+		end
+		dict[itemId] = dict[itemId] + count
+	end
+	
+	-- 获得奖励
 	for _, dropId in pairs(dropIdTable) do
 		DoRandomDrop(player, dropId, dict)
 	end
+	
 	
 	-- 压成字符串
 	local reward = {}

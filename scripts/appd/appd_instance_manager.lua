@@ -138,8 +138,6 @@ function AppInstanceMgr:resetTrialInstance()
 		outFmtError("no time to buy to resetTrialInstance")
 		return
 	end
-	-- TODO: 用上面的 这个只是测试
---	prevBuyTimes = 1
 	
 	-- 判断能否花元宝
 	local gold = tb_map_trial[passed].resetgold
@@ -162,7 +160,21 @@ function AppInstanceMgr:resetTrialInstance()
 	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 0, passed)
 end
 
-
+-- 副本每日重置
+function AppInstanceMgr:instanceDailyReset()
+	-- 重置VIP副本
+	for i = INSTANCE_INT_FIELD_VIP_START, INSTANCE_INT_FIELD_VIP_END-1 do
+		local id = i - INSTANCE_INT_FIELD_VIP_START + 1
+		self:SetByte(i, 2, 0)
+		self:SetByte(i, 3, 0)
+	end
+	
+	-- 重置试炼塔
+	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 1, 1)
+	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0, 1)
+	local passed = self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 1)
+	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 0, passed)
+end
 
 -- 获得玩家guid
 function AppInstanceMgr:getPlayerGuid()

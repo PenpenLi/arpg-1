@@ -309,13 +309,14 @@ function DoRandomDrop(player, dropId, dict, moneyOperType, itemOperType)
 		local indx = GetRandomIndex(packConfig.items)
 		local itemId = packConfig.items[indx][ 1 ]
 		local count = GetRandomExp(packConfig.counts[indx])
-		local bind  = packConfig.binds[indx][ 1 ]
 		
 		if dict[itemId] == nil then
 			dict[itemId] = 0
 		end
 		dict[itemId] = dict[itemId] + count
-		
+	end
+	
+	for itemId, count in pairs(dict) do 
 		if ItemToResoureceTable[itemId] ~= nil then
 			-- 加人物资源
 			playerInfo:AddMoney(ItemToResoureceTable[itemId], moneyOperType, count)
@@ -323,6 +324,7 @@ function DoRandomDrop(player, dropId, dict, moneyOperType, itemOperType)
 			-- 加经验
 			playerLib.AddExp(player, count)
 		else
+			local bind = tb_item_template[itemId].bind_type
 			-- 加道具
 			playerLib.AddItem(player, itemId, count, bind, itemOperType)
 		end

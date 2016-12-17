@@ -59,6 +59,13 @@ end
 function PlayerInfo:passTrialInstance(id)
 	local instMgr = self:getInstanceMgr()
 	instMgr:passInstance(id)
+	
+	-- 设置试炼塔通关层数
+	if self:GetUInt32(PLAYER_FIELD_TRIAL_LAYERS) < id then
+		self:SetUInt32(PLAYER_FIELD_TRIAL_LAYERS, id)
+	end
+	-- 更新排名
+	rankInsertTask(self:GetGuid(), RANK_TYPE_TRIAL)
 end
 
 -- 一键扫荡
@@ -71,4 +78,12 @@ end
 function PlayerInfo:resetTrial()
 	local instMgr = self:getInstanceMgr()
 	instMgr:resetTrialInstance()
+end
+
+
+-----------------------------------------------------------------------------------
+--- 副本模块每日重置
+function PlayerInfo:instanceDailyReset()
+	local instMgr = self:getInstanceMgr()
+	instMgr:instanceDailyReset()
 end
