@@ -34,11 +34,12 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL, spellid_str)		
 		return false
 	end
-
+	
 	-- 本地图是否允许施法
-	if not mapLib.GetCanCastSpell(map_ptr) then
+	local mapid = mapLib.GetMapID(map_ptr)
+	if tb_map[mapid].is_cast == 0 then
 		outDebug("DoHandleSpellStart  this map is cannot cast spell !!!")
-		return false
+		return
 	end
 
 	local config = tb_skill_base[spell_id]
@@ -127,155 +128,6 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		unitLib.SpellStop(caster)
 	end
 	
-	--[[
-	--非单点和自身周围释放的技能都得判断距离
-	if target_type ~= SPELL_SHIFANG_DAN and target_type ~= SPELL_SHIFANG_QUN then
-		local dis = casterInfo:GetDistance(tar_x, tar_y)
-		local spell_lv = 1
-		if casterInfo:GetTypeID() == TYPEID_PLAYER then
-			spell_lv = casterInfo:GetSpellLevel(spell_id)
-		end
-		local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
-		local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
-		if dis > spell_dis + 3 then	--允许3码误差
-			outFmtDebug("DoHandleSpellStart spellId = %d so far away", spell_id)
-			return false
-		end
-	end
-	]]
-	
-	-- 判断新手保护
-	--[[
-	if casterInfo:GetTypeID() == TYPEID_PLAYER then
-		if target then
-			local targetInfo = UnitInfo:new{ptr = target}
-			if targetInfo:GetTypeID() == TYPEID_PLAYER then
-				--自己在新手保护
-				if unitLib.HasBuff(caster, BUFF_NEW_PLAYER_PROTECTED) then
-					outFmtDebug("DoHandleSpellStart => in BUFF_NEW_PLAYER_PROTECTED cannot cast other")
-					return false
-				end
-				--对方在新手保护
-				if unitLib.HasBuff(target, BUFF_NEW_PLAYER_PROTECTED) then
-					outFmtDebug("DoHandleSpellStart => target in BUFF_NEW_PLAYER_PROTECTED")
-					return false
-				end
-				--对方在死亡保护
-				if unitLib.HasBuff(target, BUFF_DEATH_PROTECTED) then
-					outFmtDebug("DoHandleSpellStart => target in BUFF_DEATH_PROTECTED")
-					return false
-				end
-			end
-		end
-	end
-	]]
-	--当前是跳跃状态
-	
-	--[[
-	--local index = casterInfo:GetSpellLvIndex(spell_id)
-	local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
-	--目标单体并且目标不是自己
-	if target_type == SPELL_SHIFANG_DAN and spell_type ~= TARGET_TYPE_ONESELF then
-		--要求有目标
-		if target ~= nil then
-			local targetInfo = UnitInfo:new{ptr = target}
-			local x, y = unitLib.GetPos(target)
-			local dis = casterInfo:GetDistance(x,y)
-			if dis > spell_dis + 3 then		--允许3码误差
-				--超出施放距离
-				casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_OUT_OF_RANGE, spellid_str)		
-				return false
-			end
-			local isfriend = unitLib.IsFriendlyTo(caster, target)
-			if spell_type == TARGET_TYPE_FRIENDLY and isfriend == 0 then --目标要求为友方
-			--目标要求为友方，但与目标友好判断却为不友好
-				casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_WRONG_TARGET, spellid_str)		
-				return false
-			elseif spell_type == TARGET_TYPE_ENEMY and isfriend == 1 then--目标要求为仇人
-				--目标要求为仇人，但与目标友好判断却为友好
-				casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_WRONG_TARGET, spellid_str)					
-				return false
-			end
-		end
-	--目标直前范围、目标直扇范围和坐标点范围 这个坐标由客户端传上来
-	else
-	]]
-
-
-	
-	
-	
-
-	--[[
-	if(not casterInfo:IsEnoughConsumption(spell_id))then
-		--不够消耗
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_ENOUGH_CONSUMPTION, spellid_str)		
-		return false
-	end
-	
-	--获取2段技能的技能ID
-	local old_spell_id = spell_id
-	spell_id = casterInfo:GetNextSpellID(spell_id)
-	if erduan_spell_self_cd[casterInfo:GetGuid()] and old_spell_id ~= spell_id  then
-		if casterInfo:IsErDuanSpellCD(nowtime) then
-			--技能冷却中
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN, spellid_str)		
-			return false
-		end
-	else
-		if casterInfo:IsSpellCD(spell_id, nowtime) then
-			
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN, spellid_str)		
-			return false
-		end
-	end
-	]]
-	--print("now is:"..nowtime)
-
-	--[[	
-	
-	local target = unitLib.GetTarget(caster)
-	if(spell_id == SPELL_ID_CHONGFENG) then -- 冲撞技能
-		return true
-	end
-
-	--荒岛求生技能
-	if spell_id >= HDQS_SPELL_NORMAL and spell_id <= HDQS_SPELL_NET then
-		if not hdqs_spell_start_before(caster, target, spell_id) then
-			return false
-		end
-	end
-	
-	--pvp状态不能释放
-	if spell_id == LIUDAO_SPELL_HUANHUA then 
-		if(GetUnitTypeID(caster) == TYPEID_PLAYER and casterInfo:GetPVPState())then
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_PVP_STATE, spellid_str)
-			return false
-		end
-	end
-	
-	--有无相劫指buff 不能施法无相劫指技能
-	if spell_id == SPELL_ID_WUXIANGJIEZHI then
-		if unitLib.HasBuff(caster, BUFF_WUXIANGJIEZHI) then
-			return false
-		end
-	end
-	
-	--设置二段技能的自身cd
-	local self_cd = tb_skill_base[spell_id].self_cd
-	if self_cd > 0 then
-		erduan_spell_self_cd[casterInfo:GetGuid()] = nowtime + self_cd
-	else
-		erduan_spell_self_cd[casterInfo:GetGuid()] = nil
-	end
-	
-	--如果触发割喉，则不触发其他技能
-	if tb_skill_base[spell_id].is_kill == 1 then
-		if DoHandleGeHou(caster, target, SPELL_ID_GEHOU) then
-			return false
-		end
-	end
-	]]
 
 	return true
 end
@@ -812,8 +664,15 @@ function isInProtected(killer, target)
 		return true
 	end
 	
+	-- 当前地图是否允许PK
+	local mapid = unitLib.GetMapID(killer)
+	if tb_map[mapid].is_PK == 0 then
+		return true
+	end
+	
 	return false
 end
+
 
 function SetSkillStype(caster, spell_id)
 	if GetUnitTypeID(caster) == TYPEID_PLAYER then

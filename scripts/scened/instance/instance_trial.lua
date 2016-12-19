@@ -175,8 +175,8 @@ function InstanceTrial:AfterProcessUpdate(player)
 	if self:CheckQuestAfterTargetUpdate() then
 		local id = self:GetIndex()
 		-- »ñµÃËæ»ú½±ÀødropIdTable
-		local dropIdTable = tb_map_trial[ id ].reward
-		local data = self:RandomReward(player, dropIdTable, tb_map_trial[ id ].firstReward)
+--		local dropIdTable = tb_map_trial[ id ].reward
+		local data = self:RandomReward(player, {}, tb_map_trial[ id ].firstReward)
 		
 		self:SetMapReward(data)
 		

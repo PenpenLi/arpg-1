@@ -1,4 +1,6 @@
 
-function PlayerInfo:Handle_Init_Social(pkt)
-	
+
+function PlayerInfo:Handle_Add_Friend(pkt)
+	local  guid = pkt.guid
+	self:ApplyFriend(guid)
 end

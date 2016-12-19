@@ -84,6 +84,15 @@ function PlayerInfo:isVIP(vipLevel)
 	return self:GetUInt32(PLAYER_FIELD_VIP_LEVEL) >= vipLevel and self:GetUInt32(PLAYER_FIELD_VIP_TIME_OUT) >= os.time()
 end
 
+-- 获得vip等级
+function PlayerInfo:GetVIP()
+	local vipLevel = self:GetUInt32(PLAYER_FIELD_VIP_LEVEL)
+	if self:GetUInt32(PLAYER_FIELD_VIP_TIME_OUT) < os.time() then
+		vipLevel = 0
+	end
+	return vipLevel
+end
+
 -- 玩家是否还活着
 function PlayerInfo:IsAlive ()
 	return self:GetUInt32(PLAYER_FIELD_DEATH_STATE) == DEATH_STATE_ALIVE
@@ -804,12 +813,14 @@ require("appd/appd_context/appd_context_chat")
 require("appd/appd_context/appd_context_instance")
 require("appd/appd_context/appd_context_equip_part_opt")
 require("appd/appd_context/appd_context_spell")
+require("appd/appd_context/appd_context_social")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/chat_handler")
 require("appd/appd_context/handler/equip_part_opt_handler")
 require("appd/appd_context/handler/spell_handler")
 require("appd/appd_context/handler/instance_handler")
+require("appd/appd_context/handler/social_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

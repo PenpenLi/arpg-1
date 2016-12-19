@@ -73,6 +73,9 @@ local function on_scened_player_upgrade( pkt )
 		player:activeMount()
 	end
 	
+	-- 到C++中改变等级列表
+	playerLevelChanged(player_guid, prevLevel, player_lv)
+	
 	--[[
 	-- 如技能解锁
 	local socialSysInfo = player:getSocialSystem()

@@ -49,6 +49,14 @@ function ScenedContext:Hanlde_Dazuo_Start( pkt )
 	if not self:IsAlive() then --死亡不允许打坐
 		return
 	end
+	
+	-- 是否能够打坐
+	local mapid = unitLib.GetMapID(self.ptr)
+	if tb_map[mapid].is_sit == 0 then
+		outFmtError("current map cannot ride")
+		return
+	end
+	
 	--在跨服地图不允许打坐
 	local mapid = self:GetMapID()
 	if IsKuafuMapID(mapid) then
@@ -183,12 +191,15 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 		--错误返回
 		return
 	end
-	--看看本地图是否允许施法
-	if not mapLib.GetCanCastSpell(map_ptr) then
+	
+	--看看本地图是否允许跳跃
+	local mapid = mapLib.GetMapID(map_ptr)
+	if tb_map[mapid].is_jump == 0 then
 		outDebug("MSG_JUMP_START  this map is cannot cast spell !!!")
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_MAP_CANT_JUMP)
 		return
 	end
+	
 	--是否有进制跳跃buff
 	if not unitLib.IsCanJump(player_ptr) then
 		outDebug("MSG_JUMP_START  player is cannot jump !!!")
@@ -308,18 +319,25 @@ function ScenedContext:Handle_Ride(packet)
 		return
 	end
 	
+	-- 是否能够骑乘
+	local mapid = unitLib.GetMapID(player_ptr)
+	if tb_map[mapid].is_ride == 0 then
+		outFmtError("current map cannot ride")
+		return
+	end
+	
 	local prev = self:rideFlag()
 	if prev == 0 then	--上坐骑
 		--当前是战斗状态
 		local status = playerLib.GetPlayeCurFightStatus(player_ptr)
 		if status == COMBAT_STATE_ENTER then
-			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_FIGHT)
+--			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_FIGHT)
 			return
 		end
 		
 		--当前是跳跃状态
 		if unitLib.HasBuff(player_ptr, BUFF_JUMP_JUMP) then
-			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_JUMP)
+--			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_JUMP)
 			return
 		end
 		

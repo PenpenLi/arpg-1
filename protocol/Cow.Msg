@@ -766,4 +766,8 @@ reenter_instance,c2s,169,/*重进副本*/,STATUS_NEVER,False
 #
 social_add_friend,c2s,171,/*添加好友*/,STATUS_NEVER,False
 	guid,String,False,/*好友GUID*/
+
+#
+social_sureadd_friend,c2s,172,/*同意添加好友*/,STATUS_NEVER,False
+	guid,String,False,/*好友GUID*/
 	

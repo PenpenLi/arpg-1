@@ -32,7 +32,7 @@ config = {
 	bag_extension_material		= 22,		--包裹扩展的消耗材料模版
 	max_mail_item_count			= 4	,		--邮件附件最大个数
 
-	player_max_level = 400,					--玩家最大等级
+	player_max_level = 100,					--玩家最大等级
 	
 	player_chat_world_level		= 30,		--玩家世界频道最低等级发言
 	player_chat_whisper_level	= 30,		--私聊最低等级限时
@@ -101,7 +101,9 @@ config = {
 		CMSG_HANG_UP,				-- /*进行挂机*/	
 		CMSG_HANG_UP_SETTING,		-- /*进行挂机设置*/
 		CMSG_SWEEP_TRIAL_INSTANCE,
-		CMSG_RESET_TRIAL_INSTANCE
+		CMSG_RESET_TRIAL_INSTANCE,
+		CMSG_SOCIAL_ADD_FRIEND
+
 	},
 	--pk服命令表
 	pk_external_router_map = {

@@ -179,6 +179,8 @@ CMSG_SWEEP_TRIAL_INSTANCE		= 166	-- /*扫荡试炼塔副本*/
 CMSG_RESET_TRIAL_INSTANCE		= 167	-- /*重置试炼塔*/	
 SMSG_SWEEP_INSTANCE_REWARD		= 168	-- /*扫荡副本奖励*/	
 CMSG_REENTER_INSTANCE		= 169	-- /*重进副本*/	
+CMSG_SOCIAL_ADD_FRIEND		= 171	-- /*添加好友*/	
+CMSG_SOCIAL_SUREADD_FRIEND		= 172	-- /*同意添加好友*/	
 
 
 ---------------------------------------------------------------------
@@ -6137,6 +6139,64 @@ function Protocols.unpack_reenter_instance (pkt)
 end
 
 
+-- /*添加好友*/	
+function Protocols.pack_social_add_friend ( guid)
+	local output = Packet.new(CMSG_SOCIAL_ADD_FRIEND)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*添加好友*/	
+function Protocols.call_social_add_friend ( playerInfo, guid)
+	local output = Protocols.	pack_social_add_friend ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*添加好友*/	
+function Protocols.unpack_social_add_friend (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*同意添加好友*/	
+function Protocols.pack_social_sureadd_friend ( guid)
+	local output = Packet.new(CMSG_SOCIAL_SUREADD_FRIEND)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*同意添加好友*/	
+function Protocols.call_social_sureadd_friend ( playerInfo, guid)
+	local output = Protocols.	pack_social_sureadd_friend ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*同意添加好友*/	
+function Protocols.unpack_social_sureadd_friend (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -6308,6 +6368,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_reset_trial_instance = self.call_reset_trial_instance
 	playerInfo.call_sweep_instance_reward = self.call_sweep_instance_reward
 	playerInfo.call_reenter_instance = self.call_reenter_instance
+	playerInfo.call_social_add_friend = self.call_social_add_friend
+	playerInfo.call_social_sureadd_friend = self.call_social_sureadd_friend
 end
 
 local unpack_handler = {
@@ -6476,6 +6538,8 @@ local unpack_handler = {
 [CMSG_RESET_TRIAL_INSTANCE] =  Protocols.unpack_reset_trial_instance,
 [SMSG_SWEEP_INSTANCE_REWARD] =  Protocols.unpack_sweep_instance_reward,
 [CMSG_REENTER_INSTANCE] =  Protocols.unpack_reenter_instance,
+[CMSG_SOCIAL_ADD_FRIEND] =  Protocols.unpack_social_add_friend,
+[CMSG_SOCIAL_SUREADD_FRIEND] =  Protocols.unpack_social_sureadd_friend,
 
 }
 

@@ -523,6 +523,11 @@ Instance_base = {
 			if playerInfo:GetLevel() <= config.new_player_protected_level then
 				SystemAddBuff(player, BUFF_NEW_PLAYER_PROTECTED, MAX_BUFF_DURATION)
 			end
+			-- 如果不能骑乘则下骑
+			local mapid = self:GetMapId()
+			if tb_map[mapid].is_ride == 0 then
+				playerInfo:MountUnride()
+			end
 		end,
 	
 	--属性重算的时候是否删除buff

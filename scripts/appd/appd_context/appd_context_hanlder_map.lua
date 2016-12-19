@@ -49,6 +49,8 @@ hanlders[CMSG_HANG_UP_SETTING] = PlayerInfo.Handle_Hang_Up_Setting
 
 hanlders[CMSG_SWEEP_TRIAL_INSTANCE] = PlayerInfo.Handle_Sweep_Trial
 
-hanlders[CMSG_RESET_TRIAL_INSTANCE] = PlayerInfo.Handle_Reset_Trial
+hanlders[CMSG_RESET_TRIAL_INSTANCE] = PlayerInfo.Handle_Reset_Trial 
+
+hanlders[CMSG_SOCIAL_ADD_FRIEND] = PlayerInfo.Handle_Add_Friend
 
 return hanlders
