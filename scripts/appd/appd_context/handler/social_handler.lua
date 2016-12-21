@@ -30,5 +30,5 @@ end
 function PlayerInfo:Handle_Remove_Friend(pkt)
 	outFmtDebug("del friend")
 	local guid = pkt.guid
-	self:RemoveFriend(guid)
+	self:RemoveFriend(guid,true)
 end

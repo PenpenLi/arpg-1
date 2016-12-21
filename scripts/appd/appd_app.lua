@@ -63,6 +63,13 @@ function AppdApp:InitCorn()
 			if itemMgr then itemMgr:delFailTimeItem() end
 		end)		
 	end)
+	--每隔5min刷新好友信息
+	self.cron:every("好友信息刷新",300,function()
+		self.objMgr:foreachAllPlayer(function(player)	
+			player:RefreshFriendInfo()
+		end)
+	end)
+
 
 end
 

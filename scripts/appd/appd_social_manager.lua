@@ -40,7 +40,7 @@ end
 function AppSocialMgr:removeFriend(guid)
 	local idx = self:getFriendIndex(guid)
 	if idx ~= -1 then
-		self:clearSocialItem(index)
+		self:clearSocialItem(idx)
 		self:setFriendIndex(guid,-1)
 	end
 end
@@ -51,10 +51,76 @@ function AppSocialMgr:broadcastFriendOnline(online)
 	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END-1,MAX_FRIENT_COUNT do
 		local guid = self:getGuid(i)
 		if guid ~= "" then
-			outFmtDebug("tong zhi shang xian %s",guid)
+			--outFmtDebug("tong zhi shang xian %s",guid)
 			local friend = app.objMgr:getObj(guid)
 			if friend then 
-				friend:FriendOnline(selfGuid,online)
+				local tf = friend:FriendOnline(selfGuid,online)
+				--通知好友上线但好友拒绝 说明自己已经被好友删除 自己也删除好友
+				if not tf then
+					owner:RemoveFriend(guid,false)
+				end
+			end
+			
+		end
+	end
+end
+--刷新在线状态
+function AppSocialMgr:resetOnlineState()
+	for i=SOCIAL_FRIEND_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
+		local guid = self:getGuid(i)
+		if guid ~= "" then
+			if app.objMgr:getObj(guid) then
+				self:SetByte(i+1,3,1)
+			else
+				self:SetByte(i+1,3,0)
+			end
+		end
+	end
+end
+
+function AppSocialMgr:resetInfo()
+	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END-1,MAX_FRIENT_COUNT do
+		self:resetItemInfo(i,true)
+	end
+	for i=SOCIAL_ENEMY_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
+		self:resetItemInfo(i,false)
+	end
+end
+function AppSocialMgr:resetItemInfo(index,needclear)
+	local owner = self:getOwner()
+	local selfGuid = owner:GetGuid()
+	local guid = self:getGuid(index)
+	if guid ~= "" then
+		local friend = app.objMgr:getObj(guid)
+
+		if friend then
+			--判断自己还是否是对方好友
+			outFmtDebug("test friend %s",guid)
+			if needclear and (not friend:isFriend(selfGuid)) then
+				outFmtDebug("time clear friend")
+				owner:RemoveFriend(guid,false)
+				return
+			end
+
+			local level = friend:GetLevel()
+			local vip = friend:GetVIP()
+			local name = friend:GetName()
+			local faction = friend:GetFactionId()
+			
+			local baseLev = self:GetUInt16(index,1)
+			if baseLev ~= level then
+				self:SetUInt16(index,1,level)
+			end
+
+			local basevip = self:GetByte(index,1)
+			if basevip ~= vip then
+				self:SetByte(index,1,vip)
+			end
+			
+			local str = name .. "\1" .. faction
+			local basestr = self:GetStr(index+1)
+			if basestr ~= str then
+				self:SetStr(index+1,str)
 			end
 			
 		end
@@ -78,19 +144,7 @@ function AppSocialMgr:setPlayerLib()
 	end
 
 end
---刷新在线状态
-function AppSocialMgr:resetOnlineState()
-	for i=SOCIAL_FRIEND_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
-		local guid = self:getGuid(i)
-		if guid ~= "" then
-			if app.objMgr:getObj(guid) then
-				self:SetByte(i+1,3,1)
-			else
-				self:SetByte(i+1,3,0)
-			end
-		end
-	end
-end
+
 
 --获取一条数据信息
 function AppSocialMgr:getSocilaItem(index)
@@ -195,7 +249,7 @@ end
 --获取一个空的仇人位
 function AppSocialMgr:getEmptyEnemyIndex()
 	for i=SOCIAL_ENEMY_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
-		outFmtDebug("chouren ------------- %d",i)
+		--outFmtDebug("chouren ------------- %d",i)
 		if self:getGuid(i) == '' then
 			return i
 		end
