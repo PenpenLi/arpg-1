@@ -25,7 +25,9 @@ function AppSocialMgr:addSocialItem(player,index,fam)
 
 	--亲密度设置
 	self:SetUInt16(index+1,0,fam)
-	self:SetUInt16(index+1,1,1)
+	self:SetByte(index+1,2,1)
+	self:SetByte(index+1,3,1)
+	--self:SetUInt16(index+1,1,1)
 	--guid
 	self:SetStr(index,guid)
 	--name faction
@@ -33,8 +35,63 @@ function AppSocialMgr:addSocialItem(player,index,fam)
 	--outFmtDebug("addSocialItem %d",index)
 	--outFmtDebug("addSocialStr %s",str)
 	self:SetStr(index+1,str)
-	
 end
+--删除好友
+function AppSocialMgr:removeFriend(guid)
+	local idx = self:getFriendIndex(guid)
+	if idx ~= -1 then
+		self:clearSocialItem(index)
+		self:setFriendIndex(guid,-1)
+	end
+end
+--通知好友上线
+function AppSocialMgr:broadcastFriendOnline(online)
+	local owner = self:getOwner()
+	local selfGuid = owner:GetGuid()
+	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END-1,MAX_FRIENT_COUNT do
+		local guid = self:getGuid(i)
+		if guid ~= "" then
+			outFmtDebug("tong zhi shang xian %s",guid)
+			local friend = app.objMgr:getObj(guid)
+			if friend then 
+				friend:FriendOnline(selfGuid,online)
+			end
+			
+		end
+	end
+end
+--维护map
+function AppSocialMgr:setPlayerLib()
+	--设置好友idx
+	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END-1,MAX_FRIENT_COUNT do
+		local guid = self:getGuid(i)
+		if guid ~= "" then
+			self:setFriendIndex(guid, i)
+		end
+	end
+	--设置仇人idx
+	for i=SOCIAL_ENEMY_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
+		local guid = self:getGuid(i)
+		if guid ~= "" then
+			self:setEnemyIndex(guid, i)
+		end
+	end
+
+end
+--刷新在线状态
+function AppSocialMgr:resetOnlineState()
+	for i=SOCIAL_FRIEND_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
+		local guid = self:getGuid(i)
+		if guid ~= "" then
+			if app.objMgr:getObj(guid) then
+				self:SetByte(i+1,3,1)
+			else
+				self:SetByte(i+1,3,0)
+			end
+		end
+	end
+end
+
 --获取一条数据信息
 function AppSocialMgr:getSocilaItem(index)
 	local i1 = self:GetUInt32(index)
@@ -54,16 +111,22 @@ end
 
 --是否是朋友
 function AppSocialMgr:isFriend(guid)
-	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END,MAX_FRIENT_COUNT do
-		if self:getGuid(i) == guid then
-			return true
-		end
+	local idx = self:getFriendIndex(guid)
+	--outFmtDebug("pan duan peng you  %d",idx)
+	if idx ~= -1 then
+		return true
 	end
 	return false
+	-- for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END,MAX_FRIENT_COUNT do
+	-- 	if self:getGuid(i) == guid then
+	-- 		return true
+	-- 	end
+	-- end
+	-- return false
 end
 --是否在申请列表中
 function AppSocialMgr:isApply(guid)
-	for i=SOCIAL_APPLY_START,SOCIAL_APPLY_END,MAX_FRIENT_COUNT do
+	for i=SOCIAL_APPLY_START,SOCIAL_APPLY_END-1,MAX_FRIENT_COUNT do
 		if self:getGuid(i) == guid then
 			return true
 		end
@@ -72,7 +135,7 @@ function AppSocialMgr:isApply(guid)
 end
 --根据guid获取index
 function AppSocialMgr:getApplyIndex(guid)
-	for i=SOCIAL_APPLY_START,SOCIAL_APPLY_END,MAX_FRIENT_COUNT do
+	for i=SOCIAL_APPLY_START,SOCIAL_APPLY_END-1,MAX_FRIENT_COUNT do
 		if self:getGuid(i) == guid then
 			return i
 		end
@@ -81,26 +144,39 @@ function AppSocialMgr:getApplyIndex(guid)
 end
 
 function AppSocialMgr:getFriendIndex(guid)
-	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END,MAX_FRIENT_COUNT do
-		if self:getGuid(i) == guid then
-			return i
-		end
-	end
-	return -1
+	local owner = self:getOwner()
+	return playerLib.GetSocialFriend(owner.ptr, guid)
+	-- for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END,MAX_FRIENT_COUNT do
+	-- 	if self:getGuid(i) == guid then
+	-- 		return i
+	-- 	end
+	-- end
+	-- return -1
+end
+
+function AppSocialMgr:setFriendIndex(guid,index)
+ 	local owner = self:getOwner()
+	playerLib.SetSocialFriend(owner.ptr, guid,index)
 end
 
 function AppSocialMgr:getEnemyIndex(guid)
-	for i=SOCIAL_ENEMY_START,SOCIAL_ENEMY_END,MAX_FRIENT_COUNT do
-		if self:getGuid(i) == guid then
-			return i
-		end
-	end
-	return -1
+	local owner = self:getOwner()
+	return playerLib.GetSocialEnemy(owner.ptr, guid)
+	-- for i=SOCIAL_ENEMY_START,SOCIAL_ENEMY_END,MAX_FRIENT_COUNT do
+	-- 	if self:getGuid(i) == guid then
+	-- 		return i
+	-- 	end
+	-- end
+	-- return -1
+end
+function AppSocialMgr:setEnemyIndex(guid,index)
+	local owner = self:getOwner()
+	playerLib.SetSocialEnemy(owner.ptr, guid,index)
 end
 
 --获取一个空的朋友位
 function AppSocialMgr:getEmptyFriendIndex()
-	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END,MAX_FRIENT_COUNT do
+	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END-1,MAX_FRIENT_COUNT do
 		if self:getGuid(i) == '' then
 			return i
 		end
@@ -109,7 +185,7 @@ function AppSocialMgr:getEmptyFriendIndex()
 end
 --获取一个空的申请位
 function AppSocialMgr:getEmptyApplyIndex()
-	for i=SOCIAL_APPLY_START,SOCIAL_ENEMY_END,MAX_FRIENT_COUNT do
+	for i=SOCIAL_APPLY_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
 		if self:getGuid(i) == '' then
 			return i
 		end
@@ -118,7 +194,8 @@ function AppSocialMgr:getEmptyApplyIndex()
 end
 --获取一个空的仇人位
 function AppSocialMgr:getEmptyEnemyIndex()
-	for i=SOCIAL_ENEMY_START,SOCIAL_ENEMY_END,MAX_FRIENT_COUNT do
+	for i=SOCIAL_ENEMY_START,SOCIAL_ENEMY_END-1,MAX_FRIENT_COUNT do
+		outFmtDebug("chouren ------------- %d",i)
 		if self:getGuid(i) == '' then
 			return i
 		end
@@ -127,15 +204,26 @@ function AppSocialMgr:getEmptyEnemyIndex()
 end
 --下线清空申请列表
 function AppSocialMgr:clearApplyList()
-	for i=SOCIAL_APPLY_START,SOCIAL_APPLY_END,MAX_FRIENT_COUNT do
+	for i=SOCIAL_APPLY_START,SOCIAL_APPLY_END-1,MAX_FRIENT_COUNT do
 		self:SetUInt32(i,0)
 		self:SetUInt16(i+1,0,0)
-		self:SetUInt16(i+1,1,1)
+		--self:SetUInt16(i+1,1,1)
+		self:SetByte(i+1,2,1)
+		self:SetByte(i+1,3,0)
 		self:SetStr(i,"")
 		self:SetStr(i+1,"")
 	end
 end
-
+--清除一条数据
+function AppSocialMgr:clearSocialItem(index)
+	self:SetUInt32(index,0)
+	self:SetUInt16(index+1,0,0)
+	self:SetByte(index+1,2,1)
+	self:SetByte(index+1,3,0)
+	self:SetStr(index,"")
+	self:SetStr(index+1,"")
+end
+--添加申请列表
 function AppSocialMgr:addApplyPlayer(player)
 	local idx = self:getEmptyApplyIndex()
 
@@ -152,13 +240,14 @@ function AppSocialMgr:addApplyPlayer(player)
 	self:addSocialItem(player,idx)
 
 end
-
+--添加朋友
 function AppSocialMgr:addFriendPlayer(player)
 	local idx = self:getEmptyFriendIndex()
 	if idx == -1 then
 		return false;
 	end
 	self:addSocialItem(player,idx)
+	self:setFriendIndex(player:GetGuid(), idx)
 	return true
 end
 --添加敌人仇恨值
@@ -171,14 +260,22 @@ function AppSocialMgr:addEnemyPlayerNum(player,guid,num)
 		self:SetUInt16(idx + 1,0,hatred)
 		self:setEnemyTime(idx)
 	else
+		outFmtDebug("begin chouren kong wei")
 		local emIdx = self:getEmptyEnemyIndex(guid)
+		outFmtDebug("chou ren kong wei %d",emIdx)
 		--如果有空位则添加
 		if emIdx ~= -1 then
 			self:addSocialItem(player,emIdx,num)
+			self:setEnemyIndex(guid, emIdx)
 			self:setEnemyTime(emIdx)
 		else--如果没有空位找到时间最少并且仇恨值最少的
 			local fuIdx = self:minHatredTimeIndex()
+			--清空原来的仇人
+			local fulguid = self:GetStr(fuIdx)
+			self:setEnemyIndex(fulguid, -1)
+			--设置新的仇人
 			self:addSocialItem(player,fuIdx,num)
+			self:setEnemyIndex(guid,fuIdx)
 			self:setEnemyTime(fuIdx)
 		end
 	end
@@ -197,7 +294,7 @@ function AppSocialMgr:minHatredTimeIndex()
 	local minTime = os.time()
 	local idx = -1
 
-	for i=SOCIAL_ENEMY_START, SOCIAL_ENEMY_END, MAX_FRIENT_COUNT do
+	for i=SOCIAL_ENEMY_START, SOCIAL_ENEMY_END-1, MAX_FRIENT_COUNT do
 		local hatred = self:GetUInt16(i + 1,0)
 		local time = self:getEnemyTime(i)
 		if hatred < minnum or (hatred == minnum and  time < minTime) then
@@ -208,6 +305,21 @@ function AppSocialMgr:minHatredTimeIndex()
 	end
 
 	return idx
+
+end
+--设置好友在线状态
+function AppSocialMgr:setFriendOnLine(guid,online)
+	local idx = self:getFriendIndex(guid)
+
+	if idx == -1 then
+		return
+	end
+
+	if online then
+		self:SetByte(idx + 1,3,1)
+	else
+		self:SetByte(idx + 1,3,0)
+	end
 
 end
 
@@ -221,12 +333,12 @@ function AppSocialMgr:addFamiliay(guid,num)
 	if idx == -1 then
 		return
 	end
-
+	--outFmtDebug("idx %d",idx)
 	local fam = self:GetUInt16(idx+1,0)
-	local famlev = self:GetUInt16(idx+1,1)
-	outFmtDebug("current fam %d,%d",fam,num)
+	local famlev = self:GetByte(idx+1,2)
+	--outFmtDebug("current fam %d,%d",fam,num)
 	fam = fam + num
-	outFmtDebug("current fam %d,%d,%d",fam,num,famlev)
+	--outFmtDebug("current fam %d,%d,%d",fam,num,famlev)
 	for i=famlev,#tb_social_familiay do
 		local config = tb_social_familiay[i]
 		if fam > config.exp then
@@ -238,8 +350,25 @@ function AppSocialMgr:addFamiliay(guid,num)
 	end
 
 	self:SetUInt16(idx+1,0,fam)
-	self:SetUInt16(idx+1,1,famlev)
+	--self:SetUInt16(idx+1,1,famlev)
+	self:SetByte(idx+1,2,famlev)
+	--self:SetByte(index+1,3,0)
 
+end
+
+-- 获得玩家guid
+function AppSocialMgr:getPlayerGuid()
+	--物品管理器guid转玩家guid
+	if not self.owner_guid then
+		self.owner_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypePlayer)
+	end
+	return self.owner_guid
+end
+
+--获得技能管理器的拥有者
+function AppSocialMgr:getOwner()
+	local playerguid = self:getPlayerGuid()
+	return app.objMgr:getObj(playerguid)
 end
 
 

@@ -507,6 +507,8 @@ function PlayerInfo:Login()
 		--发送玩家属性到场景服
 		playerLib.SendAttr(self.ptr)
 	end
+
+	self:socialLogIn()
 end
 
 --pk服玩家登陆做点啥
@@ -516,8 +518,7 @@ function PlayerInfo:LoginPk()
 --玩家下线后
 function PlayerInfo:Logout ()
 	--清空好友申请列表
-	local socialMgr = self:getSocialMgr()
-	socialMgr:clearApplyList()
+	self:socialLogOut()
 end
 
 --有多少个物品

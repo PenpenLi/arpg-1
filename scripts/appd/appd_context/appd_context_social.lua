@@ -1,5 +1,46 @@
 local protocols = require('share.protocols')
 
+function PlayerInfo:socialLogIn()
+	--登录刷新好友在线状态
+	local socialMgr = self:getSocialMgr()
+	socialMgr:setPlayerLib()
+	socialMgr:resetOnlineState()
+	socialMgr:broadcastFriendOnline(true)
+end
+function PlayerInfo:socialLogOut()
+	local socialMgr = self:getSocialMgr()
+	socialMgr:clearApplyList()
+	socialMgr:broadcastFriendOnline(false)
+end
+
+function PlayerInfo:FriendOnline(guid,online)
+	local socialMgr = self:getSocialMgr()
+	if socialMgr:isFriend(guid) then
+		socialMgr:setFriendOnLine(guid,online)
+	else 
+
+	end
+
+end
+-- 删除好友 是否双向
+function PlayerInfo:RemoveFriend(guid,twoway)
+	local socialMgr = self:getSocialMgr()
+
+	if not socialMgr:isFriend(guid) then
+		outFmtDebug("player is not already friend, %s", guid)
+		return false
+	end
+	socialMgr:removeFriend(guid)
+
+	if twoway then
+		local friend = app.objMgr:getObj(guid)
+		if friend then
+			friend:RemoveFriend(self:GetGuid(),false)
+		end
+	end
+
+
+end
 --申请添加好友
 function PlayerInfo:ApplyFriend(guid)
 	local friend = app.objMgr:getObj(guid)
@@ -14,9 +55,11 @@ end
 function PlayerInfo:SureApplyFriend(guid)
 	local socialMgr = self:getSocialMgr()
 	local idx = socialMgr:getApplyIndex(guid)
+	
 	--是否在好友列表中
 	if idx ~= -1 then
 		--对方是否还在线
+		
 		local friend = app.objMgr:getObj(guid)
 		if not friend then 
 			--清除申请对象
@@ -30,15 +73,16 @@ function PlayerInfo:SureApplyFriend(guid)
 			socialMgr:setSocilaItem(idx,0,0,"","")
 			return false
 		end
-
+		
 		local i1,i2,s1,s2 = socialMgr:getSocilaItem(idx)
 		local emp = socialMgr:getEmptyFriendIndex()
 
 		if emp ~= -1 then
 			socialMgr:setSocilaItem(emp,i1,i2,s1,s2)
 			socialMgr:setSocilaItem(idx,0,0,"","")
+		else
+			outFmtDebug("target friend is full")
 		end
-
 
 		return true
 	end

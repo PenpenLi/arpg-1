@@ -194,7 +194,7 @@ npc_goods_list,s2c,42,/*Npc商品列表*/,STATUS_NEVER,False
 #
 store_buy,c2s,43,/*购买商品*/,STATUS_NEVER,False
 	id,uint32,False,/*商品id*/
-	use_gold,uint8,False,/*是否使用元宝*/
+	count,uint32,False,/*商品数量*/
 
 #
 npc_sell,c2s,44,/*出售物品*/,STATUS_NEVER,False
@@ -637,6 +637,15 @@ kuafu_chuansong,c2s,132,/*跨服传送*/,STATUS_NEVER,False
 	reserve,uint32,False,/*预留参数*/
 
 #
+field_death_cooldown,s2c,136,/*野外死亡倒计时*/,STATUS_NEVER,False
+	cooldown,uint16,False,/*倒计时*/	
+
+#
+mall_buy,c2s,137,/*商城购买*/,STATUS_NEVER,False
+	id,uint32,False,/*商品序列号*/
+	count,uint32,False,/*商品数量*/
+
+#
 strength,c2s,139,/*强化*/,STATUS_NEVER,False
 	part,uint8,False,/*强化的位置*/
 
@@ -786,3 +795,7 @@ social_get_recommend_friend,s2c,175,/*推荐好友列表*/,STATUS_NEVER,False
 #
 social_revenge_enemy,c2s,176,/*复仇*/,STATUS_NEVER,False
 	guid,String,False,/*仇人GUID*/
+
+#
+social_del_friend,c2s,177,/*删除好友*/,STATUS_NEVER,False
+	guid,String,False,/*好友GUID*/

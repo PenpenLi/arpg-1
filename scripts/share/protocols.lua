@@ -58,7 +58,7 @@ CMSG_EXCHANGE_ITEM		= 39	-- /*兑换物品*/
 CMSG_BAG_EXTENSION		= 40	-- /*背包扩展*/	
 CMSG_NPC_GET_GOODS_LIST		= 41	-- /*请求NPC商品列表*/	
 SMSG_NPC_GOODS_LIST		= 42	-- /*Npc商品列表*/	
-CMSG_NPC_BUY		= 43	-- /*购买商品*/	
+CMSG_STORE_BUY		= 43	-- /*购买商品*/	
 CMSG_NPC_SELL		= 44	-- /*出售物品*/	
 CMSG_NPC_REPURCHASE		= 45	-- /*回购物品*/	
 CMSG_AVATAR_FASHION_ENABLE		= 46	-- /*时装是否启用*/	
@@ -148,6 +148,8 @@ CMSG_CHAR_UPDATE_INFO		= 129	-- /*角色更改信息*/
 SMSG_NOTICE_WATCHER_MAP_INFO		= 130	-- /*通知客户端观察者的视角*/	
 CMSG_MODIFY_WATCH		= 131	-- /*客户端订阅对象信息*/	
 CMSG_KUAFU_CHUANSONG		= 132	-- /*跨服传送*/	
+SMSG_FIELD_DEATH_COOLDOWN		= 136	-- /*野外死亡倒计时*/	
+CMSG_MALL_BUY		= 137	-- /*商城购买*/	
 CMSG_STRENGTH		= 139	-- /*强化*/	
 SMSG_STRENGTH_SUCCESS		= 140	-- /*强化成功*/	
 CMSG_FORCEINTO		= 141	-- /*强制进入*/	
@@ -186,6 +188,7 @@ CMSG_SOCIAL_GIFT_FRIEND		= 173	-- /*赠送礼物*/
 CMSG_SOCIAL_RECOMMEND_FRIEND		= 174	-- /*推荐好友列表*/	
 SMSG_SOCIAL_GET_RECOMMEND_FRIEND		= 175	-- /*推荐好友列表*/	
 CMSG_SOCIAL_REVENGE_ENEMY		= 176	-- /*复仇*/	
+CMSG_SOCIAL_DEL_FRIEND		= 177	-- /*删除好友*/	
 
 
 ---------------------------------------------------------------------
@@ -2195,25 +2198,22 @@ end
 
 
 -- /*购买商品*/	
-function Protocols.pack_npc_buy ( id ,num ,npc_id ,do_use ,money_type)
-	local output = Packet.new(CMSG_NPC_BUY)
+function Protocols.pack_store_buy ( id ,count)
+	local output = Packet.new(CMSG_STORE_BUY)
 	output:writeU32(id)
-	output:writeU32(num)
-	output:writeU32(npc_id)
-	output:writeByte(do_use)
-	output:writeByte(money_type)
+	output:writeU32(count)
 	return output
 end
 
 -- /*购买商品*/	
-function Protocols.call_npc_buy ( playerInfo, id ,num ,npc_id ,do_use ,money_type)
-	local output = Protocols.	pack_npc_buy ( id ,num ,npc_id ,do_use ,money_type)
+function Protocols.call_store_buy ( playerInfo, id ,count)
+	local output = Protocols.	pack_store_buy ( id ,count)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
 -- /*购买商品*/	
-function Protocols.unpack_npc_buy (pkt)
+function Protocols.unpack_store_buy (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
@@ -2221,22 +2221,10 @@ function Protocols.unpack_npc_buy (pkt)
 	if not ret then
 		return false
 	end	
-	ret,param_table.num = input:readU32()
+	ret,param_table.count = input:readU32()
 	if not ret then
 		return false
 	end	
-	ret,param_table.npc_id = input:readU32()
-	if not ret then
-		return false
-	end	
-	ret,param_table.do_use = input:readByte()
-	if not ret then
-		return false
-	end
-	ret,param_table.money_type = input:readByte()
-	if not ret then
-		return false
-	end
 
 	return true,param_table	
 
@@ -5310,6 +5298,69 @@ function Protocols.unpack_kuafu_chuansong (pkt)
 end
 
 
+-- /*野外死亡倒计时*/	
+function Protocols.pack_field_death_cooldown ( cooldown)
+	local output = Packet.new(SMSG_FIELD_DEATH_COOLDOWN)
+	output:writeI16(cooldown)
+	return output
+end
+
+-- /*野外死亡倒计时*/	
+function Protocols.call_field_death_cooldown ( playerInfo, cooldown)
+	local output = Protocols.	pack_field_death_cooldown ( cooldown)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*野外死亡倒计时*/	
+function Protocols.unpack_field_death_cooldown (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.cooldown = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*商城购买*/	
+function Protocols.pack_mall_buy ( id ,count)
+	local output = Packet.new(CMSG_MALL_BUY)
+	output:writeU32(id)
+	output:writeU32(count)
+	return output
+end
+
+-- /*商城购买*/	
+function Protocols.call_mall_buy ( playerInfo, id ,count)
+	local output = Protocols.	pack_mall_buy ( id ,count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*商城购买*/	
+function Protocols.unpack_mall_buy (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.count = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 -- /*强化*/	
 function Protocols.pack_strength ( part)
 	local output = Packet.new(CMSG_STRENGTH)
@@ -6458,6 +6509,35 @@ function Protocols.unpack_social_revenge_enemy (pkt)
 end
 
 
+-- /*删除好友*/	
+function Protocols.pack_social_del_friend ( guid)
+	local output = Packet.new(CMSG_SOCIAL_DEL_FRIEND)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*删除好友*/	
+function Protocols.call_social_del_friend ( playerInfo, guid)
+	local output = Protocols.	pack_social_del_friend ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*删除好友*/	
+function Protocols.unpack_social_del_friend (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -6508,7 +6588,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_bag_extension = self.call_bag_extension
 	playerInfo.call_npc_get_goods_list = self.call_npc_get_goods_list
 	playerInfo.call_npc_goods_list = self.call_npc_goods_list
-	playerInfo.call_npc_buy = self.call_npc_buy
+	playerInfo.call_store_buy = self.call_store_buy
 	playerInfo.call_npc_sell = self.call_npc_sell
 	playerInfo.call_npc_repurchase = self.call_npc_repurchase
 	playerInfo.call_avatar_fashion_enable = self.call_avatar_fashion_enable
@@ -6598,6 +6678,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_notice_watcher_map_info = self.call_notice_watcher_map_info
 	playerInfo.call_modify_watch = self.call_modify_watch
 	playerInfo.call_kuafu_chuansong = self.call_kuafu_chuansong
+	playerInfo.call_field_death_cooldown = self.call_field_death_cooldown
+	playerInfo.call_mall_buy = self.call_mall_buy
 	playerInfo.call_strength = self.call_strength
 	playerInfo.call_strength_success = self.call_strength_success
 	playerInfo.call_forceInto = self.call_forceInto
@@ -6636,6 +6718,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_social_recommend_friend = self.call_social_recommend_friend
 	playerInfo.call_social_get_recommend_friend = self.call_social_get_recommend_friend
 	playerInfo.call_social_revenge_enemy = self.call_social_revenge_enemy
+	playerInfo.call_social_del_friend = self.call_social_del_friend
 end
 
 local unpack_handler = {
@@ -6683,7 +6766,7 @@ local unpack_handler = {
 [CMSG_BAG_EXTENSION] =  Protocols.unpack_bag_extension,
 [CMSG_NPC_GET_GOODS_LIST] =  Protocols.unpack_npc_get_goods_list,
 [SMSG_NPC_GOODS_LIST] =  Protocols.unpack_npc_goods_list,
-[CMSG_NPC_BUY] =  Protocols.unpack_npc_buy,
+[CMSG_STORE_BUY] =  Protocols.unpack_store_buy,
 [CMSG_NPC_SELL] =  Protocols.unpack_npc_sell,
 [CMSG_NPC_REPURCHASE] =  Protocols.unpack_npc_repurchase,
 [CMSG_AVATAR_FASHION_ENABLE] =  Protocols.unpack_avatar_fashion_enable,
@@ -6773,6 +6856,8 @@ local unpack_handler = {
 [SMSG_NOTICE_WATCHER_MAP_INFO] =  Protocols.unpack_notice_watcher_map_info,
 [CMSG_MODIFY_WATCH] =  Protocols.unpack_modify_watch,
 [CMSG_KUAFU_CHUANSONG] =  Protocols.unpack_kuafu_chuansong,
+[SMSG_FIELD_DEATH_COOLDOWN] =  Protocols.unpack_field_death_cooldown,
+[CMSG_MALL_BUY] =  Protocols.unpack_mall_buy,
 [CMSG_STRENGTH] =  Protocols.unpack_strength,
 [SMSG_STRENGTH_SUCCESS] =  Protocols.unpack_strength_success,
 [CMSG_FORCEINTO] =  Protocols.unpack_forceInto,
@@ -6811,6 +6896,7 @@ local unpack_handler = {
 [CMSG_SOCIAL_RECOMMEND_FRIEND] =  Protocols.unpack_social_recommend_friend,
 [SMSG_SOCIAL_GET_RECOMMEND_FRIEND] =  Protocols.unpack_social_get_recommend_friend,
 [CMSG_SOCIAL_REVENGE_ENEMY] =  Protocols.unpack_social_revenge_enemy,
+[CMSG_SOCIAL_DEL_FRIEND] =  Protocols.unpack_social_del_friend,
 
 }
 

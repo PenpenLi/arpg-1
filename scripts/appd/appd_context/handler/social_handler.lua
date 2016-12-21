@@ -21,9 +21,14 @@ function PlayerInfo:Handle_Gift_Friend(pkt)
 	self:AddGiftFriend(guid,gift)
 end 
 function PlayerInfo:Handle_Recommend_Friend(pkt)
-	outFmtDebug("huoqu tui jian lie biao")
+	--outFmtDebug("huoqu tui jian lie biao")
 	self:RecommendFriend()
 end
 function PlayerInfo:Handle_Revenge_Enemy(pkt)
-	outFmtDebug("fu chou")
+	--outFmtDebug("fu chou")
+end
+function PlayerInfo:Handle_Remove_Friend(pkt)
+	outFmtDebug("del friend")
+	local guid = pkt.guid
+	self:RemoveFriend(guid)
 end
