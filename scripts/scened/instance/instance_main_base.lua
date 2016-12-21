@@ -1,8 +1,6 @@
 InstanceMainBase = class("InstanceMainBase", Instance_base)
 
 InstanceMainBase.Name = "InstanceMainBase"
-InstanceMainBase.player_auto_respan = 0
-
 
 function InstanceMainBase:ctor(  )
 	

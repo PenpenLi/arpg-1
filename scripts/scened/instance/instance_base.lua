@@ -54,7 +54,7 @@ Instance_base = {
 	is_guajibaohu = true,
 	
 	--死后自动回城复活时间
-	player_auto_respan = 300,
+	player_auto_respan = 120,
 	
 	
 	--获取本地图是否需要持久化，及持久化名

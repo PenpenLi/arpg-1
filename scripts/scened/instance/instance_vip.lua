@@ -1,7 +1,6 @@
 InstanceVIP = class("InstanceVIP", InstanceInstBase)
 
 InstanceVIP.Name = "InstanceVIP"
-InstanceVIP.player_auto_respan = 120
 InstanceVIP.exit_time = 10
 InstanceVIP.BOSS_NAME = "VIP_BOSS"
 

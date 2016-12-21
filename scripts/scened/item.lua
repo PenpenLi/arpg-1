@@ -79,10 +79,6 @@ ScenedUseItem = {
 				return false
 			end
 			
-			-- 删掉回程复活计时器
-			local fieldInstanceInfo = InstanceFieldBase:new{ptr = map_ptr}
-			fieldInstanceInfo:RemoveTimeOutCallback(fieldInstanceInfo.Leave_Callback)
-			
 			return true
 		end
 		return false

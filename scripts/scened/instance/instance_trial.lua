@@ -1,7 +1,6 @@
 InstanceTrial = class("InstanceTrial", InstanceInstBase)
 
 InstanceTrial.Name = "InstanceTrial"
-InstanceTrial.player_auto_respan = 120
 InstanceTrial.exit_time = 10
 
 function InstanceTrial:ctor(  )

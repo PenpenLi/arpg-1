@@ -114,7 +114,7 @@ end
 UseItemScripts = {
 	--需要发送到场景服的物品模板(复活丹也写这里)
 	scened_use_items_array = {
-		191,171,201,202,203,204
+		50003,191,171,201,202,203,204
 	},
 	
 	scened_use_items_set = {},

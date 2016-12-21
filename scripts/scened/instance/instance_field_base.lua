@@ -1,6 +1,7 @@
 InstanceFieldBase = class("InstanceFieldBase", Instance_base)
 
 InstanceFieldBase.Name = "InstanceFieldBase"
+InstanceFieldBase.player_auto_respan = 120
 
 function InstanceFieldBase:ctor(  )
 	
@@ -49,17 +50,8 @@ end
 --当玩家死亡后触发()
 function InstanceFieldBase:OnPlayerDeath(player)
 	local playerInfo = UnitInfo:new{ptr = player}
-	-- 是否在挂机, 是否自动使用复活丹
-	--[[if player:isInHook() and self:isUseRespawnItem() then
-		playerLib.SendToAppdDoSomething(player, SCENED_APPD_USE_RESPAWN_ITEM, 0)
-		return
-	end--]]
-	local cooldown = 120
-	local timestamp = os.time() + cooldown
-	self:AddTimeOutCallback(self.Leave_Callback, timestamp)
-	
 	-- 发送野外死亡回城倒计时
-	playerInfo:call_field_death_cooldown(cooldown)
+	playerInfo:call_field_death_cooldown(self.player_auto_respan)
 end
 
 return InstanceFieldBase
