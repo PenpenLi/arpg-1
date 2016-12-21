@@ -54,36 +54,7 @@ function UseItem(player, item_guid, count)
 	UseItemScripts.Go(UseItemScripts, player, item, count)
 end
 
-GOLD_TO_SILVER_RATE = 100000
 function UseHpItem(player, entry, count)
-	if count <= 0 then return false end		--数量不能小于等于0
-	
-	local itemMgr = player:getItemMgr()
-	local items = itemMgr:getItemByEntry(BAG_TYPE_MAIN_BAG, entry)
-	
-	if #items == 0 then
-		-- 购买药品
-		-- 是否自动购买血瓶
-		if not self:isAutoBuyHpItem() then
-			return false
-		end
-		
-		-- 银两不足是否用元宝购买
-		local goldInstead = 0
-		if self:isAutoBuyHpItemUseGold() then
-			goldInstead = 1
-		end
-		
-		-- 购买道具是否成功
-		if not player:buyItem(MONEY_TYPE_SILVER, entry, count, MONEY_CHANGE_BUY_HP_ITEM, goldInstead, GOLD_TO_SILVER_RATE) then
-			return false
-		end
-		
-		items = itemMgr:getItemByEntry(BAG_TYPE_MAIN_BAG, entry)
-	end
-	
-	local item = items[ 1 ]
-	UseItem(player, item:getGuid(), count)
 	
 	return true
 end
@@ -91,35 +62,7 @@ end
 
 -- 购买自动复活道具
 function useRespawn(player)
-	local entry = 50003
-	local count = 1
 	
-	local itemMgr = player:getItemMgr()
-	local items = itemMgr:getItemByEntry(BAG_TYPE_MAIN_BAG, entry)
-	
-	if #items == 0 then
-		-- 购买复活丹
-		-- 是否自动购买
-		if not self:isBuyRespawnByBindGold() then
-			return false
-		end
-		
-		-- 绑银不足是否用元宝购买
-		local goldInstead = 0
-		if self:isBuyRespawnByGold() then
-			goldInstead = 1
-		end
-		
-		-- 购买道具是否成功
-		if not player:buyItem(MONEY_TYPE_BIND_GOLD, entry, count, MONEY_CHANGE_BUY_ATUO_RESPAWN, goldInstead, 1) then
-			return false
-		end
-		
-		items = itemMgr:getItemByEntry(BAG_TYPE_MAIN_BAG, entry)
-	end
-	
-	local item = items[ 1 ]
-	UseItem(player, item:getGuid(), count)
 	return true
 end
 

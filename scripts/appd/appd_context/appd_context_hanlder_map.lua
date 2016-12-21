@@ -13,13 +13,18 @@ hanlders[CMSG_BAG_EXCHANGE_POS] = PlayerInfo.Hanlde_Bag_Exchange_Pos
 hanlders[CMSG_BAG_DESTROY] = PlayerInfo.Hanlde_Bag_Destroy
 hanlders[CMSG_BAG_ITEM_SPLIT] = PlayerInfo.Hanlde_Bag_Item_Split
 hanlders[CMSG_NPC_GET_GOODS_LIST] = PlayerInfo.Hanlde_Npc_Get_Goods_List
-hanlders[CMSG_NPC_BUY] = PlayerInfo.Hanlde_Npc_Buy
+hanlders[CMSG_STORE_BUY] = PlayerInfo.Handle_Store_Buy
 hanlders[CMSG_NPC_SELL] = PlayerInfo.Hanlde_Npc_Sell
 hanlders[CMSG_NPC_REPURCHASE] = PlayerInfo.Hanlde_Npc_Rrpurchase
 hanlders[MSG_CHAT_NOTICE] = PlayerInfo.Handle_Chat_Notice
 hanlders[MSG_CHAT_HORN] = PlayerInfo.Handle_Chat_Horn
 hanlders[MSG_CHAT_WHISPER] = PlayerInfo.Handle_Chat_Whisper
 hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
+
+hanlders[CMSG_MALL_BUY] = PlayerInfo.Handle_Mall_Buy
+
+hanlders[CMSG_GOLD_RESPAWN] = PlayerInfo.Handle_Gold_Respawn
+
 hanlders[CMSG_STRENGTH] = PlayerInfo.Handle_Strength
 hanlders[CMSG_CREATE_FACTION] = PlayerInfo.Handle_Faction_Create
 hanlders[CMSG_FACTION_UPGRADE] = PlayerInfo.Handle_Faction_Upgrade
@@ -56,6 +61,7 @@ hanlders[CMSG_SOCIAL_SUREADD_FRIEND] = PlayerInfo.Handle_Sure_Add_Friend
 hanlders[CMSG_SOCIAL_GIFT_FRIEND] = PlayerInfo.Handle_Gift_Friend
 hanlders[CMSG_SOCIAL_RECOMMEND_FRIEND] = PlayerInfo.Handle_Recommend_Friend
 hanlders[CMSG_SOCIAL_REVENGE_ENEMY] = PlayerInfo.Handle_Revenge_Enemy
+hanlders[CMSG_SOCIAL_DEL_FRIEND] = PlayerInfo.Handle_Remove_Friend
 
 
 return hanlders

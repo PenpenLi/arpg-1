@@ -817,6 +817,7 @@ require("appd/appd_context/appd_context_instance")
 require("appd/appd_context/appd_context_equip_part_opt")
 require("appd/appd_context/appd_context_spell")
 require("appd/appd_context/appd_context_social")
+require("appd/appd_context/appd_context_shop")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/chat_handler")
@@ -824,6 +825,7 @@ require("appd/appd_context/handler/equip_part_opt_handler")
 require("appd/appd_context/handler/spell_handler")
 require("appd/appd_context/handler/instance_handler")
 require("appd/appd_context/handler/social_handler")
+require("appd/appd_context/handler/shop_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

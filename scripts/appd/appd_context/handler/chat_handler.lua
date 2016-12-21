@@ -121,11 +121,9 @@ function PlayerInfo:Handle_Chat_World( pkt )
 		return
 	end
 	
-	--[[
-	if(self:CheckChatLimit(CHAT_TYPE_WORLD, content) == false)then
+	--[[if(self:CheckChatLimit(CHAT_TYPE_WORLD, content) == false)then
 		return
-	end
-	]]
+	end--]]
 
 	self:SendChat(CHAT_TYPE_WORLD, content, guid, name)
 end

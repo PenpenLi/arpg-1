@@ -365,8 +365,8 @@ HT_MONEY_CHANGE_TYPE_REBATE = 5	-- 返利
 HT_MONEY_CHANGE_TYPE_TRADING = 6	-- 交易
 -- 货币变化原因类型
 MONEY_CHANGE_TYPE_CHARGE = 0	-- 玩家充值
-MONEY_CHANGE_TYPE_NPC_BUY = 1	-- NPC购买
-MONEY_CHANGE_TYPE_STALL_BUY = 2	-- 摊位购买
+MONEY_CHANGE_TYPE_STORE_BUY = 1	-- 商店购买
+MONEY_CHANGE_TYPE_MALL_BUY = 2	-- 商城购买
 MONEY_CHANGE_TYPE_STALL_SALE = 3	-- 摊位卖出
 MONEY_CHANGE_TYPE_TRADE = 4	-- 玩家交易
 MONEY_CHANGE_MAIL = 5	-- 邮件
@@ -1157,8 +1157,15 @@ SCENED_APPD_PASS_TRIAL_INSTANCE = 6	-- 通关试炼塔副本
 SCENED_APPD_PASS_VIP_INSTANCE = 7	-- 通关VIP副本
 APPD_SCENED_SWEEP_TRIAL_INSTANCE = 1	-- 扫荡试炼塔副本
 APPD_SCENED_SWEEP_VIP_INSTANCE = 2	-- 扫荡VIP副本
+APPD_SCENED_RESPAWN = 3	-- 元宝复活
 INSTANCE_SUB_TYPE_VIP = 1	-- vip副本
 INSTANCE_SUB_TYPE_TRIAL = 2	-- 试炼塔副本
+--  聊天频道
+CHAT_CHANNEL_SYSTEM = 0	-- 系统频道
+CHAT_CHANNEL_WORLD = 1	-- 世界频道
+CHAT_CHANNEL_NEARBY = 2	-- 附近频道
+CHAT_CHANNEL_FAMILY = 3	-- 家族频道
+CHAT_CHANNEL_GROUP = 4	-- 队伍频道
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 玩家下标
 -- //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1220,7 +1227,7 @@ PLAYER_FIELD_PEACE_MODE_CD = 258	-- 和平模式CD
 PLAYER_FIELD_NOTORIETY = 259	-- 2个short(0:战斗模式, 1:恶名值)
 PLAYER_FIELD_BYTES_2 = 260	-- 玩家标识,存4个byte[0灰名时间 1付费等级 2免费复活 3玩家称号]
 PLAYER_FIELD_BYTES_3 = 261	-- 四个字节,分别存放 0头像,[1发型2可用技能槽数量3下次复活是否有保护buff]
-PLAYER_FIELD_BYTES_4 = 262	-- 四个字节,分别存放 0坐骑槽数量,1当前骑乘坐骑的坐骑槽位置，未骑乘值为255,2披风格挡等级，3剩余格挡次数
+PLAYER_FIELD_BYTES_4 = 262	-- 四个字节,分别存放 (0:频道屏蔽列表,1:预留,2:预留,3:预留)
 PLAYER_FIELD_BYTES_5 = 263	-- 0 GM权限, 1, 2 
 PLAYER_FIELD_AUTO_HP = 264	-- 大红
 PLAYER_FIELD_AUTO_MP = 266	-- 大蓝

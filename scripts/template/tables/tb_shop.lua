@@ -6,7 +6,11 @@
 tb_shop = {
 	--  id:int	序号
 	--  itemId:int	道具id
+	--  count:int	道具数量
+	--  limit:int	一次购买最大数量
 	--  costResource:array	消耗资源
-	[50001] = {id = 50001,itemId = 50001,costResource = {{0, 10}},},
-	[150001] = {id = 150001,itemId = 50001,costResource = {{1, 10}},},
+	[50001] = {id = 50001,itemId = 50001,count = 99,limit = 99,costResource = {{0, 10}},},
+	[50003] = {id = 50003,itemId = 50003,count = 1,limit = 99,costResource = {{0, 10}},},
+	[150001] = {id = 150001,itemId = 50001,count = 99,limit = 99,costResource = {{1, 10}},},
+	[150003] = {id = 150003,itemId = 50003,count = 1,limit = 99,costResource = {{1, 10}},},
 }

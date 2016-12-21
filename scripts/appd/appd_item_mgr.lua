@@ -423,17 +423,20 @@ function AppItemMgr:costMoneyEnabledSolution(costItemTable, multiple)
 		local count = self:countItem(self.default_bag_type, costItem[ 1 ])
 		if count < (costItem[ 2 ] * multiple) then
 			local buyed = costItem[ 2 ] * multiple - count
-			local id = MONEY_TYPE_BIND_GOLD * 100000 + costItem[ 1 ]
+			local id = GetShopId(MONEY_TYPE_BIND_GOLD, costItem[ 1 ])
 			-- 是否在商城可以买到
 			if not tb_shop[id] then
 				return false, nil, 0
 			end
+			-- 先计算需要购买几次
+			local gtCount = tb_shop[id].count
+			local buys = math.ceil(buyed / gtCount)
 			-- 单价不能 < 0
 			local price = tb_shop[id].costResource[ 1 ][ 2 ]
 			if price < 0 then
 				return false, nil, 0
 			end 
-			costMoney = costMoney + buyed * price
+			costMoney = costMoney + buys * price
 			if count > 0 then
 				AddTempInfoIfExist(realCostItem, costItem[ 1 ], count)
 			end

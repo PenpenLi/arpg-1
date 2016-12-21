@@ -148,6 +148,9 @@ CMSG_CHAR_UPDATE_INFO		= 129	-- /*角色更改信息*/
 SMSG_NOTICE_WATCHER_MAP_INFO		= 130	-- /*通知客户端观察者的视角*/	
 CMSG_MODIFY_WATCH		= 131	-- /*客户端订阅对象信息*/	
 CMSG_KUAFU_CHUANSONG		= 132	-- /*跨服传送*/	
+CMSG_SHOW_SUIT		= 133	-- /*显示当前装备*/	
+CMSG_SHOW_POSITION		= 134	-- /*显示当前坐标*/	
+CMSG_GOLD_RESPAWN		= 135	-- /*元宝复活*/	
 SMSG_FIELD_DEATH_COOLDOWN		= 136	-- /*野外死亡倒计时*/	
 CMSG_MALL_BUY		= 137	-- /*商城购买*/	
 CMSG_STRENGTH		= 139	-- /*强化*/	
@@ -5298,6 +5301,93 @@ function Protocols.unpack_kuafu_chuansong (pkt)
 end
 
 
+-- /*显示当前装备*/	
+function Protocols.pack_show_suit ( position)
+	local output = Packet.new(CMSG_SHOW_SUIT)
+	output:writeByte(position)
+	return output
+end
+
+-- /*显示当前装备*/	
+function Protocols.call_show_suit ( playerInfo, position)
+	local output = Protocols.	pack_show_suit ( position)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*显示当前装备*/	
+function Protocols.unpack_show_suit (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.position = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*显示当前坐标*/	
+function Protocols.pack_show_position ( channel)
+	local output = Packet.new(CMSG_SHOW_POSITION)
+	output:writeByte(channel)
+	return output
+end
+
+-- /*显示当前坐标*/	
+function Protocols.call_show_position ( playerInfo, channel)
+	local output = Protocols.	pack_show_position ( channel)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*显示当前坐标*/	
+function Protocols.unpack_show_position (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.channel = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*元宝复活*/	
+function Protocols.pack_gold_respawn ( useGold)
+	local output = Packet.new(CMSG_GOLD_RESPAWN)
+	output:writeByte(useGold)
+	return output
+end
+
+-- /*元宝复活*/	
+function Protocols.call_gold_respawn ( playerInfo, useGold)
+	local output = Protocols.	pack_gold_respawn ( useGold)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*元宝复活*/	
+function Protocols.unpack_gold_respawn (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.useGold = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 -- /*野外死亡倒计时*/	
 function Protocols.pack_field_death_cooldown ( cooldown)
 	local output = Packet.new(SMSG_FIELD_DEATH_COOLDOWN)
@@ -6678,6 +6768,9 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_notice_watcher_map_info = self.call_notice_watcher_map_info
 	playerInfo.call_modify_watch = self.call_modify_watch
 	playerInfo.call_kuafu_chuansong = self.call_kuafu_chuansong
+	playerInfo.call_show_suit = self.call_show_suit
+	playerInfo.call_show_position = self.call_show_position
+	playerInfo.call_gold_respawn = self.call_gold_respawn
 	playerInfo.call_field_death_cooldown = self.call_field_death_cooldown
 	playerInfo.call_mall_buy = self.call_mall_buy
 	playerInfo.call_strength = self.call_strength
@@ -6856,6 +6949,9 @@ local unpack_handler = {
 [SMSG_NOTICE_WATCHER_MAP_INFO] =  Protocols.unpack_notice_watcher_map_info,
 [CMSG_MODIFY_WATCH] =  Protocols.unpack_modify_watch,
 [CMSG_KUAFU_CHUANSONG] =  Protocols.unpack_kuafu_chuansong,
+[CMSG_SHOW_SUIT] =  Protocols.unpack_show_suit,
+[CMSG_SHOW_POSITION] =  Protocols.unpack_show_position,
+[CMSG_GOLD_RESPAWN] =  Protocols.unpack_gold_respawn,
 [SMSG_FIELD_DEATH_COOLDOWN] =  Protocols.unpack_field_death_cooldown,
 [CMSG_MALL_BUY] =  Protocols.unpack_mall_buy,
 [CMSG_STRENGTH] =  Protocols.unpack_strength,

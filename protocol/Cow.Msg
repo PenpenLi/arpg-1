@@ -637,6 +637,18 @@ kuafu_chuansong,c2s,132,/*跨服传送*/,STATUS_NEVER,False
 	reserve,uint32,False,/*预留参数*/
 
 #
+show_suit,c2s,133,/*显示当前装备*/,STATUS_NEVER,False
+	position,uint8,False,/*主背包位置*/
+
+#
+show_position,c2s,134,/*显示当前坐标*/,STATUS_NEVER,False
+	channel,uint8,False,/*频道id*/
+
+#
+gold_respawn,c2s,135,/*元宝复活*/,STATUS_NEVER,False
+	useGold,uint8,False,/*是否使用元宝*/
+	
+#
 field_death_cooldown,s2c,136,/*野外死亡倒计时*/,STATUS_NEVER,False
 	cooldown,uint16,False,/*倒计时*/	
 

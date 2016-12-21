@@ -18,6 +18,8 @@ require("template.tables.tb_mount_train")
 require("template.tables.tb_mount_train_type")
 require("template.tables.tb_mount_upgrade")
 require("template.tables.tb_shop")
+require("template.tables.tb_store")
+require("template.tables.tb_hook_hp_item")
 
 --强化表
 require("template.tables.tb_strengthen_base")

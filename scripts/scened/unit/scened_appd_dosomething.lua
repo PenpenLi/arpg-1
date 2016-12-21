@@ -12,6 +12,8 @@ function UnitInfo:DoGetAppdDoSomething( ntype, data, str)
 		self:sweepTrial(data)
 	elseif ntype == APPD_SCENED_SWEEP_VIP_INSTANCE then
 		self:sweepVIP(data, tonumber(str))
+	elseif ntype == APPD_SCENED_RESPAWN then
+		self:sceneGoldRespawn(data)
 	end
 end
 
@@ -61,4 +63,9 @@ function UnitInfo:sweepTrial(id)
 	local list = self:Change_To_Item_Reward_Info(dict)
 	
 	protocols.call_sweep_instance_reward ( self, INSTANCE_SUB_TYPE_TRIAL, 0, 0, 0, list)
+end
+
+-- 场景服元宝复活
+function UnitInfo:sceneGoldRespawn(itemId)
+	ScenedUseItem[itemId](ScenedUseItem, self, itemId, 1)
 end

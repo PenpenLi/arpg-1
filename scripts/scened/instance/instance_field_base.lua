@@ -54,9 +54,12 @@ function InstanceFieldBase:OnPlayerDeath(player)
 		playerLib.SendToAppdDoSomething(player, SCENED_APPD_USE_RESPAWN_ITEM, 0)
 		return
 	end--]]
-	
-	local timestamp = os.time() + 10
+	local cooldown = 120
+	local timestamp = os.time() + cooldown
 	self:AddTimeOutCallback(self.Leave_Callback, timestamp)
+	
+	-- 发送野外死亡回城倒计时
+	playerInfo:call_field_death_cooldown(cooldown)
 end
 
 return InstanceFieldBase

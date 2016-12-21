@@ -1,4 +1,3 @@
-
 --[[
 随机获得类似 {{值1, 万分比概率1},{值2, 万分比概率2},...}的值
 ]]
@@ -9,6 +8,16 @@ function GetRandomExp(expTable)
 	end
 	
 	return 0
+end
+
+SHOP_ID_FACTOR = 100000
+-- 通过货币类型和道具id获得商城道具序列号
+function GetShopId(money_type, itemId)
+	return money_type * SHOP_ID_FACTOR + itemId
+end
+
+function GetItemIdByShopId(id)
+	return id % SHOP_ID_FACTOR
 end
 
 --[[
