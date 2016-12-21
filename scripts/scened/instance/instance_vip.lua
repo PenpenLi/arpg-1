@@ -30,7 +30,7 @@ function InstanceVIP:OnInitScript(  )
 	
 	self:SetMapQuestEndTime(timestamp)
 	-- 副本时间超时回调
-	self:AddTimeOutCallback(InstanceInstBase.Time_Out_Fail_Callback, timestamp)
+	self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
 end
 
 function InstanceVIP:getIndex()
@@ -54,19 +54,19 @@ end
 --当副本状态发生变化时间触发
 function InstanceVIP:OnSetState(fromstate,tostate)
 	if tostate == self.STATE_FINISH or tostate == self.STATE_FAIL then
-		self:RemoveTimeOutCallback(InstanceInstBase.Time_Out_Fail_Callback)
+		self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
 		
 		--10s后结束副本
 		local timestamp = os.time() + InstanceVIP.exit_time
 		
-		self:AddTimeOutCallback(InstanceInstBase.Leave_Callback, timestamp)
+		self:AddTimeOutCallback(self.Leave_Callback, timestamp)
 		self:SetMapEndTime(timestamp)
 	end
 end
 
 -- 判断是否能退出副本
 function InstanceVIP:DoPlayerExitInstance(player)
-	self:RemoveTimeOutCallback(InstanceInstBase.Leave_Callback)
+	self:RemoveTimeOutCallback(self.Leave_Callback)
 	return 1	--返回1的话为正常退出，返回0则不让退出
 end
 

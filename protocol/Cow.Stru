@@ -60,3 +60,13 @@ quest_status,/*任务状态*/
 item_reward_info,/*道具奖励信息*/
 	item_id,uint16,0,/*道具id*/
 	num,uint32,0,/*道具数量*/
+
+#好友信息	
+social_friend_info,/*好友信息*/
+	guid,String,50,/*好友guid*/
+	name,String,50,/*名字*/
+	faction,String,50,/*帮派*/
+	level,uint16,0,/*等级*/
+	icon,uint16,0,/*头像*/
+	vip,uint16,0,/*头像*/
+	

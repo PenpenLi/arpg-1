@@ -34,6 +34,8 @@ Instance_base = {
 	--副本启动
 	STATE_START = 1,
 	
+	Leave_Callback = "prepareToLeave",
+	
 	--副本失败
 	STATE_FAIL = 249,
 	--副本通关
@@ -52,7 +54,7 @@ Instance_base = {
 	is_guajibaohu = true,
 	
 	--死后自动回城复活时间
-	player_auto_respan = 30,
+	player_auto_respan = 300,
 	
 	
 	--获取本地图是否需要持久化，及持久化名
@@ -528,6 +530,12 @@ Instance_base = {
 			if tb_map[mapid].is_ride == 0 then
 				playerInfo:MountUnride()
 			end
+		end,
+		
+	-- 准备退出
+	prepareToLeave =
+		function(self)
+			mapLib.ExitInstance(self.ptr)
 		end,
 	
 	--属性重算的时候是否删除buff

@@ -515,7 +515,9 @@ function PlayerInfo:LoginPk()
 
 --玩家下线后
 function PlayerInfo:Logout ()
-	
+	--清空好友申请列表
+	local socialMgr = self:getSocialMgr()
+	socialMgr:clearApplyList()
 end
 
 --有多少个物品

@@ -24,7 +24,7 @@ function ScenedContext:Hanlde_Change_Battle_Mode( pkt )
 	-- 如果在战斗中不能切换和平模式
 	local status = playerLib.GetPlayeCurFightStatus(self.ptr)
 	if status == COMBAT_STATE_ENTER and mode == curr then
-		outFmtDebug("cannot change to peaceMode in battle")
+		self:CallOptResult(OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE, BATTLE_MODE_OPERTE_PEACE_MODE_DENY)
 		return
 	end
 	
@@ -33,7 +33,7 @@ function ScenedContext:Hanlde_Change_Battle_Mode( pkt )
 		local curr = os.time()
 		local cd = self:GetPeaceModeCD()
 		if curr < cd then
-			outFmtError("battle mode change to peace mode is in cd")
+			self:CallOptResult(OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE, BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)
 			return
 		end
 	else
@@ -53,7 +53,7 @@ function ScenedContext:Hanlde_Dazuo_Start( pkt )
 	-- 是否能够打坐
 	local mapid = unitLib.GetMapID(self.ptr)
 	if tb_map[mapid].is_sit == 0 then
-		outFmtError("current map cannot ride")
+		outFmtError("current map cannot sit")
 		return
 	end
 	
@@ -180,7 +180,6 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 		return
 	end	
 	if not self:IsAlive() then
-		outDebug("do MSG_JUMP_START but caster is not alive")
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_DEAD)
 		return
 	end
@@ -195,12 +194,11 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	--看看本地图是否允许跳跃
 	local mapid = mapLib.GetMapID(map_ptr)
 	if tb_map[mapid].is_jump == 0 then
-		outDebug("MSG_JUMP_START  this map is cannot cast spell !!!")
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_MAP_CANT_JUMP)
 		return
 	end
 	
-	--是否有进制跳跃buff
+	--是否有禁止跳跃buff
 	if not unitLib.IsCanJump(player_ptr) then
 		outDebug("MSG_JUMP_START  player is cannot jump !!!")
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_CANT_JUMP)
@@ -224,7 +222,6 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	local cur_time = os.time()			--获取服务器运行时间
 	local cd_time = self:GetPlayerJumpCd()	-- 玩家跳跃技能cd
 	if cur_time < cd_time then
-		outFmtDebug(" in cd")
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_SPELL_CD)
 		return
 	end
@@ -576,8 +573,9 @@ function ScenedContext:Hanlde_Enter_Trial_Instance(pkt)
 		return
 	end
 	
+	local mapid = unitLib.GetMapID(self.ptr)
 	-- 是否允许传送
-	if not self:makeEnterTest(toMapId) then
+	if mapid ~= toMapId and not self:makeEnterTest(toMapId) then
 --		outFmtError("Hanlde_Enter_VIP_Instance player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
 		return
 	end

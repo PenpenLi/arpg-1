@@ -39,3 +39,7 @@ require("template.tables.tb_divine_bless")
 --副本
 require("template.tables.tb_map_vip")
 require("template.tables.tb_map_trial")
+
+--社交
+require("template.tables.tb_social_shop")
+require("template.tables.tb_social_familiay")

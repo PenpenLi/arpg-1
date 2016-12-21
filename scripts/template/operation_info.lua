@@ -159,8 +159,8 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==LOST_RESON_NOT_HAVE_SPELL)then
 			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_NOT_HAVE_SPELL你没有这个技能 - " .. data 
 		end
-		if (reason ==LOST_RESON_NOT_ENOUGH_CONSUMPTION)then
-			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_NOT_ENOUGH_CONSUMPTION能量不足释放这个魔法，MP、HP或者其它 - " .. data 
+		if (reason ==LOST_RESON_NOT_ENOUGH_ANGER)then
+			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_NOT_ENOUGH_ANGER怒气值不足 - " .. data 
 		end
 		if (reason ==LOST_RESON_SPELL_COOLDOWN)then
 			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_SPELL_COOLDOWN冷却 - " .. data 
@@ -174,11 +174,11 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==LOST_RESON_NEED_TARGET)then
 			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_NEED_TARGET此技能需要一个目标 - " .. data 
 		end
-		if (reason ==LOST_RESON_OUT_OF_RANGE)then
-			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_OUT_OF_RANGE超出施法范围 - " .. data 
+		if (reason ==LOST_RESON_JUMP_DENY)then
+			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_JUMP_DENY跳跃状态不能施法 - " .. data 
 		end
-		if (reason ==LOST_RESON_WRONG_TARGET)then
-			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_WRONG_TARGET错误的目标，比如有些技能只能对友方用 - " .. data 
+		if (reason ==LOST_RESON_SCENE_DENY)then
+			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_SCENE_DENY场景禁止施法 - " .. data 
 		end
 		if (reason ==LOST_RESON_CAN_NOT_CAST)then
 			return "ShowOperationFailed OPRATE_TYPE_SPELL_LOSE技能释放失败 - LOST_RESON_CAN_NOT_CAST无法施法 - " .. data 
@@ -832,6 +832,21 @@ function OperationFailedToString(type, reason, data)
 			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_STRENGTH " .. reason .. "    "  .. data
+	end
+	if(type == OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE)then
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_DENY)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - BATTLE_MODE_OPERTE_PEACE_MODE_DENY战斗中不能切换和平模式 - " .. data 
+		end
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD和平模式在CD中 - " .. data 
+		end
+		return "未知错误1  OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE " .. reason .. "    "  .. data
+	end
+	if(type == OPERTE_TYPE_SOCIAL)then
+		if (reason ==SOCIAL_OPERTE_AA)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - SOCIAL_OPERTE_AAdsfsd - " .. data 
+		end
+		return "未知错误1  OPERTE_TYPE_SOCIAL " .. reason .. "    "  .. data
 	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

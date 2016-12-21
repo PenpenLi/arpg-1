@@ -51,6 +51,11 @@ hanlders[CMSG_SWEEP_TRIAL_INSTANCE] = PlayerInfo.Handle_Sweep_Trial
 
 hanlders[CMSG_RESET_TRIAL_INSTANCE] = PlayerInfo.Handle_Reset_Trial 
 
-hanlders[CMSG_SOCIAL_ADD_FRIEND] = PlayerInfo.Handle_Add_Friend
+hanlders[CMSG_SOCIAL_ADD_FRIEND] = PlayerInfo.Handle_Add_Friend 
+hanlders[CMSG_SOCIAL_SUREADD_FRIEND] = PlayerInfo.Handle_Sure_Add_Friend
+hanlders[CMSG_SOCIAL_GIFT_FRIEND] = PlayerInfo.Handle_Gift_Friend
+hanlders[CMSG_SOCIAL_RECOMMEND_FRIEND] = PlayerInfo.Handle_Recommend_Friend
+hanlders[CMSG_SOCIAL_REVENGE_ENEMY] = PlayerInfo.Handle_Revenge_Enemy
+
 
 return hanlders

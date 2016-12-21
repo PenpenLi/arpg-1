@@ -179,8 +179,13 @@ CMSG_SWEEP_TRIAL_INSTANCE		= 166	-- /*扫荡试炼塔副本*/
 CMSG_RESET_TRIAL_INSTANCE		= 167	-- /*重置试炼塔*/	
 SMSG_SWEEP_INSTANCE_REWARD		= 168	-- /*扫荡副本奖励*/	
 CMSG_REENTER_INSTANCE		= 169	-- /*重进副本*/	
+SMSG_MERRY_GO_ROUND		= 170	-- /*走马灯信息*/	
 CMSG_SOCIAL_ADD_FRIEND		= 171	-- /*添加好友*/	
 CMSG_SOCIAL_SUREADD_FRIEND		= 172	-- /*同意添加好友*/	
+CMSG_SOCIAL_GIFT_FRIEND		= 173	-- /*赠送礼物*/	
+CMSG_SOCIAL_RECOMMEND_FRIEND		= 174	-- /*推荐好友列表*/	
+SMSG_SOCIAL_GET_RECOMMEND_FRIEND		= 175	-- /*推荐好友列表*/	
+CMSG_SOCIAL_REVENGE_ENEMY		= 176	-- /*复仇*/	
 
 
 ---------------------------------------------------------------------
@@ -687,6 +692,94 @@ function item_reward_info_t:write( output )
 		self.num = 0
 	end
 	output:writeU32(self.num)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*好友信息*/
+
+social_friend_info_t = class('social_friend_info_t')
+
+function social_friend_info_t:read( input )
+
+	local ret
+	ret,self.guid = input:readUTFByLen(50)  --/*好友guid*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.name = input:readUTFByLen(50)  --/*名字*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.faction = input:readUTFByLen(50)  --/*帮派*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.level = input:readU16() --/*等级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.icon = input:readU16() --/*头像*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.vip = input:readU16() --/*头像*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function social_friend_info_t:write( output )
+	if(self.guid == nil)then
+		self.guid = ''
+	end
+	output:writeUTFByLen(self.guid , 50 ) 
+	
+	if(self.name == nil)then
+		self.name = ''
+	end
+	output:writeUTFByLen(self.name , 50 ) 
+	
+	if(self.faction == nil)then
+		self.faction = ''
+	end
+	output:writeUTFByLen(self.faction , 50 ) 
+	
+	if(self.level == nil)then
+		self.level = 0
+	end
+	output:writeI16(self.level)
+	
+	if(self.icon == nil)then
+		self.icon = 0
+	end
+	output:writeI16(self.icon)
+	
+	if(self.vip == nil)then
+		self.vip = 0
+	end
+	output:writeI16(self.vip)
 	
 	return output
 end
@@ -6139,6 +6232,31 @@ function Protocols.unpack_reenter_instance (pkt)
 end
 
 
+-- /*走马灯信息*/	
+function Protocols.pack_merry_go_round (  )
+	local output = Packet.new(SMSG_MERRY_GO_ROUND)
+	return output
+end
+
+-- /*走马灯信息*/	
+function Protocols.call_merry_go_round ( playerInfo )
+	local output = Protocols.	pack_merry_go_round (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*走马灯信息*/	
+function Protocols.unpack_merry_go_round (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 -- /*添加好友*/	
 function Protocols.pack_social_add_friend ( guid)
 	local output = Packet.new(CMSG_SOCIAL_ADD_FRIEND)
@@ -6184,6 +6302,149 @@ end
 
 -- /*同意添加好友*/	
 function Protocols.unpack_social_sureadd_friend (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*赠送礼物*/	
+function Protocols.pack_social_gift_friend ( guid ,gift)
+	local output = Packet.new(CMSG_SOCIAL_GIFT_FRIEND)
+	output:writeUTF(guid)
+	output:writeI16(#gift)
+	for i = 1,#gift,1
+	do
+		gift[i]:write(output)
+	end
+	return output
+end
+
+-- /*赠送礼物*/	
+function Protocols.call_social_gift_friend ( playerInfo, guid ,gift)
+	local output = Protocols.	pack_social_gift_friend ( guid ,gift)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*赠送礼物*/	
+function Protocols.unpack_social_gift_friend (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.gift = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.gift,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*推荐好友列表*/	
+function Protocols.pack_social_recommend_friend (  )
+	local output = Packet.new(CMSG_SOCIAL_RECOMMEND_FRIEND)
+	return output
+end
+
+-- /*推荐好友列表*/	
+function Protocols.call_social_recommend_friend ( playerInfo )
+	local output = Protocols.	pack_social_recommend_friend (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*推荐好友列表*/	
+function Protocols.unpack_social_recommend_friend (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*推荐好友列表*/	
+function Protocols.pack_social_get_recommend_friend ( list)
+	local output = Packet.new(SMSG_SOCIAL_GET_RECOMMEND_FRIEND)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*推荐好友列表*/	
+function Protocols.call_social_get_recommend_friend ( playerInfo, list)
+	local output = Protocols.	pack_social_get_recommend_friend ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*推荐好友列表*/	
+function Protocols.unpack_social_get_recommend_friend (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = social_friend_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*复仇*/	
+function Protocols.pack_social_revenge_enemy ( guid)
+	local output = Packet.new(CMSG_SOCIAL_REVENGE_ENEMY)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*复仇*/	
+function Protocols.call_social_revenge_enemy ( playerInfo, guid)
+	local output = Protocols.	pack_social_revenge_enemy ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*复仇*/	
+function Protocols.unpack_social_revenge_enemy (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
@@ -6368,8 +6629,13 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_reset_trial_instance = self.call_reset_trial_instance
 	playerInfo.call_sweep_instance_reward = self.call_sweep_instance_reward
 	playerInfo.call_reenter_instance = self.call_reenter_instance
+	playerInfo.call_merry_go_round = self.call_merry_go_round
 	playerInfo.call_social_add_friend = self.call_social_add_friend
 	playerInfo.call_social_sureadd_friend = self.call_social_sureadd_friend
+	playerInfo.call_social_gift_friend = self.call_social_gift_friend
+	playerInfo.call_social_recommend_friend = self.call_social_recommend_friend
+	playerInfo.call_social_get_recommend_friend = self.call_social_get_recommend_friend
+	playerInfo.call_social_revenge_enemy = self.call_social_revenge_enemy
 end
 
 local unpack_handler = {
@@ -6538,8 +6804,13 @@ local unpack_handler = {
 [CMSG_RESET_TRIAL_INSTANCE] =  Protocols.unpack_reset_trial_instance,
 [SMSG_SWEEP_INSTANCE_REWARD] =  Protocols.unpack_sweep_instance_reward,
 [CMSG_REENTER_INSTANCE] =  Protocols.unpack_reenter_instance,
+[SMSG_MERRY_GO_ROUND] =  Protocols.unpack_merry_go_round,
 [CMSG_SOCIAL_ADD_FRIEND] =  Protocols.unpack_social_add_friend,
 [CMSG_SOCIAL_SUREADD_FRIEND] =  Protocols.unpack_social_sureadd_friend,
+[CMSG_SOCIAL_GIFT_FRIEND] =  Protocols.unpack_social_gift_friend,
+[CMSG_SOCIAL_RECOMMEND_FRIEND] =  Protocols.unpack_social_recommend_friend,
+[SMSG_SOCIAL_GET_RECOMMEND_FRIEND] =  Protocols.unpack_social_get_recommend_friend,
+[CMSG_SOCIAL_REVENGE_ENEMY] =  Protocols.unpack_social_revenge_enemy,
 
 }
 

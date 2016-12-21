@@ -24,56 +24,49 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 	
 	-- 技能1-4不能走这个流程
 	if spell_id >= FUNCTIONAL_QING_GONG and spell_id <= FUNCTIONAL_DA_ZUO then
-		outFmtDebug("do DoHandleSpellStart but this spellId = %d is functional spell", spell_id)
 		return false
 	end
 	
 	-- 未放到技能槽
 	if not casterInfo:HasSpell(spell_id) then
-		outFmtDebug("DoHandleSpellStart spellId = %d player not set", spell_id)
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL, spellid_str)		
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL)
 		return false
 	end
 	
 	-- 本地图是否允许施法
 	local mapid = mapLib.GetMapID(map_ptr)
 	if tb_map[mapid].is_cast == 0 then
-		outDebug("DoHandleSpellStart  this map is cannot cast spell !!!")
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SCENE_DENY)
 		return
 	end
 
 	local config = tb_skill_base[spell_id]
 	if config == nil then
 		--技能不存在
-		outFmtDebug("DoHandleSpellStart  no spell = %d", spell_id)
-		local spellid_str = string.format('%d', spell_id)
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_DOENT_EXIST, spellid_str)		
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_DOENT_EXIST)
 		return false
 	end
 
 	if casterInfo:IsSpellCD(spell_id, nowtime) then
 		--技能冷却中
-		outFmtDebug("DoHandleSpellStart spellId = %d in countdown", spell_id)
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN, spellid_str)
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN)
 		return false
 	end
 
 	if(not casterInfo:IsCanCast(spell_id))then
 		--被限制施法
-		outFmtDebug("DoHandleSpellStart spellId = %d IsCanCast", spell_id)
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_CAN_NOT_CAST, spellid_str)		
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_CAN_NOT_CAST)		
 		return false
 	end
 	if(unitLib.GetCurSpell(caster) ~= 0 and unitLib.GetCurSpell(caster) == spell_id)then
 		--此技能已经在施法
-		outFmtDebug("DoHandleSpellStart spellId = %d is casting", spell_id)
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST, spellid_str)		
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST)		
 		return false
 	end
 	
 	--当前是跳跃状态
-	if unitLib.HasBuff(caster, BUFF_JUMP_JUMP) then
-		outFmtDebug("DoHandleSpellStart cannot cast in jumping")
+	if unitLib.HasBuff(caster, BUFF_JUMP_JUMP) then		
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_JUMP_DENY)
 		return false
 	end
 	
@@ -94,7 +87,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		local cas = playerLib.GetAngerSpell(caster)
 		-- 怒气技能id是否正确
 		if cas ~= spell_id then
-			outFmtDebug("DoHandleSpellStart current anger spellId = %d but cast is %d", cas, spell_id)
+			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL)
 			return false
 		end
 		
@@ -102,7 +95,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		local angerLimit = tb_anger_limit[spell_id].limit
 		local currAnger = casterInfo:GetSP()
 		if currAnger < angerLimit then
-			outFmtDebug("DoHandleSpellStart spellId = %d anger is not full", spell_id)
+			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_ENOUGH_ANGER)
 			return false
 		end
 	end
@@ -111,7 +104,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 	if spell_type == TARGET_TYPE_ONESELF then	--目标为自己
 		if not casterInfo:IsAlive() then
 			--已经死了
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_TARGET_DEAD, spellid_str)		
+			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_TARGET_DEAD)
 			return false
 		end
 	end

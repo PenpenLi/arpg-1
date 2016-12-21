@@ -70,6 +70,19 @@ ScenedUseItem = {
 	[50003] = function(self, userInfo, item_entry, count)
 		if(userInfo:IsAlive() == false and userInfo:GetLevel() > 0)then
 			unitLib.Respawn(userInfo.ptr, RESURRPCTION_HUANHUNDAN, 5)	--原地复活
+			-- 把当前副本的数据清一下
+			local map_ptr = unitLib.GetMap(userInfo.ptr)
+			if not map_ptr then return false end
+			-- 非野外地图不能使用复活
+			local mapid = unitLib.GetMapID(userInfo.ptr)
+			if tb_map[mapid].type ~= 1 then
+				return false
+			end
+			
+			-- 删掉回程复活计时器
+			local fieldInstanceInfo = InstanceFieldBase:new{ptr = map_ptr}
+			fieldInstanceInfo:RemoveTimeOutCallback(fieldInstanceInfo.Leave_Callback)
+			
 			return true
 		end
 		return false

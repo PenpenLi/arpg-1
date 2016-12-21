@@ -47,17 +47,16 @@ function InstanceFieldBase:DoIsFriendly(killer_ptr, target_ptr)
 end
 
 --当玩家死亡后触发()
-function InstanceInstBase:OnPlayerDeath(player)
+function InstanceFieldBase:OnPlayerDeath(player)
 	local playerInfo = UnitInfo:new{ptr = player}
 	-- 是否在挂机, 是否自动使用复活丹
-	if player:isInHook() and self:isUseRespawnItem() then
+	--[[if player:isInHook() and self:isUseRespawnItem() then
 		playerLib.SendToAppdDoSomething(player, SCENED_APPD_USE_RESPAWN_ITEM, 0)
 		return
-	end
+	end--]]
 	
 	local timestamp = os.time() + 10
-		mapLib.AddTimeStampTimer(self.ptr, "prepareToLeave", timestamp)
-	
+	self:AddTimeOutCallback(self.Leave_Callback, timestamp)
 end
 
 return InstanceFieldBase

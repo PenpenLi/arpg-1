@@ -192,12 +192,9 @@ npc_goods_list,s2c,42,/*Npc商品列表*/,STATUS_NEVER,False
 	npc_id,uint32,False,/**/
 
 #
-npc_buy,c2s,43,/*购买商品*/,STATUS_NEVER,False
+store_buy,c2s,43,/*购买商品*/,STATUS_NEVER,False
 	id,uint32,False,/*商品id*/
-	num,uint32,False,/*数量*/
-	npc_id,uint32,False,/*NPCID*/
-	do_use,uint8,False,/*是否直接使用*/
-	money_type,uint8,False,/*货币类型*/
+	use_gold,uint8,False,/*是否使用元宝*/
 
 #
 npc_sell,c2s,44,/*出售物品*/,STATUS_NEVER,False
@@ -763,6 +760,9 @@ sweep_instance_reward,s2c,168,/*扫荡副本奖励*/,STATUS_NEVER,False
 #
 reenter_instance,c2s,169,/*重进副本*/,STATUS_NEVER,False
 
+# 里面的字段自己在程序中补全
+merry_go_round,s2c,170,/*走马灯信息*/,STATUS_NEVER,False
+
 #
 social_add_friend,c2s,171,/*添加好友*/,STATUS_NEVER,False
 	guid,String,False,/*好友GUID*/
@@ -770,4 +770,19 @@ social_add_friend,c2s,171,/*添加好友*/,STATUS_NEVER,False
 #
 social_sureadd_friend,c2s,172,/*同意添加好友*/,STATUS_NEVER,False
 	guid,String,False,/*好友GUID*/
-	
+
+#
+social_gift_friend,c2s,173,/*赠送礼物*/,STATUS_NEVER,False
+	guid,String,False,/*好友GUID*/
+	gift,item_reward_info,True,/*礼物列表*/
+
+#
+social_recommend_friend,c2s,174,/*推荐好友列表*/,STATUS_NEVER,False
+
+#
+social_get_recommend_friend,s2c,175,/*推荐好友列表*/,STATUS_NEVER,False
+	list,social_friend_info,True,/*好友列表*/
+
+#
+social_revenge_enemy,c2s,176,/*复仇*/,STATUS_NEVER,False
+	guid,String,False,/*仇人GUID*/

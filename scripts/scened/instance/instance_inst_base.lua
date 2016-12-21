@@ -3,7 +3,6 @@ InstanceInstBase = class("InstanceInstBase", Instance_base)
 InstanceInstBase.Name = "InstanceInstBase"
 
 InstanceInstBase.Time_Out_Fail_Callback = "instanceFail"
-InstanceInstBase.Leave_Callback = "prepareToLeave"
 
 function InstanceInstBase:ctor(  )
 	
@@ -21,11 +20,6 @@ function InstanceInstBase:instanceFail()
 		state = self.STATE_FINISH
 	end
 	self:SetMapState(state)
-end
-
--- 准备退出
-function InstanceInstBase:prepareToLeave()
-	mapLib.ExitInstance(self.ptr)
 end
 
 --增加任务
@@ -251,6 +245,12 @@ function InstanceInstBase:RandomReward(player, dropIdTable, itemTable)
 end
 
 
+--当玩家死亡后触发()
+function InstanceInstBase:OnPlayerDeath(player)
+	local playerInfo = UnitInfo:new{ptr = player}	
+	local timestamp = os.time() + 10
+	self:AddTimeOutCallback(self.Leave_Callback, timestamp)
+end
 
 -------------------------------------------------------------------------------------------
 
