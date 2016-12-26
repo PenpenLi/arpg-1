@@ -408,6 +408,12 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==CHAT_RESULT_CHECK_LIMIT)then
 			return "ShowOperationFailed OPRATE_TYPE_CHAT聊天 - CHAT_RESULT_CHECK_LIMIT您说话太快了，赶紧练级等等再聊天吧… - " .. data 
 		end
+		if (reason ==CHAT_RESULT_NO_FACTION)then
+			return "ShowOperationFailed OPRATE_TYPE_CHAT聊天 - CHAT_RESULT_NO_FACTION你暂无帮派 - " .. data 
+		end
+		if (reason ==CHAT_RESULT_NO_GROUP)then
+			return "ShowOperationFailed OPRATE_TYPE_CHAT聊天 - CHAT_RESULT_NO_GROUP你暂无队伍 - " .. data 
+		end
 		return "未知错误1  OPRATE_TYPE_CHAT " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_RECEIVE_GIFT_PACKS)then
@@ -768,85 +774,106 @@ function OperationFailedToString(type, reason, data)
 		return "未知错误1  OPERTE_TYPE_CLOSE " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_HOSTING)then
-		if (reason ==HOSTING_OPERTE_IS_SELF)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_IS_SELF无法对自己操作 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_IS_HAVE)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_IS_HAVE你已经在帮派中 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_LEVEL_NOT)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_LEVEL_NOT等级不足 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NAME_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_NAME_ERR帮派名称超过6个字符 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_IS_HOSTING)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_IS_HOSTING托管中 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NAME_HAVE_FUCK)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_NAME_HAVE_FUCK帮派名称中有非法字符 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_IS_HOSTING_APPLY)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_IS_HOSTING_APPLY托管申请 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NAME_REPEAT)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_NAME_REPEAT帮派名称重复 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_FRIEND_NOT)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_FRIEND_NOT好友不存在 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_CREATE_MAX)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_CREATE_MAX帮派数量达到上限 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_HAS_NOT_24H)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_HAS_NOT_24H还没到24小时 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_OUTLINE)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_FRIEND_OUTLINE好友不在线 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_ERR)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_FRIEND_ERR托管好友错误 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_NOT_HOSTING)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_NOT_HOSTING不在托管中 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_ONLINE)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_FRIEND_ONLINE好友在线 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_LOGIN_HOSTING)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_LOGIN_HOSTING托管登录中 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_APPLY)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_FRIEND_APPLY申请发送 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_LOGIN)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_LOGIN登录 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_SUCCESS)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_SUCCESS托管申请成功 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_CANCEL)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_CANCEL取消托管 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_REFUSED)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_REFUSED拒绝托管 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_NOT_DUE_TO)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_NOT_DUE_TO托管未到期 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_HOSTING_LOGIN)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_FRIEND_HOSTING_LOGIN对方托管登录中，无法操作 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_NOT_HAS_YOU)then
-			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - HOSTING_OPERTE_FRIEND_NOT_HAS_YOU对方好友列表没有你 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_CREATE_COST)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_CREATE_COST元宝不足无法创建帮派 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_HOSTING " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_STRENGTH)then
-		if (reason ==STRENGTH_OPERTE_FAIL)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
+		if (reason ==HOSTING_OPERTE_IS_SELF)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_IS_SELF无法对自己操作 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LEVEL_NOT)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_LEVEL_NOT等级不足 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_IS_HOSTING)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_IS_HOSTING托管中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_IS_HOSTING_APPLY)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_IS_HOSTING_APPLY托管申请 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_NOT)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_FRIEND_NOT好友不存在 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_HAS_NOT_24H)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_HAS_NOT_24H还没到24小时 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_OUTLINE)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_FRIEND_OUTLINE好友不在线 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_FRIEND_ERR托管好友错误 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_NOT_HOSTING)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_NOT_HOSTING不在托管中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_ONLINE)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_FRIEND_ONLINE好友在线 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LOGIN_HOSTING)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_LOGIN_HOSTING托管登录中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_APPLY)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_FRIEND_APPLY申请发送 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LOGIN)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_LOGIN登录 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_SUCCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_SUCCESS托管申请成功 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_CANCEL)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_CANCEL取消托管 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_REFUSED)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_REFUSED拒绝托管 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_NOT_DUE_TO)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_NOT_DUE_TO托管未到期 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_HOSTING_LOGIN)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_FRIEND_HOSTING_LOGIN对方托管登录中，无法操作 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_NOT_HAS_YOU)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - HOSTING_OPERTE_FRIEND_NOT_HAS_YOU对方好友列表没有你 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_STRENGTH " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE)then
-		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_DENY)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - BATTLE_MODE_OPERTE_PEACE_MODE_DENY战斗中不能切换和平模式 - " .. data 
-		end
-		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD和平模式在CD中 - " .. data 
+		if (reason ==STRENGTH_OPERTE_FAIL)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_SOCIAL)then
-		if (reason ==SOCIAL_OPERTE_AA)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - SOCIAL_OPERTE_AAdsfsd - " .. data 
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_DENY)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - BATTLE_MODE_OPERTE_PEACE_MODE_DENY战斗中不能切换和平模式 - " .. data 
+		end
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD和平模式在CD中 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_SOCIAL " .. reason .. "    "  .. data
+	end
+	if(type == OPERTE_TYPE_FACTION)then
+		if (reason ==SOCIAL_OPERTE_AA)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - SOCIAL_OPERTE_AAdsfsd - " .. data 
+		end
+		return "未知错误1  OPERTE_TYPE_FACTION " .. reason .. "    "  .. data
 	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

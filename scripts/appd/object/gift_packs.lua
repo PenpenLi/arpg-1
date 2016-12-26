@@ -148,31 +148,16 @@ function GiftPacksInfo:SetGiftPacksItem(val)
 	self:SetStr(self:StringStart() + GIFTPACKS_INFO_STRING_GIFT_ITEM,val)
 end
 
---判断礼包是否已存在
-function GiftPacksInfo:IsGiftPacksInfo(id)
-	for i = 0, MAX_GIFTPACKS_INFO_COUNT -1
-	do
-		local start = GIFTPACKS_INT_FIELD_BEGIN + MAX_GIFTPACKS_INFO_INT * i
-		local index = start + GIFTPACKS_INFO_INT_ID
-		if(self:GetUInt32(index) ~= 0 and self:GetUInt32(index) == id)then
-			return start
-		end
-	end
-	return -1
-end
-
 --添加一个礼包信息
-function GiftPacksInfo:AddGiftPacksInfo( id, gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from)
-	if(id ~= 0 and self:IsGiftPacksInfo(id) ~= -1)then	--判断是否已经有礼包了
-		return 0
-	end
-	self:SetGiftPacksID(id)
+function GiftPacksInfo:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from)
+	
 	self:SetGiftPacksStartTime(start_time)
 	self:SetGiftPacksEndTime(end_time)
 	self:SetGiftPacksType(gift_type)
 	self:SetGiftPacksReceive(0)
 	self:SetGiftPacksRead(0)
 	self:SetGiftPacksIsDelete(0)
+	
 	self:SetGiftPacksName(gift_name)
 	self:SetGiftPacksDesc(gift_desc)
 	self:SetGiftPacksItem(item_config)
@@ -181,123 +166,48 @@ function GiftPacksInfo:AddGiftPacksInfo( id, gift_type, start_time, end_time, gi
 	return 1
 end
 
-function GiftPacksInfo:GetGiftPacksFromType(player,id,oper_type)
-	--切割下ID串
-	local id_tokens = lua_string_split(id,",")
-	local id_paras = {0}
-	for i = 1, #id_tokens 
-	do
-		id_paras[i] = tonumber(id_tokens[i])
-		if(id_paras[i] == nil)then
-			break
-		end
-	end
-	
-	for i = 1,#id_paras do				
-		local start = GIFTPACKS_INT_FIELD_BEGIN + id_paras[i] * MAX_GIFTPACKS_INFO_INT
-		if(id_paras[i]  < 0 and id_paras[i] > MAX_GIFTPACKS_INFO_COUNT)then
-			outDebug('not giftpacks id=='..id_paras[i])
-			return
-		end
-		--解析物品集合
-		local item_config = self:GetGiftPacksItem(id_paras[i])
-		local tokens = lua_string_split(item_config,",")
-		if(oper_type == GIFT_PACKS_OPER_TYPE_RECEIVE)then		--领取
-			if(self:GetByte(start + GIFTPACKS_INFO_INT_BYTE,1) == 1)then
-				outDebug('giftpacks is have')
-				return
-			end
-			self:SetByte(start + GIFTPACKS_INFO_INT_BYTE,1,1)
-			
-			local paras = {0}
-			for j = 1, #tokens 
-			do
-				paras[j] = tonumber(tokens[j])
-				if(paras[j] == nil)then
-					paras[j] = 0
-				end
-			end
-			--有物品时候执行
-			if(#paras > 1)then
-				for k = 1, #paras, 3
-				do
-					--校验下
-					if(#paras < k+2)then
-						break
-					end
-					local entry = paras[k]
-					local count = paras[k+1]
-					local failtime = paras[k+2]					
-					player:AddItemByEntry(entry, count, MONEY_CHANGE_MAIL, LOG_ITEM_OPER_TYPE_GIFT_PACKS, ITEM_BIND_NONE, true, true, 0, failtime)					
-				end
-			end			
-		elseif(oper_type == GIFT_PACKS_OPER_TYPE_READ)then	--已读
-			if(self:GetByte(start + GIFTPACKS_INFO_INT_BYTE,2) == 0)then
-				self:SetByte(start + GIFTPACKS_INFO_INT_BYTE,2,1)
-			end
-		elseif(oper_type == GIFT_PACKS_OPER_TYPE_DELETE)then	--删除
-			if(self:GetByte(start + GIFTPACKS_INFO_INT_BYTE,3) == 0 and (self:GetByte(start + GIFTPACKS_INFO_INT_BYTE,1) == 1 or #tokens <= 1))then
-				self:SetByte(start + GIFTPACKS_INFO_INT_BYTE,3,1)
-			end
-		end	
-	end
+
+-- 设置读
+function GiftPacksInfo:mailRead(indx)
+	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2 ,val)
 end
+
+-- 领取礼包
+function GiftPacksInfo:pickMail(playerInfo, indx)
+	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
 	
-function AddGiftPacksData(guid,id,gift_type,start_time,end_time,gift_name,gift_desc,item_config,item_from)
-	if(guid == "")then
+	-- 已经领了的判断和过期/删除的判断
+	if self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,2) > 0 or self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,3) > 0 or self:GetUInt32(end_time) < os.time() then
 		return
 	end
-	local data = {}
-	data.name = 'AddGiftPacksData'
-	data.callback_guid = guid
-	data.id = id
-	data.gift_type = gift_type
-	data.start_time = start_time
-	data.end_time = end_time
-	data.gift_name = gift_name
-	data.gift_desc = gift_desc
-	data.item_config = item_config
-	data.item_from = item_from
-	function data.fun (data, objs)		
-		local player = objs[data.callback_guid]
-		if not player then return end
-		local gift = player:getGiftPacksInfo()
-		if not gift then return end
-		gift:AddGiftPacksInfo(data.id, data.gift_type, data.start_time, data.end_time, data.gift_name, data.gift_desc, data.item_config, data.item_from)
+	
+	local items = self:GetGiftPacksItem(indx)
+	-- 没有附件
+	if items == "" then
+		return
 	end
-	GetObjects(data)
+	
+	
+	local itemInfoTable = string.split(items, ",")
+	-- 判断背包格子是否足够
+	local itemMgr = playerInfo:getItemMgr()
+	local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
+	if emptys < #itemInfoTable then
+		self:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
+		return
+	end
+	
+	for _, itemInfo in pairs(itemInfoTable) do
+		local itemTable = string.split(itemInfo, ":")
+		local itemId = itemTable[ 1 ]
+		local count  = itemTable[ 2 ]
+		playerInfo:PlayerAddItem(itemId, count)
+	end
+	
+	-- 设置领取标志
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
 end
 
-function DoGetGiftPacksInfo()
-	--获取礼包数据
-	local result = app.dbAccess:SearchGiftPacksInfo()
-	for _k,_v in pairs(result) do
-		if(_v.u_end_time < os.time())then
-			app.dbAccess:SaveGiftPacksStatus(GIFT_PACKS_STATUS_START,GIFT_PACKS_STATUS_END,_v.to_id,_v.id,_v.server_name)	--时间过了，那就直接发放结束
-		else
-			if(_v.i_audience_type == GIFT_PACKS_AUDIENCE_TYPE_ONE)then	--个人礼包
-				AddGiftPacksData(_v.to_id,_v.id,_v.i_gift_type,_v.u_start_time,_v.u_end_time,_v.gift_name,_v.gift_desc,_v.s_item_config,"")
-				app.dbAccess:SaveGiftPacksStatus(GIFT_PACKS_STATUS_START,GIFT_PACKS_STATUS_OK,_v.to_id,_v.id,_v.server_name)
-			elseif(_v.i_audience_type == GIFT_PACKS_AUDIENCE_TYPE_ALL or _v.i_audience_type == GIFT_PACKS_AUDIENCE_TYPE_ALL_ONLINE)then	--全服礼包
-				--全服礼包就不采用回调方式
-				if(_v.id == 0)then	--全服礼包不允许接受为ID为0的
-					return
-				end
-				
-				--取所有在线玩家
-				app.objMgr:foreachAllPlayer(function ( player)		
-					local gift = player:getGiftPacksInfo()								
-					if gift and player:GetCharCreateTime() < _v.u_start_time then						
-						gift:AddGiftPacksInfo(_v.id,_v.i_gift_type,_v.u_start_time,_v.u_end_time,_v.gift_name,_v.gift_desc,_v.s_item_config,"")					
-					end					
-				end)
-
-				if(_v.i_audience_type == GIFT_PACKS_AUDIENCE_TYPE_ALL_ONLINE)then	--如果是全服在线礼包就将状态置一下				
-					app.dbAccess:SaveGiftPacksStatus(GIFT_PACKS_STATUS_START,GIFT_PACKS_STATUS_OK,_v.to_id,_v.id,_v.server_name)
-				end
-			end
-		end
-	end
-end
 
 return GiftPacksInfo

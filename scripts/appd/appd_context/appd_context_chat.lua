@@ -7,62 +7,175 @@ limit_t = 0
 -- 聊天等级次数限制表
 LIMIT_LEVEL_COUNT_CONFIG = {
 -- 等级(10倍)	次数
-	[0] = 0,
-	[1] = 0,
-	[2] = 0,
-	[3] = 5,
-	[4] = 8,
-	[5] = 10,
-	[6] = 12,
-	[7] = 15,
-	[8] = 18,
-	[9] = 20,
+	[0] = 50,
+	[1] = 50,
+	[2] = 50,
+	[3] = 50,
+	[4] = 80,
+	[5] = 100,
+	[6] = 120,
+	[7] = 150,
+	[8] = 180,
+	[9] = 200,
 }
 
--- 发送聊天信息
-function PlayerInfo:SendChat(c_type, content, to_guid, to_name)
-	if content == "" then return end
-	if to_guid == nil then to_guid = "" end
-	if to_name == nil then to_name = "" end
+-- 发送系统聊天信息
+function PlayerInfo:SendSystemChat(content)
+	if self:isDeclineSystemMsg() then
+		return
+	end
+	self:call_send_chat (CHAT_TYPE_SYSTEM ,0 ,"" ,0 ,0 ,0 ,0 ,content, "")
+end
+
+-- 发送世界聊天信息
+function PlayerInfo:SendWorldChat(content)
 	-- 禁言
 	if self:IsGag() then
 		self:CallOptResult(OPRATE_TYPE_CHAT, CHAT_RESULT_IS_GAG)
+		return
 	end
-	if(c_type == CHAT_TYPE_WORLD and string.sub(content,1,1) == '@')then
+	
+	-- 处理GM命令
+	if string.sub(content,1,1) == '@' then
 		self:GmCommand(content)
 		return
 	end
+	
 	-- 写下日志
-	WriteChatLog(self:GetGuid(), c_type, to_guid, to_name, content, self:GetLevel(), self:GetGmNum())
+	WriteChatLog(self:GetGuid(), CHAT_TYPE_WORLD, "", "", content, self:GetLevel(), self:GetGmNum())
 	--屏蔽词
-	if(self:GetGmNum() == 0)then
+	if self:GetGmNum() == 0 then
 		content = fuckPingBi(content)
 	end
 	--//过滤
 	content = ChatMsgFilter(content)
 	--//加标识
 	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
-	-- 世界聊天
-	if(c_type == CHAT_TYPE_WORLD)then
-		-- 广播
-		app.objMgr:foreachAllPlayer(function(player)
-			player:call_chat_world(self:GetGuid(), self:GetFaction(), self:GetName(), content)
-		end)
-	-- 帮派聊天
-	elseif(c_type == CHAT_TYPE_FACTION)then
-		local faction_guid = self:GetFactionId()
-		if faction_guid == "" then
-			return
+	
+	-- 广播
+	app.objMgr:foreachAllPlayer(function(player)
+		if not player:isDeclineWorldMsg() then
+			player:call_send_chat (CHAT_TYPE_WORLD ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
 		end
-		local faction = app.objMgr:getObj(faction_guid)
-		if faction == nil then
-			return
-		end
-		local allPlayers = faction:GetFactionAllMemberPtr()
-		for _, player in pairs(allPlayers) do
-			player:call_faction_chat(self:GetGuid(), self:GetName(), content)
+	end)
+end
+
+
+-- 发送帮派聊天信息
+function PlayerInfo:SendFactionChat(content)
+
+	-- 写下日志
+	WriteChatLog(self:GetGuid(), CHAT_TYPE_FACTION, "", "", content, self:GetLevel(), self:GetGmNum())
+	--屏蔽词
+	if self:GetGmNum() == 0 then
+		content = fuckPingBi(content)
+	end
+	--//过滤
+	content = ChatMsgFilter(content)
+	--//加标识
+	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
+	
+	local faction_guid = self:GetFactionId()
+	if faction_guid == "" then
+		self:CallOptResult(OPRATE_TYPE_CHAT, CHAT_RESULT_NO_FACTION)
+		return
+	end
+	
+	local faction = app.objMgr:getObj(faction_guid)
+	if faction == nil then
+		return
+	end
+	
+	local allPlayers = faction:GetFactionAllMemberPtr()
+	for _, player in pairs(allPlayers) do
+		if not player:isDeclineFactionMsg() then
+			player:call_send_chat (CHAT_TYPE_FACTION ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
 		end
 	end
+end
+
+-- 当前聊天
+function PlayerInfo:SendNearChat(content)
+	
+	WriteChatLog(self:GetGuid(), CHAT_TYPE_CURRENT, "", "", content, self:GetLevel(), self:GetGmNum())
+	--屏蔽词
+	content = fuckPingBi(content)
+	--发送到场景服
+	self:CallScenedDoSomething(APPD_SCENED_NEAR_BY_CHAT, 0, content)
+end
+
+-- 发送喇叭消息
+function PlayerInfo:SendHornChat(content)
+	if self:GetMoney(MONEY_TYPE_GOLD_INGOT) < config.laba_use_need_money then
+		return
+	end
+	-- 扣元宝
+	if not self:SubMoney(MONEY_TYPE_GOLD_INGOT, MONEY_CHANGE_USE_LABA, config.laba_use_need_money) then
+		return
+	end
+	--屏蔽词
+	content = fuckPingBi(content)
+	--//过滤
+	content = ChatMsgFilter(content)
+	--//加标识
+	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
+	-- 广播
+	app.objMgr:foreachAllPlayer(function(player)
+		player:call_send_chat (CHAT_TYPE_HORM ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+	end)
+	-- 写下日志
+	WriteChatLog(self:GetGuid(), CHAT_TYPE_HORM, "", "", content, self:GetLevel(), self:GetGmNum())
+end
+
+-- 发送队伍聊天信息
+function PlayerInfo:SendGroupChat(content)
+	--[[
+	local groupID = self:GetGroupId()
+	if groupID == "" then
+		self:CallOptResult(OPRATE_TYPE_GROUP,ACCACK_PACKET_TYPE_DATA)
+		return
+	end
+	
+	--屏蔽词
+	content = fuckPingBi(content)
+	
+	local group = app.objMgr:getObj(groupID)
+	if not group then 
+		self:CallOptResult(OPRATE_TYPE_CHAT, CHAT_RESULT_NO_GROUP)
+		return 
+	end
+	
+	local guid_list = group:GetGroupAllMemberTable()
+	for _,guid in pairs(guid_list) do
+		local player = app.objMgr:getObj(guid)
+		if player then
+			player:call_send_chat (CHAT_TYPE_GROUP ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+		end
+	end
+	WriteChatLog(self:GetGuid(), CHAT_TYPE_GROUP, "", "", msg, self:GetLevel(), self:GetGmNum())
+	--]]
+end
+
+-- 发送私聊信息
+function PlayerInfo:SendWhisperChat(guid, content)
+	local recipient = app.objMgr:getObj(guid)
+
+	if not recipient then
+		self:CallOptResult(OPRATE_TYPE_CHAT, CHAT_RESULT_NOT_PLAYER)
+		return
+	end
+	
+	--屏蔽词
+	content = fuckPingBi(content)
+	
+	if guid ~= self:GetGuid() then
+		--私聊后做点什么
+		self:DoAfterChatWhisper(recipient)
+		recipient:call_send_chat (CHAT_TYPE_WHISPER ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, guid)
+		WriteChatLog(self:GetGuid(), CHAT_TYPE_WHISPER, recipient:GetGuid(), recipient:GetName(), content, self:GetLevel(), self:GetGmNum())
+	end
+	self:call_send_chat (CHAT_TYPE_WHISPER ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, guid)
+	
 end
 
 --gm命令入口
@@ -266,11 +379,13 @@ function PlayerInfo:CheckChatLimit(c_type, content)
 	if content == "" then
 		return false
 	end
+	--[[
 	--是否被禁言
 	if self:IsGag() then
 		self:CallOptResult(OPRATE_TYPE_CHAT, CHAT_RESULT_IS_GAG)
 		return false
 	end
+	--]]
 	--聊天长度不能超过120
 	if string.len(content) > 120 then
 		return false

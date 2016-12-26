@@ -14,6 +14,8 @@ function UnitInfo:DoGetAppdDoSomething( ntype, data, str)
 		self:sweepVIP(data, tonumber(str))
 	elseif ntype == APPD_SCENED_RESPAWN then
 		self:sceneGoldRespawn(data)
+	elseif ntype == APPD_SCENED_NEAR_BY_CHAT then
+		self:chatNearBy(str)
 	end
 end
 
@@ -68,4 +70,17 @@ end
 -- 场景服元宝复活
 function UnitInfo:sceneGoldRespawn(itemId)
 	ScenedUseItem[itemId](ScenedUseItem, self, itemId, 1)
+end
+
+
+-- 附近聊天
+function UnitInfo:chatNearBy(content)
+	-- 查询视野范围内的玩家
+	local allPlayers = playerLib.GetAllPlayerNearBy(self.ptr)
+	for _, player in pairs(allPlayers) do
+		local playerInfo = UnitInfo:new {ptr = player}
+		if not playerInfo:isDeclineNearMsg() then
+			playerInfo:call_send_chat (CHAT_TYPE_CURRENT ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+		end
+	end
 end

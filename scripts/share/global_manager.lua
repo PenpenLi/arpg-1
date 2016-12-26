@@ -12,6 +12,8 @@ globalMgr.GLOBAL_GUID_MANAGER_GUID		= "G.guidmanager"		--//guid管理数据
 globalMgr.GLOBAL_RANK_INFO				= "G.rankinfo"			--//排行榜数据
 globalMgr.GLOBAL_RANK_INFO_RASK_POOL	= "G.rankinforaskpool"	--//排行榜任务池
 globalMgr.GLOBAL_RIGHT_FLOAT_GUID		= "G.rightfloat"		--//弹窗公告
+globalMgr.GLOBAL_SYSTEM_MAIL			= "G.systemMail"		--//系统邮件
+globalMgr.GLOBAL_OFFLINE_MAIL			= "G.offlineMail"		--//离线邮件
 globalMgr.GLOBAL_NOTICE_MESSAGE			= "G.noticemessage"		--//公告消息
 globalMgr.GLOBAL_COUNTER				= "G.counter"			--//计数器，各种世界数量计数
 globalMgr.GLOBAL_SAVE_TO_DB				= "G.SaveToDbGuidList"	--//本轮要保存到数据库的所有玩家
@@ -41,9 +43,19 @@ GlobalNoticeMessage = require("share.global_notice_message")
 globalNoticeMessage = GlobalNoticeMessage:new {ptr = objects.get(globalMgr.GLOBAL_NOTICE_MESSAGE)}
 
 --获取弹窗公告
-outString('开始载入弹窗公告脚本')
+outString('load share.global_rightfloat')
 GlobalRightFloat = require("share.global_rightfloat")
 globalRightFloat = GlobalRightFloat:new {ptr = objects.get(globalMgr.GLOBAL_RIGHT_FLOAT_GUID)}
+
+--获取系统邮件
+outString('load share.global_system_mail')
+GlobalSystemMail = require("share.global_system_mail")
+globalSystemMail = GlobalSystemMail:new {ptr = objects.get(globalMgr.GLOBAL_SYSTEM_MAIL)}
+
+--获取离线邮件
+outString('load share.global_offline_mail')
+GlobalOfflineMail = require("share.global_offline_mail")
+globalOfflineMail = GlobalOfflineMail:new {ptr = objects.get(globalMgr.GLOBAL_OFFLINE_MAIL)}
 
 --guid管理器
 outString('load share.guidmanager script')
@@ -57,6 +69,8 @@ globalMgr[globalMgr.GLOBAL_OBJ_GUID] = globalValue
 globalMgr[globalMgr.GLOBAL_GAME_CONFIG] = globalGameConfig
 globalMgr[globalMgr.GLOBAL_COUNTER] = globalCounter
 globalMgr[globalMgr.GLOBAL_NOTICE_MESSAGE] = globalNoticeMessage
+globalMgr[globalMgr.GLOBAL_SYSTEM_MAIL] = globalSystemMail
+globalMgr[globalMgr.GLOBAL_OFFLINE_MAIL] = globalOfflineMail
 globalMgr[globalMgr.GLOBAL_RIGHT_FLOAT_GUID] = globalRightFloat
 globalMgr[globalMgr.GLOBAL_GUID_MANAGER_GUID] = guidMgr
 

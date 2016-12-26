@@ -1,48 +1,37 @@
 --创建帮派
 function PlayerInfo:Handle_Faction_Create( pkt )
 	local name = pkt.name
+	--print(name,"*",#name)
+	outFmtDebug("Handle_Faction_Create")
 	
-	local faction_guid = self:GetFactionId()
-	if faction_guid ~= "" then
-		print("already created faction = "..faction_guid)
-		return
-	end
-
-	local name_tab = lua_string_split(self:GetName(), ',')
-	local faction_name = string.format("%s,%s,%s", name_tab[1], name_tab[2], name)
-	local server_name = string.format("%s_%s", name_tab[1], name_tab[2])
-
-	-- local reserve = pkt.reserve
-
-	--[[
-	local config = tb_bangpai[1]
-	--判断创建帮派等级
-	if self:GetLevel() < config.need_level then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_LEVEL_LACK)
-		return
-	end
 	--玩家已经有帮派了
 	if self:GetFactionId() ~= "" then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_IS_HAVE)
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_IS_HAVE)
 		return
 	end
+
+	
+	local config = tb_faction_creat[1]
+
 	
 	-- 玩家名字不能是空的
 	if self:GetName() == "" then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_PLAYER_NAME_ERR)
+		--self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_PLAYER_NAME_ERR)
+		outFmtInfo("user name null")
 		return
 	end
 	
 	--帮派名称不能为空 帮派名称不能超过6个中文字符
-	if name == "" or string.len(name) > 12 then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NAME_ERR)
+
+	if name == "" or string.len(name) > 18 then
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NAME_ERR)
 		return
 	end
 	
 	--判断是否有屏蔽词
 	local name = fuckPingBi(pkt.name)
 	if name ~= pkt.name then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NAME_HAVE_FUCK)
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NAME_HAVE_FUCK)
 		return
 	end
 	
@@ -60,7 +49,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	end)
 
 	if bRepeat then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NAME_REPEAT)
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NAME_REPEAT)
 		return
 	end
 	--判断帮派数量上限
@@ -68,66 +57,43 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	app.objMgr:foreachAllFaction(function(faction)
 		faction_num = faction_num + 1
 	end)
-	if faction_num >= config.num_bangpai then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPEATE_TYPE_FACTION_CREATE_MAX)
+	if faction_num >= config.maxnum then
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPRATE_TYPE_FACTION_CREATE_MAX)
 		return
 	end
 	
-	--判断消耗
-	local cost_table = tb_bangpai_cost[2].cost
-	local faction_lv = 2	--初始帮派等级
-	if reserve == 1 then
-		cost_table = tb_bangpai_cost[1].cost
-		faction_lv = 1
-	end
-	if not self:SubItemByConfig(cost_table,MONEY_CHANGE_CREATE_FACTION,OPRATE_TYPE_FACTION,OPEATE_TYPE_FACTION_MONEY_ERR,nil,OPEATE_TYPE_FACTION_ITEM_ERR) then
-		return
-	end
-	]]
+
+	--扣除相应资源 + 祝福值
+	 if not self:costMoneys(MONEY_CHANGE_CREATE_FACTION,config.cost) then
+	 	self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_CREATE_COST)
+	 end
+
 	-- 获取guid
 	local new_guid = guidMgr:Make_New_Guid(guidMgr.ObjectTypeFaction, guidMgr:NewIndex(guidMgr.ObjectTypeFaction), server_name)
-	--local events_guid = guidMgr.replace(new_guid, guidMgr.ObjectTypeFactionEvents)
 	local faction = app.objMgr:newAndCallPut(new_guid, FACTION_BINLOG_OWNER_STRING)
 	if(not faction)then
 		return
 	end
-	--[[
-	local faction_events = app.objMgr:newAndCallPut(events_guid, 'faction_events')
-	if(not faction_events)then
-		return
-	end
-	]]
+
 	local faction_lv = 1
 
 	faction:SetName(faction_name)
 	faction:SetFactionLevel(faction_lv)
 
-	--[[
 	if not faction:MemberAdd(self) then
 		guidMgr:callRemoveObject(new_guid)
-		--guidMgr:callRemoveObject(events_guid)
 		self:SetFactionId("")
 		self:SetFactionName("")
 		return
 	end
-	]]
-
-	--下发binlog给客户端
-	app.objMgr:callAddWatch(self:GetSessionId(), new_guid)
-	self:SetFactionId(new_guid)
-	print("faction created = "..new_guid)
-
-	--app.objMgr:callAddWatch(self:GetSessionId(), events_guid)
-	--[[
+	
 	--登录服也监听下
 	app.objMgr:callAddWatch(serverConnList:getLogindFD(), new_guid)
-	app.objMgr:callAddWatch(serverConnList:getLogindFD(), events_guid)
 	--通知场景服监听
 	serverConnList:forEachScenedFD(function (fd)
 		app.objMgr:callAddWatch(fd, new_guid)
-		app.objMgr:callAddWatch(fd, events_guid)
 	end)
-	]]
+	
 end
 
 -- 升级
@@ -146,7 +112,7 @@ end
 --获取帮派列表
 function PlayerInfo:Handle_Faction_Get_List( pkt )
 	local start, t_end = pkt.start, pkt.t_end
-	local faction_num = 0
+	--local faction_num = 0
 	local results = {}	
 	for i = start,t_end do
 		app.objMgr:foreachAllFaction(function(faction)
@@ -154,20 +120,20 @@ function PlayerInfo:Handle_Faction_Get_List( pkt )
 				local list = faction_info_t:new 
 					{	
 						faction_name = faction:GetName(),
-						bangzhu_name = faction:GetBangZhuName(), 
+						faction_guid = faction:GetGuid(),
 						level 		 = faction:GetFactionLevel(), 
 						player_count = faction:GetMemberCount(), 
-						force 		 = faction:GetFactionForce(),
-						faction_guid = faction:GetGuid()
+						icon 		 = faction:GetFactionCurFlagId(),
+						minlev		 = faction:GetFactionMinLev()
 					}
 				table.insert(results, list)
-				faction_num = faction_num + 1
+				--faction_num = faction_num + 1
 				return
 			end
 		end)
 	end
 	-- 下发给客户端
-	self:call_faction_get_list_result(results, faction_num)
+	self:call_faction_get_list_result(results)
 end
 
 --帮派申请
@@ -180,16 +146,16 @@ function PlayerInfo:Hanlde_Faction_Apply( pkt )
 
 	local faction = app.objMgr:getObj(pkt.id)   --帮派guid
 	if faction then
-		app.objMgr:callAddWatch(self:GetSessionId(), pkt.id)
-		self:SetFactionId(pkt.id)
-		print("you have joined faction = "..pkt.id)
-		--[[
+		--app.objMgr:callAddWatch(self:GetSessionId(), pkt.id)
+		--self:SetFactionId(pkt.id)
+		--print("you have joined faction = "..pkt.id)
+		
 		if faction:GetFactionFlags(FACTION_FLAGS_AUTO) then
 			faction:MemberAdd(self)
 		else
 			faction:FactionApply(self)
 		end
-		]]
+		
 	end	
 end
 
@@ -207,6 +173,7 @@ end
 
 --帮派管理
 function PlayerInfo:Hanlde_Faction_Manager( pkt )
+	outFmtDebug("***************Hanlde_Faction_Manager")
 	local faction_guid = self:GetFactionId()
 	if faction_guid == "" then
 		return

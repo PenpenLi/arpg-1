@@ -594,6 +594,17 @@ function ScenedContext:Handle_ForceInto(pkt)
 	DoForceInto(self)
 end
 
+-- 回到主城
+function ScenedContext:Hanlde_Teleport_Main_City(pkt)
+	local mapid = unitLib.GetMapID(self.ptr)
+	if mapid == ZHUCHENG_DITU_ID then
+		return
+	end
+	
+	local map_ptr = unitLib.GetMap(self.ptr)
+	mapLib.ExitInstance(map_ptr)
+end
+
 
 local OpcodeHandlerFuncTable = require 'scened.context.scened_context_handler_map'
 

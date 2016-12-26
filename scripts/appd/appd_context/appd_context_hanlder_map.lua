@@ -1,3 +1,4 @@
+
 --函数包路由表
 local hanlders = {}
 
@@ -18,7 +19,7 @@ hanlders[CMSG_NPC_SELL] = PlayerInfo.Hanlde_Npc_Sell
 hanlders[CMSG_NPC_REPURCHASE] = PlayerInfo.Hanlde_Npc_Rrpurchase
 hanlders[MSG_CHAT_NOTICE] = PlayerInfo.Handle_Chat_Notice
 hanlders[MSG_CHAT_HORN] = PlayerInfo.Handle_Chat_Horn
-hanlders[MSG_CHAT_WHISPER] = PlayerInfo.Handle_Chat_Whisper
+hanlders[CMSG_CHAT_WHISPER] = PlayerInfo.Handle_Chat_Whisper
 hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
 
 hanlders[CMSG_MALL_BUY] = PlayerInfo.Handle_Mall_Buy
@@ -61,7 +62,27 @@ hanlders[CMSG_SOCIAL_SUREADD_FRIEND] = PlayerInfo.Handle_Sure_Add_Friend
 hanlders[CMSG_SOCIAL_GIFT_FRIEND] = PlayerInfo.Handle_Gift_Friend
 hanlders[CMSG_SOCIAL_RECOMMEND_FRIEND] = PlayerInfo.Handle_Recommend_Friend
 hanlders[CMSG_SOCIAL_REVENGE_ENEMY] = PlayerInfo.Handle_Revenge_Enemy
-hanlders[CMSG_SOCIAL_DEL_FRIEND] = PlayerInfo.Handle_Remove_Friend
+hanlders[CMSG_SOCIAL_DEL_FRIEND] = PlayerInfo.Handle_Remove_Friend 
+hanlders[CMSG_SOCIAL_CLEAR_APPLY] = PlayerInfo.Handler_Clear_Apply
 
+
+hanlders[CMSG_CHAT_BY_CHANNEL] = PlayerInfo.Handle_Chat_By_Channel
+
+hanlders[CMSG_MSG_DECLINE] = PlayerInfo.Handle_Msg_Decline
+hanlders[CMSG_BLOCK_CHAT] = PlayerInfo.Handle_Block_Chat
+
+
+-----------------------------------------------------------------------------
+hanlders[CMSG_READ_MAIL] = PlayerInfo.Handle_Read_Mail
+hanlders[CMSG_PICK_MAIL] = PlayerInfo.Handle_Pick_Mail
+hanlders[CMSG_REMOVE_MAIL] = PlayerInfo.Handle_Remove_Mail
+hanlders[CMSG_PICK_MAIL_ONE_STEP] = PlayerInfo.Handle_Pick_Mail_One_Step
+hanlders[CMSG_REMOVE_MAIL_ONE_STEP] = PlayerInfo.Handle_Remove_Mail_One_Step
+
+hanlders[CMSG_CANCEL_BLOCK_CHAT] = PlayerInfo.Handle_Cancel_Block_Chat
+-------------------------------------------------------------------------------
+
+hanlders[CMSG_FACTION_GETLIST] = PlayerInfo.Handle_Faction_Get_List 
+hanlders[CMSG_FACTION_MANAGER] = PlayerInfo.Hanlde_Faction_Manager
 
 return hanlders

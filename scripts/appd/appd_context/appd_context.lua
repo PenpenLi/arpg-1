@@ -34,6 +34,26 @@ function PlayerInfo:GetScenedFD()
 	return self:GetUInt32(PLAYER_FIELD_FD)
 end
 
+-- 获得屏蔽人员个数
+function PlayerInfo:GetBlockCounts()
+	return self:GetUInt32(PLAYER_INT_FIELD_BLOCK_COUNT)
+end
+
+-- 增加屏蔽人员个数
+function PlayerInfo:AddBlockCounts()
+	return self:AddUInt32(PLAYER_INT_FIELD_BLOCK_COUNT, 1)
+end
+
+-- 减少屏蔽人员个数
+function PlayerInfo:SubBlockCounts()
+	return self:SubUInt32(PLAYER_INT_FIELD_BLOCK_COUNT, 1)
+end
+
+-- 设置屏蔽列表的str
+function PlayerInfo:SetBlockGuids(val)
+	self:SetStr(PLAYER_STRING_FIELD_BLOCK_GUIDS, val)
+end
+
 -- 是否有坐骑
 function PlayerInfo:IsMountActived()
 	local level = self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 0)
@@ -46,6 +66,22 @@ end
 
 function PlayerInfo:SetMountStar(star)
 	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 1, star)
+end
+
+-- 玩家加道具
+function PlayerInfo:PlayerAddItem(itemId, count)
+	
+	if ItemToResoureceTable[itemId] ~= nil then
+		-- 加人物资源
+		--playerInfo:AddMoney(ItemToResoureceTable[itemId], moneyOperType, count)
+	elseif itemId == Item_Loot_Exp then
+		-- 加经验
+		--playerLib.AddExp(player, count)
+	else
+		local bind = tb_item_template[itemId].bind_type
+		-- 加道具
+		--itemMgr:addItem(itemId,count,1,true,true,0,0)
+	end
 end
 
 -- 骑乘状态
@@ -116,6 +152,16 @@ end
 --设置帮派guid
 function PlayerInfo:SetFactionId (factionId)
 	self:SetStr(PLAYER_STRING_FIELD_FACTION_GUID, factionId)
+end
+
+-- 获得帮派名字
+function PlayerInfo:GetFactionName ()
+	return self:GetStr(PLAYER_STRING_FIELD_FACTION_NAME)
+end
+
+--设置帮派名字
+function PlayerInfo:SetFactionName (name)
+	self:SetStr(PLAYER_STRING_FIELD_FACTION_NAME, name)
 end
 
 
@@ -482,6 +528,11 @@ function PlayerInfo:SetDailyOnlineTime ( val)
 	self:SetUInt32(PLAYER_APPD_INT_FIELD_DAILY_TIME, val)
 end
 
+-- 获得系统邮件的序号
+function PlayerInfo:GetSystemMailSeq()
+	return self:GetUInt32(PLAYER_INT_FIELD_SYSTEM_MAIL_ID)
+end
+
 --玩家登录做点什么,或者场景服启动做点什么？
 function PlayerInfo:Login()
 	local isPkServer = globalGameConfig:IsPKServer()
@@ -509,6 +560,9 @@ function PlayerInfo:Login()
 	end
 
 	self:socialLogIn()
+	
+	globalOfflineMail:GetOfflineMail(self)
+	globalSystemMail:checkIfHasSystemMail(self)
 end
 
 --pk服玩家登陆做点啥
@@ -791,6 +845,27 @@ function PlayerInfo:isBuyRespawnByGold()
 	return self:GetByte(PLAYER_FIELD_HOOK_BYTE3, 2) > 0
 end
 
+-- 是否拒绝接受系统消息
+function PlayerInfo:isDeclineSystemMsg()
+	return self:GetByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE0, 0) > 0
+end
+
+-- 是否拒绝接受帮派消息
+function PlayerInfo:isDeclineFactionMsg()
+	return self:GetByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE0, 1) > 0
+end
+
+-- 是否拒绝接受组队消息
+function PlayerInfo:isDeclineGroupMsg()
+	return self:GetByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE0, 2) > 0
+end
+
+-- 是否拒绝接受世界消息
+function PlayerInfo:isDeclineWorldMsg()
+	return self:GetByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE0, 3) > 0
+end
+	
+
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)
 	if is_force == nil then is_force = false end
@@ -818,8 +893,10 @@ require("appd/appd_context/appd_context_equip_part_opt")
 require("appd/appd_context/appd_context_spell")
 require("appd/appd_context/appd_context_social")
 require("appd/appd_context/appd_context_shop")
+require("appd/appd_context/appd_context_giftpacks")
 
 require("appd/appd_context/handler/faction_handler")
+require("appd/appd_context/handler/GiftPacksHandler")
 require("appd/appd_context/handler/chat_handler")
 require("appd/appd_context/handler/equip_part_opt_handler")
 require("appd/appd_context/handler/spell_handler")

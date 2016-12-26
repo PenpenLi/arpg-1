@@ -566,6 +566,10 @@ Instance_base = {
 	--玩家发送CMSG_INSTANCE_EXIT协议退出副本前的回调，预防发包
 	DoPlayerExitInstance = 
 		function(self, player)
+			local mapid = self:GetMapId()
+			if tb_map[mapid].type == MAP_TYPE_MAIN then
+				return 0
+			end
 			return 1	--返回1的话为正常退出，返回0则不让退出
 		end,
 	--玩家设置pk模式前的回调 ，预防发包
@@ -687,7 +691,7 @@ Instance_base = {
 					local dist = upgradeConfig.distance
 					local groupCD = skillConfig.groupCD
 					local singleCD = skillConfig.singleCD
-					local targetType = skillConfig.target_type
+					local targetType = skillConfig.type
 					creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], dist, groupCD, singleCD, targetType)
 				end
 			end

@@ -104,8 +104,8 @@ SMSG_TRADE_FINISH		= 85	-- /*交易完成*/
 MSG_TRADE_CANCEL		= 86	-- /*交易取消*/	
 MSG_TRADE_READY		= 87	-- /*交易准备好*/	
 SMSG_CHAT_UNIT_TALK		= 88	-- /*生物讲话*/	
-MSG_CHAT_NEAR		= 89	-- /*就近聊天*/	
-MSG_CHAT_WHISPER		= 90	-- /*私聊*/	
+CMSG_CHAT_NEAR		= 89	-- /*就近聊天*/	
+CMSG_CHAT_WHISPER		= 90	-- /*私聊*/	
 MSG_CHAT_FACTION		= 91	-- /*阵营聊天*/	
 MSG_CHAT_WORLD		= 92	-- /*世界*/	
 MSG_CHAT_HORN		= 93	-- /*喇叭*/	
@@ -192,6 +192,21 @@ CMSG_SOCIAL_RECOMMEND_FRIEND		= 174	-- /*推荐好友列表*/
 SMSG_SOCIAL_GET_RECOMMEND_FRIEND		= 175	-- /*推荐好友列表*/	
 CMSG_SOCIAL_REVENGE_ENEMY		= 176	-- /*复仇*/	
 CMSG_SOCIAL_DEL_FRIEND		= 177	-- /*删除好友*/	
+CMSG_TELEPORT_MAIN_CITY		= 178	-- /*回城*/	
+CMSG_CHAT_BY_CHANNEL		= 179	-- /*不同频道聊天*/	
+SMSG_SEND_CHAT		= 180	-- /*发送聊天*/	
+CMSG_SOCIAL_CLEAR_APPLY		= 181	-- /*清空申请列表*/	
+CMSG_MSG_DECLINE		= 182	-- /*设置拒绝接受消息*/	
+SMSG_FACTION_GET_LIST_RESULT		= 183	-- /*帮派列表*/	
+CMSG_FACTION_GETLIST		= 184	-- /*获取帮派列表*/	
+CMSG_FACTION_MANAGER		= 185	-- /*帮派管理*/	
+CMSG_READ_MAIL		= 190	-- /*读邮件*/	
+CMSG_PICK_MAIL		= 191	-- /*领取邮件*/	
+CMSG_REMOVE_MAIL		= 192	-- /*删除邮件*/	
+CMSG_PICK_MAIL_ONE_STEP		= 193	-- /*一键领取邮件*/	
+CMSG_REMOVE_MAIL_ONE_STEP		= 194	-- /*一键删除邮件*/	
+CMSG_BLOCK_CHAT		= 195	-- /*屏蔽某人*/	
+CMSG_CANCEL_BLOCK_CHAT		= 196	-- /*取消屏蔽*/	
 
 
 ---------------------------------------------------------------------
@@ -786,6 +801,90 @@ function social_friend_info_t:write( output )
 		self.vip = 0
 	end
 	output:writeI16(self.vip)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*好友信息*/
+
+faction_info_t = class('faction_info_t')
+
+function faction_info_t:read( input )
+
+	local ret
+	ret,self.faction_guid = input:readUTFByLen(50)  --/*帮派guid*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.faction_name = input:readUTFByLen(50)  --/*名字*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.level = input:readU16() --/*等级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.icon = input:readByte() --/*头像*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.player_count = input:readU16() --/*帮派人数*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.minlev = input:readU16() --/*等级限制*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function faction_info_t:write( output )
+	if(self.faction_guid == nil)then
+		self.faction_guid = ''
+	end
+	output:writeUTFByLen(self.faction_guid , 50 ) 
+	
+	if(self.faction_name == nil)then
+		self.faction_name = ''
+	end
+	output:writeUTFByLen(self.faction_name , 50 ) 
+	
+	if(self.level == nil)then
+		self.level = 0
+	end
+	output:writeI16(self.level)
+	
+	if(self.icon == nil)then
+		self.icon = 0
+	end
+	output:writeByte(self.icon)
+	
+	if(self.player_count == nil)then
+		self.player_count = 0
+	end
+	output:writeI16(self.player_count)
+	
+	if(self.minlev == nil)then
+		self.minlev = 0
+	end
+	output:writeI16(self.minlev)
 	
 	return output
 end
@@ -3774,18 +3873,15 @@ end
 
 
 -- /*就近聊天*/	
-function Protocols.pack_chat_near ( guid ,faction ,name ,content)
-	local output = Packet.new(MSG_CHAT_NEAR)
-	output:writeUTF(guid)
-	output:writeByte(faction)
-	output:writeUTF(name)
+function Protocols.pack_chat_near ( content)
+	local output = Packet.new(CMSG_CHAT_NEAR)
 	output:writeUTF(content)
 	return output
 end
 
 -- /*就近聊天*/	
-function Protocols.call_chat_near ( playerInfo, guid ,faction ,name ,content)
-	local output = Protocols.	pack_chat_near ( guid ,faction ,name ,content)
+function Protocols.call_chat_near ( playerInfo, content)
+	local output = Protocols.	pack_chat_near ( content)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -3795,18 +3891,6 @@ function Protocols.unpack_chat_near (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
-	ret,param_table.guid = input:readUTF()
-	if not ret then
-		return false
-	end	
-	ret,param_table.faction = input:readByte()
-	if not ret then
-		return false
-	end
-	ret,param_table.name = input:readUTF()
-	if not ret then
-		return false
-	end	
 	ret,param_table.content = input:readUTF()
 	if not ret then
 		return false
@@ -3818,18 +3902,16 @@ end
 
 
 -- /*私聊*/	
-function Protocols.pack_chat_whisper ( guid ,faction ,name ,content)
-	local output = Packet.new(MSG_CHAT_WHISPER)
+function Protocols.pack_chat_whisper ( guid ,content)
+	local output = Packet.new(CMSG_CHAT_WHISPER)
 	output:writeUTF(guid)
-	output:writeByte(faction)
-	output:writeUTF(name)
 	output:writeUTF(content)
 	return output
 end
 
 -- /*私聊*/	
-function Protocols.call_chat_whisper ( playerInfo, guid ,faction ,name ,content)
-	local output = Protocols.	pack_chat_whisper ( guid ,faction ,name ,content)
+function Protocols.call_chat_whisper ( playerInfo, guid ,content)
+	local output = Protocols.	pack_chat_whisper ( guid ,content)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -3840,14 +3922,6 @@ function Protocols.unpack_chat_whisper (pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.guid = input:readUTF()
-	if not ret then
-		return false
-	end	
-	ret,param_table.faction = input:readByte()
-	if not ret then
-		return false
-	end
-	ret,param_table.name = input:readUTF()
 	if not ret then
 		return false
 	end	
@@ -6628,6 +6702,509 @@ function Protocols.unpack_social_del_friend (pkt)
 end
 
 
+-- /*回城*/	
+function Protocols.pack_teleport_main_city (  )
+	local output = Packet.new(CMSG_TELEPORT_MAIN_CITY)
+	return output
+end
+
+-- /*回城*/	
+function Protocols.call_teleport_main_city ( playerInfo )
+	local output = Protocols.	pack_teleport_main_city (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*回城*/	
+function Protocols.unpack_teleport_main_city (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*不同频道聊天*/	
+function Protocols.pack_chat_by_channel ( channel ,content)
+	local output = Packet.new(CMSG_CHAT_BY_CHANNEL)
+	output:writeByte(channel)
+	output:writeUTF(content)
+	return output
+end
+
+-- /*不同频道聊天*/	
+function Protocols.call_chat_by_channel ( playerInfo, channel ,content)
+	local output = Protocols.	pack_chat_by_channel ( channel ,content)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*不同频道聊天*/	
+function Protocols.unpack_chat_by_channel (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.channel = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.content = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*发送聊天*/	
+function Protocols.pack_send_chat ( channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid)
+	local output = Packet.new(SMSG_SEND_CHAT)
+	output:writeByte(channel)
+	output:writeUTF(guid)
+	output:writeByte(title)
+	output:writeUTF(name)
+	output:writeByte(vip)
+	output:writeByte(zs)
+	output:writeByte(lvl)
+	output:writeByte(gender)
+	output:writeUTF(content)
+	output:writeUTF(to_guid)
+	return output
+end
+
+-- /*发送聊天*/	
+function Protocols.call_send_chat ( playerInfo, channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid)
+	local output = Protocols.	pack_send_chat ( channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*发送聊天*/	
+function Protocols.unpack_send_chat (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.channel = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.title = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.vip = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.zs = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.lvl = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.gender = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.content = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.to_guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*清空申请列表*/	
+function Protocols.pack_social_clear_apply (  )
+	local output = Packet.new(CMSG_SOCIAL_CLEAR_APPLY)
+	return output
+end
+
+-- /*清空申请列表*/	
+function Protocols.call_social_clear_apply ( playerInfo )
+	local output = Protocols.	pack_social_clear_apply (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*清空申请列表*/	
+function Protocols.unpack_social_clear_apply (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*设置拒绝接受消息*/	
+function Protocols.pack_msg_decline ( value0 ,value1)
+	local output = Packet.new(CMSG_MSG_DECLINE)
+	output:writeU32(value0)
+	output:writeU32(value1)
+	return output
+end
+
+-- /*设置拒绝接受消息*/	
+function Protocols.call_msg_decline ( playerInfo, value0 ,value1)
+	local output = Protocols.	pack_msg_decline ( value0 ,value1)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*设置拒绝接受消息*/	
+function Protocols.unpack_msg_decline (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.value0 = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.value1 = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*帮派列表*/	
+function Protocols.pack_faction_get_list_result ( list)
+	local output = Packet.new(SMSG_FACTION_GET_LIST_RESULT)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*帮派列表*/	
+function Protocols.call_faction_get_list_result ( playerInfo, list)
+	local output = Protocols.	pack_faction_get_list_result ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*帮派列表*/	
+function Protocols.unpack_faction_get_list_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = faction_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*获取帮派列表*/	
+function Protocols.pack_faction_getlist (  )
+	local output = Packet.new(CMSG_FACTION_GETLIST)
+	return output
+end
+
+-- /*获取帮派列表*/	
+function Protocols.call_faction_getlist ( playerInfo )
+	local output = Protocols.	pack_faction_getlist (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*获取帮派列表*/	
+function Protocols.unpack_faction_getlist (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*帮派管理*/	
+function Protocols.pack_faction_manager ( opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	local output = Packet.new(CMSG_FACTION_MANAGER)
+	output:writeByte(opt_type)
+	output:writeByte(reserve_int1)
+	output:writeByte(reserve_int2)
+	output:writeUTF(reserve_str1)
+	output:writeUTF(reserve_str2)
+	return output
+end
+
+-- /*帮派管理*/	
+function Protocols.call_faction_manager ( playerInfo, opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	local output = Protocols.	pack_faction_manager ( opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*帮派管理*/	
+function Protocols.unpack_faction_manager (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.opt_type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_int1 = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_int2 = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_str1 = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.reserve_str2 = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*读邮件*/	
+function Protocols.pack_read_mail ( indx)
+	local output = Packet.new(CMSG_READ_MAIL)
+	output:writeI16(indx)
+	return output
+end
+
+-- /*读邮件*/	
+function Protocols.call_read_mail ( playerInfo, indx)
+	local output = Protocols.	pack_read_mail ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*读邮件*/	
+function Protocols.unpack_read_mail (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*领取邮件*/	
+function Protocols.pack_pick_mail ( indx)
+	local output = Packet.new(CMSG_PICK_MAIL)
+	output:writeI16(indx)
+	return output
+end
+
+-- /*领取邮件*/	
+function Protocols.call_pick_mail ( playerInfo, indx)
+	local output = Protocols.	pack_pick_mail ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取邮件*/	
+function Protocols.unpack_pick_mail (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*删除邮件*/	
+function Protocols.pack_remove_mail ( indx)
+	local output = Packet.new(CMSG_REMOVE_MAIL)
+	output:writeI16(indx)
+	return output
+end
+
+-- /*删除邮件*/	
+function Protocols.call_remove_mail ( playerInfo, indx)
+	local output = Protocols.	pack_remove_mail ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*删除邮件*/	
+function Protocols.unpack_remove_mail (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*一键领取邮件*/	
+function Protocols.pack_pick_mail_one_step (  )
+	local output = Packet.new(CMSG_PICK_MAIL_ONE_STEP)
+	return output
+end
+
+-- /*一键领取邮件*/	
+function Protocols.call_pick_mail_one_step ( playerInfo )
+	local output = Protocols.	pack_pick_mail_one_step (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*一键领取邮件*/	
+function Protocols.unpack_pick_mail_one_step (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*一键删除邮件*/	
+function Protocols.pack_remove_mail_one_step (  )
+	local output = Packet.new(CMSG_REMOVE_MAIL_ONE_STEP)
+	return output
+end
+
+-- /*一键删除邮件*/	
+function Protocols.call_remove_mail_one_step ( playerInfo )
+	local output = Protocols.	pack_remove_mail_one_step (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*一键删除邮件*/	
+function Protocols.unpack_remove_mail_one_step (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*屏蔽某人*/	
+function Protocols.pack_block_chat ( guid)
+	local output = Packet.new(CMSG_BLOCK_CHAT)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*屏蔽某人*/	
+function Protocols.call_block_chat ( playerInfo, guid)
+	local output = Protocols.	pack_block_chat ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*屏蔽某人*/	
+function Protocols.unpack_block_chat (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*取消屏蔽*/	
+function Protocols.pack_cancel_block_chat ( indx)
+	local output = Packet.new(CMSG_CANCEL_BLOCK_CHAT)
+	output:writeByte(indx)
+	return output
+end
+
+-- /*取消屏蔽*/	
+function Protocols.call_cancel_block_chat ( playerInfo, indx)
+	local output = Protocols.	pack_cancel_block_chat ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*取消屏蔽*/	
+function Protocols.unpack_cancel_block_chat (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -6812,6 +7389,21 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_social_get_recommend_friend = self.call_social_get_recommend_friend
 	playerInfo.call_social_revenge_enemy = self.call_social_revenge_enemy
 	playerInfo.call_social_del_friend = self.call_social_del_friend
+	playerInfo.call_teleport_main_city = self.call_teleport_main_city
+	playerInfo.call_chat_by_channel = self.call_chat_by_channel
+	playerInfo.call_send_chat = self.call_send_chat
+	playerInfo.call_social_clear_apply = self.call_social_clear_apply
+	playerInfo.call_msg_decline = self.call_msg_decline
+	playerInfo.call_faction_get_list_result = self.call_faction_get_list_result
+	playerInfo.call_faction_getlist = self.call_faction_getlist
+	playerInfo.call_faction_manager = self.call_faction_manager
+	playerInfo.call_read_mail = self.call_read_mail
+	playerInfo.call_pick_mail = self.call_pick_mail
+	playerInfo.call_remove_mail = self.call_remove_mail
+	playerInfo.call_pick_mail_one_step = self.call_pick_mail_one_step
+	playerInfo.call_remove_mail_one_step = self.call_remove_mail_one_step
+	playerInfo.call_block_chat = self.call_block_chat
+	playerInfo.call_cancel_block_chat = self.call_cancel_block_chat
 end
 
 local unpack_handler = {
@@ -6905,8 +7497,8 @@ local unpack_handler = {
 [MSG_TRADE_CANCEL] =  Protocols.unpack_trade_cancel,
 [MSG_TRADE_READY] =  Protocols.unpack_trade_ready,
 [SMSG_CHAT_UNIT_TALK] =  Protocols.unpack_chat_unit_talk,
-[MSG_CHAT_NEAR] =  Protocols.unpack_chat_near,
-[MSG_CHAT_WHISPER] =  Protocols.unpack_chat_whisper,
+[CMSG_CHAT_NEAR] =  Protocols.unpack_chat_near,
+[CMSG_CHAT_WHISPER] =  Protocols.unpack_chat_whisper,
 [MSG_CHAT_FACTION] =  Protocols.unpack_chat_faction,
 [MSG_CHAT_WORLD] =  Protocols.unpack_chat_world,
 [MSG_CHAT_HORN] =  Protocols.unpack_chat_horn,
@@ -6993,6 +7585,21 @@ local unpack_handler = {
 [SMSG_SOCIAL_GET_RECOMMEND_FRIEND] =  Protocols.unpack_social_get_recommend_friend,
 [CMSG_SOCIAL_REVENGE_ENEMY] =  Protocols.unpack_social_revenge_enemy,
 [CMSG_SOCIAL_DEL_FRIEND] =  Protocols.unpack_social_del_friend,
+[CMSG_TELEPORT_MAIN_CITY] =  Protocols.unpack_teleport_main_city,
+[CMSG_CHAT_BY_CHANNEL] =  Protocols.unpack_chat_by_channel,
+[SMSG_SEND_CHAT] =  Protocols.unpack_send_chat,
+[CMSG_SOCIAL_CLEAR_APPLY] =  Protocols.unpack_social_clear_apply,
+[CMSG_MSG_DECLINE] =  Protocols.unpack_msg_decline,
+[SMSG_FACTION_GET_LIST_RESULT] =  Protocols.unpack_faction_get_list_result,
+[CMSG_FACTION_GETLIST] =  Protocols.unpack_faction_getlist,
+[CMSG_FACTION_MANAGER] =  Protocols.unpack_faction_manager,
+[CMSG_READ_MAIL] =  Protocols.unpack_read_mail,
+[CMSG_PICK_MAIL] =  Protocols.unpack_pick_mail,
+[CMSG_REMOVE_MAIL] =  Protocols.unpack_remove_mail,
+[CMSG_PICK_MAIL_ONE_STEP] =  Protocols.unpack_pick_mail_one_step,
+[CMSG_REMOVE_MAIL_ONE_STEP] =  Protocols.unpack_remove_mail_one_step,
+[CMSG_BLOCK_CHAT] =  Protocols.unpack_block_chat,
+[CMSG_CANCEL_BLOCK_CHAT] =  Protocols.unpack_cancel_block_chat,
 
 }
 

@@ -304,6 +304,14 @@ end
 function FactionInfo:AddFactionLingQi(val)
 	self:AddUInt16(FACTION_INT_FIELD_FLAGS_ID,1,val)
 end
+--设置帮派最小等级
+function FactionInfo:SetFactionMinLev(val)
+	self:SetUInt16(FACTION_INT_FIELD_MINLEV,0,val)
+end
+--获取帮派最小等级
+function FactionInfo:GetFactionMinLev(val)
+	return self:GetUInt32(FACTION_INT_FIELD_MINLEV,0)
+end
 
 --设置帮派公告
 function FactionInfo:SetFactionNotice(notice)
@@ -528,7 +536,7 @@ function FactionInfo:SetApplyPlayer(player)
 		self:SetFactionApplyForce(pos, player:GetForce())
 		self:SetFactionApplyName(pos, player:GetName())
 		self:SetFactionApplyVipLevel(pos,player:GetVipLevel())
-		self:SetFactionApplyEndTime(pos,os.time())
+		--self:SetFactionApplyEndTime(pos,os.time())
 		self:AddFactionApplyCount(1)
 	end
 end
@@ -661,11 +669,11 @@ function FactionInfo:FactionApply( player)
 		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_IS_HAVE)
 		return 
 	end
-	if player:GetLevel() < tb_bangpai[1].need_level then
+	--if player:GetLevel() < tb_bangpai[1].need_level then
 		--玩家等级不够
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_LEVEL_LACK)
-		return 
-	end
+	--	player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_LEVEL_LACK)
+	--	return 
+	--end
 	if self:GetMemberCount() == MAX_FACTION_MAMBER_COUNT then
 		--帮派人数已满
 		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_MEMBER_MAX_COUNT)
@@ -678,7 +686,7 @@ function FactionInfo:FactionApply( player)
 	end
 	
 	--否则添加到申请列表中
-	if not self:IsApplyPlayer(player:GetGuid()) and player:AddFactionQuest(self:GetGuid()) then
+	if not self:IsApplyPlayer(player:GetGuid()) then-- and player:AddFactionQuest(self:GetGuid()) 
 		self:SetApplyPlayer(player)
 	end
 end
@@ -704,14 +712,14 @@ function FactionInfo:MemberAdd( player)
 		return false
 	end
 	
-	local force,level,name,is_vip,onlinetime
+	local force,level,name,is_vip--,onlinetime
 	--创建者 or 不需要审核
 	if self:GetMemberCount() == 0 or self:GetFactionFlags(FACTION_FLAGS_AUTO) then	
 		force = player:GetForce()
 		level = player:GetLevel()
 		name = player:GetName()
-		is_vip = player:GetVipLevel()
-		onlinetime = player:GetOnlineTime()
+		is_vip = player:GetVIP()
+		--onlinetime = player:GetOnlineTime()
 	else
 		if self:IsApplyPlayer(player_guid) then
 			force,level,name,is_vip,onlinetime = self:GetApplyPlayer(player_guid)
@@ -727,13 +735,13 @@ function FactionInfo:MemberAdd( player)
 		self:SetFactionMemberIdentity(pos, FACTION_MEMBER_IDENTITY_BANGZHU)
 	else
 		self:SetFactionMemberIdentity(pos, FACTION_MEMBER_IDENTITY_QUNZHONG)
-		player:DelFactionQuest()
-		self:AddEvent(player_guid, name, FACTION_EVENT_TYPE_ADD_MEMBER)
+		--player:DelFactionQuest()
+		--self:AddEvent(player_guid, name, FACTION_EVENT_TYPE_ADD_MEMBER)
 	end
 	self:SetFactionMemberGuid(pos, player_guid)
 	self:SetFactionMemberName(pos, name)
 	self:SetFactionMemberVipLevel(pos,is_vip)
-	self:SetFactionMemberOnlineTime(pos,onlinetime)
+	--self:SetFactionMemberOnlineTime(pos,onlinetime)
 	self:SetFactionMemberIsOnline(pos,1)
 	self:AddMemberCount(1)
 	player:SetFactionId(self:GetGuid())
@@ -741,7 +749,9 @@ function FactionInfo:MemberAdd( player)
 	
 	-- 添加监听
 	app.objMgr:callAddWatch(player:GetSessionId(), self:GetGuid())
-	app.objMgr:callAddWatch(player:GetSessionId(), self:getFactionEventsGuid())
+	--app.objMgr:callAddWatch(player:GetSessionId(), self:getFactionEventsGuid())
+
+	rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 	return true
 end
 
@@ -866,7 +876,7 @@ function FactionInfo:FactionRefuseJoin(player,apply_guid)
 		return
 	end
 	self:DelApplyPlayer(apply_guid)
-	applyer:DelFactionQuest(self:GetGuid())
+	--applyer:DelFactionQuest(self:GetGuid())
 	applyer:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_REFUSED_JOIN, self:GetName())
 end
 

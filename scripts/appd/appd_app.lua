@@ -56,6 +56,10 @@ function AppdApp:InitCorn()
 		end)
 	end)
 	
+	self.cron:addCron("3点检测过期的离线邮件",'3 * * * *',function() 
+		globalOfflineMail:checkOfflineMailIfExpire()
+	end)
+	
 	--每隔5s检测下失效物品
 	self.cron:every("失效物品检测",5,function()
 		self.objMgr:foreachAllPlayer(function(player)	

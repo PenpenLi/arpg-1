@@ -50,6 +50,12 @@ end
 --当玩家死亡后触发()
 function InstanceFieldBase:OnPlayerDeath(player)
 	local playerInfo = UnitInfo:new{ptr = player}
+	
+	local cooldown = 10
+	local timestamp = os.time() + cooldown
+	-- 这句有bug
+	--self:AddTimeOutCallback(self.Leave_Callback, timestamp)
+	
 	-- 发送野外死亡回城倒计时
 	playerInfo:call_field_death_cooldown(self.player_auto_respan)
 end

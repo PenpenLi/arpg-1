@@ -15,6 +15,9 @@ require("util/utils")
 outString('load share.tick_name script')
 require("share/tick_name")
 
+-- 处理离线邮件数据
+globalOfflineMail:dealOfflineMail()
+
 -------------------------------------------------------------------------------
 --配置文件信息
 config = {
@@ -34,7 +37,7 @@ config = {
 
 	player_max_level = 100,					--玩家最大等级
 	
-	player_chat_world_level		= 30,		--玩家世界频道最低等级发言
+	player_chat_world_level		= 1,		--玩家世界频道最低等级发言
 	player_chat_whisper_level	= 30,		--私聊最低等级限时
 
 	update_firend_info_interval = 20,		--更新玩家好友资料间隔
@@ -65,15 +68,16 @@ config = {
 		CMSG_NPC_GET_GOODS_LIST,
 		CMSG_STORE_BUY,
 		CMSG_NPC_SELL,
-		MSG_CHAT_HORN,
+--		MSG_CHAT_HORN,
 		CMSG_AVATAR_FASHION_ENABLE,
 		CMSG_RECEIVE_GIFT_PACKS,		
 		CMSG_LIMIT_ACTIVITY_RECEIVE,
 		CMSG_RANK_LIST_QUERY,
 		CMSG_QUERY_PLAYER_INFO,--查询玩家信息
-		MSG_CHAT_WHISPER,--私聊*/
+		CMSG_CHAT_WHISPER,--私聊
+		--[[MSG_CHAT_WHISPER,*/
 		MSG_CHAT_WORLD,
-		MSG_CHAT_NOTICE,
+		MSG_CHAT_NOTICE,--]]
 		CMSG_CHAR_REMOTESTORE,
 		CMSG_CHAR_REMOTESTORE_STR,
 		CMSG_USE_GOLD_OPT,--使用元宝做些什么*/
@@ -109,8 +113,21 @@ config = {
 		CMSG_SOCIAL_GIFT_FRIEND,
 		CMSG_SOCIAL_RECOMMEND_FRIEND,
 		CMSG_SOCIAL_REVENGE_ENEMY,
-		CMSG_SOCIAL_DEL_FRIEND
-
+		CMSG_SOCIAL_DEL_FRIEND,
+		CMSG_SOCIAL_CLEAR_APPLY,
+		CMSG_CHAT_BY_CHANNEL,
+		CMSG_MSG_DECLINE,
+		CMSG_BLOCK_CHAT, 	--屏蔽某人
+		CMSG_FACTION_GETLIST,
+		CMSG_FACTION_MANAGER,
+		-----------------------------
+		CMSG_READ_MAIL,
+		CMSG_PICK_MAIL,
+		CMSG_REMOVE_MAIL,
+		CMSG_PICK_MAIL_ONE_STEP,
+		CMSG_REMOVE_MAIL_ONE_STEP,
+		CMSG_CANCEL_BLOCK_CHAT,
+		-------------------------------
 	},
 	--pk服命令表
 	pk_external_router_map = {

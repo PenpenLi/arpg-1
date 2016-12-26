@@ -12,5 +12,9 @@ OpcodeHandlerFuncTable[CMSG_ENTER_VIP_INSTANCE] = ScenedContext.Hanlde_Enter_VIP
 
 OpcodeHandlerFuncTable[CMSG_ENTER_TRIAL_INSTANCE] = ScenedContext.Hanlde_Enter_Trial_Instance
 
+OpcodeHandlerFuncTable[CMSG_TELEPORT_MAIN_CITY] = ScenedContext.Hanlde_Teleport_Main_City
+
+
+
 
 return OpcodeHandlerFuncTable

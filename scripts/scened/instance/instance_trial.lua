@@ -192,7 +192,6 @@ AI_trialboss = class("AI_trialboss", AI_Base)
 AI_trialboss.ainame = "AI_trialboss"
 --死亡
 function AI_trialboss:JustDied( map_ptr,owner,killer_ptr )	
-	
 	-- 先判断是不是试炼塔副本
 	local mapid = mapLib.GetMapID(map_ptr)
 	if tb_map[mapid].inst_sub_type ~= 2 then

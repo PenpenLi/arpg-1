@@ -61,7 +61,7 @@ end
 
 --遍历所有帮派
 function AppObjectManager:foreachAllFaction(func)
-	objects.foreach("^F[[:digit:]]", function ( g )
+	objects.foreach("^L[[:digit:]]", function ( g )
 		local faction = self:getObj(g)
 		if faction then return func(faction) end
 	end)

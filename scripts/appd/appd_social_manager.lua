@@ -259,13 +259,15 @@ end
 --下线清空申请列表
 function AppSocialMgr:clearApplyList()
 	for i=SOCIAL_APPLY_START,SOCIAL_APPLY_END-1,MAX_FRIENT_COUNT do
-		self:SetUInt32(i,0)
-		self:SetUInt16(i+1,0,0)
-		--self:SetUInt16(i+1,1,1)
-		self:SetByte(i+1,2,1)
-		self:SetByte(i+1,3,0)
-		self:SetStr(i,"")
-		self:SetStr(i+1,"")
+		local gid = self:GetStr(i)
+		if gid ~= "" then
+			self:SetUInt32(i,0)
+			self:SetUInt16(i+1,0,0)
+			self:SetByte(i+1,2,1)
+			self:SetByte(i+1,3,0)
+			self:SetStr(i,"")
+			self:SetStr(i+1,"")
+		end
 	end
 end
 --清除一条数据

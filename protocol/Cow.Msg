@@ -413,17 +413,12 @@ chat_unit_talk,s2c,88,/*生物讲话*/,STATUS_NEVER,False
 	say,String,False,/*发言字符*/
 
 #
-chat_near,both,89,/*就近聊天*/,STATUS_NEVER,False
-	guid,String,False,/*发言者id*/
-	faction,uint8,False,/*玩家阵营*/
-	name,String,False,/*玩家名称*/
+chat_near,c2s,89,/*就近聊天*/,STATUS_NEVER,False
 	content,String,False,/*发言内容*/
 
 #
-chat_whisper,both,90,/*私聊*/,STATUS_NEVER,False
+chat_whisper,c2s,90,/*私聊*/,STATUS_NEVER,False
 	guid,String,False,/*玩家id*/
-	faction,uint8,False,/*玩家阵营*/
-	name,String,False,/*玩家名称*/
 	content,String,False,/*说话内容*/
 
 #
@@ -811,3 +806,73 @@ social_revenge_enemy,c2s,176,/*复仇*/,STATUS_NEVER,False
 #
 social_del_friend,c2s,177,/*删除好友*/,STATUS_NEVER,False
 	guid,String,False,/*好友GUID*/
+
+#
+teleport_main_city,c2s,178,/*回城*/,STATUS_NEVER,False
+
+#
+chat_by_channel,c2s,179,/*不同频道聊天*/,STATUS_NEVER,False
+	channel,uint8,False,/*聊天频道*/
+	content,String,False,/*说话内容*/
+	
+#
+send_chat,s2c,180,/*发送聊天*/,STATUS_NEVER,False
+	channel,uint8,False,/*聊天频道*/
+	guid,String,False,/*玩家guid*/
+	title,uint8,False,/*称号*/
+	name,String,False,/*名字*/
+	vip,uint8,False,/*VIP*/
+	zs,uint8,False,/*转生*/
+	lvl,uint8,False,/*等级*/
+	gender,uint8,False,/*头像*/
+	content,String,False,/*说话内容*/
+	to_guid,String,False,/*收到的guid*/
+	
+#
+social_clear_apply,c2s,181,/*清空申请列表*/,STATUS_NEVER,False
+
+#
+msg_decline,c2s,182,/*设置拒绝接受消息*/,STATUS_NEVER,False
+	value0,uint32,False,/*PLAYER_FIELD_DECLINE_CHANNEL_BYTE0*/
+	value1,uint32,False,/*PLAYER_FIELD_DECLINE_CHANNEL_BYTE1*/
+	
+#
+faction_get_list_result,s2c,183,/*帮派列表*/,STATUS_NEVER,False
+	list,faction_info,True,/*帮派列表*/
+
+#
+faction_getlist,c2s,184,/*获取帮派列表*/,STATUS_NEVER,False
+
+#
+faction_manager,c2s,185,/*帮派管理*/,STATUS_NEVER,False
+	opt_type,uint8,False,/*操作类型*/
+	reserve_int1,uint8,False,/*预留int值1*/
+	reserve_int2,uint8,False,/*预留int值2*/
+	reserve_str1,String,False,/*预留string值1*/
+	reserve_str2,String,False,/*预留string值2*/
+	
+#
+read_mail,c2s,190,/*读邮件*/,STATUS_NEVER,False
+	indx,uint16,False,/*邮件索引*/
+
+#
+pick_mail,c2s,191,/*领取邮件*/,STATUS_NEVER,False
+	indx,uint16,False,/*邮件索引*/
+
+#
+remove_mail,c2s,192,/*删除邮件*/,STATUS_NEVER,False
+	indx,uint16,False,/*邮件索引*/
+	
+#
+pick_mail_one_step,c2s,193,/*一键领取邮件*/,STATUS_NEVER,False
+
+#
+remove_mail_one_step,c2s,194,/*一键删除邮件*/,STATUS_NEVER,False
+
+#
+block_chat,c2s,195,/*屏蔽某人*/,STATUS_NEVER,False
+	guid,String,False,/*人物guid*/
+
+#
+cancel_block_chat,c2s,196,/*取消屏蔽*/,STATUS_NEVER,False
+	indx,uint8,False,/*索引*/

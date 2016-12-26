@@ -28,6 +28,12 @@ function PlayerInfo:FriendOnline(guid,online)
 	end
 
 end
+--清空申请列表
+function PlayerInfo:ClearApply()
+	local socialMgr = self:getSocialMgr()
+	socialMgr:clearApplyList()
+end
+
 -- 删除好友 是否双向
 function PlayerInfo:RemoveFriend(guid,twoway)
 	local socialMgr = self:getSocialMgr()
@@ -50,6 +56,10 @@ function PlayerInfo:RemoveFriend(guid,twoway)
 end
 --申请添加好友
 function PlayerInfo:ApplyFriend(guid)
+	-- self:AddEnemy(guid,5)
+	-- if true then
+	-- 	return
+	-- end
 	local friend = app.objMgr:getObj(guid)
 	if not friend then 
 		outFmtDebug("friend not on line or not extis, %s", guid)
@@ -75,6 +85,15 @@ function PlayerInfo:SureApplyFriend(guid)
 			return false
 		end
 
+		if not friend:CanAddFriend(self) then
+			return false
+		end
+		
+		if not self:CanAddFriend(friend) then
+			return false
+		end
+
+
 		if friend:AddFriend(self) == false then
 			--清除申请对象
 			socialMgr:setSocilaItem(idx,0,0,"","")
@@ -84,15 +103,6 @@ function PlayerInfo:SureApplyFriend(guid)
 		socialMgr:setSocilaItem(idx,0,0,"","")
 		self:AddFriend(friend)
 		
-		-- local i1,i2,s1,s2 = socialMgr:getSocilaItem(idx)
-		-- local emp = socialMgr:getEmptyFriendIndex()
-
-		-- if emp ~= -1 then
-		-- 	socialMgr:setSocilaItem(emp,i1,i2,s1,s2)
-		-- 	socialMgr:setSocilaItem(idx,0,0,"","")
-		-- else
-		-- 	outFmtDebug("target friend is full")
-		-- end
 
 		return true
 	end
@@ -146,6 +156,30 @@ function PlayerInfo:AddFriend(friend)
 	end
 	return tf
 
+end
+
+function PlayerInfo:CanAddFriend(friend)
+	local socialMgr = self:getSocialMgr()
+	local guid = friend:GetGuid()
+
+	--判断是不是好友
+	if socialMgr:isFriend(guid) then
+		outFmtDebug("player is already friend, %s", guid)
+		return false
+	end
+	--判断是不是自己
+	if self:GetName() == guid then
+		outFmtDebug("you self is a friend, %s", guid)
+		return false
+	end
+
+	local idx = socialMgr:getEmptyFriendIndex()
+
+	if idx == -1 then
+		return false
+	end
+
+	return true
 end
 --赠送礼物
 function PlayerInfo:AddGiftFriend(guid,gift)

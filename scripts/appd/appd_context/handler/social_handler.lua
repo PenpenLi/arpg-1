@@ -28,7 +28,10 @@ function PlayerInfo:Handle_Revenge_Enemy(pkt)
 	--outFmtDebug("fu chou")
 end
 function PlayerInfo:Handle_Remove_Friend(pkt)
-	outFmtDebug("del friend")
+	--outFmtDebug("del friend")
 	local guid = pkt.guid
 	self:RemoveFriend(guid,true)
+end
+function PlayerInfo:Handler_Clear_Apply(pkt)
+	self:ClearApply()
 end

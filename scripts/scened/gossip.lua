@@ -287,16 +287,6 @@ enum Money_Type
 	MAX_MONEY_TYPE					= 12,
 };--]]
 
-ItemToResoureceTable = {
-	[Item_Loot_Gold_Ingot] = MONEY_TYPE_GOLD_INGOT,
-	[Item_Loot_Bind_Gold ] = MONEY_TYPE_BIND_GOLD,
-	[Item_Loot_Silver	 ] = MONEY_TYPE_SILVER,
-	
-	[Item_Loot_QI		 ] = MONEY_TYPE_QI,
-	[Item_Loot_BEAST	 ] = MONEY_TYPE_BEAST,
-	[Item_Loot_GEM		 ] = MONEY_TYPE_GEM,
-}
-
 function DoRandomDrop(player, dropId, dict, moneyOperType, itemOperType)
 	
 	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT

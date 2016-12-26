@@ -69,4 +69,13 @@ social_friend_info,/*好友信息*/
 	level,uint16,0,/*等级*/
 	icon,uint16,0,/*头像*/
 	vip,uint16,0,/*头像*/
+
+#帮派信息	
+faction_info,/*好友信息*/
+	faction_guid,String,50,/*帮派guid*/
+	faction_name,String,50,/*名字*/
+	level,uint16,0,/*等级*/
+	icon,uint8,0,/*头像*/
+	player_count,uint16,0,/*帮派人数*/
+	minlev,uint16,0,/*等级限制*/
 	

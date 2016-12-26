@@ -7,6 +7,8 @@ function GetGmCommandKey(gm_str)
 	
 	elseif gm_str == '@CUSTOM' then
 		return GM_COMMAND_CUSTOM
+	elseif gm_str == '@自杀' then
+		return GM_COMMAND_SELF_KILL
     
 	elseif(gm_str == '@素材'  or gm_str == '@Material')then
 		return GM_COMMAND_SUCAI    					

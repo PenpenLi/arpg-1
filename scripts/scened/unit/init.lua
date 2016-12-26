@@ -26,6 +26,10 @@ function UnitInfo:isUseRespawnItem()
 	return self:GetPlayerByte(PLAYER_FIELD_HOOK_BYTE3, 0) > 0
 end
 
+-- 是否拒绝接受附近消息
+function UnitInfo:isDeclineNearMsg()
+	return self:GetPlayerByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE1, 0) > 0
+end
 
 --获得int guid
 function UnitInfo:GetIntGuid(  )
@@ -1075,6 +1079,16 @@ end
 -- 获取精灵对象的类型（玩家、精灵）
 function GetUnitTypeID(spirit)
 	return binLogLib.GetByte(spirit, UNIT_FIELD_BYTE_0, 0)
+end
+
+
+-- 获得vip等级
+function UnitInfo:GetVIP()
+	local vipLevel = self:GetUInt32(PLAYER_FIELD_VIP_LEVEL)
+	if self:GetUInt32(PLAYER_FIELD_VIP_TIME_OUT) < os.time() then
+		vipLevel = 0
+	end
+	return vipLevel
 end
 
 --获取VIP时间
