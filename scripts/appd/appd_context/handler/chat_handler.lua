@@ -86,7 +86,7 @@ function PlayerInfo:Handle_Block_Chat(pkt)
 		end
 	end
 	
-	local info = string.format("%d|%d|%s|%d|%s", blocker:GetGender(), blocker:GetLevel(), blocker:GetName(), blocker:GetVIP(), blocker:GetFactionName())
+	local info = string.format("%d|%d|%s|%d|%s|%s", blocker:GetGender(), blocker:GetLevel(), blocker:GetName(), blocker:GetVIP(), blocker:GetFactionName(), guid)
 	self:SetStr(emptyIndx, info)
 	self:AddBlockCounts()
 end

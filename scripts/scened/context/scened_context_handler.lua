@@ -602,7 +602,7 @@ function ScenedContext:Hanlde_Teleport_Main_City(pkt)
 	end
 	
 	local map_ptr = unitLib.GetMap(self.ptr)
-	mapLib.ExitInstance(map_ptr)
+	mapLib.ExitInstance(map_ptr, self.ptr)
 end
 
 

@@ -1,7 +1,7 @@
 InstanceFieldBase = class("InstanceFieldBase", Instance_base)
 
 InstanceFieldBase.Name = "InstanceFieldBase"
-InstanceFieldBase.player_auto_respan = 120
+InstanceFieldBase.player_auto_respan = 10
 
 function InstanceFieldBase:ctor(  )
 	
@@ -51,13 +51,16 @@ end
 function InstanceFieldBase:OnPlayerDeath(player)
 	local playerInfo = UnitInfo:new{ptr = player}
 	
-	local cooldown = 10
-	local timestamp = os.time() + cooldown
-	-- 这句有bug
-	--self:AddTimeOutCallback(self.Leave_Callback, timestamp)
-	
 	-- 发送野外死亡回城倒计时
 	playerInfo:call_field_death_cooldown(self.player_auto_respan)
+end
+
+-- 回程
+function InstanceFieldBase:DoAfterRespawn(unit_ptr)
+	local unitInfo = UnitInfo:new{ptr = unit_ptr}
+	if unitInfo:GetTypeID() == TYPEID_PLAYER then
+		mapLib.ExitInstance(self.ptr, unit_ptr)
+	end
 end
 
 return InstanceFieldBase

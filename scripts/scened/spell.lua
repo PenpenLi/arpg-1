@@ -663,6 +663,11 @@ function isInProtected(killer, target)
 		return true
 	end
 	
+	-- 在传送中
+	if not playerLib.IsLogined(target) then
+		return true
+	end
+	
 	return false
 end
 

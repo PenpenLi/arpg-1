@@ -4,6 +4,8 @@ InstanceInstBase.Name = "InstanceInstBase"
 
 InstanceInstBase.Time_Out_Fail_Callback = "instanceFail"
 
+InstanceInstBase.Leave_Callback = "prepareToLeave"
+
 function InstanceInstBase:ctor(  )
 	
 end
@@ -12,6 +14,13 @@ end
 function InstanceInstBase:OnInitScript(  )
 	Instance_base.OnInitScript(self) --调用基类
 end
+
+
+-- 退出倒计时到了准备退出
+function InstanceInstBase:prepareToLeave()
+	mapLib.ExitInstance(self.ptr)
+end
+
 
 -- 副本失败退出
 function InstanceInstBase:instanceFail()

@@ -792,8 +792,7 @@ end
 
 --获得pvp状态
 function UnitInfo:GetPVPState()
-	return false
-	--TODO: return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_PVP)
+	return self:GetPlayerBit(PLAYER_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_PVP)
 end
 
 --获得pve状态
@@ -1690,6 +1689,9 @@ function OnPVPKilled(killer, target)
 	end
 	-- target, 恶名值-1
 	targetInfo:ModifyNotoriety(-1)
+	
+	-- 加仇人列表
+	playerLib.SendToAppdDoSomething(target, SCENED_APPD_ADD_ENEMY, 1, killerInfo:GetPlayerGuid())
 end
 
 

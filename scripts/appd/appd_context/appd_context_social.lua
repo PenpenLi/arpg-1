@@ -242,6 +242,7 @@ function PlayerInfo:AddEnemy(guid,num)
 	local enemy = app.objMgr:getObj(guid)
 	if not enemy then 
 		outFmtDebug("enemy not on line or not extis, %s", guid)
+		return
 	end
 	socialMgr:addEnemyPlayerNum(enemy,guid,num)
 end

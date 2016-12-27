@@ -65,7 +65,6 @@ end
 
 -- 判断是否能退出副本
 function InstanceVIP:DoPlayerExitInstance(player)
-	self:RemoveTimeOutCallback(self.Leave_Callback)
 	return 1	--返回1的话为正常退出，返回0则不让退出
 end
 
@@ -137,6 +136,8 @@ end
 --当玩家离开时触发
 function InstanceVIP:OnLeavePlayer( player, is_offline)
 	if not is_offline then
+		self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
+		self:RemoveTimeOutCallback(self.Leave_Callback)
 		self:SetMapEndTime(os.time())
 	end
 end

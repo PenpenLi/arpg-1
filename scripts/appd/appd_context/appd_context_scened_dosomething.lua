@@ -19,5 +19,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		end
 	elseif SCENED_APPD_USE_RESPAWN_ITEM == ntype then
 		useRespawn(self)
+	elseif SCENED_APPD_ADD_ENEMY == ntype then
+		self:AddEnemy(str, data)
 	end
 end

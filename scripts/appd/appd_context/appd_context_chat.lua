@@ -48,7 +48,7 @@ function PlayerInfo:SendWorldChat(content)
 		content = fuckPingBi(content)
 	end
 	--//过滤
-	content = ChatMsgFilter(content)
+--	content = ChatMsgFilter(content)
 	--//加标识
 	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
 	
