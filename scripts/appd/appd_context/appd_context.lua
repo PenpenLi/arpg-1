@@ -533,6 +533,11 @@ function PlayerInfo:GetSystemMailSeq()
 	return self:GetUInt32(PLAYER_INT_FIELD_SYSTEM_MAIL_ID)
 end
 
+-- 设置系统邮件的序号
+function PlayerInfo:SetSystemMailSeq(val)
+	return self:SetUInt32(PLAYER_INT_FIELD_SYSTEM_MAIL_ID, val)
+end
+
 --玩家登录做点什么,或者场景服启动做点什么？
 function PlayerInfo:Login()
 	local isPkServer = globalGameConfig:IsPKServer()

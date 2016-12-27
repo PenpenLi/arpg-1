@@ -16,19 +16,19 @@ end
 function PlayerInfo:Remove_Mail(indx)
 
 	local giftPacksInfo = self:getGiftPacksInfo()
-	-- TODO: 
+	giftPacksInfo:removeMail(indx)
 end
 
 -- 一键领取邮件
 function PlayerInfo:Pick_Mail_One_Step()
 	
 	local giftPacksInfo = self:getGiftPacksInfo()
-	-- TODO: 
+	giftPacksInfo:pickMailOneStep(self)
 end
 
 -- 一键删除邮件
 function PlayerInfo:Remove_Mail_One_Step()
 	
 	local giftPacksInfo = self:getGiftPacksInfo()
-	-- TODO: 
+	giftPacksInfo:removeMailOneStep() 
 end

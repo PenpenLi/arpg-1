@@ -116,7 +116,7 @@ function GlobalSystemMail:GetSystemMailItem(pos)
 	local start
 	
 	if(pos == nil)then
-		start = SYSTEM_MAIL_STRING_FIELD_BEGIN + self:StringStart()
+		start = self:StringStart()
 	else
 		start = SYSTEM_MAIL_STRING_FIELD_BEGIN + pos * MAX_SYSTEM_MAIL_INFO_STRING
 	end
@@ -155,6 +155,14 @@ function GlobalSystemMail:AddSystemMailInfo( gift_type, start_time, end_time, gi
 	
 	self:Next()
 	
+	-- 遍历所有在线玩家
+	app.objMgr:foreachAllPlayer(function(playerInfo)
+		-- 设置序列号
+		playerInfo:SetSystemMailSeq(id)
+		local indx = (id-1) % MAX_SYSTEM_MAIL_INFO_COUNT
+		self:PickSystemMail(playerInfo, indx)
+	end)
+	
 	return 1
 end
 
@@ -168,24 +176,36 @@ function GlobalSystemMail:checkIfHasSystemMail(playerInfo)
 	end
 	
 	-- 获取最后的
-	for g = vist+1, id do
+	for g = vist, id-1 do
 		local indx = g % MAX_SYSTEM_MAIL_INFO_COUNT
-		local intIndx = SYSTEM_MAIL_INT_FIELD_BEGIN + indx * MAX_SYSTEM_MAIL_INFO_INT
-		local strIndx = SYSTEM_MAIL_STRING_FIELD_BEGIN + indx * MAX_SYSTEM_MAIL_INFO_STRING
-		
-		-- 玩家自己加邮件
-		local giftPack = self:getGiftPacksInfo()
-		
-		local gift_type   = self:GetUInt32(intIndex + SYSTEM_MAIL_INFO_INT_TYPE)
-		local start_time  = self:GetUInt32(intIndex + SYSTEM_MAIL_INFO_INT_START_TIME)
-		local end_time    = self:GetUInt32(intIndex + SYSTEM_MAIL_INFO_INT_END_TIME)
-		
-		local gift_name   = self:GetStr(strIndex + SYSTEM_MAIL_INFO_STRING_NAME)
-		local gift_desc   = self:GetStr(strIndex + SYSTEM_MAIL_INFO_STRING_DESC)
-		local item_config = self:GetStr(strIndex + SYSTEM_MAIL_INFO_STRING_ITEM)
-		
-		giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, "")
+		self:PickSystemMail(playerInfo, indx)
 	end
+	
+	-- 设置序列号
+	playerInfo:SetSystemMailSeq(id)
+end
+
+-- 领取系统礼包
+function GlobalSystemMail:PickSystemMail(playerInfo, indx)
+	print("GlobalSystemMail:PickSystemMail guid =", playerInfo:GetGuid(), "indx =", indx)
+	
+	local intIndx = SYSTEM_MAIL_INT_FIELD_BEGIN + indx * MAX_SYSTEM_MAIL_INFO_INT
+	local strIndx = SYSTEM_MAIL_STRING_FIELD_BEGIN + indx * MAX_SYSTEM_MAIL_INFO_STRING
+	
+	-- 玩家自己加邮件
+	local giftPack = playerInfo:getGiftPacksInfo()
+	
+	local gift_type   = self:GetUInt32(intIndx + SYSTEM_MAIL_INFO_INT_TYPE)
+	local start_time  = self:GetUInt32(intIndx + SYSTEM_MAIL_INFO_INT_START_TIME)
+	local end_time    = self:GetUInt32(intIndx + SYSTEM_MAIL_INFO_INT_END_TIME)
+	
+	local gift_name   = self:GetStr(strIndx + SYSTEM_MAIL_INFO_STRING_NAME)
+	local gift_desc   = self:GetStr(strIndx + SYSTEM_MAIL_INFO_STRING_DESC)
+	local item_config = self:GetStr(strIndx + SYSTEM_MAIL_INFO_STRING_ITEM)
+	
+	print(gift_type, start_time, end_time, gift_name, gift_desc, item_config)
+	
+	giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, "")
 end
 
 

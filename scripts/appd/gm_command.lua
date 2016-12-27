@@ -370,11 +370,17 @@ function  DoGMScripts(player_ptr, gm_commands)
 			level = tonumber(tokens[2])
 		end		
 		player:SetByte(PLAYER_FIELD_BYTES_2, 1, level)
-	
+		
+	elseif(tokens[1] == "@系统邮件")then
+		globalSystemMail:AddSystemMailInfo(GIFT_PACKS_TYPE_SYSTEM_COMPENSATION, os.time(),os.time() + 86400*30, "系统补偿", "由于服务器停机维护, 对您的照成的损失进行补偿", "50001,1,50003,10", "")
 	elseif(tokens[1] == "@邮件")then
-		--发放礼包		
+		--发放礼包
+		local toguid = player:GetGuid()
+		if #tokens >= 2 then
+			toguid = tokens[2]
+		end
 		--AddGiftPacksData(player:GetGuid(),0,GIFT_PACKS_TYPE_FRIEND,os.time(),os.time() + 86400*30,GIFT_MASSAGE_BAGUAZHEN.GIFT_NAME,GIFT_MASSAGE_BAGUAZHEN.GIFT_NAME,"2372,1,0,2322,1,0,2334,1,0,2344,1,0,254,1,0",player:GetName())
-		AddGiftPacksData(player:GetGuid(),0,GIFT_PACKS_TYPE_ITEM_GIVE,os.time(),os.time() + 86400*30,"GIFT_NAME","小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比","2372,1,0,2322,1,0,2334,1,0,2344,1,0",player:GetName())
+		AddGiftPacksData(toguid,0,GIFT_PACKS_TYPE_ITEM_GIVE,os.time(),os.time() + 86400*30,"GIFT_NAME","小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比","50001,1,50003,10",player:GetName())
 	
 	elseif(tokens[1] == "@在线奖励次数")then
 		local count = 0

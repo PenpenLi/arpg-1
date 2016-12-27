@@ -119,7 +119,7 @@ end
 function GlobalOfflineMail:GetGiftPacksItem(pos)
 	local start
 	if(pos == nil)then
-		start = GIFTPACKS_STRING_FIELD_BEGIN + self:StringStart()
+		start = self:StringStart()
 	else
 		start = GIFTPACKS_STRING_FIELD_BEGIN + pos * MAX_GIFTPACKS_INFO_STRING
 	end
@@ -143,15 +143,15 @@ end
 	to_guid     : 邮件所属
 ]]
 function GlobalOfflineMail:AddOfflineMailInfo( gift_type, start_time, end_time, gift_name, gift_desc, item_config, to_guid)
-	self:SetSystemMailID(0)
-	self:SetSystemMailStartTime(start_time)
-	self:SetSystemMailEndTime(end_time)
-	self:SetSystemMailType(gift_type)
+	self:SetGiftPacksID(0)
+	self:SetGiftPacksStartTime(start_time)
+	self:SetGiftPacksEndTime(end_time)
+	self:SetGiftPacksType(gift_type)
 
-	self:SetSystemMailName(gift_name)
-	self:SetSystemMailDesc(gift_desc)
-	self:SetSystemMailItem(item_config)
-	self:SetSystemMailFrom(to_guid)
+	self:SetGiftPacksName(gift_name)
+	self:SetGiftPacksDesc(gift_desc)
+	self:SetGiftPacksItem(item_config)
+	self:SetGiftPacksFrom(to_guid)
 	
 	local indx = self:GetAttackStrutCount()
 	playerLib.SetOfflineMailIndexByGuid(to_guid, indx)
@@ -175,7 +175,7 @@ function AddGiftPacksData(guid, id, gift_type,start_time,end_time,gift_name,gift
 	
 	-- 玩家自己加邮件
 	local giftPack = player:getGiftPacksInfo()
-	giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, "")
+	giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from)
 end
 
 
@@ -206,6 +206,7 @@ end
 --检测离线邮件是否过期
 function GlobalOfflineMail:checkOfflineMailIfExpire()
 	local guidTable = playerLib.GetOfflineMailGuidTable()
+	local curr = os.time()
 	for _, guid in pairs(guidTable) do
 		local indxTable = playerLib.GetOfflineMailIndiceByGuid(guid)
 		for _, indx in pairs(indxTable) do
@@ -217,16 +218,29 @@ function GlobalOfflineMail:checkOfflineMailIfExpire()
 	end
 end
 
--- 玩家上限读取离线邮件
+-- 玩家上线读取离线邮件
 function GlobalOfflineMail:GetOfflineMail(playerInfo)
 	local guid = playerInfo:GetGuid()
+	local curr = os.time()
 	local indxTable = playerLib.GetOfflineMailIndiceByGuid(guid)
 	for _, indx in pairs(indxTable) do
 		local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
 		local strIndex = GIFTPACKS_STRING_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_STRING
-		if self:GetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME) >= curr and self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 1) == 0 then
+		if self:GetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME) >= curr and self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 1) == 0 and self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_FROM) == guid then
 			self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 1, 1)
+						
+			playerLib.RemoveOfflineMailIndex(guid, indx)
+			-- 玩家自己加邮件
+			local giftPack = playerInfo:getGiftPacksInfo()
 			
+			local gift_type   = self:GetByte  (intIndex + GIFTPACKS_INFO_INT_BYTE, 0)
+			local start_time  = self:GetUInt32(intIndex + GIFTPACKS_INFO_INT_START_TIME)
+			local end_time    = self:GetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME)
+			
+			local gift_name   = self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_NAME)
+			local gift_desc   = self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_DESC)
+			local item_config = self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_ITEM)
+
 			--[[
 				把所有数据清了吧
 			--]]
@@ -237,18 +251,6 @@ function GlobalOfflineMail:GetOfflineMail(playerInfo)
 			for ii = 0, MAX_GIFTPACKS_INFO_STRING-1 do
 				self:SetStr(strIndex + ii, "")
 			end
-			
-			playerLib.RemoveOfflineMailIndex(guid, indx)
-			-- 玩家自己加邮件
-			local giftPack = self:getGiftPacksInfo()
-			
-			local gift_type   = self:GetByte  (intIndex + GIFTPACKS_INFO_INT_BYTE, 0)
-			local start_time  = self:GetUInt32(intIndex + GIFTPACKS_INFO_INT_START_TIME)
-			local end_time    = self:GetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME)
-			
-			local gift_name   = self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_NAME)
-			local gift_desc   = self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_DESC)
-			local item_config = self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_ITEM)
 
 			giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, "")
 		end

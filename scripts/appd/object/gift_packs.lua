@@ -135,7 +135,7 @@ end
 function GiftPacksInfo:GetGiftPacksItem(pos)
 	local start
 	if(pos == nil)then
-		start = GIFTPACKS_STRING_FIELD_BEGIN + self:StringStart()
+		start = self:StringStart()
 	else
 		start = GIFTPACKS_STRING_FIELD_BEGIN + pos * MAX_GIFTPACKS_INFO_STRING
 	end
@@ -144,8 +144,15 @@ function GiftPacksInfo:GetGiftPacksItem(pos)
 end
 
 --设置礼包物品
-function GiftPacksInfo:SetGiftPacksItem(val)
-	self:SetStr(self:StringStart() + GIFTPACKS_INFO_STRING_GIFT_ITEM,val)
+function GiftPacksInfo:SetGiftPacksItem(val, pos)
+	local start
+	if(pos == nil)then
+		start = self:StringStart()
+	else
+		start = GIFTPACKS_STRING_FIELD_BEGIN + pos * MAX_GIFTPACKS_INFO_STRING
+	end
+	
+	self:SetStr(start + GIFTPACKS_INFO_STRING_GIFT_ITEM,val)
 end
 
 --添加一个礼包信息
@@ -190,24 +197,53 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	
 	
 	local itemInfoTable = string.split(items, ",")
+	local size = #itemInfoTable / 2
+	
 	-- 判断背包格子是否足够
 	local itemMgr = playerInfo:getItemMgr()
 	local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
-	if emptys < #itemInfoTable then
+	if emptys < size then
 		self:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
 		return
 	end
 	
-	for _, itemInfo in pairs(itemInfoTable) do
-		local itemTable = string.split(itemInfo, ":")
-		local itemId = itemTable[ 1 ]
-		local count  = itemTable[ 2 ]
+	for i = 1, #itemInfoTable, 2 do
+		local itemId = itemInfoTable[ i ]
+		local count  = itemInfoTable[i+1]
 		playerInfo:PlayerAddItem(itemId, count)
 	end
 	
 	-- 设置领取标志
 	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
+	self:SetGiftPacksItem("", indx)
 end
 
+-- 删除礼包
+function GiftPacksInfo:removeMail(indx)
+	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
+	
+	-- 已经删除的判断
+	if self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,3) > 0  then
+		return
+	end
+	
+	-- 设置删除标志
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 3, 1)
+end
+
+-- 一键领取
+function GiftPacksInfo:pickMailOneStep(playerInfo)
+	for i = 0, MAX_GIFTPACKS_INFO_COUNT-1 do
+		self:pickMail(playerInfo, i)
+	end
+end
+
+-- 一键删除
+function GiftPacksInfo:removeMailOneStep()
+	local intIndex = GIFTPACKS_INT_FIELD_BEGIN
+	for i = 0, MAX_GIFTPACKS_INFO_COUNT-1 do
+		self:removeMail(i)
+	end
+end
 
 return GiftPacksInfo
