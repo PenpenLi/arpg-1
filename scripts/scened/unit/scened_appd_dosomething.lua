@@ -16,6 +16,8 @@ function UnitInfo:DoGetAppdDoSomething( ntype, data, str)
 		self:sceneGoldRespawn(data)
 	elseif ntype == APPD_SCENED_NEAR_BY_CHAT then
 		self:chatNearBy(str)
+	elseif ntype == APPD_SCENED_ADD_EXP then
+		self:AddExp(data)
 	end
 end
 
@@ -80,7 +82,12 @@ function UnitInfo:chatNearBy(content)
 	for _, player in pairs(allPlayers) do
 		local playerInfo = UnitInfo:new {ptr = player}
 		if not playerInfo:isDeclineNearMsg() then
-			playerInfo:call_send_chat (CHAT_TYPE_CURRENT ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+			playerInfo:call_send_chat (CHAT_TYPE_CURRENT ,self:GetPlayerGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
 		end
 	end
+end
+
+-- ¼Ó¾­Ñé
+function UnitInfo:AddExp(exp)
+	playerLib.AddExp(self.ptr, exp)
 end

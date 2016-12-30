@@ -1,6 +1,46 @@
+--角色登录 帮派处理
+function PlayerInfo:factionLogin()
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			local player_guid = self:GetGuid()
+			local index = faction:FindPlayerIndex(player_guid)
+			if index == nil then
+				self:clearFaction()
+			else 
+				faction:SetFactionMemberIsOnline(index,1)
+				faction:SetFactionMemberLogoutTime(index,0)
+			end
+		else
+			self:clearFaction()
+		end
+	end
+end
+--角色退出 帮派处理
+function PlayerInfo:factionLogOut()
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			local player_guid = self:GetGuid()
+			local index = faction:FindPlayerIndex(player_guid)
+			if index ~= nil then
+				faction:SetFactionMemberIsOnline(index,0)
+				faction:SetFactionMemberLogoutTime(index,os.time())
+			end
+		end
+	end
+end
+--清理角色帮派信息
+function PlayerInfo:clearFaction()
+	self:SetFactionId("")
+	self:SetFactionName("")
+end
 --创建帮派
 function PlayerInfo:Handle_Faction_Create( pkt )
 	local name = pkt.name
+	local icon = pkt.icon
 	--print(name,"*",#name)
 	outFmtDebug("Handle_Faction_Create")
 	
@@ -66,6 +106,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	--扣除相应资源 + 祝福值
 	 if not self:costMoneys(MONEY_CHANGE_CREATE_FACTION,config.cost) then
 	 	self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_CREATE_COST)
+		return
 	 end
 
 	-- 获取guid
@@ -79,6 +120,8 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 
 	faction:SetName(faction_name)
 	faction:SetFactionLevel(faction_lv)
+	faction:SetBangZhuName(self:GetName())
+	faction:SetFactionCurFlagId(icon)
 
 	if not faction:MemberAdd(self) then
 		guidMgr:callRemoveObject(new_guid)
@@ -86,6 +129,8 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 		self:SetFactionName("")
 		return
 	end
+	
+	faction:RefreshShop()
 	
 	--登录服也监听下
 	app.objMgr:callAddWatch(serverConnList:getLogindFD(), new_guid)
@@ -111,29 +156,42 @@ end
 
 --获取帮派列表
 function PlayerInfo:Handle_Faction_Get_List( pkt )
-	local start, t_end = pkt.start, pkt.t_end
-	--local faction_num = 0
-	local results = {}	
-	for i = start,t_end do
-		app.objMgr:foreachAllFaction(function(faction)
-			if i == faction:GetFactionRank() then
-				local list = faction_info_t:new 
-					{	
-						faction_name = faction:GetName(),
-						faction_guid = faction:GetGuid(),
-						level 		 = faction:GetFactionLevel(), 
-						player_count = faction:GetMemberCount(), 
-						icon 		 = faction:GetFactionCurFlagId(),
-						minlev		 = faction:GetFactionMinLev()
-					}
-				table.insert(results, list)
-				--faction_num = faction_num + 1
-				return
-			end
-		end)
+	local page, num,grep = pkt.page, pkt.num,grep 
+	local lev = 0
+	if grep then
+		lev = self:GetLevel()
 	end
-	-- 下发给客户端
-	self:call_faction_get_list_result(results)
+	playerLib.FastGetFactionList(self:GetGuid(),page,num,lev)
+	
+end
+
+--快速加入帮派
+function PlayerInfo:Handle_Faction_FastJoin(pkt)
+	print("Handle_Faction_FastJoin")
+	local flag = true
+	app.objMgr:foreachAllFaction(function(faction)
+		
+		if faction:GetFactionFlags(FACTION_FLAGS_AUTO) then
+			local faclev = faction:GetFactionMinLev()
+			if faclev > 0 then
+				local lev = self:GetLevel()
+				if lev >= faclev then
+					flag = false
+					return faction:MemberAdd(self)
+				end
+			else
+				flag = false
+				return faction:MemberAdd(self)
+			end
+		end
+			
+		
+	end)
+	
+	if flag then
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPEATE_TYPE_FACTION_NOT_JOIN)
+	end
+	
 end
 
 --帮派申请
@@ -145,11 +203,13 @@ function PlayerInfo:Hanlde_Faction_Apply( pkt )
 	end
 
 	local faction = app.objMgr:getObj(pkt.id)   --帮派guid
-	if faction then
-		--app.objMgr:callAddWatch(self:GetSessionId(), pkt.id)
-		--self:SetFactionId(pkt.id)
-		--print("you have joined faction = "..pkt.id)
-		
+	if faction then		
+		if self:GetLevel() < faction:GetFactionMinLev() then
+			--玩家等级不够
+			self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_LEV_LOW)
+			return 
+		end
+
 		if faction:GetFactionFlags(FACTION_FLAGS_AUTO) then
 			faction:MemberAdd(self)
 		else
@@ -173,7 +233,6 @@ end
 
 --帮派管理
 function PlayerInfo:Hanlde_Faction_Manager( pkt )
-	outFmtDebug("***************Hanlde_Faction_Manager")
 	local faction_guid = self:GetFactionId()
 	if faction_guid == "" then
 		return
@@ -201,15 +260,15 @@ function PlayerInfo:Hanlde_Faction_Manager( pkt )
 	--职位任免	
 	elseif opt_type == FACTION_MANAGER_TYPE_APPOINT then
 		faction:FactionAppoint(self, reserve_str1,reserve_int1)	
-	--勾选“不需审核”
-	elseif opt_type == FACTION_MANAGER_TYPE_NO_REVIEW then
-		faction:FactionReview(self, reserve_int1)	
+	--招募设置
+	elseif opt_type == FACTION_MANAGER_TYPE_RECRUIT then
+		faction:FactionRecruit(self, reserve_int1,reserve_int2,reserve_str1)
 	--	帮派升级
 	elseif opt_type == FACTION_MANAGER_TYPE_LEVEL_UP then
 		faction:FactionLevelUp(self)	
 	--	替换帮旗
 	elseif opt_type == FACTION_MANAGER_TYPE_CHANGE_FLAGS then
-		faction:FactionChangeFlags(self,reserve_int1)		
+		--faction:FactionChangeFlags(self,reserve_int1)		
 	--帮会公告	
 	elseif opt_type == FACTION_MANAGER_TYPE_NOTICE then	
 		faction:FactionNotice(self,reserve_str1)		
@@ -219,6 +278,7 @@ end
 
 --帮众操作
 function PlayerInfo:Handle_Faction_People( pkt )
+	outFmtDebug("juanxian")
 	local faction_guid = self:GetFactionId()
 	if faction_guid == "" then
 		return
@@ -240,18 +300,22 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	--捐献
 	if opt_type == FACTION_MANAGER_TYPE_JUANXIAN then
 		faction:FactionJuanXian(self,pos,reserve_int1,reserve_int2)
+		--faction:RefreshShop()
 	--领取福利	
 	elseif opt_type == FACTION_MANAGER_TYPE_FULI then
-		faction:FactionFuLi(self,pos)
+		--faction:FactionFuLi(self,pos)
 	--发红包	
 	elseif opt_type == FACTION_MANAGER_TYPE_FA_HONGBAO then
-		faction:FactionFaHongBao(self,reserve_int1,reserve_int2)
+		--faction:FactionFaHongBao(self,reserve_int1,reserve_int2)
 	--领取红包	
 	elseif opt_type == FACTION_MANAGER_TYPE_LQ_HONGBAO then	
-		faction:FactionLqHongBao(self,pos)
+		--faction:FactionLqHongBao(self,pos)
 	--上香	
 	elseif opt_type == FACTION_MANAGER_TYPE_SHANGXIANG then	
-		faction:FactionShangXiang(self,pos,reserve_int1)
+		--faction:FactionShangXiang(self,pos,reserve_int1)
+	--
+	elseif opt_type == FACTION_MANAGER_TYPE_SHOP then
+		faction:ShopItem(self,reserve_int1,reserve_int2)
 	end
 	
 	

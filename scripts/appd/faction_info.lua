@@ -39,6 +39,11 @@ end
 function FactionInfo:SubMemberCount(val)
 	self:SubUInt32(FACTION_INT_FIELD_PLAYER_NOW_INDEX, val)
 end
+--帮派最大成员人数
+function FactionInfo:GetMemberMaxCount()
+	local lev = self:GetFactionLevel()
+	return tb_faction_base[lev].maxnum
+end
 
 --获取帮派申请人数
 function FactionInfo:GetFactionApplyCount()
@@ -59,6 +64,44 @@ end
 function FactionInfo:SubFactionApplyCount(val)
 	self:SubUInt32(FACTION_INT_FIELD_APPLY_PLAYER_COUNT_INDEX, val)
 end
+---------------------帮派事件相关---------------------
+--获取单条事件类型
+function FactionInfo:GetFactionEventType(pos)
+	return self:GetUInt16(FACTION_INT_FIELD_EVENT+pos*MAX_FACTION_INT_EVENT+FACTION_INT_EVENT_TYPE_VALUE,0)
+end
+--设置单条事件类型
+function FactionInfo:SetFactionEventType(pos,val)
+	self:SetUInt16(FACTION_INT_FIELD_EVENT+pos*MAX_FACTION_INT_EVENT+FACTION_INT_EVENT_TYPE_VALUE,0,val)
+end
+
+--获取单条事件值
+function FactionInfo:GetFactionEventValue(pos)
+	return self:GetUInt16(FACTION_INT_FIELD_EVENT+pos*MAX_FACTION_INT_EVENT+FACTION_INT_EVENT_TYPE_VALUE,1)
+end
+--设置单条事件值
+function FactionInfo:SetFactionEventValue(pos,val)
+	self:SetUInt16(FACTION_INT_FIELD_EVENT+pos*MAX_FACTION_INT_EVENT+FACTION_INT_EVENT_TYPE_VALUE,1,val)
+end
+
+--获取单条事件名称
+function FactionInfo:GetFactionEventName(pos)
+	return self:GetStr(FACTION_STRING_FIELD_EVENT+pos)
+end
+--设置单条事件名称
+function FactionInfo:SetFactionEventName(pos,val)
+	self:SetStr(FACTION_STRING_FIELD_EVENT+pos,val)
+end
+
+--设置事件标记
+function FactionInfo:SetFactionEventFlag(val)
+	self:SetUInt32(FACTION_INT_FIELD_EVENT_FALG,val)
+end
+--获取事件标记
+function FactionInfo:GetFactionEventFlag()
+	return self:GetUInt32(FACTION_INT_FIELD_EVENT_FALG)
+end
+
+
 
 ---------------------成员信息相关---------------------
 --获取成员战斗力
@@ -94,6 +137,36 @@ end
 --增加成员今日贡献
 function FactionInfo:AddFactionMemberDayGongXian(pos,val)
 	self:AddUInt16(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_UINT16, 1, val)
+end
+
+--获取成员今日金币捐献次数
+function FactionInfo:GetFactionMemberGoldDonation(pos)
+	return self:GetByte(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_UINT16, 2)
+end
+
+--设置成员今日金币捐献次数
+function FactionInfo:SetFactionMemberGoldDonation(pos,val)
+	self:SetByte(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_UINT16, 2, val)
+end
+
+--增加成员今日金币捐献次数
+function FactionInfo:AddFactionMemberGoldDonation(pos,val)
+	self:AddByte(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_UINT16, 2, val)
+end
+
+--获取成员今日元宝捐献次数
+function FactionInfo:GetFactionMemberYbDonation(pos)
+	return self:GetByte(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_UINT16, 3)
+end
+
+--设置成员今日元宝捐献次数
+function FactionInfo:SetFactionMemberYbDonation(pos,val)
+	self:SetByte(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_UINT16, 3, val)
+end
+
+--增加成员今日元宝捐献次数
+function FactionInfo:AddFactionMemberYbDonation(pos,val)
+	self:AddByte(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_UINT16, 3, val)
 end
 
 --获取成员标志位
@@ -245,16 +318,16 @@ end
 
 --获取帮派资产
 function FactionInfo:GetFactionMoney()
-	return self:GetUInt32(FACTION_INT_FIELD_MONEY)
+	return self:GetDouble(FACTION_INT_FIELD_MONEY)
 end
 
 --设置帮派资产
 function FactionInfo:SetFactionMoney(val)
-	self:SetUInt32(FACTION_INT_FIELD_MONEY,val)
+	self:SetDouble(FACTION_INT_FIELD_MONEY,val)
 end
 --增加帮派资产
 function FactionInfo:AddFactionMoney(val)
-	self:AddUInt32(FACTION_INT_FIELD_MONEY,val)
+	self:AddDouble(FACTION_INT_FIELD_MONEY,val)
 end
 
 
@@ -316,6 +389,11 @@ end
 --设置帮派公告
 function FactionInfo:SetFactionNotice(notice)
 	self:SetStr(FACTION_STRING_FIELD_GONGGAO,notice)
+end
+
+--设置帮派招募公告
+function FactionInfo:SetFactionZhaoMuNotice(notice)
+	self:SetStr(FACTION_STRING_FIELD_ZHAOMU_GONGGAO,notice)
 end
 
 --设置帮派公告修改时间
@@ -451,6 +529,16 @@ function FactionInfo:SetFactionApplyVipLevel(pos,val)
 	self:SetByte(FACTION_INT_FIELD_APPLY_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_BYTE, 2, val)
 end
 
+--设置成员是否在线
+function FactionInfo:SetFactionApplyIsOnline(pos,val)
+	self:SetByte(FACTION_INT_FIELD_APPLY_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_BYTE, 0, val)
+end
+
+--获取成员身份
+function FactionInfo:GetFactionApplyIdentity(pos)
+	return self:GetByte(FACTION_INT_FIELD_APPLY_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_BYTE, 1)
+end
+
 --获取申请成员在线时长
 function FactionInfo:GetFactionApplyOnlineTime(pos)
 	return self:GetUInt32(FACTION_INT_FIELD_APPLY_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_ONLINE_TIME)
@@ -471,6 +559,16 @@ function FactionInfo:SetFactionApplyEndTime(pos,val)
 	self:SetUInt32(FACTION_INT_FIELD_APPLY_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_XIAOHEIWU_END_TIME,val)
 end
 
+--获取申请成员申请时间
+function FactionInfo:GetFactionApplyTime(pos)
+	return self:GetUInt32(FACTION_INT_FIELD_APPLY_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_TOTAL_CONTRIBUTION)
+end
+
+--设置申请成员申请时间
+function FactionInfo:SetFactionApplyTime(pos,val)
+	self:SetUInt32(FACTION_INT_FIELD_APPLY_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_TOTAL_CONTRIBUTION,val)
+end
+
 --获取申请成员GUID
 function FactionInfo:GetFactionApplyGuid(pos)
 	return self:GetStr(FACTION_STRING_FIELD_APPLY_PLAYER + pos*MAX_FACTION_STRING_MEMBER+FACTION_STRING_MEMBER_GUID)
@@ -489,6 +587,16 @@ end
 --设置申请成员名字
 function FactionInfo:SetFactionApplyName(pos,val)
 	self:SetStr(FACTION_STRING_FIELD_APPLY_PLAYER + pos*MAX_FACTION_STRING_MEMBER+FACTION_STRING_MEMBER_NAME,val)
+end
+
+--获取申请成员名字
+function FactionInfo:GetFactionApplyFlag()
+	return self:GetUInt32(FACTION_INT_FIELD_APPLY_FLAG)
+end
+
+--设置申请成员名字
+function FactionInfo:SetFactionApplyFlag(val)
+	self:SetUInt32(FACTION_INT_FIELD_APPLY_FLAG,val)
 end
 
 --获得玩家是否在申请列表中
@@ -513,6 +621,21 @@ function FactionInfo:GetApplyEmptyPos()
 	end
 	return pos
 end
+--获取申请列表中时间最早的
+function FactionInfo:GetApplyMinTimePos()
+	local minnum = 4294967295
+	local pos
+	for i = 0,MAX_FACTION_APLLY_MAMBER_COUNT-1 do
+		local time = self:GetFactionApplyTime(i)
+		--outFmtDebug("time %d",time)
+		if minnum > time then
+			minnum = time
+			pos = i
+		end
+		
+	end
+	return pos
+end
 
 --获取邀请列表成员所在位置
 function FactionInfo:GetApplyPosFromPlayer(guid)
@@ -529,30 +652,36 @@ end
 
 --添加申请成员
 function FactionInfo:SetApplyPlayer(player)	
+	--outFmtDebug("SetApplyPlayer")
 	local pos = self:GetApplyEmptyPos()
+	if pos == nil then
+		pos = self:GetApplyMinTimePos()
+		--outFmtDebug("SetApplyPlayer3 %d",pos)
+	end
+	
 	if pos then
 		self:SetFactionApplyGuid(pos, player:GetGuid())
 		self:SetFactionApplyLevel(pos, player:GetLevel())
 		self:SetFactionApplyForce(pos, player:GetForce())
 		self:SetFactionApplyName(pos, player:GetName())
-		self:SetFactionApplyVipLevel(pos,player:GetVipLevel())
-		--self:SetFactionApplyEndTime(pos,os.time())
-		self:AddFactionApplyCount(1)
+		self:SetFactionApplyVipLevel(pos,player:GetVIP())
+		self:SetFactionApplyIsOnline(pos,1)
+		self:SetFactionApplyTime(pos,os.time())
 	end
 end
 
 --获取申请成员信息
 function FactionInfo:GetApplyPlayer(guid)
 	local pos = self:GetApplyPosFromPlayer(guid)
-	local force,level,name,is_vip,onlinetime
+	local force,level,name,is_vip
 	if pos ~= nil then
 		force = self:GetFactionApplyForce(pos)
 		level = self:GetFactionApplyLevel(pos)
 		name = self:GetFactionApplyName(pos)
 		is_vip = self:GetFactionApplyVipLevel(pos)
-		onlinetime = self:GetFactionApplyOnlineTime(pos)
+		--onlinetime = self:GetFactionApplyOnlineTime(pos)
 	end
-	return force,level,name,is_vip,onlinetime
+	return force,level,name,is_vip
 end
 
 --删除申请成员信息
@@ -564,30 +693,30 @@ function FactionInfo:DelApplyPlayer(guid)
 		self:SetFactionApplyForce(pos, 0)
 		self:SetFactionApplyName(pos,"")
 		self:SetFactionApplyVipLevel(pos,0)
-		self:SetFactionApplyOnlineTime(pos,0)
-		self:SetFactionApplyEndTime(pos,0)
-		self:SubFactionApplyCount(1)
+		--self:SetFactionApplyOnlineTime(pos,0)
+		--self:SetFactionApplyEndTime(pos,0)
+		self:SetFactionApplyIsOnline(pos,0)
+		self:SetFactionApplyTime(pos,0)
+		--self:SubFactionApplyCount(1)
 	end
 end
 --------------------------------------申请加入帮派成员信息END---------------------------------------------
 --添加帮派动态
-function FactionInfo:AddEvent( player_id, player_name, event_type, pi1, pi2, pi3, ps1)
-	if(pi1 == nil)then
-		pi1 = 0
+function FactionInfo:AddEvent( event_name, event_type, event_val)
+	local pos = self:GetFactionEventFlag()
+	--outFmtDebug("pos %d %d",pos,event_name)
+	self:SetFactionEventType(pos,event_type)
+	self:SetFactionEventValue(pos,event_val)
+	self:SetFactionEventName(pos,event_name)
+	pos = pos + 1
+	if pos >= MAX_FACTION_EVENT_COUNT then
+		pos = 0
 	end
-	if(pi2 == nil)then
-		pi2 = 0
-	end
-	if(pi3 == nil)then
-		pi3 = 0
-	end
-	if(ps1 == nil)then
-		ps1 = ''
-	end
-	local factionEventInfo = self:getFactionEventsInfo()
-	if(factionEventInfo ~= nil)then
-		factionEventInfo:AddFactionEventInfo(self:GetGuid(), player_id, player_name, os.time(), event_type, pi1, pi2, pi3, ps1)
-	end
+	self:SetFactionEventFlag(pos)
+	--local factionEventInfo = self:getFactionEventsInfo()
+	--if(factionEventInfo ~= nil)then
+	--	factionEventInfo:AddFactionEventInfo(self:GetGuid(), player_id, player_name, os.time(), event_type, pi1, pi2, pi3, ps1)
+	--end
 end
 
 --获取帮派可添加的位置
@@ -613,16 +742,13 @@ function FactionInfo:FindPlayerIndex(PlayGuid)
 	end
 	return pos
 end
-
+--设置帮主名字
+function FactionInfo:SetBangZhuName(name)
+	self:SetStr(FACTION_STRING_FIELD_MANGER_NAME,name)
+end
 --获得帮主名字
 function FactionInfo:GetBangZhuName()
-	for i=0, MAX_FACTION_MAMBER_COUNT - 1 do
-		if self:GetFactionMemberGuid(i) ~= '' and self:GetFactionMemberIdentity(i) == FACTION_MEMBER_IDENTITY_BANGZHU then
-			return self:GetFactionMemberName(i)
-		end
-	end
-		
-	return ''
+	return self:GetStr(FACTION_STRING_FIELD_MANGER_NAME)
 end	
 
 --获得帮主guid
@@ -648,6 +774,17 @@ function FactionInfo:IsManager(guid)
 	end
 	return false
 end	
+--获得是否核心管理员
+function FactionInfo:IsCoreManager(guid)
+	local pos = self:FindPlayerIndex(guid)
+	if pos then
+		if self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_BANGZHU
+			or self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_FU_BANGZHU then
+			return true
+		end
+	end
+	return false
+end	
 
 --获得位置人数
 function FactionInfo:GetZhiWeiCount(zhiwei)
@@ -666,7 +803,8 @@ end
 function FactionInfo:FactionApply( player)
 	if player:GetFactionId() ~= "" then
 		--玩家已有帮派
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_IS_HAVE)
+		--player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_IS_HAVE)
+		outFmtDebug("you cannot join other, have faction = %s",faction_guid)
 		return 
 	end
 	--if player:GetLevel() < tb_bangpai[1].need_level then
@@ -674,9 +812,9 @@ function FactionInfo:FactionApply( player)
 	--	player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_LEVEL_LACK)
 	--	return 
 	--end
-	if self:GetMemberCount() == MAX_FACTION_MAMBER_COUNT then
+	if self:GetMemberCount() >= self:GetMemberMaxCount() then
 		--帮派人数已满
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_MEMBER_MAX_COUNT)
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT)
 		return 
 	end
 	if self:GetFactionApplyCount() == MAX_FACTION_MAMBER_COUNT then
@@ -688,6 +826,8 @@ function FactionInfo:FactionApply( player)
 	--否则添加到申请列表中
 	if not self:IsApplyPlayer(player:GetGuid()) then-- and player:AddFactionQuest(self:GetGuid()) 
 		self:SetApplyPlayer(player)
+	else
+		outFmtDebug("you cannot join other, have apply")
 	end
 end
 
@@ -703,6 +843,12 @@ function FactionInfo:MemberAdd( player)
 		--玩家已经有帮派了
 		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_IS_HAVE)
 		return false
+	end
+
+	if self:GetMemberCount() >= self:GetMemberMaxCount() then
+		--帮派人数已满
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT)
+		return 
 	end
 	
 	local pos = self:GetFactionEmptyPos()
@@ -722,7 +868,11 @@ function FactionInfo:MemberAdd( player)
 		--onlinetime = player:GetOnlineTime()
 	else
 		if self:IsApplyPlayer(player_guid) then
-			force,level,name,is_vip,onlinetime = self:GetApplyPlayer(player_guid)
+			--force,level,name,is_vip = self:GetApplyPlayer(player_guid)
+			force = player:GetForce()
+			level = player:GetLevel()
+			name = player:GetName()
+			is_vip = player:GetVIP()
 			self:DelApplyPlayer(player_guid)
 		else
 			return false
@@ -784,12 +934,20 @@ function FactionInfo:FactionQuit( player,is_merge)
 	player:SetFactionName("")
 	--移除监听
 	app.objMgr:callDelWatch(player:GetSessionId(),self:GetGuid())
-	app.objMgr:callDelWatch(player:GetSessionId(),self:getFactionEventsGuid())
+	--app.objMgr:callDelWatch(player:GetSessionId(),self:getFactionEventsGuid())
 	--成员离开后的处理
 	self:DoChangeMemberOpt(index)
 	if is_merge == nil then
-		self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_SUB_MEMBER)
+		--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_SUB_MEMBER)
 	end
+end
+--离线成员移除
+function FactionInfo:FactionOutlineQuit(guid)
+	local index = self:FindPlayerIndex(guid)
+	if index == nil then
+		return
+	end
+	self:DoChangeMemberOpt(index)
 end
 
 --成员离开后的处理
@@ -798,9 +956,9 @@ function FactionInfo:DoChangeMemberOpt(index)
 	self:SubMemberCount(1)
 	--如果帮派解散
 	if self:GetMemberCount() == 0 then
-		local faction_events_guid = self:getFactionEventsGuid()
+		--local faction_events_guid = self:getFactionEventsGuid()
 		app.objMgr:callRemoveObject(self:GetGuid())
-		app.objMgr:callRemoveObject(faction_events_guid)
+		--app.objMgr:callRemoveObject(faction_events_guid)
 		return
 	end
 	--清理数据
@@ -809,7 +967,7 @@ function FactionInfo:DoChangeMemberOpt(index)
 	self:SetFactionMemberDayGongXian(index,0)
 	self:SetFactionMemberIdentity(index, 0)
 	self:SetFactionMemberVipLevel(index,0)
-	self:SetFactionMemberOnlineTime(index,0)
+	--self:SetFactionMemberOnlineTime(index,0)
 	self:SetFactionMemberLogoutTime(index,0)
 	self:SetFactionMemberTotalGongXian(index,0)
 	self:SetFactionMemberGuid(index, "")
@@ -827,33 +985,34 @@ function FactionInfo:FactionAgreeJoin( player, apply_guid)
 	end
 	
 	if not self:IsManager(player:GetGuid()) then
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
 	
 	if not self:IsApplyPlayer(apply_guid) then
 		--玩家没有在申请列表
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NOT_IN_APPLY_LIST)
+		--player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NOT_IN_APPLY_LIST)
+		outFmtDebug("apply user is not in apply list")
 		return
 	end
 	
-	if self:GetMemberCount() == MAX_FACTION_MAMBER_COUNT then
+	if self:GetMemberCount() >= self:GetMemberMaxCount() then
 		--帮派人数已满
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_MEMBER_MAX_COUNT)
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT)
 		return 
 	end
 	
 	if applyer:GetFactionId() ~= "" then
 		--玩家已经有帮派了
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_IS_HAVE)
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_IS_HAVE)
 		--申请列表的数据不是最新的，这里手动清除一下数据
 		self:DelApplyPlayer(apply_guid)
 		return
 	end
 	
 	if self:MemberAdd(applyer) then
-		applyer:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_JOINED, self:GetName())
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_JOIN_SUCCESS, {apply_guid,applyer:GetName()})
+		applyer:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_JOIN_SUCESS)
+		--player:CallOptResult(OPERTE_TYPE_FACTION, OPRATE_TYPE_FACTION_JOIN_SUCCESS, {apply_guid,applyer:GetName()})
 	end
 end
 
@@ -862,22 +1021,24 @@ function FactionInfo:FactionRefuseJoin(player,apply_guid)
 	local applyer = app.objMgr:getObj(apply_guid)
 	if applyer == nil then
 		--找不到该玩家
+		self:DelApplyPlayer(apply_guid)
 		return 
 	end
 	
 	if not self:IsManager(player:GetGuid()) then
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
 	
 	if not self:IsApplyPlayer(apply_guid) then
 		--玩家没有在申请列表
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NOT_IN_APPLY_LIST)
+		--player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NOT_IN_APPLY_LIST)
+		outFmtDebug("player is not in apply list")
 		return
 	end
 	self:DelApplyPlayer(apply_guid)
 	--applyer:DelFactionQuest(self:GetGuid())
-	applyer:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_REFUSED_JOIN, self:GetName())
+	applyer:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN, self:GetName())
 end
 
 
@@ -886,13 +1047,18 @@ end
 function FactionInfo:MemberKicked( player, member_id)
 	local player_guid = player:GetGuid()
 	
-	local pos = self:FindPlayerIndex(player_guid)
-	if pos == nil then return end
+	--local pos = self:FindPlayerIndex(player_guid)
+	--if pos == nil then return end
 	
-	if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU
-		and self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_FU_BANGZHU then
+	--if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU
+	--	and self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_FU_BANGZHU then
 		--不是帮主或者负帮主
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+	--	player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+	--	return
+	--end
+	
+	if not self:IsManager(player:GetGuid()) then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
 	
@@ -908,15 +1074,19 @@ function FactionInfo:MemberKicked( player, member_id)
 	end
 	local member = app.objMgr:getObj(member_id)
 	if member then
+		--outFmtDebug("on line %s",member_id)
 		self:FactionQuit(member,true)
-		self:AddEvent(player_guid, player:GetName(), FACTION_EVENT_TYPE_KICK_MEMBER,0,0,0,member:GetName())
-		member:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_KICKED, self:GetName())
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_KICK_SUCCESS, {member_id,member:GetName()})
+		member:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_KICKED, self:GetName())
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_KICK_SUCCESS, {member_id,member:GetName()})
+	else
+		--outFmtDebug("not on line %s",member_id)
+		self:FactionOutlineQuit(member_id)
 	end
 end
 
 --职位任免
 function FactionInfo:FactionAppoint( player, member_id,zhiwei)
+	--print("zhiwei %d",zhiwei)
 	if zhiwei < FACTION_MEMBER_IDENTITY_BANGZHU or zhiwei > FACTION_MEMBER_IDENTITY_QUNZHONG then
 		--职位错误
 		return
@@ -925,14 +1095,14 @@ function FactionInfo:FactionAppoint( player, member_id,zhiwei)
 	local player_guid = player:GetGuid()
 	local pos = self:FindPlayerIndex(player_guid)
 	if pos == nil then return end
-	if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU then
-		--不是帮主
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+	if not self:IsCoreManager(player_guid) then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
 	
 	if member_id == player_guid then
 		--自己不能任免自己
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_APPOINT_NOSELF)
 		return
 	end
 	
@@ -946,82 +1116,90 @@ function FactionInfo:FactionAppoint( player, member_id,zhiwei)
 		--职位相同
 		return
 	end
+	--outFmtDebug("zhiwei %d",zhiwei)
 	
-	
-	local config = tb_bangpai[1].num_occupations[zhiwei]
+	local config = tb_faction_zhiwei[zhiwei].num
 	if zhiwei ~= FACTION_MEMBER_IDENTITY_BANGZHU and config then
 		if self:GetZhiWeiCount(zhiwei) >= config then
 		--该职位人数已满
-			player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_MAX_ZHIWEI)
+			player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_MAX_ZHIWEI)
+			return
+		end
+	end
+	
+	
+	--如果是替换帮主
+	if zhiwei == FACTION_MEMBER_IDENTITY_BANGZHU  then
+		if self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_BANGZHU then--帮主自己才能转让
+			self:SetFactionMemberIdentity(pos,FACTION_MEMBER_IDENTITY_QUNZHONG)
+			self:SetBangZhuName(self:GetFactionMemberName(member_pos))
+		else
+			--print("aaaa")
 			return
 		end
 	end
 	
 	self:SetFactionMemberIdentity(member_pos,zhiwei)
-	--如果是替换帮主
-	if zhiwei == FACTION_MEMBER_IDENTITY_BANGZHU then
-		self:SetFactionMemberIdentity(pos,FACTION_MEMBER_IDENTITY_QUNZHONG)
-	end
-	player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_APPOINT_SUCCESS)
+	
+	player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_APPOINT_SUCCESS)
 	local member = app.objMgr:getObj(member_id)
 	if member then
-		member:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_PROMOTED,zhiwei)
-		self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_APPOINT,zhiwei,0,0,member:GetName())
+		member:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_PROMOTED,zhiwei)
+		--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_APPOINT,zhiwei,0,0,member:GetName())
 	end
 end
 
---勾选“不需审核”
-function FactionInfo:FactionReview(player,reserve_int1 )
+--招募设置
+function FactionInfo:FactionRecruit(player,reserve_int1,reserve_int2,reserve_str1 )
+	--print(reserve_int1,reserve_int2,reserve_str1,FACTION_FLAGS_AUTO)
+	if reserve_int2 < 0 then
+		outFmtDebug("faction Recruit level error")
+		return;
+	end
 	local player_guid = player:GetGuid()
-	local pos = self:FindPlayerIndex(player_guid)
-	if pos == nil then return end
-	if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU then
+	--local pos = self:FindPlayerIndex(player_guid)
+	--if pos == nil then return end
+	if not self:IsManager(player_guid) then
 		--不是帮主
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+		player:CallOptResult(OPRATE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
 	
 	if reserve_int1 == 1 then
-		faction:SetFactionFlags(FACTION_FLAGS_AUTO)
+		self:SetFactionFlags(FACTION_FLAGS_AUTO)
 	else
-		faction:UnSetFactionFlags(FACTION_FLAGS_AUTO)
+		self:UnSetFactionFlags(FACTION_FLAGS_AUTO)
 	end
+
+	self:SetFactionMinLev(reserve_int2)
+	self:SetFactionZhaoMuNotice(reserve_str1)
+
+	rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 end
 
 --帮派升级
 function FactionInfo:FactionLevelUp(player )
-	--[[
 	local player_guid = player:GetGuid()
-	local pos = self:FindPlayerIndex(player_guid)
-	if pos == nil then return end
-	if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU 
-		and self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_FU_BANGZHU then
-		--不是帮主 or 副帮主
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+	if not self:IsManager(player_guid) then
+		--不是帮主
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
-	local active = self:GetFactionActive()
+	local lv = self:GetFactionLevel()
 	local money = self:GetFactionMoney()
-	local config = tb_bangpai_level[lv]
-	if config == nil or lv >= #tb_bangpai_level then 
+	local config = tb_faction_base[lv]
+	if config == nil or lv >= #tb_faction_base then 
 		return 
 	end
-	--判断活跃度
-	if active < config.cost_huoyue then
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_ACTIVE_ERR)
-		return
-	end
 	--判断金钱
-	if money < config.cost_money then
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPEATE_TYPE_FACTION_MONEY_ERR)
+	if money < config.cost then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPEATE_TYPE_FACTION_MONEY_ERR)
 		return
 	end
-	]]
-	local lv = self:GetFactionLevel()
+	self:SetFactionMoney(money - config.cost)
 	self:SetFactionLevel(lv + 1)
-	print("faction level = "..(lv + 1))
 	--升级成功
-	--player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_LEVEL_UP)
+	player:CallOptResult(OPERTE_TYPE_FACTION, OPEATE_TYPE_FACTION_LEVEL_UP)
 end
 
 
@@ -1093,30 +1271,38 @@ function FactionInfo:FactionFlags(index ,guid)
 end
 --帮会公告
 function FactionInfo:FactionNotice(player,notice)
+	
 	local player_guid = player:GetGuid()
 	local pos = self:FindPlayerIndex(player_guid)
 	if pos == nil then return end
+	local tab = string.split(notice,"\1")
+	if #tab ~= 3 then
+		outFmtInfo("faction notice format error");
+		return
+	end
+	--if #tab
+	
 	if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU 
 		and self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_FU_BANGZHU then
 		--不是帮主 or 副帮主
-		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
 	
 	--帮派公告不能超过144个中文字符
-	if string.len(notice) > 144 then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NOTICE_ERR)
+	if string.len(notice) > 400 then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOTICE_ERR)
 		return
 	end
 	
 	--判断是否有屏蔽词
 	if fuckPingBi(notice) ~= notice then
-		self:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NOTICE_HAVE_FUCK)
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOTICE_ERR_PB)
 		return
 	end
-	
+	print(notice,56) 
 	self:SetFactionNotice(notice)
-	self:SetFactionNoticeTime(os.time())
+	--self:SetFactionNoticeTime(os.time())
 	
 	--local allPlayers = self:GetFactionAllMemberPtr()
 	--for _, people in pairs(allPlayers) do
@@ -1150,8 +1336,8 @@ function FactionInfo:Update( player)
 	
 	
 	--玩家VIP等级
-	if player:GetVipLevel() ~= self:GetFactionMemberVipLevel(Faction_Pos) then
-		self:SetFactionMemberVipLevel(Faction_Pos, player:GetVipLevel())
+	if player:GetVIP() ~= self:GetFactionMemberVipLevel(Faction_Pos) then
+		self:SetFactionMemberVipLevel(Faction_Pos, player:GetVIP())
 	end
 	
 	--玩家在线时长
@@ -1184,26 +1370,101 @@ function FactionInfo:Update( player)
 	end
 	
 end
-
+--获取商品index 和 num
+function FactionInfo:GetShopItem(item)
+	for i=FACTION_INT_FIELD_SHOP,FACTION_INT_FIELD_SHOP_END-1 do
+		local id = self:GetUInt16(i,0)
+		if id == item then
+			return i,self:GetUInt16(i,1)
+		end
+	end
+	return -1,0
+end
+--设置商品数量
+function FactionInfo:SetShopItemNum(idx,num)
+	self:SetUInt16(idx,1,num)
+end
+--商店购买
+function FactionInfo:ShopItem(player,item,num)
+	local idx,curNum = self:GetShopItem(item)
+	if idx ~= -1 then
+		if num > curNum then
+			player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_SHOP_NUMLOW)
+			return
+		end
+		local config = tb_faction_shop[item]
+		if not config then
+			return
+		end
+		
+		if not player:checkMoneyEnoughs(config.costResource,num) then
+			player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_DEVOTE)
+			return
+		end
+	
+		if player:costMoneys(MONEY_CHANGE_FACTION_SHOP,config.costResource,num) then
+			curNum = curNum - num
+			self:SetShopItemNum(idx,curNum)
+			player:AddItemByEntry(config.itemId, num, nil, 9, true)--FIXME
+		end
+	end
+end
+--商店刷新
+function FactionInfo:RefreshShop()
+	local lev = self:GetFactionLevel()
+	print(lev)
+	local config = tb_faction_base[lev]
+	if not config then
+		return
+	end
+	local num = config.shop
+	
+	local list = tb_faction_shop_list[lev]
+	if num > #list then
+		num = #list
+	end
+	local idxTab = GetRandomIndexTable(#list,num)
+	--for k,v in ipairs(idxTab) do
+	--	print(k,v)
+	--end
+	for i=FACTION_INT_FIELD_SHOP,FACTION_INT_FIELD_SHOP_END-1 do
+		local idx = i - FACTION_INT_FIELD_SHOP + 1
+		
+		if idxTab[idx] then
+			local item = list[idxTab[idx]]
+			if item then
+				self:SetUInt16(i,0,item.id)
+				self:SetUInt16(i,1,item.num)
+			else 
+				self:SetUInt16(i,0,0)
+				self:SetUInt16(i,1,0)
+			end
+		else 
+			self:SetUInt16(i,0,0)
+			self:SetUInt16(i,1,0)
+		end
+	end
+end
 --帮派自身心跳
 function FactionInfo:SelfUpdate()
-	local faction_force = 0
-	local is_boss_add = false
-	for iNum = 0, MAX_FACTION_MAMBER_COUNT - 1 do
+
+	--local faction_force = 0
+	--local is_boss_add = false
+	--for iNum = 0, MAX_FACTION_MAMBER_COUNT - 1 do
 		--更新战斗力
-		faction_force = faction_force + self:GetFactionMemberForce(iNum)
+		--faction_force = faction_force + self:GetFactionMemberForce(iNum)
 		--更新是否打帮派boss有加成
-		local player = app.objMgr:getObj(self:GetFactionMemberGuid(iNum))
-		if player and player:GetFactionFbCount() > 0 then
-			is_boss_add = true
-		end
-	end	
-	self:SetFactionForce(faction_force)
-	if is_boss_add then
-		self:SetFactionFlags(FACTION_FLAGS_IS_BOSS_ADD)
-	else
-		self:UnSetFactionFlags(FACTION_FLAGS_IS_BOSS_ADD)
-	end
+		--local player = app.objMgr:getObj(self:GetFactionMemberGuid(iNum))
+		--if player and player:GetFactionFbCount() > 0 then
+		--	is_boss_add = true
+		--end
+	--end	
+	--self:SetFactionForce(faction_force)
+	--if is_boss_add then
+	--	self:SetFactionFlags(FACTION_FLAGS_IS_BOSS_ADD)
+	--else
+	--	self:UnSetFactionFlags(FACTION_FLAGS_IS_BOSS_ADD)
+	--end
 	
 	--看下帮主是否已经离线超过3天
 	local manager_guid = self:GetBangZhuGuid()
@@ -1340,24 +1601,90 @@ end
 
 --捐献
 function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
-	local cost_table = {}
-	table.insert(cost_table,money_type)
-	table.insert(cost_table,money_sum)
-	if not player:SubItemByConfig(cost_table,MONEY_CHANGE_FACTION_JUANXIAN,OPRATE_TYPE_FACTION,OPEATE_TYPE_FACTION_MONEY_ERR) then
+	local baseconfig = tb_faction_donation[money_type]
+	if baseconfig == nil then
+		return
+	end
+	--获取最大捐献次数
+	local maxNum = 0
+	local config = tb_faction_base[self:GetFactionLevel()]
+	if config then
+		if money_type == 1 then
+			maxNum = config.golddonation
+		elseif money_type == 2 then
+			maxNum = config.ybdonation
+		end
+	else
+		return
+	end
+	--outFmtDebug("maxNum %d",maxNum)
+
+	local vip = player:GetVIP()
+	--outFmtDebug("vip %d",vip)
+	if vip > 0 then
+		local vipConfig = tb_vip_base[vip]
+		if money_type == 1 then
+			maxNum = maxNum + vipConfig.factiondonation
+		elseif money_type == 2 then
+			maxNum = maxNum + vipConfig.factionybdonation
+		end
+	end
+	--当前次数
+	local currentNum
+	if money_type == 1 then
+		currentNum = self:GetFactionMemberGoldDonation(pos)
+	elseif money_type == 2 then
+		currentNum = self:GetFactionMemberYbDonation(pos)
+	end
+	
+	--outFmtDebug("currentNum %d,%d",currentNum,money_sum)
+
+	local targetNum = currentNum + money_sum
+	if targetNum > maxNum then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_DONATIONMAX)
 		return
 	end
 	
-	local gongxian = (money_sum - 2) * 6 + 10
-	local zijin = (money_sum - 2) * 10 + 15
-	if money_type == 1 then	--铜钱
-		gongxian = (money_sum - 50000) / 10000 * 2.5 + 10
-		zijin = (money_sum - 50000) / 10000 * 2.5 + 10
+	--print(baseconfig.cost)
+	if not player:checkMoneyEnoughs(baseconfig.cost,money_sum) then
+		if money_type == 1 then
+			player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_DONATION_GOLD)
+		elseif money_type == 2 then
+			player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_DONATION_YB)
+		end
+
+		return
 	end
 	
-	self:AddFactionMemberDayGongXian(pos,gongxian)
-	self:AddFactionMemberTotalGongXian(pos,gongxian)
-	self:AddFactionMoney(pos,zijin)
-	self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_JUANXIAN,money_type,money_sum,gongxian)
+	if player:costMoneys(MONEY_CHANGE_FACTION_DONATION,baseconfig.cost,money_sum) then
+		local devote = baseconfig.devote * money_sum
+		local zijin = baseconfig.money * money_sum
+		self:AddFactionMoney(zijin)
+		self:AddFactionMemberTotalGongXian(pos,devote)
+		player:AddMoney(MONEY_TYPE_FACTION, MONEY_CHANGE_FACTION_DONATION, devote)
+		self:AddEvent(player:GetName(),money_type,money_sum)
+	end
+	
+	
+	--local cost_table = {}
+	--table.insert(cost_table,money_type)
+	--table.insert(cost_table,money_sum)
+	--if not player:SubItemByConfig(cost_table,MONEY_CHANGE_FACTION_JUANXIAN,OPRATE_TYPE_FACTION,OPEATE_TYPE_FACTION_MONEY_ERR) then
+	--	return
+	--end
+	
+	--local gongxian = (money_sum - 2) * 6 + 10
+	--local zijin = (money_sum - 2) * 10 + 15
+	--if money_type == 1 then	--铜钱
+	--	gongxian = (money_sum - 50000) / 10000 * 2.5 + 10
+	--	zijin = (money_sum - 50000) / 10000 * 2.5 + 10
+	--end
+	
+	--self:AddFactionMemberDayGongXian(pos,gongxian)
+	--self:AddFactionMemberTotalGongXian(pos,gongxian)
+	--self:AddFactionMoney(pos,zijin)
+
+	--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_JUANXIAN,money_type,money_sum,gongxian)
 end
 --领取福利
 function FactionInfo:FactionFuLi(player,pos)

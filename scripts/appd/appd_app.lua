@@ -74,6 +74,19 @@ function AppdApp:InitCorn()
 		end)
 	end)
 
+	--每隔6s检测下失效幻化
+	self.cron:every("失效幻化检测", 6,function()
+		self.objMgr:foreachAllPlayer(function(player)	
+			player:OnRemoveExpireIllusion()
+		end)
+	end)
+	
+	--每隔7s检测下失效神兵
+	self.cron:every("失效神兵检测", 7,function()
+		self.objMgr:foreachAllPlayer(function(player)
+			player:OnRemoveExpireDivine()
+		end)
+	end)
 
 end
 

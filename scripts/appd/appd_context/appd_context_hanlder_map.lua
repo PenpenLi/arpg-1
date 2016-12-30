@@ -83,7 +83,8 @@ hanlders[CMSG_CANCEL_BLOCK_CHAT] = PlayerInfo.Handle_Cancel_Block_Chat
 -------------------------------------------------------------------------------
 
 hanlders[CMSG_FACTION_GETLIST] = PlayerInfo.Handle_Faction_Get_List 
-hanlders[CMSG_FACTION_MANAGER] = PlayerInfo.Hanlde_Faction_Manager
-
+hanlders[CMSG_FACTION_MANAGER] = PlayerInfo.Hanlde_Faction_Manager 
+hanlders[CMSG_FACTION_MEMBER_OPERATE] = PlayerInfo.Handle_Faction_People 
+hanlders[CMSG_FACTION_FAST_JOIN] = PlayerInfo.Handle_Faction_FastJoin
 
 return hanlders

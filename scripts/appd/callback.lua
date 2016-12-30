@@ -4,12 +4,12 @@ local callback_table = {
 
 --获取通过owner某一批对象
 function GetObjects(data)
-	local server_name = app.dbAccess:GetServerName(data.callback_guid)
+	local server_name = app.dbAccess:getServerName(data.callback_guid)
 	if(server_name == nil)then
 		outDebug("GetObjects is error player guid is "..data.callback_guid)
 		return
 	end
-	if(GlobalGameConfig:IsMyServer(server_name) == false)then
+	if(globalGameConfig:IsMyServer(server_name) == false)then
 		outString(string.format("GetObjects not my server , %s %s %s", data.callback_guid, data.my_guid and data.my_guid or "", data.name))
 		return
 	end
@@ -22,7 +22,7 @@ function GetObjects(data)
 	if(data_cb == nil)then
 		data_cb = {callback_guid = data.callback_guid, data = {data}}
 		callback_table[data_cb.callback_guid] = data_cb
-		playerLib.OfflineOper(data_cb.callback_guid)
+		playerLib.OfflineOper(data_cb.callback_guid, data.name)
 	else		
 		--同一个玩家只能同时进行一次回调
 		if(data.lock_fun ~= nil)then
@@ -34,7 +34,7 @@ function GetObjects(data)
 end
 
 --执行回调
-function GetObjectsCallBack(callback_guid, objs)
+function DoGetObjectsCallBack(callback_guid, objs)
 	local data_cb = callback_table[callback_guid]
 	if data_cb == nil then
 		outDebug("DoGetObjectsCallBack data is nil "..callback_guid)
@@ -53,7 +53,7 @@ function GetObjectsCallBack(callback_guid, objs)
 		end
 	end
 	
-	callback_table[callback_id] = nil
+	callback_table[callback_guid] = nil
 	for k,data in pairs(data_cb.data) do
 		outDebug(string.format('DoGetObjectsCallBack uid : %s, name : %s',data.callback_guid,data.name))
 		--todo 如果这里业务代码出错，那么剩下的所有回调都将失效。

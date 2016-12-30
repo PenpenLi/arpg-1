@@ -47,10 +47,11 @@ function PlayerInfo:SendWorldChat(content)
 	if self:GetGmNum() == 0 then
 		content = fuckPingBi(content)
 	end
-	--//过滤
---	content = ChatMsgFilter(content)
-	--//加标识
-	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
+	
+	-- 转义解析
+	local valid
+	valid, content = ChatMsgParser(self, content)
+	if not valid then return end
 	
 	-- 广播
 	app.objMgr:foreachAllPlayer(function(player)
@@ -71,9 +72,9 @@ function PlayerInfo:SendFactionChat(content)
 		content = fuckPingBi(content)
 	end
 	--//过滤
-	content = ChatMsgFilter(content)
+--	content = ChatMsgFilter(content)
 	--//加标识
-	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
+--	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
 	
 	local faction_guid = self:GetFactionId()
 	if faction_guid == "" then
@@ -116,9 +117,9 @@ function PlayerInfo:SendHornChat(content)
 	--屏蔽词
 	content = fuckPingBi(content)
 	--//过滤
-	content = ChatMsgFilter(content)
+--	content = ChatMsgFilter(content)
 	--//加标识
-	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
+--	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
 	-- 广播
 	app.objMgr:foreachAllPlayer(function(player)
 		player:call_send_chat (CHAT_TYPE_HORM ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")

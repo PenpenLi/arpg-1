@@ -26,6 +26,18 @@ function PlayerInfo:Handle_Recommend_Friend(pkt)
 end
 function PlayerInfo:Handle_Revenge_Enemy(pkt)
 	--outFmtDebug("fu chou")
+	local guid = pkt.guid
+	local data = {}
+	data.name = 'Handle_Revenge_Enemy'
+	data.callback_guid = guid
+	data.my_guid = self:GetGuid()
+	function data.fun (data, objs)
+		print("callbacked ===================")
+		local targetPlayer = objs[data.callback_guid]
+		if not targetPlayer then return end
+		print("target player =", targetPlayer:GetGuid())
+	end
+	GetObjects(data)
 end
 function PlayerInfo:Handle_Remove_Friend(pkt)
 	--outFmtDebug("del friend")

@@ -179,7 +179,7 @@ end
 -- 是否存在当前幻化坐骑
 function AppSpellMgr:hasIllusion(illuId)
 	
-	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END-1, MAX_ILLUSION_ATTR_COUNT do
 		if self:GetUInt32(ILLUSION_ATTR_ID + i) == illuId then
 			return true
 		end
@@ -201,7 +201,7 @@ function AppSpellMgr:onActiveIllusion(illuId)
 	local config = tb_mount_illusion[illuId]
 	local expire = 0
 	if config.last > 0 then
-		expire = os.time() + config.last * 24 * 3600
+		expire = os.time() + config.last * 60
 	end
 	self:SetUInt32(ILLUSION_ATTR_EXPIRE + indx, expire)
 	
@@ -213,15 +213,10 @@ function AppSpellMgr:onActiveIllusion(illuId)
 		self:SetUInt16(st, SHORT_SPELL_LV, 1)
 		st = st + 1
 	end
-	
-	-- 如果是有过期时间的幻化, 就加到过期字典中
-	if expire > 0 then
-		playerLib.SetToExpireMap(self.ptr, EXPIRE_TYPE_ILLUSION, illuId, expire)
-	end
 end
 
 function AppSpellMgr:findEmptyIllusionSlot()
-	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END-1, MAX_ILLUSION_ATTR_COUNT do
 		if self:GetUInt32(ILLUSION_ATTR_ID + i) == 0 then
 			return i
 		end
@@ -236,7 +231,7 @@ function AppSpellMgr:raiseIlluSpell(spellId)
 
 	local prev = self:getSpellLevel(spellId)
 
-	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do	
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END-1, MAX_ILLUSION_ATTR_COUNT do	
 		for j = ILLUSION_ATTR_SPELL_START + i, ILLUSION_ATTR_SPELL_END + i do
 			if self:GetUInt16(j, SHORT_SPELL_ID) == spellId then
 				self:SetUInt16(j, SHORT_SPELL_LV, prev + 1)
@@ -250,7 +245,7 @@ end
 -- 获得幻化的binlogindex
 function AppSpellMgr:getIllusionBinLogIndex(illuId)
 	local indx = -1
-	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END-1, MAX_ILLUSION_ATTR_COUNT do
 		if self:GetUInt32(ILLUSION_ATTR_ID + i) == illuId then
 			indx = i
 			break
@@ -260,32 +255,39 @@ function AppSpellMgr:getIllusionBinLogIndex(illuId)
 	return indx
 end
 
--- 移除幻化
-function AppSpellMgr:removeIllusion(illuId)
-	-- 清空幻化
-	local indx = self:getIllusionBinLogIndex(illuId)
-	if indx > -1 then
-		self:SetUInt32(ILLUSION_ATTR_ID + indx, 0)
-		for i = ILLUSION_ATTR_SPELL_START, ILLUSION_ATTR_SPELL_END-1 do
-			self:SetUInt32(i + indx, 0)		
-		end
-		self:SetUInt32(ILLUSION_ATTR_EXPIRE + indx, 0)
-	end
-end
-
--- 获得坐骑幻化技能
-function AppSpellMgr:getIllusionSkill(illuId)
-	local indx = self:getIllusionBinLogIndex(illuId)
-	local skillTable = {}
+-- 检测是否过期
+-- 返回过期的幻化信息{{illusionId, skill1, skill2,...},...}
+function AppSpellMgr:checkIfIllusionExpired()
+	local expiredTable = {}
+	local curr = os.time()
 	
-	if indx > -1 then
-		for i = ILLUSION_ATTR_SPELL_START, ILLUSION_ATTR_SPELL_END-1 do
-			local spellId = self:GetUInt16(i + indx, 0)
-			table.insert(skillTable, spellId)
+	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
+		local illuId = self:GetUInt32(ILLUSION_ATTR_ID + i)
+		-- 有幻化id的表示有数据
+		if illuId > 0 then
+			local expireTime = self:GetUInt32(ILLUSION_ATTR_EXPIRE + i)
+			-- 过期时间为0表示永不过期
+			if expireTime > 0 and curr > expireTime then
+				local info = {illuId}
+				for j = ILLUSION_ATTR_SPELL_START, ILLUSION_ATTR_SPELL_END-1 do
+					local spellId = self:GetUInt16(i + j, 0)
+					if spellId > 0 then
+						table.insert(info, spellId)
+					end
+				end
+				table.insert(expiredTable, info)
+				
+				-- 清空数据
+				self:SetUInt32(ILLUSION_ATTR_ID + i, 0)
+				for j = ILLUSION_ATTR_SPELL_START, ILLUSION_ATTR_SPELL_END-1 do
+					self:SetUInt32(i + j, 0)
+				end
+				self:SetUInt32(ILLUSION_ATTR_EXPIRE + i, 0)
+			end
 		end
 	end
 	
-	return skillTable
+	return expiredTable
 end
 
 ----------------------------------------------神兵-----------------------------------------------

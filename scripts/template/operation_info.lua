@@ -792,6 +792,69 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==OPERTE_TYPE_FACTION_CREATE_COST)then
 			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_CREATE_COST元宝不足无法创建帮派 - " .. data 
 		end
+		if (reason ==OPERTE_TYPE_FACTION_NOT_MANAGER)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_NOT_MANAGER不是帮主或副帮主无法编辑 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_NOTICE_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_NOTICE_ERR帮派公告超过144个字符 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_NOTICE_ERR_PB)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_NOTICE_ERR_PB帮派公告包含非法字符 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_LEV_LOW)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_LEV_LOW等级不够，不能加入帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT帮派人数已满无法加入 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_JOIN_SUCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_JOIN_SUCESS恭喜你加入帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN你被拒绝加入帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_KICKED)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_KICKED你被移出帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_KICK_SUCCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_KICK_SUCCESS踢出帮派成员 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_MAX_ZHIWEI)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_MAX_ZHIWEI职位人数已满 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_APPOINT_SUCCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_APPOINT_SUCCESS任命成功 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_PROMOTED)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_PROMOTED你被任命为 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_APPOINT_NOSELF)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_APPOINT_NOSELF自己不能任命自己  - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DONATIONMAX)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_DONATIONMAX捐献次数超过最大次数 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DONATION_GOLD)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_DONATION_GOLD捐献所需金币不够 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DONATION_YB)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_DONATION_YB捐献所需元宝不够 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_SHOP_NUMLOW)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_SHOP_NUMLOW商品剩余数量不足无法购买 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DEVOTE)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPERTE_TYPE_FACTION_DEVOTE帮贡不足 - " .. data 
+		end
+		if (reason ==OPEATE_TYPE_FACTION_MONEY_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPEATE_TYPE_FACTION_MONEY_ERR帮派资金不足 - " .. data 
+		end
+		if (reason ==OPEATE_TYPE_FACTION_LEVEL_UP)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPEATE_TYPE_FACTION_LEVEL_UP帮派升级成功 - " .. data 
+		end
+		if (reason ==OPEATE_TYPE_FACTION_NOT_JOIN)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - OPEATE_TYPE_FACTION_NOT_JOIN没有可以加入的帮派 - " .. data 
+		end
 		return "未知错误1  OPERTE_TYPE_HOSTING " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_STRENGTH)then

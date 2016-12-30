@@ -177,7 +177,15 @@ end
 -- 设置读
 function GiftPacksInfo:mailRead(indx)
 	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
-	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2 ,val)
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
+	
+	local strIndex = GIFTPACKS_STRING_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_STRING
+	local days = 20
+	if self:GetStr(strIndex + GIFTPACKS_INFO_STRING_GIFT_ITEM) == "" then
+		days = 3
+	end
+	
+	self:SetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME, os.time() + days * 24 * 3600)
 end
 
 -- 领取礼包
@@ -185,7 +193,7 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
 	
 	-- 已经领了的判断和过期/删除的判断
-	if self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,2) > 0 or self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,3) > 0 or self:GetUInt32(end_time) < os.time() then
+	if self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,1) > 0 or self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,3) > 0 or self:GetUInt32(intIndex+GIFTPACKS_INFO_INT_END_TIME) < os.time() then
 		return
 	end
 	
@@ -207,15 +215,17 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 		return
 	end
 	
+	-- 设置领取标志
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 1, 1)
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
+	self:SetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME, os.time() + 3 * 24 * 3600)
+	self:SetGiftPacksItem("", indx)
+	
 	for i = 1, #itemInfoTable, 2 do
-		local itemId = itemInfoTable[ i ]
-		local count  = itemInfoTable[i+1]
+		local itemId = tonumber(itemInfoTable[ i ])
+		local count  = tonumber(itemInfoTable[i+1])
 		playerInfo:PlayerAddItem(itemId, count)
 	end
-	
-	-- 设置领取标志
-	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
-	self:SetGiftPacksItem("", indx)
 end
 
 -- 删除礼包
@@ -224,6 +234,16 @@ function GiftPacksInfo:removeMail(indx)
 	
 	-- 已经删除的判断
 	if self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE,3) > 0  then
+		return
+	end
+	
+	-- 没有读过不让删
+	if self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2) == 0  then
+		return
+	end
+	
+	-- 有附件的不让删除
+	if self:GetGiftPacksItem(indx) ~= "" then
 		return
 	end
 	

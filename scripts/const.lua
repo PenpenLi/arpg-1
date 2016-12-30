@@ -306,3 +306,90 @@ function ChatMsgAddSing(str, falseGmLevel, girlGmLevel)
 	end
 	return str
 end
+
+POSITION_REGEX = "{T=1}"
+SUIT_REGEX = "{T=2,G=\"(%a%d+%.%w+)\"}"
+
+CHAT_REGEX_INFO = {
+	[ 1 ] = {POSITION_REGEX, ""},
+	[ 2 ] = {SUIT_REGEX, "%1"},
+}
+
+-- 聊天转义解析
+function ChatMsgParser(playerInfo, str, forbidden)
+	local sort = {}
+	for T, regexInfo in pairs(CHAT_REGEX_INFO) do
+		local ret = DoFind(str, regexInfo[ 1 ], regexInfo[ 2 ])
+		-- 某一段
+		for _, seq in pairs(ret) do
+			local a = seq[ 1 ]
+			local b = seq[ 2 ]
+			local s = seq[ 3 ]
+			table.insert(sort, {T = T, a = a, b = b, s = s})
+		end
+	end
+	
+	if #sort == 0 then
+		return true, str
+	end
+	
+	-- 当前频道不能发送转义内容
+	if forbidden then
+		return false, ""
+	end
+	
+	-- 从小达到排序
+	table.sort(sort, function(a, b) return a.a < b.a end)
+	
+	-- 如果有正则匹配有交叉, 从头开始取合法的
+	local tmp = sort[ 1 ]
+	local valid = {tmp}
+	for i = 2, #sort do
+		local ele = sort[ i ]
+		if tmp.b >= ele.a then
+			sort[ i ] = nil
+		else
+			tmp = ele
+			table.insert(valid, ele)
+		end
+	end
+	
+	-- 进行替换
+	local st = 1
+	local chatmsg = ""
+	for i = 1, #valid do
+		ed = valid[ i ].a
+		if st < ed then
+			chatmsg = chatmsg..string.sub(str, st, ed-1)
+		end
+		-----------这里进行解析----------
+		chatmsg = chatmsg..msgRealContent(playerInfo, valid[ i ]);
+		---------------------
+		st = valid[ i ].b+1
+	end
+	
+	if st < #str then
+		chatmsg = chatmsg..string.sub(str, st, #str)
+	end
+	
+	return true, chatmsg
+end
+
+
+-- {T = T, a = a, b = b, s = s}
+function msgRealContent(playerInfo, info)
+	-- TODO: 进行转义
+	if info.T == TEXT_TYPE_POSITION then
+		-- {\"T\":{T},\"M\":{M},\"L\":{L},\"X\":{X},\"Y\":{Y}}
+		local str = tb_msg_text_type[info.T].content
+		str = string.gsub(str, "{T}", info.T)
+		str = string.gsub(str, "{M}", playerInfo:GetMapId())
+		str = string.gsub(str, "{L}", 1)
+		local x, y = playerInfo:GetPosition ()
+		str = string.gsub(str, "{X}", x)
+		str = string.gsub(str, "{Y}", y)
+		
+		return str
+	end
+	return ""
+end

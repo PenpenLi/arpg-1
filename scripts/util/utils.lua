@@ -103,3 +103,22 @@ ItemToResoureceTable = {
 	[Item_Loot_BEAST	 ] = MONEY_TYPE_BEAST,
 	[Item_Loot_GEM		 ] = MONEY_TYPE_GEM,
 }
+
+-- 判断字符串匹配正则的结果
+function DoFind(str, regex, rep)
+	local ret = {}
+    local indx = 1
+    local size = #str
+    while (indx <= size) do
+        local a, b = string.find(str, regex, indx)
+        if not a then
+            break
+        end
+        indx = b+1
+		local substr = string.sub(str, a, b)
+		substr, _ = string.gsub(substr, regex, rep)
+		table.insert(ret, {a, b, substr})
+    end
+	
+	return ret
+end

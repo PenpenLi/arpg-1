@@ -706,20 +706,30 @@ function PlayerInfo:DoHandleIllusion(illuId)
 	]]
 end
 
-function PlayerInfo:RemoveIllusion(illuId)
-	-- 如果是幻化的需要除去幻化
-	if self:GetCurrIllusionId() == illuId then
-		self:SetCurrIllusionId(0)
+-- 移除过期幻化信息
+function PlayerInfo:PlayerRemoveExpiredIllusion(expiredTable)
+	-- 没有过期的return
+	if #expiredTable == 0 then
+		return
 	end
 	
-	-- 移除技能
-	local spellTable = spellMgr:getIllusionSkill(illuId)
-	for _, spellId in pairs(spellTable) do
-		local config = tb_skill_base[spellId]
-		if self:isPassiveSpell(config.is_initiative) then
-			self:updatePassive(spellId, 0)
-		elseif self:isSupportSpell(config.is_initiative) then
-			self:SetSpellInfo(spellId, 0)
+	for _, info in pairs(expiredTable) do
+		
+		local illuId = info[ 1 ]
+		-- 如果是幻化的需要除去幻化
+		if self:GetCurrIllusionId() == illuId then
+			self:SetCurrIllusionId(0)
+		end
+		
+		-- 移除技能
+		for i = 2, #info do
+			local spellId = info[ i ]
+			local config = tb_skill_base[spellId]
+			if self:isPassiveSpell(config.is_initiative) then
+				self:updatePassive(spellId, 0)
+			elseif self:isSupportSpell(config.is_initiative) then
+				self:SetSpellInfo(spellId, 0)
+			end
 		end
 	end
 	

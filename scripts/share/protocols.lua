@@ -200,6 +200,8 @@ CMSG_MSG_DECLINE		= 182	-- /*设置拒绝接受消息*/
 SMSG_FACTION_GET_LIST_RESULT		= 183	-- /*帮派列表*/	
 CMSG_FACTION_GETLIST		= 184	-- /*获取帮派列表*/	
 CMSG_FACTION_MANAGER		= 185	-- /*帮派管理*/	
+CMSG_FACTION_MEMBER_OPERATE		= 186	-- /*帮派成员操作*/	
+CMSG_FACTION_FAST_JOIN		= 187	-- /*快速加入帮派*/	
 CMSG_READ_MAIL		= 190	-- /*读邮件*/	
 CMSG_PICK_MAIL		= 191	-- /*领取邮件*/	
 CMSG_REMOVE_MAIL		= 192	-- /*删除邮件*/	
@@ -806,7 +808,7 @@ function social_friend_info_t:write( output )
 end
 
 ---------------------------------------------------------------------
---/*好友信息*/
+--/*帮派信息*/
 
 faction_info_t = class('faction_info_t')
 
@@ -823,6 +825,24 @@ function faction_info_t:read( input )
 		return ret
 	end
 	ret,self.faction_name = input:readUTFByLen(50)  --/*名字*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.faction_bz = input:readUTFByLen(50)  --/*帮主名字*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.faction_gg = input:readUTFByLen(50)  --/*公告*/
 
 	if not ret then
 		return ret
@@ -865,6 +885,16 @@ function faction_info_t:write( output )
 		self.faction_name = ''
 	end
 	output:writeUTFByLen(self.faction_name , 50 ) 
+	
+	if(self.faction_bz == nil)then
+		self.faction_bz = ''
+	end
+	output:writeUTFByLen(self.faction_bz , 50 ) 
+	
+	if(self.faction_gg == nil)then
+		self.faction_gg = ''
+	end
+	output:writeUTFByLen(self.faction_gg , 50 ) 
 	
 	if(self.level == nil)then
 		self.level = 0
@@ -5609,15 +5639,16 @@ end
 
 
 -- /*创建帮派*/	
-function Protocols.pack_create_faction ( name)
+function Protocols.pack_create_faction ( name ,icon)
 	local output = Packet.new(CMSG_CREATE_FACTION)
 	output:writeUTF(name)
+	output:writeByte(icon)
 	return output
 end
 
 -- /*创建帮派*/	
-function Protocols.call_create_faction ( playerInfo, name)
-	local output = Protocols.	pack_create_faction ( name)
+function Protocols.call_create_faction ( playerInfo, name ,icon)
+	local output = Protocols.	pack_create_faction ( name ,icon)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -5631,6 +5662,10 @@ function Protocols.unpack_create_faction (pkt)
 	if not ret then
 		return false
 	end	
+	ret,param_table.icon = input:readByte()
+	if not ret then
+		return false
+	end
 
 	return true,param_table	
 
@@ -6895,19 +6930,21 @@ end
 
 
 -- /*帮派列表*/	
-function Protocols.pack_faction_get_list_result ( list)
+function Protocols.pack_faction_get_list_result ( list ,curpag ,maxpag)
 	local output = Packet.new(SMSG_FACTION_GET_LIST_RESULT)
 	output:writeI16(#list)
 	for i = 1,#list,1
 	do
 		list[i]:write(output)
 	end
+	output:writeByte(curpag)
+	output:writeByte(maxpag)
 	return output
 end
 
 -- /*帮派列表*/	
-function Protocols.call_faction_get_list_result ( playerInfo, list)
-	local output = Protocols.	pack_faction_get_list_result ( list)
+function Protocols.call_faction_get_list_result ( playerInfo, list ,curpag ,maxpag)
+	local output = Protocols.	pack_faction_get_list_result ( list ,curpag ,maxpag)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -6930,6 +6967,14 @@ function Protocols.unpack_faction_get_list_result (pkt)
 		end
 		table.insert(param_table.list,stru)
 	end
+	ret,param_table.curpag = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.maxpag = input:readByte()
+	if not ret then
+		return false
+	end
 
 	return true,param_table	
 
@@ -6937,14 +6982,17 @@ end
 
 
 -- /*获取帮派列表*/	
-function Protocols.pack_faction_getlist (  )
+function Protocols.pack_faction_getlist ( page ,num ,grep)
 	local output = Packet.new(CMSG_FACTION_GETLIST)
+	output:writeByte(page)
+	output:writeByte(num)
+	output:writeByte(grep)
 	return output
 end
 
 -- /*获取帮派列表*/	
-function Protocols.call_faction_getlist ( playerInfo )
-	local output = Protocols.	pack_faction_getlist (  )
+function Protocols.call_faction_getlist ( playerInfo, page ,num ,grep)
+	local output = Protocols.	pack_faction_getlist ( page ,num ,grep)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -6954,9 +7002,20 @@ function Protocols.unpack_faction_getlist (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.page = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.num = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.grep = input:readByte()
+	if not ret then
+		return false
+	end
 
-	return true,{}
-	
+	return true,param_table	
 
 end
 
@@ -6965,8 +7024,8 @@ end
 function Protocols.pack_faction_manager ( opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
 	local output = Packet.new(CMSG_FACTION_MANAGER)
 	output:writeByte(opt_type)
-	output:writeByte(reserve_int1)
-	output:writeByte(reserve_int2)
+	output:writeI16(reserve_int1)
+	output:writeI16(reserve_int2)
 	output:writeUTF(reserve_str1)
 	output:writeUTF(reserve_str2)
 	return output
@@ -6988,11 +7047,11 @@ function Protocols.unpack_faction_manager (pkt)
 	if not ret then
 		return false
 	end
-	ret,param_table.reserve_int1 = input:readByte()
+	ret,param_table.reserve_int1 = input:readU16()
 	if not ret then
 		return false
 	end
-	ret,param_table.reserve_int2 = input:readByte()
+	ret,param_table.reserve_int2 = input:readU16()
 	if not ret then
 		return false
 	end
@@ -7006,6 +7065,80 @@ function Protocols.unpack_faction_manager (pkt)
 	end	
 
 	return true,param_table	
+
+end
+
+
+-- /*帮派成员操作*/	
+function Protocols.pack_faction_member_operate ( opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	local output = Packet.new(CMSG_FACTION_MEMBER_OPERATE)
+	output:writeByte(opt_type)
+	output:writeI16(reserve_int1)
+	output:writeI16(reserve_int2)
+	output:writeUTF(reserve_str1)
+	output:writeUTF(reserve_str2)
+	return output
+end
+
+-- /*帮派成员操作*/	
+function Protocols.call_faction_member_operate ( playerInfo, opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	local output = Protocols.	pack_faction_member_operate ( opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*帮派成员操作*/	
+function Protocols.unpack_faction_member_operate (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.opt_type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_int1 = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_int2 = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_str1 = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.reserve_str2 = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*快速加入帮派*/	
+function Protocols.pack_faction_fast_join (  )
+	local output = Packet.new(CMSG_FACTION_FAST_JOIN)
+	return output
+end
+
+-- /*快速加入帮派*/	
+function Protocols.call_faction_fast_join ( playerInfo )
+	local output = Protocols.	pack_faction_fast_join (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*快速加入帮派*/	
+function Protocols.unpack_faction_fast_join (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
 
 end
 
@@ -7397,6 +7530,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_faction_get_list_result = self.call_faction_get_list_result
 	playerInfo.call_faction_getlist = self.call_faction_getlist
 	playerInfo.call_faction_manager = self.call_faction_manager
+	playerInfo.call_faction_member_operate = self.call_faction_member_operate
+	playerInfo.call_faction_fast_join = self.call_faction_fast_join
 	playerInfo.call_read_mail = self.call_read_mail
 	playerInfo.call_pick_mail = self.call_pick_mail
 	playerInfo.call_remove_mail = self.call_remove_mail
@@ -7593,6 +7728,8 @@ local unpack_handler = {
 [SMSG_FACTION_GET_LIST_RESULT] =  Protocols.unpack_faction_get_list_result,
 [CMSG_FACTION_GETLIST] =  Protocols.unpack_faction_getlist,
 [CMSG_FACTION_MANAGER] =  Protocols.unpack_faction_manager,
+[CMSG_FACTION_MEMBER_OPERATE] =  Protocols.unpack_faction_member_operate,
+[CMSG_FACTION_FAST_JOIN] =  Protocols.unpack_faction_fast_join,
 [CMSG_READ_MAIL] =  Protocols.unpack_read_mail,
 [CMSG_PICK_MAIL] =  Protocols.unpack_pick_mail,
 [CMSG_REMOVE_MAIL] =  Protocols.unpack_remove_mail,

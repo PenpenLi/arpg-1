@@ -666,6 +666,7 @@ forceInto,c2s,141,/*强制进入*/,STATUS_NEVER,False
 #
 create_faction,c2s,142,/*创建帮派*/,STATUS_NEVER,False
 	name,String,False,/*帮派名称*/
+	icon,uint8,False,/*icon*/
 
 #
 faction_upgrade,c2s,143,/*升级帮派*/,STATUS_NEVER,False
@@ -839,17 +840,33 @@ msg_decline,c2s,182,/*设置拒绝接受消息*/,STATUS_NEVER,False
 #
 faction_get_list_result,s2c,183,/*帮派列表*/,STATUS_NEVER,False
 	list,faction_info,True,/*帮派列表*/
+	curpag,uint8,False,/*当前页*/
+	maxpag,uint8,False,/*最大页*/
 
 #
 faction_getlist,c2s,184,/*获取帮派列表*/,STATUS_NEVER,False
-
+	page,uint8,False,/*当前页*/
+	num,uint8,False,/*每页数量*/
+	grep,uint8,False,/*自动过滤*/
+	
 #
 faction_manager,c2s,185,/*帮派管理*/,STATUS_NEVER,False
 	opt_type,uint8,False,/*操作类型*/
-	reserve_int1,uint8,False,/*预留int值1*/
-	reserve_int2,uint8,False,/*预留int值2*/
+	reserve_int1,uint16,False,/*预留int值1*/
+	reserve_int2,uint16,False,/*预留int值2*/
 	reserve_str1,String,False,/*预留string值1*/
 	reserve_str2,String,False,/*预留string值2*/
+
+#
+faction_member_operate,c2s,186,/*帮派成员操作*/,STATUS_NEVER,False
+	opt_type,uint8,False,/*操作类型*/
+	reserve_int1,uint16,False,/*预留int值1*/
+	reserve_int2,uint16,False,/*预留int值2*/
+	reserve_str1,String,False,/*预留string值1*/
+	reserve_str2,String,False,/*预留string值2*/
+
+#
+faction_fast_join,c2s,187,/*快速加入帮派*/,STATUS_NEVER,False
 	
 #
 read_mail,c2s,190,/*读邮件*/,STATUS_NEVER,False

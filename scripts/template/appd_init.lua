@@ -47,3 +47,16 @@ require("template.tables.tb_social_shop")
 require("template.tables.tb_social_familiay")
 --帮派
 require("template.tables.tb_faction_creat")
+require("template.tables.tb_faction_base")
+require("template.tables.tb_faction_zhiwei")
+require("template.tables.tb_faction_donation")
+require("template.tables.tb_faction_shop")
+
+--vip
+require("template.tables.tb_vip_base")
+
+--信息
+require("template.tables.tb_msg_text_type")
+
+--- 数据预处理
+require("template.tabset")

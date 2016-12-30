@@ -69,18 +69,23 @@ function PlayerInfo:SetMountStar(star)
 end
 
 -- 玩家加道具
-function PlayerInfo:PlayerAddItem(itemId, count)
+function PlayerInfo:PlayerAddItem(itemId, count, oper_type)
+
+	oper_type = oper_type or MONEY_CHANGE_MAIL
 	
 	if ItemToResoureceTable[itemId] ~= nil then
 		-- 加人物资源
-		--playerInfo:AddMoney(ItemToResoureceTable[itemId], moneyOperType, count)
+		playerInfo:AddMoney(ItemToResoureceTable[itemId], oper_type, count)
 	elseif itemId == Item_Loot_Exp then
-		-- 加经验
-		--playerLib.AddExp(player, count)
+		-- 加经验 发送到场景服
+		self:CallScenedDoSomething(APPD_SCENED_ADD_EXP, count)
 	else
-		local bind = tb_item_template[itemId].bind_type
-		-- 加道具
-		--itemMgr:addItem(itemId,count,1,true,true,0,0)
+		if tb_item_template[itemId] then
+			-- 加道具
+			local bind = tb_item_template[itemId].bind_type
+			local itemMgr = self:getItemMgr()
+			itemMgr:addItem(itemId,count,bind,true,true,0,0)
+		end
 	end
 end
 
@@ -565,6 +570,7 @@ function PlayerInfo:Login()
 	end
 
 	self:socialLogIn()
+	self:factionLogin()
 	
 	globalOfflineMail:GetOfflineMail(self)
 	globalSystemMail:checkIfHasSystemMail(self)
@@ -578,6 +584,7 @@ function PlayerInfo:LoginPk()
 function PlayerInfo:Logout ()
 	--清空好友申请列表
 	self:socialLogOut()
+	self:factionLogOut()
 end
 
 --有多少个物品
@@ -797,38 +804,19 @@ function PlayerInfo:GetGirlGM()
 	return math.floor(self:GetGmNum() / 100)
 end
 
-
--- 移除过期物品
-function PlayerInfo:OnRemoveExpire(expireType, id)
-	-- 幻化
-	if expireType == EXPIRE_TYPE_ILLUSION then
-		local spellMgr = self:getSpellMgr()
-		
-		-- 移除幻化数据
-		self:RemoveIllusion(id)
-		
-		-- 移除数据
-		spellMgr:removeIllusion(id)
-		
-		-- 重算属性
-		playerLib.SendAttr(self.ptr)
-		
-	-- 神兵
-	elseif expireType == EXPIRE_TYPE_DIVINE then
-		local spellMgr = self:getSpellMgr()	
-		
-		if self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID) == id then
-			self:switchDivine(0)
-		else
-			--TODO:删除神兵
-		end
-		
-		playerLib.SendAttr(self.ptr)
-	end
+-- 移除失效幻化
+function PlayerInfo:OnRemoveExpireIllusion()
+	local spellMgr = self:getSpellMgr()
+	local expiredTable = spellMgr:checkIfIllusionExpired()
 	
-	
+	-- 移除p对象中和过期幻化有关的数据
+	self:PlayerRemoveExpiredIllusion(expiredTable)
 end
 
+-- 移除失效神兵
+function PlayerInfo:OnRemoveExpireDivine()
+	
+end
 
 -- 是否自动购买血瓶
 function PlayerInfo:isAutoBuyHpItem()
