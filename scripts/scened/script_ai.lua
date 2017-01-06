@@ -246,7 +246,7 @@ end
 --bossai
 AI_boss = class("AI_boss", AI_Base)
 AI_boss.ainame = "AI_boss"
-
+-- 有BUG 需要处理
 function AI_boss:DamageTaken( owner,unit,damage )
 	local map_ptr = unitLib.GetMap(owner)
 	local createInfo = UnitInfo:new{ptr = owner}	

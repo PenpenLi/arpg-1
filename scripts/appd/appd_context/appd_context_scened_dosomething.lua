@@ -8,6 +8,9 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		self:checkVipMapTeleport(data, str)
 	elseif SCENED_APPD_ENTER_TRIAL_INSTANCE == ntype then
 		self:checkTrialMapTeleport()
+	elseif SCENED_APPD_ENTER_RES_INSTANCE == ntype then
+		--进入资源副本
+		self:checkResMapTeleport(data)
 	elseif SCENED_APPD_PASS_TRIAL_INSTANCE == ntype then
 		self:passTrialInstance(data)
 	elseif SCENED_APPD_PASS_VIP_INSTANCE == ntype then

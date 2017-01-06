@@ -1386,6 +1386,9 @@ function FactionInfo:SetShopItemNum(idx,num)
 end
 --商店购买
 function FactionInfo:ShopItem(player,item,num)
+	if num <= 0 then
+		return
+	end
 	local idx,curNum = self:GetShopItem(item)
 	if idx ~= -1 then
 		if num > curNum then
@@ -1605,6 +1608,12 @@ function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
 	if baseconfig == nil then
 		return
 	end
+	if money_type ~= 1 and money_type ~= 2 then
+		return
+	end
+	if money_sum <= 0 then
+		return
+	end
 	--获取最大捐献次数
 	local maxNum = 0
 	local config = tb_faction_base[self:GetFactionLevel()]
@@ -1636,6 +1645,7 @@ function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
 	elseif money_type == 2 then
 		currentNum = self:GetFactionMemberYbDonation(pos)
 	end
+	--outFmtDebug("curNum %d",currentNum)
 	
 	--outFmtDebug("currentNum %d,%d",currentNum,money_sum)
 
@@ -1663,6 +1673,11 @@ function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
 		self:AddFactionMemberTotalGongXian(pos,devote)
 		player:AddMoney(MONEY_TYPE_FACTION, MONEY_CHANGE_FACTION_DONATION, devote)
 		self:AddEvent(player:GetName(),money_type,money_sum)
+		if money_type == 1 then
+			self:AddFactionMemberGoldDonation(pos,money_sum)
+		elseif money_type == 2 then
+			self:AddFactionMemberYbDonation(pos,money_sum)
+		end
 	end
 	
 	

@@ -19,3 +19,9 @@ end
 function PlayerInfo:Handle_Reset_Trial(pkt)
 	self:resetTrial()
 end
+
+
+-- 世界BOSS报名
+function PlayerInfo:Handle_World_Boss_Enroll(pkt)
+	onEnrole(self)
+end

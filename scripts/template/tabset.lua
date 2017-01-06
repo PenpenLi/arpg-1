@@ -9,4 +9,3 @@ for id,config in ipairs(tb_faction_shop) do
 end
 
 --print(#tb_faction_shop_list)
-

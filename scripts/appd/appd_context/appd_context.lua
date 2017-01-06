@@ -411,7 +411,9 @@ end
 -- 扣除钱
 function PlayerInfo:costMoneys(oper_type, costTable, times)
 	times = times or 1
-	
+	if times < 1 then
+		return false
+	end
 	-- 判断是否可扣除
 	if not self:checkMoneyEnoughs(costTable, times) then
 		return false
@@ -857,7 +859,60 @@ end
 function PlayerInfo:isDeclineWorldMsg()
 	return self:GetByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE0, 3) > 0
 end
-	
+
+
+-- 获得最后一次参加世界BOSS的id
+function PlayerInfo:GetLastJoinID()
+	return self:GetUInt32(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_ID)
+end
+
+-- 设置最后一次参加世界BOSS的id
+function PlayerInfo:SetLastJoinID(id)
+	if self:GetLastJoinID() == id then
+		return
+	end
+	self:SetUInt32(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_ID, id)
+end
+
+-- 获得最后一次参加世界BOSS的状态
+function PlayerInfo:GetLastState()
+	return self:GetByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 0)
+end
+
+-- 设置最后一次参加世界BOSS的状态
+function PlayerInfo:SetLastState(state)
+	if self:GetLastState() == state then
+		return
+	end
+	self:SetByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 0, state)
+end
+
+-- 获得最后一次参加世界BOSS的分线
+function PlayerInfo:GetLastLine()
+	return self:GetByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 1)
+end
+
+-- 设置最后一次参加世界BOSS的分线
+function PlayerInfo:SetLastLine(line)
+	if self:GetLastLine() == line then
+		return
+	end
+	self:SetByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 1, line)
+end
+
+-- 获得最后一次参加世界BOSS的自身死亡次数
+function PlayerInfo:GetLastDeath()
+	return self:GetByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 2)
+end
+
+-- 增加最后一次参加世界BOSS的自身死亡次数
+function PlayerInfo:SetLastDeath(count)
+	if self:GetLastDeath() == count then
+		return
+	end
+	self:AddByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 2, count)
+end
+
 
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)

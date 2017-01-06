@@ -34,6 +34,16 @@ config = {
 	bag_extension_count			= 7	,		--包裹一次扩展的格子数
 	bag_extension_material		= 22,		--包裹扩展的消耗材料模版
 	max_mail_item_count			= 4	,		--邮件附件最大个数
+	
+	world_boss_enroll_time = {14, 05}		,--世界BOSS报名时间
+	world_boss_enroll_time_last = 1			,--世界BOSS报名持续分钟
+	world_boss_time_last = 15				,--世界BOSS持续分钟
+	
+	world_boss_room_limit = 50				,--世界BOSS房间人数上限
+
+	field_boss_start_time = {{13,0},{21,0}} ,--野外boss开始时间
+	field_boss_notice_time = 2				,--野外boss开启时间提醒(m)
+	field_boss_born_time = 1				,--野外boss刷新时间提醒(m)
 
 	player_max_level = 100,					--玩家最大等级
 	
@@ -130,6 +140,7 @@ config = {
 		CMSG_REMOVE_MAIL_ONE_STEP,
 		CMSG_CANCEL_BLOCK_CHAT,
 		-------------------------------
+		CMSG_WORLD_BOSS_ENROLL,	-- /*世界BOSS报名*/	
 	},
 	--pk服命令表
 	pk_external_router_map = {

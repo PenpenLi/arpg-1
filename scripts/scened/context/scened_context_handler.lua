@@ -590,6 +590,50 @@ function ScenedContext:Hanlde_Enter_Trial_Instance(pkt)
 	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_TRIAL_INSTANCE, 0)
 end
 
+--进入资源副本
+function ScenedContext:Hanlde_Enter_Res_Instance( pkt )
+	
+	local id = pkt.id
+	--outFmtDebug("instance id %d",id)
+	if tb_instance_res[id] == nil then
+		return
+	end
+	
+	local map_ptr = unitLib.GetMap(self.ptr)
+	if not map_ptr then 
+		return
+	end
+	
+	local toMapId = tb_instance_res[id].mapid
+	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		outFmtError("Hanlde_Enter_VIP_Instance player %s is not alive!", self:GetPlayerGuid())
+		return 
+	end
+
+	-- 该地图是否存在
+	if tb_map[toMapId] == nil then
+		return
+	end
+	
+	-- 是否允许传送
+	if not self:makeEnterTest(toMapId) then
+--		outFmtError("Hanlde_Enter_VIP_Instance player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
+		return
+	end
+	
+	--pvp状态下一律不准进
+	if self:GetPVPState() then
+		outFmtError("Hanlde_Enter_VIP_Instance player %s is pvp state!", self:GetPlayerGuid())
+		return
+	end
+	
+	--发到应用服进行进入判断
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_RES_INSTANCE, id)
+end
+--end 资源副本-----------
+
 function ScenedContext:Handle_ForceInto(pkt)
 	DoForceInto(self)
 end
@@ -603,6 +647,63 @@ function ScenedContext:Hanlde_Teleport_Main_City(pkt)
 	
 	local map_ptr = unitLib.GetMap(self.ptr)
 	mapLib.ExitInstance(map_ptr, self.ptr)
+end
+
+-- 使用需要广播的
+function ScenedContext:Handle_Use_Broadcast_gameobject(pkt)
+	local target = pkt.target
+	
+	local map_ptr = unitLib.GetMap(self.ptr)
+	local gameobject = mapLib.GetGameObjectByGuid(map_ptr, target)
+	if not gameobject then return end
+	
+	-- 至少是需要读进度条
+	local gameObjectInfo = UnitInfo:new {ptr = gameobject}
+	if not gameObjectInfo:NeedUseMode() then
+		return
+	end
+	
+	-- 特殊处理的采集物
+	local entry = gameObjectInfo:GetEntry()	
+	if tb_gameobject_template[entry].judge < 1 then
+		return
+	end
+	
+	local mapid = unitLib.GetMapID(self.ptr)
+	local mapInfo = Select_Instance_Script(mapid):new {ptr = map_ptr}
+	mapInfo:OnUseBroadCastGameObject(self, gameObjectInfo)
+end
+
+-- 世界BOSS挑战
+function ScenedContext:Handle_World_Boss_Fight(pkt)
+	-- 不是BOSS挑战阶段不能进
+	if not globalValue:IsWorldBossBorn() then
+		outFmtDebug("not in IsWorldBossBorn")
+		return
+	end
+	
+	local id = globalValue:GetWorldBossTimes()
+	-- 没进行过报名的不能进
+	if id ~= self:GetLastJoinID() then
+		outFmtDebug("current joinid = %d, but curr = %d", id, self:GetLastJoinID())
+		return
+	end
+	
+	local indx = globalValue:GetTodayWorldBossID()
+	local config = tb_worldboss_base[indx]
+	local toMapId = config.mapid
+	local toX = randInt(config.rect[ 1 ], config.rect[ 3 ])
+	local toY = randInt(config.rect[ 2 ], config.rect[ 4 ])
+	local line = self:GetLastLine()
+	-- 不符合线路的不能进
+	local rooms = globalValue:GetTodayWorldBossRoom()
+	if line > 0 and line <= rooms and not globalValue:IsWorldBossEndInLine(line) then
+		playerLib.Teleport(self.ptr, toMapId, toX, toY, line, "")
+	end
+end
+
+function ScenedContext:Handle_Roll_WorldBoss_Treasure(pkt)
+	Roll_Treasure(self)
 end
 
 

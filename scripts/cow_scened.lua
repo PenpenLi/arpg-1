@@ -13,6 +13,9 @@ require("util/utils")
 outString('load share.tick_name script')
 require("share/tick_name")
 require 'scened.scened_internal_pack'
+
+-- 第一此生成世界BOSS信息
+globalValue:RandomStepWorldBossIfNeverDoes()
 -------------------------------------------------------------------
 --初始化一些东西，例如BUFF对游戏操作的限制 用数字的说明是一些特殊的东西
 config = {
@@ -36,6 +39,13 @@ config = {
 	nomal_attack_time =  1300				,--默认攻击时间
 	nomal_move_speed = 180					,--默认移动速度
 	
+	world_boss_wait		  = 15				,--世界BOSS等待刷新时间(s)
+	world_boss_last		  = 15				,--世界BOSS持续时间(m)
+	world_boss_invincible_time	= 10		,--世界BOSS无敌持续时间(s)
+	world_boss_roll_last_time	= 7			,--世界BOSSroll点持续时间(s)
+	
+	field_boss_born_time  = 1				,--野外boss刷新时间提醒(m)
+
 	
 	update_ownership_time = 1500			,--更新怪物所有者的间隔
 	left_fighting_time = 6000				,--脱离战斗时间
@@ -125,6 +135,11 @@ config = {
 		CMSG_ENTER_VIP_INSTANCE,	-- 请求进入vip副本
 		CMSG_ENTER_TRIAL_INSTANCE,
 		CMSG_TELEPORT_MAIN_CITY,
+		CMSG_USE_BROADCAST_GAMEOBJECT,
+		CMSG_WORLD_BOSS_FIGHT,	-- /*世界BOSS挑战*/
+		CMSG_ROLL_WORLD_BOSS_TREASURE,	-- roll点
+		CMSG_RES_INSTANCE_ENTER,
+		
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
@@ -224,6 +239,12 @@ function load_lua_scripts()
 		
 		{'地图VIP副本脚本'		,'scened/instance/instance_vip'},
 		{'地图试炼塔副本脚本'	,'scened/instance/instance_trial'},
+		
+		{'地图世界BOSS等待脚本'	,'scened/instance/instance_worldboss_prepare'},
+		{'地图世界BOSS脚本'		,'scened/instance/instance_worldboss'},
+		
+		{'资源副本脚本'		,'scened/instance/instance_res_base'},
+		
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -248,6 +269,10 @@ INSTANCE_SCRIPT_TABLE = {
 	[2002] = InstanceInstBase,
 	[2003] = InstanceVIP,
 	[2004] = InstanceTrial,
+	
+	[2016] = InstanceWorldBossP,
+	[2017] = InstanceWorldBoss,
+	[2011] = InstanceResBase,
 	--[101] = InstanceTower1,
 	--[102] = InstanceTower2,
 	--[103] = InstanceTaoHua,
@@ -257,6 +282,7 @@ INSTANCE_SCRIPT_TABLE = {
 function GetRespawnPos()
 	return {55,19}
 end
+
 
 -- 获取地图模板名称
 function GetMapTemplateName(mapid)

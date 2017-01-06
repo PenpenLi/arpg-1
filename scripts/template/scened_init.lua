@@ -54,3 +54,16 @@ require("template.tables.tb_map")
 require("template.tables.tb_map_vip")
 require("template.tables.tb_drop_packet")
 require("template.tables.tb_map_trial")
+
+-- 野外BOSS
+require("template.tables.tb_map_field_boss")
+require("template.tables.tb_map_field_boss_time")
+
+-- 世界BOSS
+require("template.tables.tb_worldboss_base")
+require("template.tables.tb_worldboss_roll")
+require("template.tables.tb_worldboss_rank_reward")
+require("template.tables.tb_worldboss_waitroom")
+require("template.tables.tb_worldboss_time")
+
+require("template.tables.tb_instance_res")

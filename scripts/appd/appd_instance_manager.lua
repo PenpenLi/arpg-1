@@ -36,7 +36,7 @@ function AppInstanceMgr:checkIfCanEnterVIP(id, hard)
 	
 	self:AddByte(indx, 2, 1)
 	
-	local gerneralId = string.format("%d:%s:%d_%d", id, hard, times, getMsTime())
+	local gerneralId = string.format("%d:%s:%d_%d:%s", id, hard, times, getMsTime(), player:GetGuid())
 	
 	-- 发起传送
 	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, gerneralId)
@@ -65,8 +65,44 @@ function AppInstanceMgr:isEnoughForceByHard(id, hard, force)
 end
 
 
+-------------------------------资源副本------------------------------
+function AppInstanceMgr:checkIfCanEnterResInstance(id)
+	
+	outFmtDebug("appd enter res %d",id)
+	local config = tb_instance_res[id]
+	
+	
+	local player = self:getOwner()
+	
+	
+	-- 判断进入次数是否足够
+	-- 每个信息4个byte[0:挑战次数,1:预留,2:预留,3:预留]
+	
+	local indx = INSTANCE_INT_FIELD_VIP_START + id - 1
+	local times = self:GetByte(indx, 0)
+	local mapid = config.mapid
+	
+	--outFmtDebug("times %d ,mapID %d",times,mapid)
+	
+	if times >= config.times then
+		outFmtError("try time is not fit for mapid %d", mapid)
+		return
+	end
+	
+	local x 	= config.x
+	local y 	= config.y
+	
+	self:AddByte(indx, 0, 1)
 
-
+	
+	
+	local gerneralId = string.format("%d:%d:%s", id, getMsTime(), player:GetGuid())
+	
+	outFmtDebug("gerneralId %s",gerneralId)
+	
+	-- 发起传送
+	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, gerneralId)
+end
 
 
 
@@ -86,7 +122,7 @@ function AppInstanceMgr:checkIfCanEnterTrial()
 	local player = self:getOwner()
 	local config = tb_map_trial[nextId]
 	
-	local gerneralId = string.format("%d:%d", nextId, getMsTime())
+	local gerneralId = string.format("%d:%d:%s", nextId, getMsTime(), player:GetGuid())
 	
 	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), config.x, config.y, config.mapid, gerneralId)
 end

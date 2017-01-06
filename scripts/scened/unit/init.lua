@@ -95,7 +95,7 @@ function UnitInfo:CheckPlayer(name)
 end
 
 function UnitInfo:GetPlayerBit(index, offset)
-	--self:CheckPlayer(string.format("GetPlayerBit index = %d offset = %d ", index, offset))
+	self:CheckPlayer(string.format("GetPlayerBit index = %d offset = %d ", index, offset))
 	return binLogLib.GetBit(self.ptr_player_data, index, offset)
 end
 
@@ -110,103 +110,103 @@ function UnitInfo:GetPlayerUInt16(index, offset)
 end
 
 function UnitInfo:GetPlayerUInt32(index)
-	--self:CheckPlayer(string.format("GetPlayerUInt32-- index = %d", index))
+	self:CheckPlayer(string.format("GetPlayerUInt32-- index = %d", index))
 	return binLogLib.GetUInt32(self.ptr_player_data, index)
 end
 
 function UnitInfo:SetPlayerBit(index, offset)
-	--self:CheckPlayer(string.format("SetPlayerBit index = %d offset = %d", index, offset))
+	self:CheckPlayer(string.format("SetPlayerBit index = %d offset = %d", index, offset))
 	binLogLib.SetBit(self.ptr_player_data, index, offset)
 end
 
 function UnitInfo:UnSetPlayerBit(index, offset)
-	--self:CheckPlayer(string.format("UnSetPlayerBit-- index =%d offset = %d ", index, offset))
+	self:CheckPlayer(string.format("UnSetPlayerBit-- index =%d offset = %d ", index, offset))
 	binLogLib.UnSetBit(self.ptr_player_data, index, offset)
 end
 
 function UnitInfo:SetPlayerByte(index, offset, value)
-	--self:CheckPlayer(string.format("SetPlayerByte-- index = %d offset = %d", index, offset))
+	self:CheckPlayer(string.format("SetPlayerByte-- index = %d offset = %d", index, offset))
 	binLogLib.SetByte(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SetPlayerUInt16(index, offset, value)
-	--self:CheckPlayer(string.format("SetPlayerUInt16-- index = %d offset = %d", index, offset))
+	self:CheckPlayer(string.format("SetPlayerUInt16-- index = %d offset = %d", index, offset))
 	binLogLib.SetUInt16(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SubPlayerUInt16(index, offset, value)
-	--self:CheckPlayer(string.format("SubPlayerUInt16-- index = %d offset = %d", index, offset))
+	self:CheckPlayer(string.format("SubPlayerUInt16-- index = %d offset = %d", index, offset))
 	binLogLib.SubUInt16(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:AddPlayerUInt16(index, offset, value)
-	--self:CheckPlayer(string.format("SubPlayerUInt16-- index = %d offset = %d", index, offset))
+	self:CheckPlayer(string.format("SubPlayerUInt16-- index = %d offset = %d", index, offset))
 	binLogLib.AddUInt16(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SetPlayerUInt32(index, value)
-	--self:CheckPlayer(string.format("SetPlayerUInt32-- index = %d ", index))
+	self:CheckPlayer(string.format("SetPlayerUInt32-- index = %d ", index))
 	binLogLib.SetUInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:AddPlayerUInt32(index, value)
-	--self:CheckPlayer(string.format("AddPlayerUInt32-- index = %d", index))
+	self:CheckPlayer(string.format("AddPlayerUInt32-- index = %d", index))
 	binLogLib.AddUInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:SubPlayerUInt32(index, value)
-	--self:CheckPlayer(string.format("SubPlayerUInt32-- index = %d", index))
+	self:CheckPlayer(string.format("SubPlayerUInt32-- index = %d", index))
 	binLogLib.SubUInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:GetPlayerDouble(index)
-	--self:CheckPlayer(string.format("GetPlayerDouble-- index = %d", index))
+	self:CheckPlayer(string.format("GetPlayerDouble-- index = %d", index))
 	return binLogLib.GetDouble(self.ptr_player_data, index)
 end
 
 function UnitInfo:SetPlayerDouble(index, value)
-	--self:CheckPlayer(string.format("SetPlayerDouble-- index = %d", index))
+	self:CheckPlayer(string.format("SetPlayerDouble-- index = %d", index))
 	binLogLib.SetDouble(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:AddPlayerDouble(index, value)
-	--self:CheckPlayer(string.format("AddPlayerDouble-- index = %d", index))
+	self:CheckPlayer(string.format("AddPlayerDouble-- index = %d", index))
 	binLogLib.AddDouble(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:SubPlayerDouble(index, value)
-	--self:CheckPlayer(string.format("SubPlayerDouble-- index = %d", index))
+	self:CheckPlayer(string.format("SubPlayerDouble-- index = %d", index))
 	binLogLib.SubDouble(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:AddPlayerByte(index, offset, value)
-	--self:CheckPlayer(string.format("AddPlayerByte-- index = % d offset = %d", index, offset))
+	self:CheckPlayer(string.format("AddPlayerByte-- index = % d offset = %d", index, offset))
 	binLogLib.AddByte(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SetPlayerStr(index, value)
-	--self:CheckPlayer(string.format("SetPlayerStr-- index = %d", index))
+	self:CheckPlayer(string.format("SetPlayerStr-- index = %d", index))
 	binLogLib.SetStr(self.ptr_player_data, index,value)
 end
 
 function UnitInfo:SetPlayerFloat(index, value)
-	--self:CheckPlayer(string.format("SetPlayerFloat-- index = %d", index))
+	self:CheckPlayer(string.format("SetPlayerFloat-- index = %d", index))
 	binLogLib.SetFloat(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:GetPlayerFloat(index)
-	--self:CheckPlayer(string.format("GetPlayerFloat-- index = %d", index))
+	self:CheckPlayer(string.format("GetPlayerFloat-- index = %d", index))
 	return binLogLib.GetFloat(self.ptr_player_data, index)
 end
 
 function UnitInfo:GetPlayerStr(index)
-	--self:CheckPlayer(string.format("GetPlayerStr-- index = %d", index))
+	self:CheckPlayer(string.format("GetPlayerStr-- index = %d", index))
 	return binLogLib.GetStr(self.ptr_player_data, index)
 end
 
 --获得主玩家guid
 function UnitInfo:GetPlayerGuid()
-	--self:CheckPlayer("GetPlayerGuid")
+	self:CheckPlayer("GetPlayerGuid")
 	return binLogLib.GetStr(self.ptr_player_data, BINLOG_STRING_FIELD_GUID)
 end
 
@@ -276,9 +276,30 @@ function UnitInfo:isInBattle()
 	
 end
 
+------------------------------------
+--需要读条
+function UnitInfo:NeedUseMode()
+	return self:GetBit(GO_FIELD_FLAGS, GO_FLAG_USEMODE)
+end
+------------------------------------
+
+
+function UnitInfo:SetProcessTime(val)
+	self:SetUInt32(UNIT_FIELD_PROCESS_TIME, val)
+end
+
+function UnitInfo:SetProcessSeconds(val)
+	self:SetUInt32(UNIT_FIELD_PROCESS_SECONDS, val)
+end	
+
+function UnitInfo:SetPickedName(name)
+	self:SetStr(UNIT_STRING_FIELD_PICK_NAME, name)
+end	
+
+
 
 --生物部分
-function UnitInfo:SetBaseAttrs(info, bRecal)
+function UnitInfo:SetBaseAttrs(info, bRecal, mul)
 	local tBaseKey = {
 		[EQUIP_ATTR_MAXHEALTH] = {UNIT_FIELD_MAXHEALTH},
 		[EQUIP_ATTR_DAMAGE] = {UNIT_FIELD_DAMAGE},
@@ -307,20 +328,24 @@ function UnitInfo:SetBaseAttrs(info, bRecal)
 	else
 	]]
 		-- 默认都走这里
-	tBaseKey[EQUIP_ATTR_MAXHEALTH] = {UNIT_FIELD_MAXHEALTH, UNIT_FIELD_HEALTH}		 --血
+	--tBaseKey[EQUIP_ATTR_MAXHEALTH] = {UNIT_FIELD_MAXHEALTH, UNIT_FIELD_HEALTH}		 --血
 	--end
 	
 	for i = 1, #info do
 		local attrtype = info[ i ][ 1 ]
 		local attrval = info[ i ][ 2 ]
+		if attrtype == EQUIP_ATTR_MAXHEALTH then
+			attrval = math.floor(attrval * mul)
+		end
 		if tBaseKey[attrtype] then
-			for _, k in pairs(tBaseKey[attrtype]) do
-				--outFmtDebug("creature attrtype = %d, binlogIndex = %d, val = %d", attrtype, k, attrval)					
-				if(self:GetUInt32(k) ~= attrval)then
-					self:SetUInt32(k, attrval)
-				end
+			local k = tBaseKey[attrtype][ 1 ]
+			if(self:GetUInt32(k) ~= attrval)then
+				self:SetUInt32(k, attrval)
 			end
-		end			
+			if attrtype == EQUIP_ATTR_MAXHEALTH and not bRecal then
+				self:SetUInt32(UNIT_FIELD_HEALTH, attrval)
+			end
+		end	
 	end
 	--outFmtDebug('---> init creature attr %d %d %d', self:GetEntry(), self:GetUInt32(UNIT_FIELD_MAXHEALTH), self:GetUInt32(UNIT_FIELD_HEALTH))
 end
@@ -1077,6 +1102,9 @@ end
 
 -- 获取精灵对象的类型（玩家、精灵）
 function GetUnitTypeID(spirit)
+	if not spirit then
+		print( debug.traceback() )
+	end
 	return binLogLib.GetByte(spirit, UNIT_FIELD_BYTE_0, 0)
 end
 
@@ -1810,6 +1838,60 @@ function GetTwoPointDistance(pos_x, pos_y, tar_x, tar_y)
 	local dy = pos_y - tar_y
 	return math.sqrt(math.pow(dx,2)+math.pow(dy,2))
 end
+
+
+-- 获得最后一次参加世界BOSS的id
+function UnitInfo:GetLastJoinID()
+	return self:GetPlayerUInt32(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_ID)
+end
+
+-- 设置最后一次参加世界BOSS的id
+function UnitInfo:SetLastJoinID(id)
+	if self:GetLastJoinID() == id then
+		return
+	end
+	self:SetPlayerUInt32(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_ID, id)
+end
+
+-- 获得最后一次参加世界BOSS的状态
+function UnitInfo:GetLastState()
+	return self:GetPlayerByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 0)
+end
+
+-- 设置最后一次参加世界BOSS的状态
+function UnitInfo:SetLastState(state)
+	if self:GetLastState() == state then
+		return
+	end
+	self:SetPlayerByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 0, state)
+end
+
+-- 获得最后一次参加世界BOSS的分线
+function UnitInfo:GetLastLine()
+	return self:GetPlayerByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 1)
+end
+
+-- 设置最后一次参加世界BOSS的分线
+function UnitInfo:SetLastLine(line)
+	if self:GetLastLine() == line then
+		return
+	end
+	self:SetPlayerByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 1, line)
+end
+
+-- 获得最后一次参加世界BOSS的自身死亡次数
+function UnitInfo:GetLastDeath()
+	return self:GetPlayerByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 2)
+end
+
+-- 增加最后一次参加世界BOSS的自身死亡次数
+function UnitInfo:SetLastDeath(count)
+	if self:GetLastDeath() == count then
+		return
+	end
+	self:AddPlayerByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 2, count)
+end
+
 
 require 'scened.unit.unit_spell'
 require 'scened.unit.scened_appd_dosomething'

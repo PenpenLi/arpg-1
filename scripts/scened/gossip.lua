@@ -67,7 +67,7 @@ function DoForceInto(playerInfo)
 	--local ownerGuid = playerInfo:GetPlayerGuid()
 
 	local map_ptr = unitLib.GetMap(playerInfo.ptr)
-
+	
 
 
 	playerLib.Teleport(playerInfo.ptr, toMapId, toX, toY, 0, "")

@@ -56,7 +56,9 @@ end
 ----------------------------------------增加任务 ------------------------------------------
 --增加击杀怪物任务
 function InstanceInstBase:OnAddKillMonsterQuest(quest)
-	assert(#quest == 3)
+	if(#quest ~= 3) then
+		return
+	end
 	
 	local indx = self:GetEmptySlot()
 	
@@ -125,7 +127,7 @@ Quest_Func_Table[INSTANCE_QUEST_TYPE_BREAK_THROUGH]	= InstanceInstBase.OnAddBrea
 -- 一个怪物被玩家杀了
 function InstanceInstBase:OneMonsterKilled(entry)
 	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
-		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_KILL_MONSTER and self:GetUInt16(i, 1) == entry then
+		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_KILL_MONSTER and self:IsFitForQuest(self:GetUInt16(i, 1), entry) then
 			local indx = (i - MAP_INT_FIELD_QUESTS_START) / 2
 			local prev = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx)
 			self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx, prev + 1)
@@ -134,6 +136,11 @@ function InstanceInstBase:OneMonsterKilled(entry)
 	end
 	
 	return false
+end
+
+-- 是否满足这个任务
+function InstanceInstBase:IsFitForQuest(dest, entry)
+	return dest == entry or dest == 0 and tb_creature_template[entry].monster_type == 0
 end
 
 
@@ -217,41 +224,6 @@ Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_PROTECT_NPC]	= InstanceInstBase.OnChe
 Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_ESCORT_NPC]	= InstanceInstBase.OnCheckEscortNPCQuest
 Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_DEFENSE]		= InstanceInstBase.OnCheckDefenseQuest
 Quest_Check_Func_Table[INSTANCE_QUEST_TYPE_BREAK_THROUGH]	= InstanceInstBase.OnCheckBreakThroughQuest
-
-
-
-
-----------------------------------------------随机奖励---------------------------------------------
--- dropIdTable : {dropId1, dropId2}
-function InstanceInstBase:RandomReward(player, dropIdTable, itemTable)
-	itemTable = itemTable or {}
-	local dict = {}
-	
-	-- 把里面的值拷贝过来
-	for _, itemInfo in pairs(itemTable) do
-		local itemId = itemInfo[ 1 ]
-		local count  = itemInfo[ 2 ]
-		if dict[itemId] == nil then
-			dict[itemId] = 0
-		end
-		dict[itemId] = dict[itemId] + count
-	end
-	
-	-- 获得奖励
-	for _, dropId in pairs(dropIdTable) do
-		DoRandomDrop(player, dropId, dict)
-	end
-	
-	
-	-- 压成字符串
-	local reward = {}
-	for itemId, count in pairs(dict) do
-		table.insert(reward, itemId..":"..count)
-	end
-	local data = string.join(",", reward)
-	
-	return data
-end
 
 
 --当玩家死亡后触发()

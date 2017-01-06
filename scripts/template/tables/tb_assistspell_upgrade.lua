@@ -5,7 +5,7 @@
 
 tb_assistspell_upgrade = {
 	--  id:int	等级
-	--  cost:int	升级消耗铜钱
+	--  cost:int	升级消耗真气
 	[1] = {id = 1,cost = 8000,},
 	[2] = {id = 2,cost = 8000,},
 	[3] = {id = 3,cost = 8000,},

@@ -22,7 +22,8 @@ config = {
 	auto_save_time = 360,						--自动保存数据时间间隔，秒
 	auto_backup_hdd_time	= 1800,				--每30分钟存一次回档，秒
 	reload_game_config_interval = 600,			--重新读取游戏配置间隔
-	Save_Player_To_DB_Count = 1,				--每次轮询保存到数据库的个数
+	Save_Player_To_DB_Count = 1,				--每次轮询保存到数据库的个数\
+	world_boss_waitting_room_limit = 50					,--世界BOSS房间人数上限
 	cant_make_name = NAME_ILLEGAL_CHAR,			--取名屏蔽字
 	--游戏服命令表
 	external_router_map = {
@@ -154,9 +155,11 @@ end
 
 --地图分线人数配置
 map_line_config = {
-	[1] = 22,
-	[101] = 30,
-	[102] = 300,
+	[1] = 200,
+	[1001] = 200,
+	[1002] = 200,
+	[2016] = config.world_boss_waitting_room_limit,
+	[2017] = config.world_boss_waitting_room_limit,
 }
 --获取真正该传去的分线号
 function GetWantToLineno(mapid, lineno, general_id)

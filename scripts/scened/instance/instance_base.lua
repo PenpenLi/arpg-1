@@ -336,6 +336,10 @@ Instance_base = {
 	GetMapGeneralId = function(self)
 		return self:GetStr(MAP_STR_GENERAL_ID)
 	end,
+	-- 获得分线
+	GetMapLineNo = function(self)
+		return self:GetUInt32(MAP_INT_FIELD_LINE_NO)
+	end,
 	
 	--设置副本状态
 	SetMapState = function(self, state)
@@ -403,6 +407,12 @@ Instance_base = {
 	SetMapReward = 
 		function(self, data)
 			self:SetStr(MAP_STR_REWARD, data)
+		end,
+	
+	-- 获得单人的复活时间
+	GetSingleRespawnTime = 
+		function(self, player)
+			return self.player_auto_respan
 		end,
 	
 	--获取击杀怪物数量
@@ -487,6 +497,11 @@ Instance_base = {
 		function(self, playerInfo)
 			return true
 		end,
+	
+	-- 当玩家移动后
+	OnPlayerAfterMove =
+		function(self, player)
+		end,
 		
 	--当客户端发来进入下一状态的指令
 	OnTryToNextState = 
@@ -508,6 +523,40 @@ Instance_base = {
 		playerLib.Teleport(player,to_mapid, tb_map_info[to_mapid].into_point[1], tb_map_info[to_mapid].into_point[2])
 		return true
 	end,
+	
+	
+	----------------------------------------------随机奖励---------------------------------------------
+	-- dropIdTable : {dropId1, dropId2}
+	RandomReward = function(self, player, dropIdTable, itemTable)
+		itemTable = itemTable or {}
+		local dict = {}
+		
+		-- 把里面的值拷贝过来
+		for _, itemInfo in pairs(itemTable) do
+			local itemId = itemInfo[ 1 ]
+			local count  = itemInfo[ 2 ]
+			if dict[itemId] == nil then
+				dict[itemId] = 0
+			end
+			dict[itemId] = dict[itemId] + count
+		end
+		
+		-- 获得奖励
+		for _, dropId in pairs(dropIdTable) do
+			DoRandomDrop(player, dropId, dict)
+		end
+		
+		
+		-- 压成字符串
+		local reward = {}
+		for itemId, count in pairs(dict) do
+			table.insert(reward, itemId..":"..count)
+		end
+		local data = string.join(",", reward)
+		
+		return data
+	end,
+	
 	--当玩家加入时触发
 	OnJoinPlayer =
 		function(self,player)
@@ -658,9 +707,21 @@ Instance_base = {
 		
 			return 1	--返回1的话成功使用游戏对象，返回0的话使用不成功
 		end,
+	
+	-- 使用需要读进度条广播的游戏对象
+	OnUseBroadCastGameObject =
+		function(self, playerInfo, gameObjectInfo)
+		end,
+
+	-- 打断
+	OnDisrupt =
+		function(self, killer, targetInfo)
+			
+		end,
 
  	--按怪物等级初始化怪物信息
-	InitCreatureInfo = function(self, creature_ptr, bRecal)
+	InitCreatureInfo = function(self, creature_ptr, bRecal, mul)
+		mul = mul or 1
 		local creature = UnitInfo:new{ptr = creature_ptr}	
 		local entry = creature:GetEntry()
 		local config = tb_creature_template[entry]
@@ -687,7 +748,7 @@ Instance_base = {
 					creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], dist, groupCD, singleCD, targetType)
 				end
 			end
-			creature:SetBaseAttrs(config.pro, bRecal)
+			creature:SetBaseAttrs(config.pro, bRecal, mul)
 		else
 			outFmtError("no entry[%d] for creature", entry)
 		end

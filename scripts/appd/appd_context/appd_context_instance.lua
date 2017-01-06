@@ -47,6 +47,12 @@ function PlayerInfo:sweepVIP(id)
 	end
 	
 end
+---------------------------资源副本-----------------------------
+-- 检测能否进入资源副本
+function PlayerInfo:checkResMapTeleport(id)
+	local instMgr = self:getInstanceMgr()
+	instMgr:checkIfCanEnterResInstance(id)
+end
 
 ---------------------------试炼塔-----------------------------
 -- 检测能否进入试炼塔副本
@@ -86,4 +92,111 @@ end
 function PlayerInfo:instanceDailyReset()
 	local instMgr = self:getInstanceMgr()
 	instMgr:instanceDailyReset()
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------世界BOSS----------------
+-- 报名列表
+Enroll = {}
+
+-- 进行报名
+function onEnrole(playerInfo)
+	-- 一定要是报名阶段
+	if not globalValue:IsWorldBossEnroll() then
+		outFmtDebug("========================= not in enroll time")
+		return
+	end
+	
+	Enroll[playerInfo:GetGuid()] = 1
+	local id = globalValue:GetWorldBossTimes()
+	playerInfo:SetLastJoinID(id)
+	playerInfo:SetLastState(PLAYER_WORLD_BOSS_ENROLLED)
+	playerInfo:SetLastLine(0)
+	playerInfo:SetLastDeath(0)
+	
+	playerInfo:CallScenedDoSomething(APPD_SCENED_WORLD_BOSS_WAITING)
+end
+
+function ClearWorldBossEnrollData()
+	Enroll = {}
+end
+
+-- 获得报名的所有玩家
+function GetEnrolledPlayer()
+	local tb = {}
+	
+	for playerGuid, _ in pairs(Enroll) do
+		local playerInfo = app.objMgr:getObj(playerGuid)
+		print(playerGuid, playerInfo)
+		if playerInfo then
+			table.insert(tb, playerInfo)
+		end
+	end
+	
+	return tb
+end
+
+-- 报名世界boss
+function OnEnrollWorldBoss()
+	-- 世界BOSS开启次数+1
+	globalValue:AddWorldBossTimes()
+	-- 设置报名状态
+	globalValue:SetWorldBossState(WORLD_BOSS_PROCESS_ENROLL)
+	--清理世界BOSS报名数据
+	ClearWorldBossEnrollData()
+end
+
+-- 安排世界BOSS房间
+function ArrangeWorldBossRoom()
+	
+	local playerDict = GetEnrolledPlayer()
+	local count = #playerDict
+	
+	if count == 0 then
+		return {}, {}
+	end
+	
+	local room = math.ceil(count / config.world_boss_room_limit)
+	local playersPerRoom = math.floor(count / room)
+	local rest = count % room
+	
+	-- 算出每个房间容纳的人数
+	local roomInfo = {}
+	for i = 1, room do
+		local num = playersPerRoom
+		if rest > 0 then
+			rest = rest - 1
+			num = num + 1
+		end
+		table.insert(roomInfo, num)
+	end
+		
+	-- 先把BOSS随机出来
+	globalValue:RandomTodayWorldBossID()
+
+	return playerDict, roomInfo
+end
+
+-- 进行传送
+function DoWorldBossTeleport(playerDict, roomInfo)
+	local line = 1
+	for _, playerInfo in pairs(playerDict) do
+		-- 进行传送(必要的话进行分时传送)
+		playerInfo:CallScenedDoSomething(APPD_SCENED_WORLD_BOSS_ENTER, line)
+		if roomInfo[line] == 0 then
+			line = line + 1
+		end
+	end
 end

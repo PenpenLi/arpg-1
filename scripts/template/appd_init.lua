@@ -58,5 +58,11 @@ require("template.tables.tb_vip_base")
 --信息
 require("template.tables.tb_msg_text_type")
 
+-- 地图
+require("template.tables.tb_map")
+require("template.tables.tb_map_field_boss_time")
+require("template.tables.tb_worldboss_time")
+require("template.tables.tb_instance_res")
+
 --- 数据预处理
 require("template.tabset")

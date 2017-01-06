@@ -156,10 +156,12 @@ end
 
 --获取帮派列表
 function PlayerInfo:Handle_Faction_Get_List( pkt )
-	local page, num,grep = pkt.page, pkt.num,grep 
+	local page, num,grep = pkt.page, pkt.num,pkt.grep 
 	local lev = 0
-	if grep then
+	--outFmtDebug("self grep %d",grep)
+	if grep == 1 then
 		lev = self:GetLevel()
+		--outFmtDebug("self level: %d",lev)
 	end
 	playerLib.FastGetFactionList(self:GetGuid(),page,num,lev)
 	
@@ -278,7 +280,7 @@ end
 
 --帮众操作
 function PlayerInfo:Handle_Faction_People( pkt )
-	outFmtDebug("juanxian")
+	--outFmtDebug("juanxian")
 	local faction_guid = self:GetFactionId()
 	if faction_guid == "" then
 		return

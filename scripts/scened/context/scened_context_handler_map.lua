@@ -14,7 +14,13 @@ OpcodeHandlerFuncTable[CMSG_ENTER_TRIAL_INSTANCE] = ScenedContext.Hanlde_Enter_T
 
 OpcodeHandlerFuncTable[CMSG_TELEPORT_MAIN_CITY] = ScenedContext.Hanlde_Teleport_Main_City
 
+OpcodeHandlerFuncTable[CMSG_USE_BROADCAST_GAMEOBJECT] = ScenedContext.Handle_Use_Broadcast_gameobject
 
+OpcodeHandlerFuncTable[CMSG_WORLD_BOSS_FIGHT] = ScenedContext.Handle_World_Boss_Fight
+
+OpcodeHandlerFuncTable[CMSG_ROLL_WORLD_BOSS_TREASURE] = ScenedContext.Handle_Roll_WorldBoss_Treasure
+
+OpcodeHandlerFuncTable[CMSG_RES_INSTANCE_ENTER] = ScenedContext.Hanlde_Enter_Res_Instance
 
 
 return OpcodeHandlerFuncTable

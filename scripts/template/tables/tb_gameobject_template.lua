@@ -11,6 +11,7 @@ tb_gameobject_template = {
 	--  regX:int	坐标X
 	--  regY:int	坐标Y
 	--  isAround:int	是否允许走动
+	--  judge:int	特殊判断
 	--  go_flag:int	传送点标志位
 	--  quest_id0:int	任务0
 	--  quest_id1:int	任务1
@@ -18,10 +19,6 @@ tb_gameobject_template = {
 	--  quest_id3:int	任务3
 	--  trigger_width:int	感应区宽
 	--  trigger_height:int	感应区高
-	[1] = {id = 1,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
-	[2] = {id = 2,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
-	[3] = {id = 3,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
-	[4] = {id = 4,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
-	[5] = {id = 5,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
-	[6] = {id = 6,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
+	[6] = {id = 6,name = "传送门",time = 1,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 2,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
+	[7] = {id = 7,name = "大宝箱",time = 5,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 1,go_flag = 1280,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 3,trigger_height = 3,},
 }

@@ -938,5 +938,29 @@ function OperationFailedToString(type, reason, data)
 		end
 		return "未知错误1  OPERTE_TYPE_FACTION " .. reason .. "    "  .. data
 	end
+	if(type == OPERTE_TYPE_FIELD_BOSS)then
+		if (reason ==FIELD_BOSS_OPERTE_WILL_START)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_WILL_START野外BOSS即将在{1}分钟后开启, 请大家安排好时间 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_WILL_OCCUR)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_WILL_OCCUR野外boss{1}即将出现，请各位大侠做好准备 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_OCCUR)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_OCCUR野外boss已经在各个地图刷新，请各位大侠火速前往击杀 查看详情 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_BOSS_BORN)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_BOSS_BORN{1}已出现在{2}，请各位大侠火速前往击杀 立即前往 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_BOSS_KILL)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_BOSS_KILL{1}已被成功击杀！恭喜{2}获得{3}1分钟的优先开启权利 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_PROTECT)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_PROTECT九龙宝箱保护时间结束，静待各位大侠开启 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_PICKED)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_PICKED恭喜{1}最终开启九龙宝箱，获得XXXX - " .. data 
+		end
+		return "未知错误1  OPERTE_TYPE_FIELD_BOSS " .. reason .. "    "  .. data
+	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

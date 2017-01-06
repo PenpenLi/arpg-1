@@ -893,3 +893,37 @@ block_chat,c2s,195,/*屏蔽某人*/,STATUS_NEVER,False
 #
 cancel_block_chat,c2s,196,/*取消屏蔽*/,STATUS_NEVER,False
 	indx,uint8,False,/*索引*/
+	
+#
+use_broadcast_gameobject,c2s,200,/*使用需要广播的游戏对象*/,STATUS_NEVER,False
+	target,uint32,False,/*gameobject uintguid*/
+
+#
+world_boss_enroll,c2s,201,/*世界BOSS报名*/,STATUS_NEVER,False
+
+#
+world_boss_fight,c2s,202,/*世界BOSS挑战*/,STATUS_NEVER,False
+
+#
+change_line,c2s,203,/*换线*/,STATUS_NEVER,False
+	lineNo,uint16,False,/*线号*/
+	
+#
+roll_world_boss_treasure,c2s,204,/*roll世界BOSS箱子*/,STATUS_NEVER,False
+
+#
+roll_result,s2c,205,/*roll点结果*/,STATUS_NEVER,False
+	point,uint8,False,/*数值点*/
+	name,String,False,/*名字*/
+	isHighest,uint8,False,/*是否当前最高*/
+	timestamp,uint32,False,/*服务器结束roll点时间戳*/
+	rollid,uint8,False,/*rollid*/
+	
+#
+world_boss_rank,s2c,206,/*当前世界BOSS伤害排名*/,STATUS_NEVER,False
+	rankList,rank_info,True,/*排名*/
+	mine,uint8,False,/*我的排名*/
+
+#
+res_instance_enter,c2s,210,/*进入资源副本*/,STATUS_NEVER,False
+	id,uint8,False,/*副本类型*/

@@ -39,7 +39,9 @@ end
 
 -- 从连续的size个数里面随机count个数, 保证惟一
 function GetRandomIndexTable(size, count)
-	assert(size >= count)
+	if (size < count) then
+		return {}
+	end
 	
 	local ret = {}
 	

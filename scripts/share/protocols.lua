@@ -209,6 +209,14 @@ CMSG_PICK_MAIL_ONE_STEP		= 193	-- /*一键领取邮件*/
 CMSG_REMOVE_MAIL_ONE_STEP		= 194	-- /*一键删除邮件*/	
 CMSG_BLOCK_CHAT		= 195	-- /*屏蔽某人*/	
 CMSG_CANCEL_BLOCK_CHAT		= 196	-- /*取消屏蔽*/	
+CMSG_USE_BROADCAST_GAMEOBJECT		= 200	-- /*使用需要广播的游戏对象*/	
+CMSG_WORLD_BOSS_ENROLL		= 201	-- /*世界BOSS报名*/	
+CMSG_WORLD_BOSS_FIGHT		= 202	-- /*世界BOSS挑战*/	
+CMSG_CHANGE_LINE		= 203	-- /*换线*/	
+CMSG_ROLL_WORLD_BOSS_TREASURE		= 204	-- /*roll世界BOSS箱子*/	
+SMSG_ROLL_RESULT		= 205	-- /*roll点结果*/	
+SMSG_WORLD_BOSS_RANK		= 206	-- /*当前世界BOSS伤害排名*/	
+CMSG_RES_INSTANCE_ENTER		= 210	-- /*进入资源副本*/	
 
 
 ---------------------------------------------------------------------
@@ -915,6 +923,46 @@ function faction_info_t:write( output )
 		self.minlev = 0
 	end
 	output:writeI16(self.minlev)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*排名信息*/
+
+rank_info_t = class('rank_info_t')
+
+function rank_info_t:read( input )
+
+	local ret
+	ret,self.name = input:readUTFByLen(50)  --/*名字*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.value = input:readFloat() --/*伤害百分比*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function rank_info_t:write( output )
+	if(self.name == nil)then
+		self.name = ''
+	end
+	output:writeUTFByLen(self.name , 50 ) 
+	
+	if(self.value == nil)then
+		self.value = 0
+	end
+	output:writeFloat(self.value)
 	
 	return output
 end
@@ -7338,6 +7386,264 @@ function Protocols.unpack_cancel_block_chat (pkt)
 end
 
 
+-- /*使用需要广播的游戏对象*/	
+function Protocols.pack_use_broadcast_gameobject ( target)
+	local output = Packet.new(CMSG_USE_BROADCAST_GAMEOBJECT)
+	output:writeU32(target)
+	return output
+end
+
+-- /*使用需要广播的游戏对象*/	
+function Protocols.call_use_broadcast_gameobject ( playerInfo, target)
+	local output = Protocols.	pack_use_broadcast_gameobject ( target)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*使用需要广播的游戏对象*/	
+function Protocols.unpack_use_broadcast_gameobject (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.target = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*世界BOSS报名*/	
+function Protocols.pack_world_boss_enroll (  )
+	local output = Packet.new(CMSG_WORLD_BOSS_ENROLL)
+	return output
+end
+
+-- /*世界BOSS报名*/	
+function Protocols.call_world_boss_enroll ( playerInfo )
+	local output = Protocols.	pack_world_boss_enroll (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*世界BOSS报名*/	
+function Protocols.unpack_world_boss_enroll (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*世界BOSS挑战*/	
+function Protocols.pack_world_boss_fight (  )
+	local output = Packet.new(CMSG_WORLD_BOSS_FIGHT)
+	return output
+end
+
+-- /*世界BOSS挑战*/	
+function Protocols.call_world_boss_fight ( playerInfo )
+	local output = Protocols.	pack_world_boss_fight (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*世界BOSS挑战*/	
+function Protocols.unpack_world_boss_fight (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*换线*/	
+function Protocols.pack_change_line ( lineNo)
+	local output = Packet.new(CMSG_CHANGE_LINE)
+	output:writeI16(lineNo)
+	return output
+end
+
+-- /*换线*/	
+function Protocols.call_change_line ( playerInfo, lineNo)
+	local output = Protocols.	pack_change_line ( lineNo)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*换线*/	
+function Protocols.unpack_change_line (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.lineNo = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*roll世界BOSS箱子*/	
+function Protocols.pack_roll_world_boss_treasure (  )
+	local output = Packet.new(CMSG_ROLL_WORLD_BOSS_TREASURE)
+	return output
+end
+
+-- /*roll世界BOSS箱子*/	
+function Protocols.call_roll_world_boss_treasure ( playerInfo )
+	local output = Protocols.	pack_roll_world_boss_treasure (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*roll世界BOSS箱子*/	
+function Protocols.unpack_roll_world_boss_treasure (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*roll点结果*/	
+function Protocols.pack_roll_result ( point ,name ,isHighest ,timestamp ,rollid)
+	local output = Packet.new(SMSG_ROLL_RESULT)
+	output:writeByte(point)
+	output:writeUTF(name)
+	output:writeByte(isHighest)
+	output:writeU32(timestamp)
+	output:writeByte(rollid)
+	return output
+end
+
+-- /*roll点结果*/	
+function Protocols.call_roll_result ( playerInfo, point ,name ,isHighest ,timestamp ,rollid)
+	local output = Protocols.	pack_roll_result ( point ,name ,isHighest ,timestamp ,rollid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*roll点结果*/	
+function Protocols.unpack_roll_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.point = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.isHighest = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.timestamp = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.rollid = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*当前世界BOSS伤害排名*/	
+function Protocols.pack_world_boss_rank ( rankList ,mine)
+	local output = Packet.new(SMSG_WORLD_BOSS_RANK)
+	output:writeI16(#rankList)
+	for i = 1,#rankList,1
+	do
+		rankList[i]:write(output)
+	end
+	output:writeByte(mine)
+	return output
+end
+
+-- /*当前世界BOSS伤害排名*/	
+function Protocols.call_world_boss_rank ( playerInfo, rankList ,mine)
+	local output = Protocols.	pack_world_boss_rank ( rankList ,mine)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*当前世界BOSS伤害排名*/	
+function Protocols.unpack_world_boss_rank (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.rankList = {}
+	for i = 1,len,1
+	do
+		local stru = rank_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.rankList,stru)
+	end
+	ret,param_table.mine = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*进入资源副本*/	
+function Protocols.pack_res_instance_enter ( id)
+	local output = Packet.new(CMSG_RES_INSTANCE_ENTER)
+	output:writeByte(id)
+	return output
+end
+
+-- /*进入资源副本*/	
+function Protocols.call_res_instance_enter ( playerInfo, id)
+	local output = Protocols.	pack_res_instance_enter ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*进入资源副本*/	
+function Protocols.unpack_res_instance_enter (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -7539,6 +7845,14 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_remove_mail_one_step = self.call_remove_mail_one_step
 	playerInfo.call_block_chat = self.call_block_chat
 	playerInfo.call_cancel_block_chat = self.call_cancel_block_chat
+	playerInfo.call_use_broadcast_gameobject = self.call_use_broadcast_gameobject
+	playerInfo.call_world_boss_enroll = self.call_world_boss_enroll
+	playerInfo.call_world_boss_fight = self.call_world_boss_fight
+	playerInfo.call_change_line = self.call_change_line
+	playerInfo.call_roll_world_boss_treasure = self.call_roll_world_boss_treasure
+	playerInfo.call_roll_result = self.call_roll_result
+	playerInfo.call_world_boss_rank = self.call_world_boss_rank
+	playerInfo.call_res_instance_enter = self.call_res_instance_enter
 end
 
 local unpack_handler = {
@@ -7737,6 +8051,14 @@ local unpack_handler = {
 [CMSG_REMOVE_MAIL_ONE_STEP] =  Protocols.unpack_remove_mail_one_step,
 [CMSG_BLOCK_CHAT] =  Protocols.unpack_block_chat,
 [CMSG_CANCEL_BLOCK_CHAT] =  Protocols.unpack_cancel_block_chat,
+[CMSG_USE_BROADCAST_GAMEOBJECT] =  Protocols.unpack_use_broadcast_gameobject,
+[CMSG_WORLD_BOSS_ENROLL] =  Protocols.unpack_world_boss_enroll,
+[CMSG_WORLD_BOSS_FIGHT] =  Protocols.unpack_world_boss_fight,
+[CMSG_CHANGE_LINE] =  Protocols.unpack_change_line,
+[CMSG_ROLL_WORLD_BOSS_TREASURE] =  Protocols.unpack_roll_world_boss_treasure,
+[SMSG_ROLL_RESULT] =  Protocols.unpack_roll_result,
+[SMSG_WORLD_BOSS_RANK] =  Protocols.unpack_world_boss_rank,
+[CMSG_RES_INSTANCE_ENTER] =  Protocols.unpack_res_instance_enter,
 
 }
 

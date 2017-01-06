@@ -24,6 +24,7 @@ OPERTE_TYPE_STRENGTH = 19	-- 强化
 OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE = 20	-- 切换战斗模式失败
 OPERTE_TYPE_SOCIAL = 21	-- 社交
 OPERTE_TYPE_FACTION = 22	-- 帮派
+OPERTE_TYPE_FIELD_BOSS = 23	-- 野外BOSS
 -- 登录相关操作返回
 OPRATE_RESULT_SUCCESS = 1	-- 成功
 OPRATE_RESULT_NAME_REPEAT = 2	-- 名称重复
@@ -333,4 +334,12 @@ STRENGTH_OPERTE_FAIL = 0	-- 强化失败
 BATTLE_MODE_OPERTE_PEACE_MODE_DENY = 0	-- 战斗中不能切换和平模式
 BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD = 1	-- 和平模式在CD中
 SOCIAL_OPERTE_AA = 0	-- dsfsd
+--  野外BOSS
+FIELD_BOSS_OPERTE_WILL_START = 1	-- 野外BOSS即将在{1}分钟后开启, 请大家安排好时间
+FIELD_BOSS_OPERTE_WILL_OCCUR = 2	-- 野外boss{1}即将出现，请各位大侠做好准备
+FIELD_BOSS_OPERTE_OCCUR = 3	-- 野外boss已经在各个地图刷新，请各位大侠火速前往击杀 查看详情
+FIELD_BOSS_OPERTE_BOSS_BORN = 4	-- {1}已出现在{2}，请各位大侠火速前往击杀 立即前往
+FIELD_BOSS_OPERTE_BOSS_KILL = 5	-- {1}已被成功击杀！恭喜{2}获得{3}1分钟的优先开启权利
+FIELD_BOSS_OPERTE_PROTECT = 6	-- 九龙宝箱保护时间结束，静待各位大侠开启
+FIELD_BOSS_OPERTE_PICKED = 7	-- 恭喜{1}最终开启九龙宝箱，获得XXXX
 -- _OPRATE_RESULT_H

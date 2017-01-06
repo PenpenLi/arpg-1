@@ -81,4 +81,7 @@ faction_info,/*帮派信息*/
 	player_count,uint16,0,/*帮派人数*/
 	minlev,uint16,0,/*等级限制*/
 	
-	
+#排名信息
+rank_info,/*排名信息*/
+	name,String,50,/*名字*/
+	value,float,0,/*伤害百分比*/

@@ -87,4 +87,7 @@ hanlders[CMSG_FACTION_MANAGER] = PlayerInfo.Hanlde_Faction_Manager
 hanlders[CMSG_FACTION_MEMBER_OPERATE] = PlayerInfo.Handle_Faction_People 
 hanlders[CMSG_FACTION_FAST_JOIN] = PlayerInfo.Handle_Faction_FastJoin
 
+
+hanlders[CMSG_WORLD_BOSS_ENROLL] = PlayerInfo.Handle_World_Boss_Enroll
+
 return hanlders

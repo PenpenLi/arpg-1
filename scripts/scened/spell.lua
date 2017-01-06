@@ -22,6 +22,12 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 		return false
 	end
 	
+	--自己无敌
+	if unitLib.HasBuff(caster, BUFF_INVINCIBLE) then
+		print("in the BUFF_INVINCIBLE")
+		return false
+	end
+	
 	-- 技能1-4不能走这个流程
 	if spell_id >= FUNCTIONAL_QING_GONG and spell_id <= FUNCTIONAL_DA_ZUO then
 		return false
@@ -637,15 +643,22 @@ function isAngerSpellHitPlayer(spellId, target)
 end
 
 function isInProtected(killer, target)
+		
 	if GetUnitTypeID(killer) ~= TYPEID_PLAYER or GetUnitTypeID(target) ~= TYPEID_PLAYER then
 		return false
 	end
+	
+	--对方无敌
+	if unitLib.HasBuff(target, BUFF_INVINCIBLE) then
+		print("in the BUFF_INVINCIBLE")
+		return true
+	end
+	
 	
 	--自己在新手保护
 	if unitLib.HasBuff(killer, BUFF_NEW_PLAYER_PROTECTED) then
 		return true
 	end
-	
 	
 	--对方在新手保护
 	if unitLib.HasBuff(target, BUFF_NEW_PLAYER_PROTECTED) then

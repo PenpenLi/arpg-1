@@ -8,7 +8,7 @@ tb_item_template = {
 	--  level:int	限制等级
 	--  rank:int	等阶
 	--  bind_type:int	绑定类型
-	--  type:int	子类型
+	--  type:int	子类型2
 	--  pos:int	装备部位
 	--  quality:int	品质
 	--  sex:int	性别
