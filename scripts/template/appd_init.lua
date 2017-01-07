@@ -64,5 +64,8 @@ require("template.tables.tb_map_field_boss_time")
 require("template.tables.tb_worldboss_time")
 require("template.tables.tb_instance_res")
 
+-- 邮件
+require("template.tables.tb_mail")
+
 --- 数据预处理
 require("template.tabset")

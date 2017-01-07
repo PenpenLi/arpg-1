@@ -24,5 +24,9 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		useRespawn(self)
 	elseif SCENED_APPD_ADD_ENEMY == ntype then
 		self:AddEnemy(str, data)
+	elseif SCENED_APPD_ADD_MAIL == ntype then
+		local desc = tb_mail[data].desc
+		local name = tb_mail[data].name
+		AddGiftPacksData(self:GetGuid(),0,GIFT_PACKS_TYPE_ITEM_GIVE,os.time(),os.time() + 86400*30, name, desc, str, "系统")
 	end
 end

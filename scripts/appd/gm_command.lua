@@ -397,6 +397,9 @@ function  DoGMScripts(player_ptr, gm_commands)
 		app:InitFieldBossCorn(H, M, a, b)
 		
 	elseif (tokens[1] == "@世界BOSS")then
+		-- 先把原来的状态设置下
+		globalValue:SetWorldBossState(WORLD_BOSS_PROCESS_TYPE_FINISH)
+		-- 重新设置BOSS
 		local H = tonumber(tokens[ 2 ])
 		local M = tonumber(tokens[ 3 ])
 		local a = tonumber(tokens[ 4 ])

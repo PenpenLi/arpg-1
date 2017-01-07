@@ -59,6 +59,7 @@ function GlobalValue:GetFieldBossStrStart(indx)
 	return GLOBALVALUE_STRING_FIELD_FIELD_BOSS_START + indx * MAX_FIELD_BOSS_STR_DATA_COUNT
 end
 
+
 -- 重置野外boss数据
 function GlobalValue:ResetFieldBoss(mapid, lineNo)
 	local indx = self:GetFieldBossIndex(mapid, lineNo)
@@ -204,6 +205,9 @@ end
 
 -- 设置世界BOSS的状态
 function GlobalValue:SetWorldBossState(state)
+	if self:GetWorldBossState() == state then
+		return
+	end
 	self:SetUInt32(GLOBALVALUE_INT_FIELD_WORLD_BOSS_STATE, state)
 end
 

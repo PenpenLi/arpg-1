@@ -748,9 +748,15 @@ Instance_base = {
 					creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], dist, groupCD, singleCD, targetType)
 				end
 			end
-			creature:SetBaseAttrs(config.pro, bRecal, mul)
+--			creature:SetBaseAttrs(config.pro, bRecal, mul)
+			self:SetCreaturePro(creature, config.pro, bRecal, mul)
 		else
 			outFmtError("no entry[%d] for creature", entry)
 		end
+	end,
+	
+	-- 设置属性
+	SetCreaturePro = function(self, creature, pros, bRecal, mul)
+		creature:SetBaseAttrs(pros, bRecal, mul)
 	end,
 }

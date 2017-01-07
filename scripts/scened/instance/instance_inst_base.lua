@@ -159,7 +159,7 @@ function InstanceInstBase:CheckQuestAfterTargetUpdate(isTimeout)
 		local targetType = self:GetByte(i, 0)
 		if targetType > 0 then
 			if Quest_Check_Func_Table[targetType] then
-				local vist = Quest_Check_Func_Table[targetType](self, i-MAP_INT_FIELD_QUESTS_START, isTimeout)
+				local vist = Quest_Check_Func_Table[targetType](self, (i-MAP_INT_FIELD_QUESTS_START)/2, isTimeout)
 				if not vist then ret = false end
 			end
 		end

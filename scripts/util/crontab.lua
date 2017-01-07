@@ -181,6 +181,7 @@ function crontab:ctor(  )
 
 	--取得现在的秒数，延迟到整点分钟的时候启动一个定时
 	self:after("__delayUpdateCrontab", 60-os.time()%60, function ( )
+		updateClockTables(self._crons)
 		--在整点分钟的时候，每隔一分钟执行一次
 		self:every("__updateCrontab", 60, function ( )					
 			updateClockTables(self._crons)

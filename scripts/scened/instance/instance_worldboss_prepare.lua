@@ -16,8 +16,11 @@ end
 function InstanceWorldBossP:OnInitScript(  )
 	Instance_base.OnInitScript(self) --调用基类
 	
+	local endTime = os.time() + config.field_boss_born_time * 60
+	
 	-- 设置结束时间
-	self:SetMapEndTime(os.time() + config.field_boss_born_time * 60 + 8)
+	self:SetMapEndTime(endTime + 8)
+	self:SetUInt32(WORLDBOSS_FIELDS_WAIT_TIME, endTime)
 end
 
 --当玩家加入后触发

@@ -36,8 +36,6 @@ function ClearWorldBossData(all)
 		InstanceWorldBoss.rollList = {}
 		InstanceWorldBoss.rollNameList = {}
 	end
-	
-	print("ClearWorldBossData")
 end
 
 -- 判断BOSS是否需要升级
@@ -110,10 +108,20 @@ end
 function InstanceWorldBoss:OnInitScript(  )
 	Instance_base.OnInitScript(self) --调用基类
 	
-	mapLib.DelTimer(self.ptr, 'OnTimer_Refresh')
-	mapLib.AddTimer(self.ptr, 'OnTimer_Refresh', config.world_boss_wait * 1000)
+	mapLib.DelTimer(self.ptr, 'OnTimer_RefreshBoss')
+	mapLib.DelTimer(self.ptr, 'OnTimer_UpdateRank')
+	-- 刷新BOSS 计时器
 	
-	-- 设置结束时间
+	local boss = mapLib.AliasCreature(self.ptr, InstanceWorldBoss.WORLD_BOSS_NAME)
+	if not boss then
+		mapLib.AddTimer(self.ptr, 'OnTimer_RefreshBoss', config.world_boss_wait * 1000)
+		self:SetUInt32(WORLDBOSS_FIELDS_BORN_TIME, config.world_boss_wait)
+	end
+	
+	-- 刷新排名 计时器
+	mapLib.AddTimer(self.ptr, 'OnTimer_UpdateRank', 1000)
+	
+	-- 设置总结束时间
 	self:SetMapEndTime(os.time() + tb_worldboss_time[ 1 ].time_last * 60)
 end
 
@@ -123,14 +131,9 @@ function InstanceWorldBoss:IsEnd()
 	return globalValue:IsWorldBossEnd() or globalValue:IsWorldBossEndInLine(lineNo)
 end
 
-function InstanceWorldBoss:OnTimer_Refresh()
+-- 刷新BOSS
+function InstanceWorldBoss:OnTimer_RefreshBoss()
 
-	-- 世界BOSS结束
-	if self:IsEnd() then
-		mapLib.ExitInstance(self.ptr)
-		return false
-	end
-	
 	if globalValue:IsWorldBossBorn() then
 		-- 刷BOSS		
 		local boss = mapLib.AliasCreature(self.ptr, InstanceWorldBoss.WORLD_BOSS_NAME)
@@ -152,11 +155,7 @@ function InstanceWorldBoss:OnTimer_Refresh()
 				-- 标识为boss怪
 				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
 			end
-			
-			mapLib.AddTimer(self.ptr, 'OnTimer_UpdateRank', 1000)
 		end
-		
-		return false
 	end
 
 	return false
@@ -166,7 +165,6 @@ end
 function InstanceWorldBoss:InitCreatureInfo(creature_ptr, bRecal, mul)
 	local level = globalValue:GetWorldBossLevel()
 	mul = 1 + level * 0.2
-	print("mul =***********************= ", mul, self:GetMapLineNo())
 	Instance_base.InitCreatureInfo(self, creature_ptr, bRecal, mul)
 end
 
@@ -177,14 +175,8 @@ function InstanceWorldBoss:OnTimer_UpdateRank()
 	local rankInfo = InstanceWorldBoss.rankList[lineNo]
 	local maxHP = InstanceWorldBoss.boss_hp[lineNo]
 	
-	print("===================OnTimer_UpdateRank lineNo", lineNo, InstanceWorldBoss.rankList[lineNo])
-	
 	local rankList = {}
 	if not rankInfo then
-		print("*************************** why is nil")
-		print("*************************** why is nil")
-		print("*************************** why is nil")
-		print("*************************** why is nil")
 		rankInfo = {}
 	end
 	
@@ -200,8 +192,9 @@ function InstanceWorldBoss:OnTimer_UpdateRank()
 	
 	-- 世界BOSS结束
 	if self:IsEnd() then
-		print("it is end&&&&&&&&&&&&&&&&&&&&&&")
 		InstanceWorldBoss.rankList[lineNo] = {}
+		-- 设置提前结束时间
+		self:SetMapEndTime(os.time() + 20)
 		return false
 	end
 	
@@ -212,14 +205,6 @@ function InstanceWorldBoss:DoIsFriendly(killer_ptr, target_ptr)
 	local killerInfo = UnitInfo:new{ptr = killer_ptr}
 	local targetInfo = UnitInfo:new{ptr = target_ptr}
 	
-	if not killer_ptr then
-		print("killer_ptr is nil%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-	end
-	
-	if not target_ptr then
-		print("target_ptr is nil%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-	end
-
 	-- 先判断
 	local ret = true
 	if killerInfo:GetTypeID() == TYPEID_PLAYER then
@@ -264,13 +249,11 @@ function InstanceWorldBoss:OnJoinPlayer(player)
 		return
 	end
 	
-	-- BOSS被杀了, 还让进么
-	--[[
-	if os.time() >= self:GetMapEndTime() then
+	-- 结束时间到就不让进了
+	if os.time() >= self:GetMapEndTime() or self:IsEnd() then
 		mapLib.ExitInstance(self.ptr, player)
 		return
 	end
-	--]]
 end
 
 --当玩家加入后触发
@@ -286,7 +269,6 @@ end
 function InstanceWorldBoss:GetSingleRespawnTime(player)
 	local lineNo = self:GetMapLineNo()
 	local playerInfo = UnitInfo:new{ptr = player}
-	print("lineNo =", lineNo, "GetPlayerGuid", playerInfo:GetPlayerGuid())
 	if not InstanceWorldBoss.deathList[lineNo] then
 		InstanceWorldBoss.deathList[lineNo] = {}
 	end
@@ -328,32 +310,53 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 	globalValue:SetWorldBossEndInLine(lineNo)
 	instanceInfo:SetMapEndTime(os.time() + 10)
 	
+	-- 根据排名 发邮件
+	local rankInfo = InstanceWorldBoss.rankList[lineNo]
+	local indx = 1
+	for i = 1, #rankInfo do
+		local to = tb_worldboss_rank_reward[ indx ].id2
+		-- 不满足条件的往后移
+		if to > 0 and to < i then
+			indx = indx + 1
+		end 
+		
+		to = tb_worldboss_rank_reward[ indx ].id2
+		if i <= to then
+			local playerGuid = rankInfo[ i ][ 3 ]
+			--发到应用服发宝箱
+			local player = mapLib.GetPlayerByPlayerGuid(map_ptr, playerGuid)
+			playerLib.SendToAppdDoSomething(player, SCENED_APPD_ADD_MAIL, MAIL_SOURCE_WORLD_BOSS * 65536 + i, tb_worldboss_rank_reward[ indx ].reward)
+		end 
+	end
+	
 	return 0
 end
 
-
--- 受到伤害后
-function AI_WorldBoss:DamageDeal( owner, unit, damage)
+-- 伤害发生前
+function AI_WorldBoss:DamageTaken(owner, unit, damage)
 	local bossInfo = UnitInfo:new{ptr = owner}
 	local map_ptr = unitLib.GetMap(owner)
-	local instanceInfo = InstanceFieldBase:new{ptr = map_ptr}
+	local instanceInfo = InstanceWorldBoss:new{ptr = map_ptr}
 	local mapid  = instanceInfo:GetMapId()
 	local lineNo = instanceInfo:GetMapLineNo()
 	
-	if damage == 0 then
+	if damage <= 0 then
 		return
 	end
 	
-	if damage < 0 then
-		print("^^^^^^^^^^^^^^^^^^boss cure for damage", damage)
-		InstanceWorldBoss.rankList[lineNo] = {}
-		return
-	end
-	
-	local currHealth = bossInfo:GetHealth()
+	local prev = bossInfo:GetHealth()
 	local maxHealth  = bossInfo:GetMaxhealth()
+	if damage > prev then
+		damage = prev
+	end
 	
-	print("get hurt==============", damage)
+	currHealth = prev - damage
+	
+	outFmtInfo("before hurt==============, %d, ggggg = %d", damage, prev)
+	if prev == 0 then
+		outFmtInfo("why in prev === 0")
+		return
+	end
 	
 	local unitInfo = UnitInfo:new {ptr = unit}
 	
@@ -361,7 +364,7 @@ function AI_WorldBoss:DamageDeal( owner, unit, damage)
 	InstanceWorldBoss.boss_hp[lineNo] = maxHealth
 	
 	-- 进行排名
-	AddWorldBossDamage(lineNo, unitInfo:GetName(), damage)
+	AddWorldBossDamage(lineNo, unitInfo:GetPlayerGuid(), unitInfo:GetName(), damage)
 	
 	-- 遍历是否需要进行roll点	
 	local prev = currHealth + damage
@@ -379,14 +382,24 @@ function AI_WorldBoss:DamageDeal( owner, unit, damage)
 		-- 未死亡 加无敌buff
 		if currHealth > 0 then
 			unitLib.AddBuff(owner, BUFF_INVINCIBLE, owner, 1, config.world_boss_invincible_time)
+			-- 通知进入无敌模式
 		end
 		
-		InstanceWorldBoss.rollList[lineNo] = {0, "", os.time(), os.time() + config.world_boss_roll_last_time, rollId}
-		InstanceWorldBoss.rollNameList[lineNo] = {}
-		
-		mapLib.AddTimer(map_ptr, 'OnTimer_Roll', config.world_boss_roll_last_time * 1000, rollId)
-		-- 通知所有在里面的人roll点
-		NotifyAllRollResult(map_ptr, 0, "", 0, os.time() + config.world_boss_roll_last_time, rollId)
+		-- 准备roll点
+		instanceInfo:PrepareToRoll(rollId)
+	end
+	
+end
+
+-- 受到伤害后
+function AI_WorldBoss:DamageDeal( owner, unit, damage)
+	local map_ptr = unitLib.GetMap(owner)
+	local instanceInfo = InstanceWorldBoss:new{ptr = map_ptr}
+	local lineNo = instanceInfo:GetMapLineNo()
+	
+	if damage < 0 then
+		InstanceWorldBoss.rankList[lineNo] = {}
+		return
 	end
 end
 
@@ -399,6 +412,29 @@ function NotifyAllRollResult(map_ptr, point, name, isHighest, cd, rollid)
 	end
 end
 
+-- 准备roll点
+function InstanceWorldBoss:PrepareToRoll(rollId)
+	outFmtInfo("=================PrepareToRoll")
+	mapLib.AddTimer(self.ptr, 'OnTimer_RollStart', 1000, rollId)
+end
+
+-- roll提示开始
+function InstanceWorldBoss:OnTimer_RollStart(rollId)
+	
+	outFmtInfo("=======$$$$$$$$$$$$$OnTimer_RollStart")
+	
+	local lineNo = self:GetMapLineNo()
+	
+	InstanceWorldBoss.rollList[lineNo] = {0, "", os.time(), os.time() + config.world_boss_roll_last_time, rollId}
+	InstanceWorldBoss.rollNameList[lineNo] = {}
+	
+	mapLib.AddTimer(self.ptr, 'OnTimer_Roll', config.world_boss_roll_last_time * 1000, rollId)
+	-- 通知所有在里面的人roll点
+	NotifyAllRollResult(self.ptr, 0, "", 0, os.time() + config.world_boss_roll_last_time, rollId)
+	
+	return false
+end
+
 -- roll点时间结束
 function InstanceWorldBoss:OnTimer_Roll(rollId)
 	local lineNo = self:GetMapLineNo()
@@ -406,21 +442,18 @@ function InstanceWorldBoss:OnTimer_Roll(rollId)
 	-- 没有人roll点
 	if playerGuid == "" then
 		outFmtDebug("no one roll **************************")
-		return
+		return false
 	end
 	local player = mapLib.GetPlayerByPlayerGuid(self.ptr, playerGuid)
-	print("===============", playerGuid, player)
 	local itemId = tb_worldboss_roll[rollId].itemid
-	
 	local bind = tb_item_template[itemId].bind_type
 	playerLib.AddItem(player, itemId, 1, bind, LOG_ITEM_OPER_TYPE_WORLD_BOSS_ROLL)
 	
 	return false
 end
 
-function AddWorldBossDamage(lineNo, name, damage)
+function AddWorldBossDamage(lineNo, playerGuid, name, damage)
 	if not InstanceWorldBoss.rankList[lineNo] then
-		print("$$$$$$$$$$$ InstanceWorldBoss.rankList nil for lineNo", lineNo)
 		InstanceWorldBoss.rankList[lineNo] = {}
 	end
 	local rankInfo = InstanceWorldBoss.rankList[lineNo]
@@ -436,7 +469,7 @@ function AddWorldBossDamage(lineNo, name, damage)
 	end
 	
 	if indx == #rankInfo + 1 then
-		table.insert(rankInfo, {name, damage})
+		table.insert(rankInfo, {name, damage, playerGuid})
 	end
 	
 	RankSort(rankInfo, indx)
