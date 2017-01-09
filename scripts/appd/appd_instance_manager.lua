@@ -1,3 +1,5 @@
+local protocols = require('share.protocols')
+
 local AppInstanceMgr = class("AppInstanceMgr", BinLogObject)
 
 function AppInstanceMgr:ctor()
@@ -78,14 +80,27 @@ function AppInstanceMgr:checkIfCanEnterResInstance(id)
 	-- 判断进入次数是否足够
 	-- 每个信息4个byte[0:挑战次数,1:预留,2:预留,3:预留]
 	
-	local indx = INSTANCE_INT_FIELD_VIP_START + id - 1
+	local indx = INSTANCE_INT_FIELD_RES_START + id - 1
 	local times = self:GetByte(indx, 0)
 	local mapid = config.mapid
 	
-	--outFmtDebug("times %d ,mapID %d",times,mapid)
+	local allTime = config.times
+	local vip = player:GetVIP()
+	if vip > 0 then
+		allTime = allTime + tb_vip_base[vip].instance
+	end
+	--local viptimes = tb_vip_base
 	
-	if times >= config.times then
+	outFmtDebug("times %d ,mapID %d",times,mapid)
+	--判断次数
+	if times >= allTime then
 		outFmtError("try time is not fit for mapid %d", mapid)
+		return
+	end
+	--判断等级
+	local lev = player:GetLevel()
+	if lev < config.limLev then
+		outFmtError("res instance Limit lev %d", lev)
 		return
 	end
 	
@@ -132,6 +147,15 @@ end
 function AppInstanceMgr:passInstance(id)
 	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 1, id)
 end
+-- 通关资源副本
+function AppInstanceMgr:passResInstance(id)
+	--outFmtDebug("ton guan zi yuan fu ben %d *************************************",id)
+	local idx =  INSTANCE_INT_FIELD_RES_START + id - 1
+	local pas = self:GetByte(idx,1)
+	if pas == 0 then
+		self:SetByte(idx,1,1)
+	end
+end
 
 
 -- 一键扫荡试炼塔
@@ -152,6 +176,62 @@ function AppInstanceMgr:sweepTrialInstance()
 	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0, prevSweepTimes - 1)
 	local player = self:getOwner()
 	player:CallScenedDoSomething(APPD_SCENED_SWEEP_TRIAL_INSTANCE, layers)
+end
+-- 扫荡资源副本
+function AppInstanceMgr:sweepResInstance(id)
+	--print("AppInstanceMgr:sweepResInstance")
+	local baseIdx =  INSTANCE_INT_FIELD_RES_START + id - 1
+	local pas = self:GetByte(baseIdx,1)
+	if pas == 1 then
+		--print("begin sao dang")
+		
+		--tb_instance_reward
+		local baseconfig = tb_instance_res[id]
+		local times = self:GetByte(baseIdx, 0)
+		
+		local allTime = baseconfig.times
+		local player = self:getOwner()
+		local vip = player:GetVIP()
+		if vip > 0 then
+			allTime = allTime + tb_vip_base[vip].instance
+		end
+		
+		--判断次数
+		if times >= allTime then
+			outFmtError("try time is not fit for mapid  %d",times)
+			return
+		end
+		
+		local playerInfo = self:getOwner()
+		local idx = id * 100 + playerInfo:GetLevel()
+		local config = tb_instance_reward[idx]
+		local tab = {}
+		table.insert(tab,config.basereward[1])
+		local randomReward = config.randomreward
+		local rewardIdx = randInt(1, #randomReward)
+		table.insert(tab,randomReward[rewardIdx])
+		table.insert(tab,config.reward[1])
+		
+		local list = {}
+		
+		for _,v in ipairs(tab) do
+			playerInfo:PlayerAddItem(v[1],v[2])
+			--奖励通知
+			local stru = item_reward_info_t .new()
+			stru.item_id	= v[1]
+			stru.num 		= v[2]
+			table.insert(list, stru)
+		end
+		
+		--添加次数
+		self:AddByte(baseIdx, 0, 1)
+		
+		
+		protocols.call_sweep_instance_reward ( player, INSTANCE_SUB_TYPE_RES, id, 0, 0, list)
+		
+	else
+		outFmtDebug("not first res instance")
+	end
 end
 
 -- 重置试炼塔
@@ -210,6 +290,11 @@ function AppInstanceMgr:instanceDailyReset()
 	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0, 1)
 	local passed = self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 1)
 	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 0, passed)
+	
+	-- 重置资源副本
+	for i = INSTANCE_INT_FIELD_RES_START,INSTANCE_INT_FIELD_RES_END-1 do
+		self:SetByte(i,0,0)
+	end
 end
 
 -- 获得玩家guid

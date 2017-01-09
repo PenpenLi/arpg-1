@@ -4,3 +4,6 @@
 require("template.tables.tb_char_level")
 require("template.tables.tb_char_skill")
 require("template.tables.tb_skill_base")
+
+-- 地图
+require("template.tables.tb_map")

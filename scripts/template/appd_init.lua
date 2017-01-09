@@ -69,3 +69,6 @@ require("template.tables.tb_mail")
 
 --- 数据预处理
 require("template.tabset")
+
+--- 副本
+require("template.tables.tb_instance_reward")

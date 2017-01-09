@@ -527,8 +527,13 @@ Instance_base = {
 	
 	----------------------------------------------随机奖励---------------------------------------------
 	-- dropIdTable : {dropId1, dropId2}
-	RandomReward = function(self, player, dropIdTable, itemTable)
+	-- itemTable: {{ItemId, count}}
+	RandomReward = function(self, player, dropIdTable, itemTable, moneyOperType, itemOperType)
+		dropIdTable = dropIdTable or {}
 		itemTable = itemTable or {}
+		moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
+		itemOperType  = itemOperType  or LOG_ITEM_OPER_TYPE_LOOT
+	
 		local dict = {}
 		
 		-- 把里面的值拷贝过来
@@ -543,10 +548,11 @@ Instance_base = {
 		
 		-- 获得奖励
 		for _, dropId in pairs(dropIdTable) do
-			DoRandomDrop(player, dropId, dict)
+			DoRandomDrop(dropId, dict)
 		end
 		
-		
+		PlayerAddRewards(player, dict, moneyOperType, itemOperType)
+			
 		-- 压成字符串
 		local reward = {}
 		for itemId, count in pairs(dict) do

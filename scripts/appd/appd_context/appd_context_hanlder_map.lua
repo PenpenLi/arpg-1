@@ -53,7 +53,8 @@ hanlders[CMSG_HANG_UP] = PlayerInfo.Handle_Hang_Up
 
 hanlders[CMSG_HANG_UP_SETTING] = PlayerInfo.Handle_Hang_Up_Setting
 
-hanlders[CMSG_SWEEP_TRIAL_INSTANCE] = PlayerInfo.Handle_Sweep_Trial
+hanlders[CMSG_SWEEP_TRIAL_INSTANCE] = PlayerInfo.Handle_Sweep_Trial 
+hanlders[CMSG_RES_INSTANCE_SWEEP] = PlayerInfo.Handle_Sweep_Res
 
 hanlders[CMSG_RESET_TRIAL_INSTANCE] = PlayerInfo.Handle_Reset_Trial 
 

@@ -137,33 +137,19 @@ function IsKuafuMapID(map_id)
 	return false
 end
 
--- 世界地图
-WORLD_MAP_ID_CONFIG = {
--- 世界地图id
-	[1	] = 1, --康都郊外
-	[2	] = 1, --秦都
-	[3	] = 1, --东胡
-	[4	] = 1, --康都
-	[5	] = 1, --宣城
-	[6	] = 1, --北胡
-	[7	] = 1, --汉都
-	[8	] = 1, --齐都
-	[9	] = 1, --绿海草原
-	[10	] = 1, --北胡新都
-	[11	] = 1, --宣城都会
-	[12	] = 1, --北胡战场
-	[13	] = 1, --康国新都
-	[14 ] = 1,
-	[15 ] = 1,
-	[16 ] = 1,
-	[17 ] = 1,
-	[18 ] = 1,
-	[19 ] = 1,	
-	[30	] = 1, --蟠桃园
-}
 --是否在世界地图
-function IsWorldMap(map_id)
-	return WORLD_MAP_ID_CONFIG[map_id] == 1
+function IsWorldMap(mapid)
+	return tb_map[mapid].inst_type == 0
+end
+
+-- 判断这个副本的分线号 是不是常驻分线
+function IsMapLineStable(mapid, lineNo)
+	return IsWorldMap(mapid) and 1 <= lineNo and lineNo <= MAX_DEFAULT_LINE_COUNT 
+end
+
+-- 该地图的分线是否创建
+function DoIsMapLineCreated(mapid, lineNo)
+	return IsWorldMap(mapid) and (IsMapLineStable(mapid, lineNo) or mapLib.IsMapLineCreated(mapid, lineNo))
 end
 
 --数值表字符切割

@@ -75,7 +75,7 @@ function PlayerInfo:PlayerAddItem(itemId, count, oper_type)
 	
 	if ItemToResoureceTable[itemId] ~= nil then
 		-- 加人物资源
-		playerInfo:AddMoney(ItemToResoureceTable[itemId], oper_type, count)
+		self:AddMoney(ItemToResoureceTable[itemId], oper_type, count)
 	elseif itemId == Item_Loot_Exp then
 		-- 加经验 发送到场景服
 		self:CallScenedDoSomething(APPD_SCENED_ADD_EXP, count)

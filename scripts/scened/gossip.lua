@@ -251,6 +251,24 @@ function DoQuestRewardScript(player, quest_id, xp, silver, taolue, bind_gold, al
 end
 
 
+-- 随机奖励 并合并到dict中
+function DoRandomDrop(dropId, dict)
+	local config = tb_drop_reward[dropId]
+	for _, packetId in pairs(config.reward) do
+		local packConfig = tb_drop_packet[packetId]
+		
+		local indx = GetRandomIndex(packConfig.items)
+		local itemId = packConfig.items[indx][ 1 ]
+		local count = GetRandomExp(packConfig.counts[indx])
+		
+		if dict[itemId] == nil then
+			dict[itemId] = 0
+		end
+		dict[itemId] = dict[itemId] + count
+	end
+end
+
+
 --[[// 资源类道具
 enum Item_Loot_Resource 
 {
@@ -287,26 +305,10 @@ enum Money_Type
 	MAX_MONEY_TYPE					= 12,
 };--]]
 
-function DoRandomDrop(player, dropId, dict, moneyOperType, itemOperType)
-	
-	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
-	itemOperType  = itemOperType  or LOG_ITEM_OPER_TYPE_LOOT
-	
-	local config = tb_drop_reward[dropId]
-	for _, packetId in pairs(config.reward) do
-		local packConfig = tb_drop_packet[packetId]
-		
-		local indx = GetRandomIndex(packConfig.items)
-		local itemId = packConfig.items[indx][ 1 ]
-		local count = GetRandomExp(packConfig.counts[indx])
-		
-		if dict[itemId] == nil then
-			dict[itemId] = 0
-		end
-		dict[itemId] = dict[itemId] + count
-	end
-	
-	for itemId, count in pairs(dict) do 
+-- 玩家获得奖励
+-- rewardDict:  {itemId1 = count1}
+function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
+	for itemId, count in pairs(rewardDict) do 
 		if ItemToResoureceTable[itemId] ~= nil then
 			-- 加人物资源
 			playerInfo:AddMoney(ItemToResoureceTable[itemId], moneyOperType, count)
@@ -316,8 +318,8 @@ function DoRandomDrop(player, dropId, dict, moneyOperType, itemOperType)
 		else
 			local bind = tb_item_template[itemId].bind_type
 			-- 加道具
+			-- 如果背包加不了的话需要放邮件
 			playerLib.AddItem(player, itemId, count, bind, itemOperType)
 		end
 	end
-	
 end

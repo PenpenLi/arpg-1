@@ -927,3 +927,7 @@ world_boss_rank,s2c,206,/*当前世界BOSS伤害排名*/,STATUS_NEVER,False
 #
 res_instance_enter,c2s,210,/*进入资源副本*/,STATUS_NEVER,False
 	id,uint8,False,/*副本类型*/
+	
+#
+res_instance_sweep,c2s,211,/*扫荡资源副本*/,STATUS_NEVER,False
+	id,uint8,False,/*副本类型*/

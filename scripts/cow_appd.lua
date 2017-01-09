@@ -141,6 +141,8 @@ config = {
 		CMSG_CANCEL_BLOCK_CHAT,
 		-------------------------------
 		CMSG_WORLD_BOSS_ENROLL,	-- /*世界BOSS报名*/	
+		-----------------------------
+		CMSG_RES_INSTANCE_SWEEP,
 	},
 	--pk服命令表
 	pk_external_router_map = {

@@ -2,6 +2,8 @@ InstanceResBase = class("InstanceResBase", InstanceInstBase)
 
 InstanceResBase.Name = "InstanceResBase"
 InstanceResBase.exit_time = 10
+--刷新坐标偏移值
+InstanceResBase.RefreshOffset = 3;
 
 function InstanceResBase:ctor(  )
 	
@@ -9,8 +11,8 @@ end
 
 --初始化脚本函数
 function InstanceResBase:OnInitScript(  )
+	
 	InstanceInstBase.OnInitScript(self) --调用基类
-	outFmtDebug("InstanceResBase:OnInitScript")
 	
 	if self:GetMapQuestEndTime() > 0 then
 		return
@@ -19,8 +21,14 @@ function InstanceResBase:OnInitScript(  )
 	self:parseGeneralId()
 	
 	local id = self:GetIndex()
-	local time	= tb_instance_res[ id ].time	
-	local questTable = tb_map_trial[ id ].quests
+	local config = tb_instance_res[ id ]
+	local time	= config.time	
+	local questTable = config.quests
+	
+	self:InitRes(config)
+	
+	self:SetBatch(config.refresnum)
+
 	-- 加副本任务
 	self:OnAddQuests(questTable)
 	-- 加任务任务时间
@@ -29,6 +37,58 @@ function InstanceResBase:OnInitScript(  )
 	self:SetMapQuestEndTime(timestamp)
 	-- 副本时间超时回调
 	self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
+	
+	print("------------")
+end
+
+function InstanceResBase:InitRes(config)
+	self:SetRandomMonsterIndex(config.refresnum)
+end
+
+--设置每波怪刷新的次序
+function InstanceResBase:SetRandomMonsterIndex(num)
+	local tab = GetRandomIndexTable(num,num)
+	for i=1,#tab do
+		if i <= 4 then
+			self:SetByte(MAP_INT_FIELD_RESERVE2,i-1,tab[i])
+		elseif i <= 8 then
+			self:SetByte(MAP_INT_FIELD_RESERVE3,i-5,tab[i])
+		end
+		--print(i-1,tab[i])
+	end
+end
+
+function InstanceResBase:GetRandomMonsterIndex(idx)
+	if idx <= 3 then
+		return self:GetByte(MAP_INT_FIELD_RESERVE2,idx)
+	elseif idx <= 7 then
+		return self:GetByte(MAP_INT_FIELD_RESERVE3,idx-4)
+	end
+	
+	return 0
+end
+
+--设置每波怪的数量
+function InstanceResBase:SetKillTarget(val)
+	self:SetUInt16(MAP_INT_FIELD_RESERVE1,0,val);
+end
+function InstanceResBase:SubKillTarget()
+	self:SubUInt16(MAP_INT_FIELD_RESERVE1,0,1);
+end
+function InstanceResBase:GetKillTarget()
+	return self:GetUInt16(MAP_INT_FIELD_RESERVE1,0);
+end
+--设置怪的波数
+function InstanceResBase:SetBatch(val)
+	return self:SetUInt16(MAP_INT_FIELD_RESERVE1,1,val);
+end
+
+function InstanceResBase:SubBatch()
+	return self:SubUInt16(MAP_INT_FIELD_RESERVE1,1,1);
+end
+
+function InstanceResBase:GetBatch()
+	return self:GetUInt16(MAP_INT_FIELD_RESERVE1,1);
 end
 
 
@@ -39,6 +99,7 @@ end
 function InstanceResBase:parseGeneralId()
 	
 	local generalId	= self:GetMapGeneralId()
+	outFmtDebug("generalId %s",generalId)
 	local params = string.split(generalId, ':')
 	local indx = tonumber(params[ 1 ])
 	
@@ -78,8 +139,51 @@ function InstanceResBase:OnJoinPlayer(player)
 	end
 	
 	-- 刷新怪物
-	self:OnRefreshMonster(player)
+	self:OnRefreshMonster(playerInfo)
 	
+end
+
+--刷一波怪
+function InstanceResBase:RefreshMonsterBatch(player)
+	local batchIdx = self:GetBatch() - 1
+	
+	local tf,cnt = self:ApplyRefreshMonsterBatch(player,batchIdx)
+	if not tf then
+		return
+	end
+	
+	outFmtDebug("RefreshMonsterBatch %d",cnt)
+	
+	self:SetKillTarget(cnt)
+	self:SubBatch()
+end
+
+function InstanceResBase:ApplyRefreshMonsterBatch(player,batchIdx)
+	outFmtDebug("ApplyRefreshMonsterBatch base")
+	local batchPos = self:GetRandomMonsterIndex(batchIdx)
+
+	if batchPos == 0 then
+		return false,0
+	end
+	
+	local id = self:GetIndex()
+	local config = tb_instance_res[ id ]
+	local entry = config.monster[batchPos]
+	local plev = player:GetLevel()
+	local bornPos = config.monsterInfo[batchPos]
+	local cnt = config.monsternum
+	
+
+	for i = 1, cnt do
+		local bornX = bornPos[ 1 ] + randInt(0, self.RefreshOffset)
+		local bornY = bornPos[ 2 ] + randInt(0, self.RefreshOffset)
+
+		local creature = mapLib.AddCreature(self.ptr, 
+			{templateid = entry, x = bornX, y = bornY, level=plev, active_grid = true, alias_name = config.name, 
+			ainame = "AI_res", npcflag = {}, attackType = 2})
+		
+	end
+	return true,cnt
 end
 
 --刷怪
@@ -93,59 +197,8 @@ function InstanceResBase:OnRefreshMonster(player)
 		return
 	end
 	
-	local id		= self:GetIndex()
-	local config	= tb_instance_res[ id ]
-	
-	local entry
-	local bornX
-	local bornY
-	
-	if #config.monsterInfo > 0 then
-		-- 中心点的坐标
-		local cx	= config.monsterInfo[ 1 ]
-		local cy	= config.monsterInfo[ 2 ]
-		
-		entry 		= config.monsterInfo[ 3 ]
-		local offs	= config.monsterInfo[ 4 ]
-		local num	= config.monsterInfo[ 5 ]
-		local width = offs * 2 + 1
-		local grids = width * width
-		local cent	= (grids - 1) / 2
-		
-		-- 左上角点的坐标
-		local lx = cx - offs
-		local ly = cy - offs
-		
-		
-		local idTable = GetRandomIndexTable(grids, num)
-		for _, indx in pairs(idTable) do
-			local id = indx - 1
-			local offx = id % width
-			local offy = id / width
-			bornX = lx + offx
-			bornY = ly + offy
-			
-			mapLib.AddCreature(self.ptr, {
-				templateid = entry, x = bornX, y = bornY, 
-				active_grid = true, alias_name = "", ainame = tb_creature_template[entry].ainame, npcflag = {}
-			}
-		)
-		end
-	end
-	
-	if #config.bossInfo > 0 then
-		entry = config.bossInfo[ 3 ]
-		bornX = config.bossInfo[ 1 ]
-		bornY = config.bossInfo[ 2 ]
-		mapLib.AddCreature(self.ptr, {
-				templateid = entry, x = bornX, y = bornY, 
-				active_grid = true, alias_name = "TrialBoss", ainame = tb_creature_template[entry].ainame, npcflag = {}
-			}
-		)
-	end
+	self:RefreshMonsterBatch(player)
 
-
-	
 end
 
 --当玩家加入后触发
@@ -178,7 +231,17 @@ function InstanceResBase:AfterProcessUpdate(player)
 		local id = self:GetIndex()
 		-- 获得随机奖励dropIdTable
 --		local dropIdTable = tb_map_trial[ id ].reward
-		local data = self:RandomReward(player, {}, tb_map_trial[ id ].firstReward)
+		local playerInfo = UnitInfo:new{ptr = player}
+		local idx = id * 100 + playerInfo:GetLevel()
+		--outFmtDebug("tb_instance_reward idx %d",idx)
+		local config = tb_instance_reward[idx]
+		local tab = {}
+		table.insert(tab,config.basereward[1])
+		local randomReward = config.randomreward
+		local rewardIdx = randInt(1, #randomReward)
+		table.insert(tab,randomReward[rewardIdx])
+		
+		local data = self:RandomReward(player, {}, tab)
 		
 		self:SetMapReward(data)
 		
@@ -186,8 +249,54 @@ function InstanceResBase:AfterProcessUpdate(player)
 		self:SetMapState(self.STATE_FINISH)
 		
 		--发到应用服进行进入判断
-		playerLib.SendToAppdDoSomething(player, SCENED_APPD_PASS_TRIAL_INSTANCE, id)
+		playerLib.SendToAppdDoSomething(player, SCENED_APPD_PASS_RES_INSTANCE, id)
 	end
+end
+
+function InstanceResBase:MonsterDie(player)
+	local playerInfo = UnitInfo:new{ptr = player}
+	self:SubKillTarget()
+	local num = self:GetKillTarget()
+	if num == 0 then
+		local batchNum = self:GetBatch()
+		outFmtDebug("batchNum-----------------------%d",batchNum)
+		if batchNum > 0 then
+			outFmtDebug("shua xiao guai")
+			self:RefreshMonsterBatch(playerInfo)
+		else 
+			--outFmtDebug("shua boss")
+			self:RefreshBoss(playerInfo)
+		end
+	end
+end
+--刷新boss
+function InstanceResBase:RefreshBoss(player)
+	local id = self:GetIndex()
+	local config = tb_instance_res[ id ]
+	local entry = config.boss
+	local plev = player:GetLevel()
+	local bornPos = config.bosspos
+	
+	local creature = mapLib.AddCreature(self.ptr, {templateid = entry, x = bornPos[1], y = bornPos[2], level=plev, 
+		active_grid = true, alias_name = config.name, ainame = "AI_resBoss", npcflag = {}})
+	
+end
+
+function InstanceResBase:SetCreaturePro(creature, pros, bRecal, mul)
+	--outFmtDebug("SetBaseAttrs -- ai res ")
+	--creature:SetBaseAttrs(pros, bRecal, mul)
+	local entry = creature:GetEntry()
+	local lev = creature:GetLevel()
+	local idx = entry * 100 + lev
+	--outFmtDebug("SetBaseAttrs -- ai res %d--%d--%d",entry,lev,idx)
+	local config = tb_creature_resource[idx]
+	if config then
+		--outFmtDebug("shu xing")
+		Instance_base.SetCreaturePro(self, creature, config.pro, bRecal, mul)
+	else 
+		Instance_base.SetCreaturePro(self, creature, pros, bRecal, mul)
+	end
+	
 end
 
 -------------------------------- BOSS
@@ -201,7 +310,8 @@ function AI_resBoss:JustDied( map_ptr,owner,killer_ptr )
 		return
 	end
 	
-	local instanceInfo = InstanceResBase:new{ptr = map_ptr}
+	--local instanceInfo = InstanceResBase:new{ptr = map_ptr}
+	local instanceInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
 	
 	-- 如果时间到了失败了 即使最后下杀死BOSS都没用
 	if instanceInfo:GetMapState() ~= instanceInfo.STATE_START then
@@ -229,14 +339,16 @@ AI_res = class("AI_res", AI_Base)
 AI_res.ainame = "AI_res"
 --死亡
 function AI_res:JustDied( map_ptr,owner,killer_ptr )	
-	
+	--outFmtDebug("die die ")
 	-- 先判断是不是试炼塔副本
 	local mapid = mapLib.GetMapID(map_ptr)
 	if tb_map[mapid].inst_sub_type ~= 2 then
 		return
 	end
 	
-	local instanceInfo = InstanceResBase:new{ptr = map_ptr}
+	--local instanceInfo = InstanceResBase:new{ptr = map_ptr}
+	
+	local instanceInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
 	
 	-- 如果时间到了失败了 即使最后下杀死BOSS都没用
 	if instanceInfo:GetMapState() ~= instanceInfo.STATE_START then
@@ -254,7 +366,8 @@ function AI_res:JustDied( map_ptr,owner,killer_ptr )
 	if updated then
 		instanceInfo:AfterProcessUpdate(killer_ptr)
 	end
-	
+	instanceInfo:MonsterDie(killer_ptr)
+	--outFmtDebug("die die ****************** ")
 	return 0
 end
 

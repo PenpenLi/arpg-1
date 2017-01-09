@@ -2,7 +2,7 @@
 local OpcodeHandlerFuncTable = {}
 OpcodeHandlerFuncTable [CMSG_JUMP_START] = ScenedContext.Hanlde_Jump_Start
 -- OpcodeHandlerFuncTable [MSG_JUMP_END] = ScenedContext.Hanlde_Jump_End
---OpcodeHandlerFuncTable [MSG_TELEPORT] = ScenedContext.Hanlde_Teleport
+-- OpcodeHandlerFuncTable [MSG_TELEPORT] = ScenedContext.Hanlde_Teleport
 OpcodeHandlerFuncTable [CMSG_FORCEINTO] = ScenedContext.Handle_ForceInto
 
 OpcodeHandlerFuncTable[CMSG_RIDE_MOUNT] 		= ScenedContext.Handle_Ride
@@ -21,6 +21,8 @@ OpcodeHandlerFuncTable[CMSG_WORLD_BOSS_FIGHT] = ScenedContext.Handle_World_Boss_
 OpcodeHandlerFuncTable[CMSG_ROLL_WORLD_BOSS_TREASURE] = ScenedContext.Handle_Roll_WorldBoss_Treasure
 
 OpcodeHandlerFuncTable[CMSG_RES_INSTANCE_ENTER] = ScenedContext.Hanlde_Enter_Res_Instance
+
+OpcodeHandlerFuncTable[CMSG_CHANGE_LINE] = ScenedContext.Hanlde_Change_Line
 
 
 return OpcodeHandlerFuncTable

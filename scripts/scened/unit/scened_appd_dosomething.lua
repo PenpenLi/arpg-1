@@ -38,8 +38,10 @@ function UnitInfo:sweepVIP(id, hard)
 	local dropIdTable = tb_map_vip[id].rewards[hard]
 	
 	for _, dropId in pairs(dropIdTable) do
-		DoRandomDrop(self.ptr, dropId, dict)
+		DoRandomDrop(dropId, dict)
 	end
+	
+	PlayerAddRewards(self.ptr, dict, MONEY_CHANGE_VIP_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_VIP_INSTANCE_REWARD)
 	
 	-- 扫荡的结果发送
 	local list = self:Change_To_Item_Reward_Info(dict)
@@ -69,9 +71,11 @@ function UnitInfo:sweepTrial(id)
 		local dropIdTable = tb_map_trial[ i ].reward
 			
 		for _, dropId in pairs(dropIdTable) do
-			DoRandomDrop(self.ptr, dropId, dict)
+			DoRandomDrop(dropId, dict)
 		end
 	end
+	
+	PlayerAddRewards(self.ptr, dict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD)
 	
 	-- 扫荡的结果发送
 	local list = self:Change_To_Item_Reward_Info(dict)

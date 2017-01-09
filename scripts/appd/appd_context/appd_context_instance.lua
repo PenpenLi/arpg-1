@@ -74,10 +74,28 @@ function PlayerInfo:passTrialInstance(id)
 	rankInsertTask(self:GetGuid(), RANK_TYPE_TRIAL)
 end
 
+-- 通关关卡
+function PlayerInfo:passResInstance(id)
+	local instMgr = self:getInstanceMgr()
+	instMgr:passResInstance(id)
+	
+end
+
+
 -- 一键扫荡
 function PlayerInfo:sweepTrial()
 	local instMgr = self:getInstanceMgr()
 	instMgr:sweepTrialInstance()
+end
+
+function PlayerInfo:sweepResInstance(id)
+	local vip = self:GetVIP()
+	if vip <= 0 then
+		outFmtDebug("not vip cannot sweepResInstance")
+		return
+	end
+	local instMgr = self:getInstanceMgr()
+	instMgr:sweepResInstance(id)
 end
 
 -- 重置试炼塔
@@ -195,6 +213,7 @@ function DoWorldBossTeleport(playerDict, roomInfo)
 	for _, playerInfo in pairs(playerDict) do
 		-- 进行传送(必要的话进行分时传送)
 		playerInfo:CallScenedDoSomething(APPD_SCENED_WORLD_BOSS_ENTER, line)
+		roomInfo[line] = roomInfo[line] - 1
 		if roomInfo[line] == 0 then
 			line = line + 1
 		end

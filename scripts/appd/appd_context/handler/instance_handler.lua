@@ -20,6 +20,15 @@ function PlayerInfo:Handle_Reset_Trial(pkt)
 	self:resetTrial()
 end
 
+-- 扫荡资源副本
+function PlayerInfo:Handle_Sweep_Res(pkt)
+	local id = pkt.id
+	if tb_instance_res[id] == nil then
+		return
+	end
+	self:sweepResInstance(id)
+end
+
 
 -- 世界BOSS报名
 function PlayerInfo:Handle_World_Boss_Enroll(pkt)

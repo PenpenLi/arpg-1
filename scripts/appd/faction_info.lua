@@ -901,7 +901,7 @@ function FactionInfo:MemberAdd( player)
 	app.objMgr:callAddWatch(player:GetSessionId(), self:GetGuid())
 	--app.objMgr:callAddWatch(player:GetSessionId(), self:getFactionEventsGuid())
 
-	rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
+	--rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 	return true
 end
 
@@ -1174,7 +1174,7 @@ function FactionInfo:FactionRecruit(player,reserve_int1,reserve_int2,reserve_str
 	self:SetFactionMinLev(reserve_int2)
 	self:SetFactionZhaoMuNotice(reserve_str1)
 
-	rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
+	--rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 end
 
 --帮派升级

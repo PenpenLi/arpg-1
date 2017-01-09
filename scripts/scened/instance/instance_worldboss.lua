@@ -2,7 +2,7 @@ InstanceWorldBoss = class("InstanceWorldBoss", Instance_base)
 local protocols = require('share.protocols')
 
 InstanceWorldBoss.Name = "InstanceWorldBoss"
-InstanceWorldBoss.player_auto_respan = 10
+InstanceWorldBoss.player_auto_respan = 5
 
 -- 所有线的排名
 InstanceWorldBoss.rankList = {}
@@ -274,7 +274,7 @@ function InstanceWorldBoss:GetSingleRespawnTime(player)
 	end
 	local cnt = InstanceWorldBoss.deathList[lineNo][playerInfo:GetPlayerGuid()]
 	cnt = cnt or 0
-	return self.player_auto_respan + cnt * 5
+	return self.player_auto_respan + cnt * 3
 end
 
 -- 当玩家死亡后
@@ -446,8 +446,8 @@ function InstanceWorldBoss:OnTimer_Roll(rollId)
 	end
 	local player = mapLib.GetPlayerByPlayerGuid(self.ptr, playerGuid)
 	local itemId = tb_worldboss_roll[rollId].itemid
-	local bind = tb_item_template[itemId].bind_type
-	playerLib.AddItem(player, itemId, 1, bind, LOG_ITEM_OPER_TYPE_WORLD_BOSS_ROLL)
+	
+	PlayerAddRewards(player, {[itemId] = 1}, MONEY_CHANGE_WORLD_BOSS_ROLL, LOG_ITEM_OPER_TYPE_WORLD_BOSS_ROLL)
 	
 	return false
 end

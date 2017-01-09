@@ -2,6 +2,7 @@
 	场景服要用到的模板表请在这require
 ]]
 require("template.tables.tb_creature_template")
+require("template.tables.tb_creature_resource")
 require("template.tables.tb_anger_limit")
 require("template.tables.tb_buff_template")
 require("template.tables.tb_dailymission")
@@ -67,3 +68,4 @@ require("template.tables.tb_worldboss_waitroom")
 require("template.tables.tb_worldboss_time")
 
 require("template.tables.tb_instance_res")
+require("template.tables.tb_instance_reward")

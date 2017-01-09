@@ -10,6 +10,6 @@ tb_worldboss_rank_reward = {
 	[1] = {id = 1,id2 = 1,reward = "50001,1",},
 	[2] = {id = 2,id2 = 2,reward = "50001,1",},
 	[3] = {id = 3,id2 = 3,reward = "50001,1",},
-	[6] = {id = 6,id2 = 14,reward = "50001,1",},
-	[15] = {id = 15,id2 = -1,reward = "50001,1",},
+	[4] = {id = 4,id2 = 14,reward = "50001,1",},
+	[5] = {id = 5,id2 = -1,reward = "50001,1",},
 }

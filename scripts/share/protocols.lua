@@ -217,6 +217,7 @@ CMSG_ROLL_WORLD_BOSS_TREASURE		= 204	-- /*roll世界BOSS箱子*/
 SMSG_ROLL_RESULT		= 205	-- /*roll点结果*/	
 SMSG_WORLD_BOSS_RANK		= 206	-- /*当前世界BOSS伤害排名*/	
 CMSG_RES_INSTANCE_ENTER		= 210	-- /*进入资源副本*/	
+CMSG_RES_INSTANCE_SWEEP		= 211	-- /*扫荡资源副本*/	
 
 
 ---------------------------------------------------------------------
@@ -7644,6 +7645,35 @@ function Protocols.unpack_res_instance_enter (pkt)
 end
 
 
+-- /*扫荡资源副本*/	
+function Protocols.pack_res_instance_sweep ( id)
+	local output = Packet.new(CMSG_RES_INSTANCE_SWEEP)
+	output:writeByte(id)
+	return output
+end
+
+-- /*扫荡资源副本*/	
+function Protocols.call_res_instance_sweep ( playerInfo, id)
+	local output = Protocols.	pack_res_instance_sweep ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*扫荡资源副本*/	
+function Protocols.unpack_res_instance_sweep (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -7853,6 +7883,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_roll_result = self.call_roll_result
 	playerInfo.call_world_boss_rank = self.call_world_boss_rank
 	playerInfo.call_res_instance_enter = self.call_res_instance_enter
+	playerInfo.call_res_instance_sweep = self.call_res_instance_sweep
 end
 
 local unpack_handler = {
@@ -8059,6 +8090,7 @@ local unpack_handler = {
 [SMSG_ROLL_RESULT] =  Protocols.unpack_roll_result,
 [SMSG_WORLD_BOSS_RANK] =  Protocols.unpack_world_boss_rank,
 [CMSG_RES_INSTANCE_ENTER] =  Protocols.unpack_res_instance_enter,
+[CMSG_RES_INSTANCE_SWEEP] =  Protocols.unpack_res_instance_sweep,
 
 }
 

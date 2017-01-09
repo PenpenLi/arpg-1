@@ -124,7 +124,7 @@ end
 
 --是否需要提供传送generalid,通过地图id判断
 function DoIsNeedGeneralid(mapid)
-	local tbl = {2003, 2004, 2005}
+	local tbl = {2003, 2004, 2005, 2011,2012,2013,2014,2015}
 	local flag = false
 	for _, val in ipairs(tbl) do
 		if mapid == val then
