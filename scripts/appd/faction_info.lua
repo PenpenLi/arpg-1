@@ -1200,6 +1200,8 @@ function FactionInfo:FactionLevelUp(player )
 	self:SetFactionLevel(lv + 1)
 	--升级成功
 	player:CallOptResult(OPERTE_TYPE_FACTION, OPEATE_TYPE_FACTION_LEVEL_UP)
+	
+	rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 end
 
 

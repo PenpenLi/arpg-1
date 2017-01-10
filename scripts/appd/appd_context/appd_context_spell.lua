@@ -854,13 +854,16 @@ function PlayerInfo:ApplyDivineActive(id,t)
 	end
 	local spellMgr = self:getSpellMgr()
 	if spellMgr:addDivine(id,time) then
+		
+		local num = spellMgr:getDivineNum()
+		self:SetDivineNum(num)
 		--激活主动技能
 		local config = tb_divine_base[id]
 		self:onDivineActivedSpell(id,config.skill,false)
 		
 		-- 重算战斗力(当前和属性绑定在一起)
 		self:RecalcAttrAndBattlePoint()
-	
+		
 		return true
 	end
 	return false
@@ -891,6 +894,10 @@ function PlayerInfo:DivineUpLev(divineId)
 	 	if now >= config.bless then
 	 		local nowLev = curlev + 1
 	 		spellMgr:setDivinLevBless(idx,nowLev,now-config.bless)
+			
+			--重新设置神兵数量
+			local num = spellMgr:getDivineNum()
+			self:SetDivineNum(num)
 
 	 		--激活对应的被动技能
 	 		local slist = tb_divine_base[divineId].passiveskill

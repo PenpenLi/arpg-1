@@ -180,7 +180,7 @@ function InstanceResBase:ApplyRefreshMonsterBatch(player,batchIdx)
 
 		local creature = mapLib.AddCreature(self.ptr, 
 			{templateid = entry, x = bornX, y = bornY, level=plev, active_grid = true, alias_name = config.name, 
-			ainame = "AI_res", npcflag = {}, attackType = 2})
+			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
 		
 	end
 	return true,cnt
@@ -306,7 +306,7 @@ AI_resBoss.ainame = "AI_resBoss"
 function AI_resBoss:JustDied( map_ptr,owner,killer_ptr )	
 	-- 先判断是不是试炼塔副本
 	local mapid = mapLib.GetMapID(map_ptr)
-	if tb_map[mapid].inst_sub_type ~= 2 then
+	if tb_map[mapid].inst_sub_type ~= INSTANCE_SUB_TYPE_RES then
 		return
 	end
 	
@@ -342,7 +342,7 @@ function AI_res:JustDied( map_ptr,owner,killer_ptr )
 	--outFmtDebug("die die ")
 	-- 先判断是不是试炼塔副本
 	local mapid = mapLib.GetMapID(map_ptr)
-	if tb_map[mapid].inst_sub_type ~= 2 then
+	if tb_map[mapid].inst_sub_type ~= INSTANCE_SUB_TYPE_RES then
 		return
 	end
 	

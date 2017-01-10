@@ -57,18 +57,20 @@ end
 --增加击杀怪物任务
 function InstanceInstBase:OnAddKillMonsterQuest(quest)
 	if(#quest ~= 3) then
-		return
+		return -1
 	end
 	
 	local indx = self:GetEmptySlot()
 	
 	if indx < 0 then
-		return
+		return -1
 	end
 	
 	self:SetByte(indx, 0, quest[ 1 ])
 	self:SetByte(indx, 1, quest[ 2 ])
 	self:SetUInt16(indx, 1, quest[ 3 ])
+	
+	return indx
 end
 
 --增加收集物品任务
@@ -83,7 +85,12 @@ end
 
 --增加守护NPC任务
 function InstanceInstBase:OnAddProtectNPCQuest(quest)
-	
+	-- 增加结构同击杀怪物任务一样
+	local indx = self:OnAddKillMonsterQuest(quest)
+	if indx > 0 then
+		local offset = (indx - MAP_INT_FIELD_QUESTS_START) / 2
+		self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, offset, 100)
+	end
 end
 
 --增加护送NPC任务
@@ -124,13 +131,13 @@ Quest_Func_Table[INSTANCE_QUEST_TYPE_BREAK_THROUGH]	= InstanceInstBase.OnAddBrea
 
 ----------------------------------------任务进度更新情况 ------------------------------------------
 
--- 一个怪物被玩家杀了
+-- (1) 一个怪物被玩家杀了
 function InstanceInstBase:OneMonsterKilled(entry)
 	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
-		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_KILL_MONSTER and self:IsFitForQuest(self:GetUInt16(i, 1), entry) then
-			local indx = (i - MAP_INT_FIELD_QUESTS_START) / 2
-			local prev = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx)
-			self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx, prev + 1)
+		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_KILL_MONSTER and self:IsFitForKillMonsterQuest(self:GetUInt16(i, 1), entry) then
+			local offset = (i - MAP_INT_FIELD_QUESTS_START) / 2
+			local prev = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, offset)
+			self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, offset, prev + 1)
 			return true
 		end
 	end
@@ -138,20 +145,36 @@ function InstanceInstBase:OneMonsterKilled(entry)
 	return false
 end
 
--- 是否满足这个任务
-function InstanceInstBase:IsFitForQuest(dest, entry)
+-- 是否满足击杀目标怪物
+function InstanceInstBase:IsFitForKillMonsterQuest(dest, entry)
 	return dest == entry or dest == 0 and tb_creature_template[entry].monster_type == 0
 end
 
 
+-- (4) 守护的被怪物杀了
+function InstanceInstBase:ProtectorHit(entry, hpRate)
+	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1, 2 do
+		if self:GetByte(i, 0) == INSTANCE_QUEST_TYPE_PROTECT_NPC and self:GetUInt16(i, 1) == entry then
+			local offset = (i - MAP_INT_FIELD_QUESTS_START) / 2
+			hpRate = math.floor(hpRate)
+			self:SetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, offset, hpRate)
+			return true
+		end
+	end
+	
+	return false
+end
+
 -- 还有几个TODO
+
+
 
 
 ----------------------------------------检查任务完成情况 ------------------------------------------
 
 -- 副本时间到了以后或者进度更新后检测任务是否完成
 function InstanceInstBase:CheckQuestAfterTargetUpdate(isTimeout)	
-	isTimeout = isTimeout or 0
+	isTimeout = isTimeout or false
 	
 	local ret = true
 	
@@ -189,7 +212,28 @@ end
 
 --检查守护NPC任务
 function InstanceInstBase:OnCheckProtectNPCQuest(indx, isTimeout)
-	return false
+	local offset = MAP_INT_FIELD_QUESTS_START + indx * 2
+	--local process = self:GetByte(MAP_INT_FIELD_QUESTS_PROCESS_START, indx)
+	
+	local target = self:GetByte(offset, 1)
+	local entry = self:GetUInt16(offset, 1)
+	
+	local ret = true
+	local entryList = mapLib.QueryCreature(self.ptr, entry)
+	for _, creature_ptr in pairs(entryList) do
+		local creatureInfo = UnitInfo:new {ptr = creature_ptr}
+		-- 目标未达到
+		if creatureInfo:GetHealth() * 100 < creatureInfo:GetMaxhealth() * target then
+			ret = false
+			break
+		end
+	end
+	-- 没有目标NPC
+	if #entryList == 0 then
+		ret = false
+	end
+	
+	return ret
 end
 
 --检查护送NPC任务

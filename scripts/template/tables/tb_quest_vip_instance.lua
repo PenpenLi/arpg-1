@@ -5,4 +5,5 @@
 
 tb_quest_vip_instance = {
 	[1] = {},
+	[4] = {},
 }

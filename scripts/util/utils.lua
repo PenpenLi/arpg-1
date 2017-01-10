@@ -124,3 +124,47 @@ function DoFind(str, regex, rep)
 	
 	return ret
 end
+
+
+
+-- PlayerInfo的属性换算战力
+UnitInfo_Battle_Point_Rate = {
+	[EQUIP_ATTR_MAXHEALTH] = 2,
+	[EQUIP_ATTR_DAMAGE] = 3,
+	[EQUIP_ATTR_ARMOR] = 2,
+	[EQUIP_ATTR_HIT] = 2,
+	[EQUIP_ATTR_DODGE] = 2,
+	[EQUIP_ATTR_CRIT] = 1,
+	[EQUIP_ATTR_TOUGH] = 1,
+	[EQUIP_ATTR_ATTACK_SPEED] = 1,
+	[EQUIP_ATTR_MOVE_SPEED] = 0,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = 1,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = 1,
+	[EQUIP_ATTR_DAMAGE_RESIST] = 1,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = 1,
+	[EQUIP_ATTR_HIT_RATE] = 1,
+	[EQUIP_ATTR_DODGE_RATE] = 1,
+	[EQUIP_ATTR_CRIT_RATE] = 1,
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = 1,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = 1,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = 1,
+}
+
+-- 计算战斗力
+function DoAnyOneCalcForce(attrDict)
+	local battlePoint = 0
+	for attrId, value in pairs(attrDict) do
+		battlePoint = battlePoint + value * UnitInfo_Battle_Point_Rate[attrId]
+	end
+	
+	return battlePoint
+end
+function DoAnyOneCalcForceByAry(attrAy)
+	local battlePoint = 0
+	for k, v in pairs(attrAy) do
+		--battlePoint = battlePoint + value * UnitInfo_Battle_Point_Rate[attrId]
+		battlePoint = battlePoint + v[2] * UnitInfo_Battle_Point_Rate[v[1]]
+	end
+	
+	return battlePoint
+end

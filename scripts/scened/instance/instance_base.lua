@@ -632,6 +632,11 @@ Instance_base = {
 	--是否友好（友好1，不友好0）
 	DoIsFriendly = 
 		function(self, killer_ptr, target_ptr)
+			
+			if self:GetMapState() ~= self.STATE_START then
+				return 1
+			end
+			
 			local killerInfo = UnitInfo:new{ptr = killer_ptr}
 			local targetInfo = UnitInfo:new{ptr = target_ptr}
 

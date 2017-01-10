@@ -247,6 +247,7 @@ function load_lua_scripts()
 		{'资源副本脚本'			,'scened/instance/instance_res_base'},
 		{'资源真气副本脚本'		,'scened/instance/instance_res_zhenqi'},
 		{'资源金币副本脚本'		,'scened/instance/instance_res_gold'},
+		{'资源宝石精华副本脚本'	,'scened/instance/instance_res_gem'},
 		
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
@@ -279,9 +280,8 @@ INSTANCE_SCRIPT_TABLE = {
 	[2012] = InstanceResZhenQi,
 	[2013] = InstanceResGold,
 	[2014] = InstanceResGold,
-	--[101] = InstanceTower1,
-	--[102] = InstanceTower2,
-	--[103] = InstanceTaoHua,
+	[2015] = InstanceResGem,
+
 }
 
 -- 复活点坐标

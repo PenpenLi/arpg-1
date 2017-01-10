@@ -308,13 +308,19 @@ end
 function AppSpellMgr:calculDivineAttr(attrs)
 	local tab = self:getDivineList()
 	--Ttab(attrs)
+	local allForce = 0
 	for k,v in pairs(tab) do
 		local id = (k-1) * #tb_divine_bless + v + 1
 		local config = tb_divine_streng[id].props
+		local baseForce = DoAnyOneCalcForceByAry(config)
+		allForce = allForce + baseForce
 		for i=1,#config do
 			attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
 		end
 	end
+	
+	local player = self:getOwner()
+	player:SetDivineForce(allForce)
 	--Ttab(attrs)
 end
 -- 是否存在神兵
@@ -332,6 +338,17 @@ function AppSpellMgr:hasDivine(divineId)
 	
 	return false
 end
+-- 当前神兵数量
+function AppSpellMgr:getDivineNum()
+	local num = 0
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) ~= 0 then
+			num = num + 1
+		end
+	end
+	return num
+end
+
 --添加神兵
 function AppSpellMgr:addDivine(divineId,time)
 	if self:hasDivine(divineId) then

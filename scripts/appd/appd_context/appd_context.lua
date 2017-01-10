@@ -912,6 +912,29 @@ function PlayerInfo:SetLastDeath(count)
 	end
 	self:AddByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 2, count)
 end
+--设置角色神兵数量
+function PlayerInfo:SetDivineNum(val)
+	self:SetUInt32(PLAYER_FIELD_DIVINE_NUM,val)
+end
+--设置神兵总战力
+function PlayerInfo:SetDivineForce(val)
+	local old = self:GetUInt32(PLAYER_FIELD_DIVINE_FORCE)
+	if old ~= val then
+		self:SetUInt32(PLAYER_FIELD_DIVINE_FORCE,val)
+	end
+end
+
+--设置最好的坐骑信息
+function PlayerInfo:SetMountBest(id,lev,start)
+	self:SetByte(PLAYER_FIELD_MOUNT_BEST,0,id)
+	self:SetByte(PLAYER_FIELD_MOUNT_BEST,1,lev)
+	self:SetByte(PLAYER_FIELD_MOUNT_BEST,2,start)
+end
+
+--设置坐骑总战力
+function PlayerInfo:SetMountForce(val)
+	self:SetUInt32(PLAYER_FIELD_MOUNT_FORCE,val)
+end
 
 
 -- 关闭连接

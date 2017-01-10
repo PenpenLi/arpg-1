@@ -124,7 +124,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	faction:SetFactionCurFlagId(icon)
 
 	if not faction:MemberAdd(self) then
-		guidMgr:callRemoveObject(new_guid)
+		app.objMgr:callRemoveObject(new_guid)
 		self:SetFactionId("")
 		self:SetFactionName("")
 		return

@@ -1613,29 +1613,6 @@ UnitInfo_Get_Attr_Func = {
 	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = UnitInfo.GetResistCritMultiple,
 }
 
--- PlayerInfo的属性换算战力
-UnitInfo_Battle_Point_Rate = {
-	[EQUIP_ATTR_MAXHEALTH] = 2,
-	[EQUIP_ATTR_DAMAGE] = 3,
-	[EQUIP_ATTR_ARMOR] = 2,
-	[EQUIP_ATTR_HIT] = 2,
-	[EQUIP_ATTR_DODGE] = 2,
-	[EQUIP_ATTR_CRIT] = 1,
-	[EQUIP_ATTR_TOUGH] = 1,
-	[EQUIP_ATTR_ATTACK_SPEED] = 1,
-	[EQUIP_ATTR_MOVE_SPEED] = 0,
-	[EQUIP_ATTR_AMPLIFY_DAMAGE] = 1,
-	[EQUIP_ATTR_IGNORE_DEFENSE] = 1,
-	[EQUIP_ATTR_DAMAGE_RESIST] = 1,
-	[EQUIP_ATTR_DAMAGE_RETURNED] = 1,
-	[EQUIP_ATTR_HIT_RATE] = 1,
-	[EQUIP_ATTR_DODGE_RATE] = 1,
-	[EQUIP_ATTR_CRIT_RATE] = 1,
-	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = 1,
-	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = 1,
-	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = 1,
-}
-
 --属性重算（场景服）
 function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 	local unitInfo = UnitInfo:new {ptr = player}
@@ -1687,11 +1664,10 @@ function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
 			value = value + attrs[attrId]
 		end
 		func(unitInfo, value)
-		
-		if UnitInfo_Battle_Point_Rate[attrId] then
-			battlePoint = battlePoint + value * UnitInfo_Battle_Point_Rate[attrId]
-		end
-	end	
+		attrs[attrId] = value
+	end
+	
+	battlePoint = battlePoint + DoAnyOneCalcForce(attrs)
 	
 	local nonePorpPoint = binLogLib.GetUInt32(attrBinlog, #UnitInfo_Battle_Point_Rate)
 	battlePoint = battlePoint + nonePorpPoint
