@@ -15,9 +15,6 @@ require("util/utils")
 outString('load share.tick_name script')
 require("share/tick_name")
 
--- 处理离线邮件数据
-globalOfflineMail:dealOfflineMail()
-
 -------------------------------------------------------------------------------
 --配置文件信息
 config = {

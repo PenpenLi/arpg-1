@@ -631,7 +631,7 @@ function PlayerInfo:Login()
 	self:socialLogIn()
 	self:factionLogin()
 	
-	globalOfflineMail:GetOfflineMail(self)
+	self:GetOfflineMail()
 	globalSystemMail:checkIfHasSystemMail(self)
 end
 
@@ -993,6 +993,9 @@ function PlayerInfo:SetMountForce(val)
 	self:SetUInt32(PLAYER_FIELD_MOUNT_FORCE,val)
 end
 
+local OFFLINE_MAIL_PATH_FORMAT = __OFFLINE_MAIL_FOLDER__.."/%s.mail"
+local OFFLINE_MAIL_INFO = "%u|%u|%u|%s|%s|%s|%s\n"
+
 -- 添加邮件
 function AddGiftPacksData(guid, id, gift_type,start_time,end_time,gift_name,gift_desc,item_config,item_from)
 	if(guid == "")then
@@ -1002,13 +1005,56 @@ function AddGiftPacksData(guid, id, gift_type,start_time,end_time,gift_name,gift
 	local player = app.objMgr:getObj(guid)
 	-- 没有就加离线文件
 	if not player then 
-		globalOfflineMail:AddOfflineMailInfo( gift_type, start_time, end_time, gift_name, gift_desc, item_config, guid)
+		local path = string.format(OFFLINE_MAIL_PATH_FORMAT, guid)
+		local fp, err = io.open(path, "a")
+		if err then
+			outFmtError("save offline mail fail for path = %s", path)
+			return
+		end
+		fp:write(string.format(OFFLINE_MAIL_INFO, gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from))
+		fp:close()
 		return 
 	end
 	
 	-- 玩家自己加邮件
 	local giftPack = player:getGiftPacksInfo()
 	giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from)
+end
+
+-- 玩家上线读离线文件
+function PlayerInfo:GetOfflineMail()
+	local path = string.format(OFFLINE_MAIL_PATH_FORMAT, self:GetGuid())
+	local fp, err = io.open(path, "r+")
+	if err then
+		outFmtDebug("no such file for %s", path)
+		return
+	end
+	
+	local giftPack = self:getGiftPacksInfo()
+	
+	while (true) do
+		local content = fp:read("*l")
+		if not content or content == "" then
+			break
+		end
+		
+		local values = string.split(content, "|")
+		local gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from
+		gift_type = tonumber(values[ 1 ])
+		start_time = tonumber(values[ 2 ])
+		end_time = tonumber(values[ 3 ])
+		gift_name = values[ 4 ]
+		gift_desc = values[ 5 ]
+		item_config = values[ 6 ]
+		item_from = values[ 7 ]
+		
+		giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from)
+	end
+	fp:close()
+	
+	-- 清空文件
+	local fp, err = io.open(path, "w+")
+	fp:close()
 end
 
 -- 等级改变了

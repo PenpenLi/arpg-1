@@ -56,11 +56,6 @@ function AppdApp:InitCorn()
 		end)
 	end)
 	
-	-- 3点清除过期离线邮件
-	self.cron:addCron("3点检测过期的离线邮件",'0 3 * * *',function() 
-		globalOfflineMail:checkOfflineMailIfExpire()
-	end)
-	
 	-- 野外boss马上刷新通知
 	local fbconfig = tb_map_field_boss_time[ 1 ]
 		
