@@ -161,25 +161,6 @@ function GlobalOfflineMail:AddOfflineMailInfo( gift_type, start_time, end_time, 
 	return 1
 end
 
-function AddGiftPacksData(guid, id, gift_type,start_time,end_time,gift_name,gift_desc,item_config,item_from)
-	if(guid == "")then
-		return
-	end
-	
-	local player = app.objMgr:getObj(guid)
-	-- 没有就加离线文件
-	if not player then 
-		globalOfflineMail:AddOfflineMailInfo( gift_type, start_time, end_time, gift_name, gift_desc, item_config, guid)
-		return 
-	end
-	
-	-- 玩家自己加邮件
-	local giftPack = player:getGiftPacksInfo()
-	giftPack:AddGiftPacksInfo(gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from)
-end
-
-
-
 --服务器启动读取离线邮件
 function GlobalOfflineMail:dealOfflineMail()
 	local intIndex = GIFTPACKS_INT_FIELD_BEGIN

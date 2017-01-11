@@ -15,7 +15,7 @@ function AppSocialMgr:addSocialItem(player,index,fam)
 	local level = player:GetLevel()
 	local gender = player:GetGender()
 	local vip = player:GetVIP()
-	local faction = player:GetFactionId()
+	local faction = player:GetFactionName()
 
 
 	--图标 vip 等级

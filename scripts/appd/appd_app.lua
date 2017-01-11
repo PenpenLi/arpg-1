@@ -104,7 +104,7 @@ function AppdApp:InitCorn()
 	end)
 
 	-- 每个1800秒刷新排行榜信息
-	self.cron:every("刷新排行榜信息", 1800,function()
+	self.cron:every("刷新排行榜信息", 30,function()
 		OnUpdateRankList()
 	end)
 	

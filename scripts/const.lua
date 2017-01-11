@@ -147,11 +147,6 @@ function IsMapLineStable(mapid, lineNo)
 	return IsWorldMap(mapid) and 1 <= lineNo and lineNo <= MAX_DEFAULT_LINE_COUNT 
 end
 
--- 该地图的分线是否创建
-function DoIsMapLineCreated(mapid, lineNo)
-	return IsWorldMap(mapid) and (IsMapLineStable(mapid, lineNo) or mapLib.IsMapLineCreated(mapid, lineNo))
-end
-
 --数值表字符切割
 function number_table_string_split(str, split_char) 
 	local sub_str_tab = {}

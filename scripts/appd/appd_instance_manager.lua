@@ -72,9 +72,7 @@ function AppInstanceMgr:sweepVIPInstance(id, hard)
 	local dict = {}
 	local dropIdTable = tb_map_vip[id].rewards[hard]
 	
-	for _, dropId in pairs(dropIdTable) do
-		DoRandomDrop(dropId, dict)
-	end
+	DoRandomDropTable(dropIdTable, dict)
 	
 	local itemDict = {}
 	for entry, count in pairs(dict) do
@@ -201,9 +199,7 @@ function AppInstanceMgr:sweepTrialInstance()
 	local dict = {}
 	for i = 1, layers do
 		local dropIdTable = tb_map_trial[ i ].reward
-		for _, dropId in pairs(dropIdTable) do
-			DoRandomDrop(dropId, dict)
-		end
+		DoRandomDropTable(dropIdTable, dict)
 	end
 	
 	local itemDict = {}

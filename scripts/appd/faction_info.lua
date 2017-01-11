@@ -749,7 +749,16 @@ end
 --获得帮主名字
 function FactionInfo:GetBangZhuName()
 	return self:GetStr(FACTION_STRING_FIELD_MANGER_NAME)
-end	
+end
+
+--设置帮主GUID
+function FactionInfo:SetBangZhuGuid(guid)
+	self:SetStr(FACTION_STRING_FIELD_MANGER_GUID,guid)
+end
+--获得帮主GUID
+function FactionInfo:GetBangZhuGuid()
+	return self:GetStr(FACTION_STRING_FIELD_MANGER_GUID)
+end		
 
 --获得帮主guid
 function FactionInfo:GetBangZhuGuid()
@@ -905,6 +914,20 @@ function FactionInfo:MemberAdd( player)
 	return true
 end
 
+function FactionInfo:FactionExit(player)
+	local player_guid = player:GetGuid()
+	local index = self:FindPlayerIndex(player_guid)
+	if index == nil then
+		return
+	end
+	--如果退出是帮主,找到最长在线玩家
+	if self:GetFactionMemberIdentity(index) == FACTION_MEMBER_IDENTITY_BANGZHU then	
+		self:FactionDissolution()
+	else 
+		self:FactionQuit(player)
+	end
+end
+
 --成员退出
 function FactionInfo:FactionQuit( player,is_merge)
 	local player_guid = player:GetGuid()
@@ -912,28 +935,12 @@ function FactionInfo:FactionQuit( player,is_merge)
 	if index == nil then
 		return
 	end
-	--如果退出是帮主,找到最长在线玩家
-	if self:GetFactionMemberIdentity(index) == FACTION_MEMBER_IDENTITY_BANGZHU then			
-		local index_ass = -1
-		local online_time = 0
-		for i = 0, MAX_FACTION_MAMBER_COUNT - 1 do		
-			local guid = self:GetFactionMemberGuid(i)
-			if guid ~= "" and guid ~= player_guid then
-				if online_time < self:GetFactionMemberOnlineTime(i) then
-					online_time = self:GetFactionMemberOnlineTime(i)
-					index_ass = i
-				end
-			end
-		end
-		--帮派里还有其他人可以当团长
-		if index_ass ~= -1 then
-			self:SetFactionMemberIdentity(index_ass, FACTION_MEMBER_IDENTITY_BANGZHU)
-		end
-	end
+	
 	player:SetFactionId("")
 	player:SetFactionName("")
 	--移除监听
 	app.objMgr:callDelWatch(player:GetSessionId(),self:GetGuid())
+
 	--app.objMgr:callDelWatch(player:GetSessionId(),self:getFactionEventsGuid())
 	--成员离开后的处理
 	self:DoChangeMemberOpt(index)
@@ -948,6 +955,23 @@ function FactionInfo:FactionOutlineQuit(guid)
 		return
 	end
 	self:DoChangeMemberOpt(index)
+end
+--帮派解散
+function FactionInfo:FactionDissolution()
+
+	for i = 0, MAX_FACTION_MAMBER_COUNT - 1 do
+		local pguid = self:GetFactionMemberGuid(i)
+		if pguid ~=  "" then
+			local member = app.objMgr:getObj(pguid)
+			if member then
+				self:FactionQuit(member,true)
+			else
+				self:FactionOutlineQuit(pguid)
+			end
+		end
+	end
+	
+	app.objMgr:callRemoveObject(self:GetGuid())
 end
 
 --成员离开后的处理
@@ -1016,6 +1040,23 @@ function FactionInfo:FactionAgreeJoin( player, apply_guid)
 	end
 end
 
+--全部同意加入帮派
+function FactionInfo:FactionAgreeJoinAll( player )
+	
+	if not self:IsManager(player:GetGuid()) then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
+		return
+	end
+	
+	for i = 0,MAX_FACTION_APLLY_MAMBER_COUNT-1 do
+		local apply_guid = self:GetFactionApplyGuid(i)
+		if apply_guid ~= "" then
+			self:FactionAgreeJoin( player, apply_guid)
+		end
+	end
+
+end
+
 --拒绝加入帮派
 function FactionInfo:FactionRefuseJoin(player,apply_guid)
 	local applyer = app.objMgr:getObj(apply_guid)
@@ -1040,9 +1081,20 @@ function FactionInfo:FactionRefuseJoin(player,apply_guid)
 	--applyer:DelFactionQuest(self:GetGuid())
 	applyer:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN, self:GetName())
 end
-
-
-
+--拒绝所有人加入帮派
+function FactionInfo:FactionRefuseJoinAll(player)
+	if not self:IsManager(player:GetGuid()) then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
+		return
+	end
+	
+	for i = 0,MAX_FACTION_APLLY_MAMBER_COUNT-1 do
+		local apply_guid = self:GetFactionApplyGuid(i)
+		if apply_guid ~= "" then
+			self:FactionRefuseJoin( player, apply_guid)
+		end
+	end
+end
 --踢出帮派
 function FactionInfo:MemberKicked( player, member_id)
 	local player_guid = player:GetGuid()
@@ -1133,6 +1185,7 @@ function FactionInfo:FactionAppoint( player, member_id,zhiwei)
 		if self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_BANGZHU then--帮主自己才能转让
 			self:SetFactionMemberIdentity(pos,FACTION_MEMBER_IDENTITY_QUNZHONG)
 			self:SetBangZhuName(self:GetFactionMemberName(member_pos))
+			self:SetBangZhuGuid(self:GetFactionMemberGuid(member_pos))
 		else
 			--print("aaaa")
 			return

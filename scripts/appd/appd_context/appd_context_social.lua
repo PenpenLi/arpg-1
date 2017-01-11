@@ -28,6 +28,7 @@ function PlayerInfo:FriendOnline(guid,online)
 	end
 
 end
+
 --清空申请列表
 function PlayerInfo:ClearApply()
 	local socialMgr = self:getSocialMgr()

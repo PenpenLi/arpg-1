@@ -138,20 +138,33 @@ function DoFind(str, regex, rep)
 end
 
 
+function DoRandomDropTable(dropTable, dict)
+	for _, dropId in pairs(dropTable) do
+		DoRandomDrop(dropId, dict)
+	end
+end
+
 -- 随机奖励 并合并到dict中
 function DoRandomDrop(dropId, dict)
 	local config = tb_drop_reward[dropId]
-	for _, packetId in pairs(config.reward) do
-		local packConfig = tb_drop_packet[packetId]
+	
+	for _, packetInfo in pairs(config.reward) do
+		local packetId = packetInfo[ 1 ]
+		local rate = packetInfo[ 2 ]
+		local rd = randInt(1, 10000)
 		
-		local indx = GetRandomIndex(packConfig.items)
-		local itemId = packConfig.items[indx][ 1 ]
-		local count = GetRandomExp(packConfig.counts[indx])
-		
-		if dict[itemId] == nil then
-			dict[itemId] = 0
+		if rd <= rate then
+			local packConfig = tb_drop_packet[packetId]
+			
+			local indx = GetRandomIndex(packConfig.items)
+			local itemId = packConfig.items[indx][ 1 ]
+			local count = GetRandomExp(packConfig.counts[indx])
+			
+			if dict[itemId] == nil then
+				dict[itemId] = 0
+			end
+			dict[itemId] = dict[itemId] + count
 		end
-		dict[itemId] = dict[itemId] + count
 	end
 end
 

@@ -291,7 +291,9 @@ enum Money_Type
 -- 玩家获得奖励
 -- rewardDict:  {itemId1 = count1}
 function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
-	
+	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
+	itemOperType  = itemOperType  or LOG_ITEM_OPER_TYPE_LOOT
+		
 	local itemDict = {}
 	local playerInfo = UnitInfo:new {ptr = player}
 	for itemId, count in pairs(rewardDict) do 
@@ -309,6 +311,9 @@ function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 			end
 		end
 	end
-	print("call_appd_add_items")
-	call_appd_add_items(playerInfo:GetPlayerGuid(), itemDict, itemOperType)
+	
+	if #itemDict > 0 then
+		print("call_appd_add_items")
+		call_appd_add_items(playerInfo:GetPlayerGuid(), itemDict, itemOperType)
+	end
 end

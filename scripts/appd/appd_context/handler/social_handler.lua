@@ -4,6 +4,29 @@ function PlayerInfo:Handle_Add_Friend(pkt)
 	local  guid = pkt.guid
 	self:ApplyFriend(guid)
 end
+
+function PlayerInfo:Handle_Add_Friend_ByName(pkt)
+	local name = pkt.name
+	if name == nil then
+		return
+	end
+	local flag = false
+	
+	app.objMgr:foreachAllPlayer(function(player)
+		local pname = player:GetName()
+		local _, q= string.find(pname, name)  
+		if q ~= nil and q == #pname then
+			self:ApplyFriend(player:GetGuid())
+			flag = true
+		end
+	end)
+	
+	if flag then
+		outFmtDebug("has send info")
+	else
+		outFmtDebug("can not find player")	
+	end
+end
 --同意申请加好友
 function PlayerInfo:Handle_Sure_Add_Friend(pkt)
 	local  guid = pkt.guid

@@ -868,6 +868,10 @@ faction_member_operate,c2s,186,/*帮派成员操作*/,STATUS_NEVER,False
 
 #
 faction_fast_join,c2s,187,/*快速加入帮派*/,STATUS_NEVER,False
+
+#
+social_add_friend_byname,c2s,188,/*通过名字添加好友*/,STATUS_NEVER,False
+	name,String,False,/*好友name*/
 	
 #
 read_mail,c2s,190,/*读邮件*/,STATUS_NEVER,False
@@ -932,3 +936,10 @@ res_instance_enter,c2s,210,/*进入资源副本*/,STATUS_NEVER,False
 #
 res_instance_sweep,c2s,211,/*扫荡资源副本*/,STATUS_NEVER,False
 	id,uint8,False,/*副本类型*/
+
+#
+show_map_line,c2s,212,/*查看本地图的分线号*/,STATUS_NEVER,False
+
+#
+send_map_line,s2c,213,/*返回本地图的分线号信息*/,STATUS_NEVER,False
+	info,line_info,True,/*分线号信息*/

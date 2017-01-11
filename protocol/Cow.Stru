@@ -85,3 +85,8 @@ faction_info,/*帮派信息*/
 rank_info,/*排名信息*/
 	name,String,50,/*名字*/
 	value,float,0,/*伤害百分比*/
+
+#分线号结构体
+line_info,/*坐标结构体*/
+	lineNo,uint16,0,/*分线号*/
+	rate,uint8,0,/*玩家比率*/

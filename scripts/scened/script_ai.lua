@@ -132,22 +132,14 @@ AI_Base = {
 			end
 			
 			--处理道具掉落
-			local need_drop_items = self:ItemLoot(player_lv, player_gender, info,player,owner)		-- {{模板,数量,绑定与否,存在时间,保护时间}, }
-			for i = 1, #need_drop_items do
-				local drop_item_config = need_drop_items[i]
-				local loot_entry = drop_item_config[ 1 ]
-				local count      = drop_item_config[ 2 ]
-				if loot_entry == Item_Loot_Silver then
-					--playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, drop_item_config[2])
-					AddLootGameObject(map_ptr, owner, player_guid, loot_entry, count, fcm)
-				else
-					for j = 1, drop_item_config[2] do
-						--playerLib.AddItem(player, loot_entry, 1, ITEM_BIND_NONE, LOG_ITEM_OPER_TYPE_LOOT)			
-						AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 0, fcm, drop_item_config[4], drop_item_config[5], drop_item_config[6])				
-					end
-				end
-			end
+			-- local need_drop_items = self:ItemLoot(player_lv, player_gender, info,player,owner)		-- {{模板,数量,绑定与否,存在时间,保护时间}, }
 			
+			
+			local drop_ids = info.reward_id
+			local rewardDict = {}
+			DoRandomDropTable(drop_ids, rewardDict)
+			
+			PlayerAddRewards(player, rewardDict)
 			-- --兽魂
 			-- local shouhun = self:ShouHunLoot(info) 
 			-- if shouhun > 0 then
@@ -175,7 +167,7 @@ AI_Base = {
 	end,
 	--处理道具掉落
 	ItemLoot = function( self, player_lv, player_gender, info,player,owner)
-		local need_drop_items = {}
+		--[[local need_drop_items = {}
 		local drop_ids = info.reward_id
 		if #drop_ids == 0 then return need_drop_items end
 		
@@ -190,7 +182,7 @@ AI_Base = {
 				table.insert(need_drop_items, temp)
 			end
 		end
-		return need_drop_items
+		return need_drop_items--]]
 	end,	
 }
 

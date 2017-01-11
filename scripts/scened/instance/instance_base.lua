@@ -547,9 +547,7 @@ Instance_base = {
 		end
 		
 		-- 获得奖励
-		for _, dropId in pairs(dropIdTable) do
-			DoRandomDrop(dropId, dict)
-		end
+		DoRandomDropTable(dropIdTable, dict)
 		
 		PlayerAddRewards(player, dict, moneyOperType, itemOperType)
 			

@@ -37,6 +37,8 @@ config = {
 		CMSG_PLAYER_LOGOUT,
 		CMSG_REGULARISE_ACCOUNT,		
 		CMSG_PLAYER_KICKING,	--踢人
+		CMSG_CHANGE_LINE,
+		CMSG_SHOW_MAP_LINE,
 		--CMSG_KUAFU_FIGHT_SIGN,
 		CMSG_GOBACK_TO_GAME_SERVER,
 		--CMSG_KUAFU_FIGHT_CANCEL_SIGN,
@@ -151,6 +153,11 @@ function FindOrCreateMap(mapid, inst_type, general_id, lineno)
 		result = createInstance(mapid, general_id, lineno_true)		--如果没有就创建一个新的实例
 	end
 	return result
+end
+
+-- 获得地图人数配置
+function OnGetMapLineCount(mapid)
+	return map_line_config[mapid] or 5000
 end
 
 --地图分线人数配置

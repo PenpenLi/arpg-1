@@ -64,8 +64,8 @@ hanlders[CMSG_SOCIAL_GIFT_FRIEND] = PlayerInfo.Handle_Gift_Friend
 hanlders[CMSG_SOCIAL_RECOMMEND_FRIEND] = PlayerInfo.Handle_Recommend_Friend
 hanlders[CMSG_SOCIAL_REVENGE_ENEMY] = PlayerInfo.Handle_Revenge_Enemy
 hanlders[CMSG_SOCIAL_DEL_FRIEND] = PlayerInfo.Handle_Remove_Friend 
-hanlders[CMSG_SOCIAL_CLEAR_APPLY] = PlayerInfo.Handler_Clear_Apply
-
+hanlders[CMSG_SOCIAL_CLEAR_APPLY] = PlayerInfo.Handler_Clear_Apply 
+hanlders[CMSG_SOCIAL_ADD_FRIEND_BYNAME] = PlayerInfo.Handle_Add_Friend_ByName
 
 hanlders[CMSG_CHAT_BY_CHANNEL] = PlayerInfo.Handle_Chat_By_Channel
 

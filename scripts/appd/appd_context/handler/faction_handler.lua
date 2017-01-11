@@ -32,6 +32,36 @@ function PlayerInfo:factionLogOut()
 		end
 	end
 end
+
+function PlayerInfo:factionUpLevel()
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local lev = self:GetLevel()
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			local player_guid = self:GetGuid()
+			local index = faction:FindPlayerIndex(player_guid)
+			if index ~= nil then
+				faction:SetFactionMemberLevel(index,lev)
+			end
+		end
+	end
+end
+
+function PlayerInfo:factionUpForce()
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local force = self:GetForce()
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			local player_guid = self:GetGuid()
+			local index = faction:FindPlayerIndex(player_guid)
+			if index ~= nil then
+				faction:SetFactionMemberForce(index,force)
+			end
+		end
+	end
+end
 --清理角色帮派信息
 function PlayerInfo:clearFaction()
 	self:SetFactionId("")
@@ -49,7 +79,8 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_IS_HAVE)
 		return
 	end
-
+	
+	outFmtDebug("------------ %s",self:GetFactionId())
 	
 	local config = tb_faction_creat[1]
 
@@ -121,6 +152,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	faction:SetName(faction_name)
 	faction:SetFactionLevel(faction_lv)
 	faction:SetBangZhuName(self:GetName())
+	faction:SetBangZhuGuid(self:GetGuid())
 	faction:SetFactionCurFlagId(icon)
 
 	if not faction:MemberAdd(self) then
@@ -139,6 +171,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 		app.objMgr:callAddWatch(fd, new_guid)
 	end)
 	
+	rankInsertTask(faction:GetGuid(), RANK_TYPE_FACTION)
 end
 
 -- 升级
@@ -273,7 +306,15 @@ function PlayerInfo:Hanlde_Faction_Manager( pkt )
 		--faction:FactionChangeFlags(self,reserve_int1)		
 	--帮会公告	
 	elseif opt_type == FACTION_MANAGER_TYPE_NOTICE then	
-		faction:FactionNotice(self,reserve_str1)		
+		faction:FactionNotice(self,reserve_str1)	
+	--同意所有加入帮派
+	elseif opt_type == FACTION_MANAGER_TYPE_AGREE_JOIN_ALL then
+		faction:FactionAgreeJoinAll(self)	
+	--拒绝所有加入帮派
+	elseif opt_type == FACTION_MANAGER_TYPE_REFUSE_JOIN_ALL then
+		faction:FactionRefuseJoinAll(self)	
+	elseif opt_type == FACTION_MANAGER_TYPE_QUIT then
+		faction:FactionExit(self)	
 	end
 	
 end

@@ -702,7 +702,7 @@ function ScenedContext:Handle_World_Boss_Fight(pkt)
 	end
 end
 
--- 换线
+--[[-- 换线
 function ScenedContext:Hanlde_Change_Line(pkt)
 	local lineNo = pkt.lineNo
 	local mapid	 = unitLib.GetMapID(self.ptr)
@@ -714,7 +714,7 @@ function ScenedContext:Hanlde_Change_Line(pkt)
 	
 	local toX, toY = unitLib.GetPos(self.ptr)
 	playerLib.Teleport(self.ptr, mapid, toX, toY, lineNo)
-end
+end--]]
 
 function ScenedContext:Handle_Roll_WorldBoss_Treasure(pkt)
 	Roll_Treasure(self)

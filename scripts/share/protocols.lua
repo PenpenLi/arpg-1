@@ -202,6 +202,7 @@ CMSG_FACTION_GETLIST		= 184	-- /*获取帮派列表*/
 CMSG_FACTION_MANAGER		= 185	-- /*帮派管理*/	
 CMSG_FACTION_MEMBER_OPERATE		= 186	-- /*帮派成员操作*/	
 CMSG_FACTION_FAST_JOIN		= 187	-- /*快速加入帮派*/	
+CMSG_SOCIAL_ADD_FRIEND_BYNAME		= 188	-- /*通过名字添加好友*/	
 CMSG_READ_MAIL		= 190	-- /*读邮件*/	
 CMSG_PICK_MAIL		= 191	-- /*领取邮件*/	
 CMSG_REMOVE_MAIL		= 192	-- /*删除邮件*/	
@@ -218,6 +219,8 @@ SMSG_ROLL_RESULT		= 205	-- /*roll点结果*/
 SMSG_WORLD_BOSS_RANK		= 206	-- /*当前世界BOSS伤害排名*/	
 CMSG_RES_INSTANCE_ENTER		= 210	-- /*进入资源副本*/	
 CMSG_RES_INSTANCE_SWEEP		= 211	-- /*扫荡资源副本*/	
+CMSG_SHOW_MAP_LINE		= 212	-- /*查看本地图的分线号*/	
+SMSG_SEND_MAP_LINE		= 213	-- /*返回本地图的分线号信息*/	
 
 
 ---------------------------------------------------------------------
@@ -964,6 +967,42 @@ function rank_info_t:write( output )
 		self.value = 0
 	end
 	output:writeFloat(self.value)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*坐标结构体*/
+
+line_info_t = class('line_info_t')
+
+function line_info_t:read( input )
+
+	local ret
+	ret,self.lineNo = input:readU16() --/*分线号*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.rate = input:readByte() --/*玩家比率*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function line_info_t:write( output )
+	if(self.lineNo == nil)then
+		self.lineNo = 0
+	end
+	output:writeI16(self.lineNo)
+	
+	if(self.rate == nil)then
+		self.rate = 0
+	end
+	output:writeByte(self.rate)
 	
 	return output
 end
@@ -6846,7 +6885,7 @@ end
 
 
 -- /*发送聊天*/	
-function Protocols.pack_send_chat ( channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid)
+function Protocols.pack_send_chat ( channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid ,faction_guid)
 	local output = Packet.new(SMSG_SEND_CHAT)
 	output:writeByte(channel)
 	output:writeUTF(guid)
@@ -6858,12 +6897,13 @@ function Protocols.pack_send_chat ( channel ,guid ,title ,name ,vip ,zs ,lvl ,ge
 	output:writeByte(gender)
 	output:writeUTF(content)
 	output:writeUTF(to_guid)
+	output:writeUTF(faction_guid)
 	return output
 end
 
 -- /*发送聊天*/	
-function Protocols.call_send_chat ( playerInfo, channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid)
-	local output = Protocols.	pack_send_chat ( channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid)
+function Protocols.call_send_chat ( playerInfo, channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid ,faction_guid)
+	local output = Protocols.	pack_send_chat ( channel ,guid ,title ,name ,vip ,zs ,lvl ,gender ,content ,to_guid ,faction_guid)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -6910,6 +6950,10 @@ function Protocols.unpack_send_chat (pkt)
 		return false
 	end	
 	ret,param_table.to_guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.faction_guid = input:readUTF()
 	if not ret then
 		return false
 	end	
@@ -7192,6 +7236,35 @@ function Protocols.unpack_faction_fast_join (pkt)
 end
 
 
+-- /*通过名字添加好友*/	
+function Protocols.pack_social_add_friend_byname ( name)
+	local output = Packet.new(CMSG_SOCIAL_ADD_FRIEND_BYNAME)
+	output:writeUTF(name)
+	return output
+end
+
+-- /*通过名字添加好友*/	
+function Protocols.call_social_add_friend_byname ( playerInfo, name)
+	local output = Protocols.	pack_social_add_friend_byname ( name)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*通过名字添加好友*/	
+function Protocols.unpack_social_add_friend_byname (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 -- /*读邮件*/	
 function Protocols.pack_read_mail ( indx)
 	local output = Packet.new(CMSG_READ_MAIL)
@@ -7469,7 +7542,7 @@ end
 -- /*换线*/	
 function Protocols.pack_change_line ( lineNo)
 	local output = Packet.new(CMSG_CHANGE_LINE)
-	output:writeI16(lineNo)
+	output:writeU32(lineNo)
 	return output
 end
 
@@ -7485,10 +7558,10 @@ function Protocols.unpack_change_line (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
-	ret,param_table.lineNo = input:readU16()
+	ret,param_table.lineNo = input:readU32()
 	if not ret then
 		return false
-	end
+	end	
 
 	return true,param_table	
 
@@ -7667,6 +7740,73 @@ function Protocols.unpack_res_instance_sweep (pkt)
 	ret,param_table.id = input:readByte()
 	if not ret then
 		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*查看本地图的分线号*/	
+function Protocols.pack_show_map_line (  )
+	local output = Packet.new(CMSG_SHOW_MAP_LINE)
+	return output
+end
+
+-- /*查看本地图的分线号*/	
+function Protocols.call_show_map_line ( playerInfo )
+	local output = Protocols.	pack_show_map_line (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*查看本地图的分线号*/	
+function Protocols.unpack_show_map_line (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回本地图的分线号信息*/	
+function Protocols.pack_send_map_line ( info)
+	local output = Packet.new(SMSG_SEND_MAP_LINE)
+	output:writeI16(#info)
+	for i = 1,#info,1
+	do
+		info[i]:write(output)
+	end
+	return output
+end
+
+-- /*返回本地图的分线号信息*/	
+function Protocols.call_send_map_line ( playerInfo, info)
+	local output = Protocols.	pack_send_map_line ( info)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回本地图的分线号信息*/	
+function Protocols.unpack_send_map_line (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.info = {}
+	for i = 1,len,1
+	do
+		local stru = line_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.info,stru)
 	end
 
 	return true,param_table	
@@ -7868,6 +8008,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_faction_manager = self.call_faction_manager
 	playerInfo.call_faction_member_operate = self.call_faction_member_operate
 	playerInfo.call_faction_fast_join = self.call_faction_fast_join
+	playerInfo.call_social_add_friend_byname = self.call_social_add_friend_byname
 	playerInfo.call_read_mail = self.call_read_mail
 	playerInfo.call_pick_mail = self.call_pick_mail
 	playerInfo.call_remove_mail = self.call_remove_mail
@@ -7884,6 +8025,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_world_boss_rank = self.call_world_boss_rank
 	playerInfo.call_res_instance_enter = self.call_res_instance_enter
 	playerInfo.call_res_instance_sweep = self.call_res_instance_sweep
+	playerInfo.call_show_map_line = self.call_show_map_line
+	playerInfo.call_send_map_line = self.call_send_map_line
 end
 
 local unpack_handler = {
@@ -8075,6 +8218,7 @@ local unpack_handler = {
 [CMSG_FACTION_MANAGER] =  Protocols.unpack_faction_manager,
 [CMSG_FACTION_MEMBER_OPERATE] =  Protocols.unpack_faction_member_operate,
 [CMSG_FACTION_FAST_JOIN] =  Protocols.unpack_faction_fast_join,
+[CMSG_SOCIAL_ADD_FRIEND_BYNAME] =  Protocols.unpack_social_add_friend_byname,
 [CMSG_READ_MAIL] =  Protocols.unpack_read_mail,
 [CMSG_PICK_MAIL] =  Protocols.unpack_pick_mail,
 [CMSG_REMOVE_MAIL] =  Protocols.unpack_remove_mail,
@@ -8091,6 +8235,8 @@ local unpack_handler = {
 [SMSG_WORLD_BOSS_RANK] =  Protocols.unpack_world_boss_rank,
 [CMSG_RES_INSTANCE_ENTER] =  Protocols.unpack_res_instance_enter,
 [CMSG_RES_INSTANCE_SWEEP] =  Protocols.unpack_res_instance_sweep,
+[CMSG_SHOW_MAP_LINE] =  Protocols.unpack_show_map_line,
+[SMSG_SEND_MAP_LINE] =  Protocols.unpack_send_map_line,
 
 }
 
