@@ -907,7 +907,7 @@ world_boss_fight,c2s,202,/*世界BOSS挑战*/,STATUS_NEVER,False
 
 #
 change_line,c2s,203,/*换线*/,STATUS_NEVER,False
-	lineNo,uint16,False,/*线号*/
+	lineNo,uint32,False,/*线号*/
 	
 #
 roll_world_boss_treasure,c2s,204,/*roll世界BOSS箱子*/,STATUS_NEVER,False
