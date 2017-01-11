@@ -36,11 +36,12 @@ end
 -- 附近聊天
 function UnitInfo:chatNearBy(content)
 	-- 查询视野范围内的玩家
+	local faction_guid = self:GetFactionId()
 	local allPlayers = playerLib.GetAllPlayerNearBy(self.ptr)
 	for _, player in pairs(allPlayers) do
 		local playerInfo = UnitInfo:new {ptr = player}
 		if not playerInfo:isDeclineNearMsg() then
-			playerInfo:call_send_chat (CHAT_TYPE_CURRENT ,self:GetPlayerGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+			playerInfo:call_send_chat (CHAT_TYPE_CURRENT ,self:GetPlayerGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "", faction_guid)
 		end
 	end
 end

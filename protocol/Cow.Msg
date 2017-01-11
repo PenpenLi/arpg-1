@@ -828,6 +828,7 @@ send_chat,s2c,180,/*发送聊天*/,STATUS_NEVER,False
 	gender,uint8,False,/*头像*/
 	content,String,False,/*说话内容*/
 	to_guid,String,False,/*收到的guid*/
+	faction_guid,String,False,/*帮派guid*/
 	
 #
 social_clear_apply,c2s,181,/*清空申请列表*/,STATUS_NEVER,False

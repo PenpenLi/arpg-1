@@ -751,7 +751,7 @@ end
 
 --获取帮派id
 function UnitInfo:GetFactionId()
-	return self:GetStr(UNIT_STRING_FIELD_FACTION)
+	return self:GetPlayerStr(PLAYER_STRING_FIELD_FACTION_GUID)
 end
 --获取队伍id
 function UnitInfo:GetGroupId()

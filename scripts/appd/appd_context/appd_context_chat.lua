@@ -24,7 +24,7 @@ function PlayerInfo:SendSystemChat(content)
 	if self:isDeclineSystemMsg() then
 		return
 	end
-	self:call_send_chat (CHAT_TYPE_SYSTEM ,0 ,"" ,0 ,0 ,0 ,0 ,content, "")
+	self:call_send_chat (CHAT_TYPE_SYSTEM ,0 ,"" ,0 ,0 ,0 ,0 ,content, "", self:GetFactionId ())
 end
 
 -- 发送世界聊天信息
@@ -53,10 +53,11 @@ function PlayerInfo:SendWorldChat(content)
 	valid, content = ChatMsgParser(self, content)
 	if not valid then return end
 	
+	local faction_guid = self:GetFactionId ()
 	-- 广播
 	app.objMgr:foreachAllPlayer(function(player)
 		if not player:isDeclineWorldMsg() then
-			player:call_send_chat (CHAT_TYPE_WORLD ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+			player:call_send_chat (CHAT_TYPE_WORLD ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "", faction_guid)
 		end
 	end)
 end
@@ -90,7 +91,7 @@ function PlayerInfo:SendFactionChat(content)
 	local allPlayers = faction:GetFactionAllMemberPtr()
 	for _, player in pairs(allPlayers) do
 		if not player:isDeclineFactionMsg() then
-			player:call_send_chat (CHAT_TYPE_FACTION ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+			player:call_send_chat (CHAT_TYPE_FACTION ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "", faction_guid)
 		end
 	end
 end
@@ -120,9 +121,11 @@ function PlayerInfo:SendHornChat(content)
 --	content = ChatMsgFilter(content)
 	--//加标识
 --	content = ChatMsgAddSing(content, self:GetFalseGM(), self:GetGirlGM())
+
+	local faction_guid = self:GetFactionId()
 	-- 广播
 	app.objMgr:foreachAllPlayer(function(player)
-		player:call_send_chat (CHAT_TYPE_HORM ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+		player:call_send_chat (CHAT_TYPE_HORM ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "", faction_guid)
 	end)
 	-- 写下日志
 	WriteChatLog(self:GetGuid(), CHAT_TYPE_HORM, "", "", content, self:GetLevel(), self:GetGmNum())
@@ -147,10 +150,11 @@ function PlayerInfo:SendGroupChat(content)
 	end
 	
 	local guid_list = group:GetGroupAllMemberTable()
+	local faction_guid = self:GetFactionId()
 	for _,guid in pairs(guid_list) do
 		local player = app.objMgr:getObj(guid)
 		if player then
-			player:call_send_chat (CHAT_TYPE_GROUP ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "")
+			player:call_send_chat (CHAT_TYPE_GROUP ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, "", faction_guid)
 		end
 	end
 	WriteChatLog(self:GetGuid(), CHAT_TYPE_GROUP, "", "", msg, self:GetLevel(), self:GetGmNum())
@@ -172,10 +176,10 @@ function PlayerInfo:SendWhisperChat(guid, content)
 	if guid ~= self:GetGuid() then
 		--私聊后做点什么
 		self:DoAfterChatWhisper(recipient)
-		recipient:call_send_chat (CHAT_TYPE_WHISPER ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, guid)
+		recipient:call_send_chat (CHAT_TYPE_WHISPER ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, guid, self:GetFactionId())
 		WriteChatLog(self:GetGuid(), CHAT_TYPE_WHISPER, recipient:GetGuid(), recipient:GetName(), content, self:GetLevel(), self:GetGmNum())
 	end
-	self:call_send_chat (CHAT_TYPE_WHISPER ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, guid)
+	self:call_send_chat (CHAT_TYPE_WHISPER ,self:GetGuid() ,0 ,self:GetName() ,self:GetVIP() ,0 ,self:GetLevel() ,self:GetGender() ,content, guid, self:GetFactionId())
 	
 end
 
