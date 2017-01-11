@@ -270,6 +270,7 @@ function GlobalValue:RandomStepWorldBossIfNeverDoes()
 	if not (0 < id and id <= #tb_worldboss_base) or not (0 < id2 and id2 <= #tb_worldboss_base) then
 		globalValue:RandomStepWorldBoss()
 	end
+	print("curr boss id = ", self:GetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 0), self:GetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 1))
 end
 
 -- 设置这次的BOSS ID

@@ -224,7 +224,7 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	for i = 1, #itemInfoTable, 2 do
 		local itemId = tonumber(itemInfoTable[ i ])
 		local count  = tonumber(itemInfoTable[i+1])
-		playerInfo:PlayerAddItem(itemId, count)
+		playerInfo:PlayerAddItem(itemId, count, LOG_ITEM_OPER_TYPE_GIFT_PACKS)
 	end
 end
 

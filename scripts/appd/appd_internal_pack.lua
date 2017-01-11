@@ -48,6 +48,30 @@ function unpack_quest_add_item( pkt )
 	return true, player_guid, item_entry, count, bind, stronglv, failtime, logtype
 end
 
+function unpack_add_items( pkt )
+	local ret, player_guid, len, logtype
+	local itemDict = {}
+	
+	ret, player_guid = pkt:readUTF()
+	if not ret then return false end
+	
+	ret, len = pkt:readU16()
+	if not ret then return false end
+	for i = 1, len do
+		ret, entry = pkt:readU32()
+		if not ret then return false end
+		
+		ret, count = pkt:readU32()
+		if not ret then return false end
+		table.insert(itemDict, {entry, count})
+	end
+
+	ret, logtype = pkt:readByte()
+	if not ret then return false end
+	
+	return true, player_guid, itemDict, logtype
+end
+
 function unpack_player_upgrade( pkt )
 	local ret, player_guid, prevLevel, player_lv
 	ret, player_guid = pkt:readUTF()

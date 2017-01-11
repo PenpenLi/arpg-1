@@ -76,6 +76,14 @@ function AddTempInfoIfExist(map, key, value)
 	table.insert(map, {key, value})
 end
 
+-- 合并 {[key] = value}的table
+function MergeSameTable(map, key, value)
+	if not map[key] then
+		map[key] = 0
+	end
+	map[key] = map[key] + value
+end
+
 function TPrint(map)
 	local out = "{"
 	for i = 1, #map do
@@ -96,15 +104,19 @@ function Ttab( tab )
 	outFmtInfo(out)
 end
 
-ItemToResoureceTable = {
-	[Item_Loot_Gold_Ingot] = MONEY_TYPE_GOLD_INGOT,
-	[Item_Loot_Bind_Gold ] = MONEY_TYPE_BIND_GOLD,
-	[Item_Loot_Silver	 ] = MONEY_TYPE_SILVER,
-	
-	[Item_Loot_QI		 ] = MONEY_TYPE_QI,
-	[Item_Loot_BEAST	 ] = MONEY_TYPE_BEAST,
-	[Item_Loot_GEM		 ] = MONEY_TYPE_GEM,
-}
+-- 是否是资源
+function IsResource(itemId)
+	return tb_item_template[itemId].money_type > 0
+end
+
+-- 获得资源类型
+function GetMoneyType(itemId)
+	local money_type = tb_item_template[itemId].money_type - 1
+	local ret = false
+	money_type = money_type or -1
+	ret = ret or money_type ~= -1
+	return money_type
+end
 
 -- 判断字符串匹配正则的结果
 function DoFind(str, regex, rep)
@@ -125,6 +137,36 @@ function DoFind(str, regex, rep)
 	return ret
 end
 
+
+-- 随机奖励 并合并到dict中
+function DoRandomDrop(dropId, dict)
+	local config = tb_drop_reward[dropId]
+	for _, packetId in pairs(config.reward) do
+		local packConfig = tb_drop_packet[packetId]
+		
+		local indx = GetRandomIndex(packConfig.items)
+		local itemId = packConfig.items[indx][ 1 ]
+		local count = GetRandomExp(packConfig.counts[indx])
+		
+		if dict[itemId] == nil then
+			dict[itemId] = 0
+		end
+		dict[itemId] = dict[itemId] + count
+	end
+end
+
+function Change_To_Item_Reward_Info(dict)
+	-- 扫荡的结果发送
+	local list = {}
+	for item_id, num in pairs(dict) do
+		local stru = item_reward_info_t .new()
+		stru.item_id	= item_id
+		stru.num 		= num
+		table.insert(list, stru)
+	end
+	
+	return list
+end
 
 
 -- PlayerInfo的属性换算战力
@@ -167,4 +209,9 @@ function DoAnyOneCalcForceByAry(attrAy)
 	end
 	
 	return battlePoint
+end
+
+-- 获得邮件模版id
+function GetMailEntryId(gift_type, level)
+	return gift_type * 65536 + level
 end

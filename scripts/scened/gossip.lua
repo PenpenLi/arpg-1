@@ -251,23 +251,6 @@ function DoQuestRewardScript(player, quest_id, xp, silver, taolue, bind_gold, al
 end
 
 
--- 随机奖励 并合并到dict中
-function DoRandomDrop(dropId, dict)
-	local config = tb_drop_reward[dropId]
-	for _, packetId in pairs(config.reward) do
-		local packConfig = tb_drop_packet[packetId]
-		
-		local indx = GetRandomIndex(packConfig.items)
-		local itemId = packConfig.items[indx][ 1 ]
-		local count = GetRandomExp(packConfig.counts[indx])
-		
-		if dict[itemId] == nil then
-			dict[itemId] = 0
-		end
-		dict[itemId] = dict[itemId] + count
-	end
-end
-
 
 --[[// 资源类道具
 enum Item_Loot_Resource 
@@ -308,18 +291,24 @@ enum Money_Type
 -- 玩家获得奖励
 -- rewardDict:  {itemId1 = count1}
 function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
+	
+	local itemDict = {}
+	local playerInfo = UnitInfo:new {ptr = player}
 	for itemId, count in pairs(rewardDict) do 
-		if ItemToResoureceTable[itemId] ~= nil then
+		if IsResource(itemId) then
 			-- 加人物资源
-			playerInfo:AddMoney(ItemToResoureceTable[itemId], moneyOperType, count)
+			local moneyType = GetMoneyType(itemId)
+			playerInfo:AddMoney(moneyType, moneyOperType, count)
 		elseif itemId == Item_Loot_Exp then
 			-- 加经验
 			playerLib.AddExp(player, count)
 		else
-			local bind = tb_item_template[itemId].bind_type
-			-- 加道具
-			-- 如果背包加不了的话需要放邮件
-			playerLib.AddItem(player, itemId, count, bind, itemOperType)
+			
+			if tb_item_template[itemId] then
+				table.insert(itemDict, {itemId, count})
+			end
 		end
 	end
+	print("call_appd_add_items")
+	call_appd_add_items(playerInfo:GetPlayerGuid(), itemDict, itemOperType)
 end

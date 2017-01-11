@@ -68,23 +68,80 @@ function PlayerInfo:SetMountStar(star)
 	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 1, star)
 end
 
--- 玩家加道具
-function PlayerInfo:PlayerAddItem(itemId, count, oper_type)
-
-	oper_type = oper_type or MONEY_CHANGE_MAIL
+--[[
+rewardDict :  {{itemId, count},{itemId1, count1}}
+--]]
+function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type)
+	money_oper_type = money_oper_type or MONEY_CHANGE_SELECT_LOOT
+	item_oper_type  = item_oper_type  or LOG_ITEM_OPER_TYPE_LOOT
 	
-	if ItemToResoureceTable[itemId] ~= nil then
-		-- 加人物资源
-		self:AddMoney(ItemToResoureceTable[itemId], oper_type, count)
-	elseif itemId == Item_Loot_Exp then
-		-- 加经验 发送到场景服
-		self:CallScenedDoSomething(APPD_SCENED_ADD_EXP, count)
+	local itemDict = {}
+	-- 先把资源和经验加了, 放背包的道具第二步算
+	for _, itemInfo in pairs(rewardDict) do
+		
+		local itemId = itemInfo[ 1 ]
+		local count  = itemInfo[ 2 ]		
+		if IsResource(itemId) then
+			-- 加人物资源
+			local moneyType = GetMoneyType(itemId)
+			self:AddMoney(moneyType, money_oper_type, count)
+		elseif itemId == Item_Loot_Exp then
+			-- 加经验 发送到场景服
+			self:CallScenedDoSomething(APPD_SCENED_ADD_EXP, count)
+		else
+			if tb_item_template[itemId] then
+				table.insert(itemDict, {itemId, count})
+			end
+		end
+	end
+
+	-- 加道具的时候判断是否背包满了
+	if #itemDict > 0 then
+		local indx = -1
+		local itemMgr = self:getItemMgr()
+		-- 放得下的先放
+		for i = 1, #itemDict do
+			local entry = itemDict[ i ][ 1 ]
+			local count = itemDict[ i ][ 2 ]
+			-- 判断背包是否放的下
+			if not itemMgr:canHold(BAG_TYPE_MAIN_BAG, entry, count, 1, 0) then
+				indx = i
+				break
+			end
+			local bind = tb_item_template[entry].bind_type
+			self:AddItemByEntry(entry, count, nil, item_oper_type, bind, true, true, 0, 0)
+		end
+		
+		-- 放不下的存邮件
+		if indx > 0 then
+			local mailItem = {}
+			for i = indx, #itemDict do
+				table.insert(mailItem, itemDict[ i ][ 1 ])
+				table.insert(mailItem, itemDict[ i ][ 2 ])
+			end
+			
+			local itemConfig = string.join(",", mailItem)
+			local data = GetMailEntryId(GIFT_PACKS_TYPE_BAG_FULL, 0)
+			local desc = tb_mail[data].desc
+			local name = tb_mail[data].name
+			local giftType = tb_mail[data].source
+			AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, itemConfig, "系统")
+		end
+	end
+end
+
+-- 玩家加道具
+function PlayerInfo:PlayerAddItem(itemId, count, item_oper_type)
+
+	item_oper_type  = item_oper_type  or LOG_ITEM_OPER_TYPE_LOOT
+	
+	if IsResource(itemId) or itemId == Item_Loot_Exp  then
+		return
 	else
 		if tb_item_template[itemId] then
 			-- 加道具
 			local bind = tb_item_template[itemId].bind_type
-			local itemMgr = self:getItemMgr()
-			itemMgr:addItem(itemId,count,bind,true,true,0,0)
+			self:AddItemByEntry(itemId, count, nil, item_oper_type, bind, true, true, 0, 0)
 		end
 	end
 end
@@ -936,6 +993,15 @@ function PlayerInfo:SetMountForce(val)
 	self:SetUInt32(PLAYER_FIELD_MOUNT_FORCE,val)
 end
 
+-- 等级改变了
+function PlayerInfo:OnLevelChanged()
+	print("level changed")
+end
+
+-- 战力改变了
+function PlayerInfo:OnForceChanged()
+	print("force changed")
+end
 
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)

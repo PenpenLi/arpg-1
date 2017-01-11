@@ -28,6 +28,7 @@ local function on_scened_loot_select( pkt )
 		outFmtDebug("loot_select:player %s not online item_entry %d count %d", player_guid, item_entry, count)
 		return
 	end
+	local bind = tb_item_template[itemId].bind_type
 	player:AddItemByEntry(item_entry, count, nil, LOG_ITEM_OPER_TYPE_LOOT, bind, true, true, 0, failtime)
 end
 
@@ -43,7 +44,22 @@ local function on_scened_quest_add_item( pkt )
 		outFmtDebug("quest_add_item:player %s not online item_entry %d count %d", player_guid, item_entry, count)
 		return
 	end
-	player:AddItemByEntry(item_entry, count, nil, logtype, bind, true, true, stronglv, failtime)
+	player:PlayerAddItems({{item_entry, count}}, nil, logtype)
+	--player:AddItemByEntry(item_entry, count, nil, logtype, bind, true, true, stronglv, failtime)
+end
+
+local function on_scened_add_items(pkt)
+	local ret, player_guid, itemDict, logtype = unpack_add_items(pkt)
+	if not ret then
+		return
+	end
+	
+	local player = app.objMgr:getObj(player_guid)
+	if not player then
+		outFmtDebug("on_scened_quest_add_item:player %s not online", player_guid)
+		return
+	end
+	player:PlayerAddItems(itemDict, nil, logtype)
 end
 
 --场景服通知应用服玩家升级了
@@ -163,6 +179,8 @@ local appdInsternalHanlders = {}
 appdInsternalHanlders[INTERNAL_OPT_USER_ITEM_RESULT] = on_scened_use_item_result
 appdInsternalHanlders[INTERNAL_OPT_LOOT_SELECT] = on_scened_loot_select
 appdInsternalHanlders[INTERNAL_OPT_QUEST_ADD_REW_ITEM] = on_scened_quest_add_item
+appdInsternalHanlders[INTERNAL_OPT_ADD_ITEMS] = on_scened_add_items
+
 appdInsternalHanlders[INTERNAL_OPT_UPGRADE_LEVEL] = on_scened_player_upgrade
 appdInsternalHanlders[INTERNAL_OPT_ADD_GIFT_PACKS] = on_scened_add_gift_packs
 appdInsternalHanlders[INTERNAL_OPT_APPD_ADD_NUMBER_MATERIAL] = on_scened_add_number_material

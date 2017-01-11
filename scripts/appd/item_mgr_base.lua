@@ -362,7 +362,6 @@ function ItemMgrBase:canHold(bag_type, entry, count, isBind, fail_time)
 		isBind = isBind ~= 0
 	end
 	fail_time = fail_time or 0
-	
 	local item_tempate = tb_item_template[entry]
 	local max_over_lay = item_tempate.max_overlap	
 	local can_hold = 0

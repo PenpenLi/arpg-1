@@ -5,8 +5,7 @@ function AddLootGameObject(map, unit, player_id, loot_entry, bind_state, fcm,exi
 		return false
 	end
 	
-	local is_money = loot_entry == Item_Loot_Silver or loot_entry == Item_Loot_Wood or loot_entry == Item_Loot_Mineral 
-							or loot_entry == Item_Loot_Coal or loot_entry == Item_Loot_Leather or loot_entry == Item_Loot_Pearl or loot_entry == Item_Loot_Crystal
+	local is_money = IsResource(loot_entry)
 	if(is_money)then
 		assert(fcm ~= nil)	--必须崩掉，如果是要掉钱，必须处理防沉迷
 

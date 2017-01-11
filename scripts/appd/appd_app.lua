@@ -103,6 +103,11 @@ function AppdApp:InitCorn()
 		end)
 	end)
 
+	-- 每个1800秒刷新排行榜信息
+	self.cron:every("刷新排行榜信息", 1800,function()
+		OnUpdateRankList()
+	end)
+	
 end
 
 -- 全服野外BOSS定时器初始化

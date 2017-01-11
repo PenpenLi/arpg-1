@@ -42,8 +42,7 @@ function PlayerInfo:sweepVIP(id)
 	
 	if self:costMoneys(MONEY_CHANGE_BUY_VIP_INSTANCE, {{MONEY_TYPE_GOLD_INGOT, cost}}) then
 		instMgr:AddByte(indx, 3, 1)
-		-- 发送到场景服进行挑战
-		self:CallScenedDoSomething(APPD_SCENED_SWEEP_VIP_INSTANCE, id, ""..hard)
+		instMgr:sweepVIPInstance(id, hard)
 	end
 	
 end

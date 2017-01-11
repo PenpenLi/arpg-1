@@ -30,6 +30,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 	elseif SCENED_APPD_ADD_MAIL == ntype then
 		local desc = tb_mail[data].desc
 		local name = tb_mail[data].name
-		AddGiftPacksData(self:GetGuid(),0,GIFT_PACKS_TYPE_ITEM_GIVE,os.time(),os.time() + 86400*30, name, desc, str, "系统")
+		local giftType = tb_mail[data].source
+		AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, str, "系统")
 	end
 end

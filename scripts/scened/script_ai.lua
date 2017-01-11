@@ -135,14 +135,15 @@ AI_Base = {
 			local need_drop_items = self:ItemLoot(player_lv, player_gender, info,player,owner)		-- {{模板,数量,绑定与否,存在时间,保护时间}, }
 			for i = 1, #need_drop_items do
 				local drop_item_config = need_drop_items[i]
-				local loot_entry = drop_item_config[1]
+				local loot_entry = drop_item_config[ 1 ]
+				local count      = drop_item_config[ 2 ]
 				if loot_entry == Item_Loot_Silver then
-					playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, drop_item_config[2])
-					--AddLootGameObject(map_ptr, owner, player_guid, loot_entry, drop_item_config[2], fcm)
+					--playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, drop_item_config[2])
+					AddLootGameObject(map_ptr, owner, player_guid, loot_entry, count, fcm)
 				else
-					for j = 1, drop_item_config[2] do	
-						playerLib.AddItem(player, loot_entry, 1, ITEM_BIND_NONE, LOG_ITEM_OPER_TYPE_LOOT)			
-						--AddLootGameObject(map_ptr, owner, player_guid, loot_entry, drop_item_config[3], fcm, drop_item_config[4], drop_item_config[5],drop_item_config[6])				
+					for j = 1, drop_item_config[2] do
+						--playerLib.AddItem(player, loot_entry, 1, ITEM_BIND_NONE, LOG_ITEM_OPER_TYPE_LOOT)			
+						AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 0, fcm, drop_item_config[4], drop_item_config[5], drop_item_config[6])				
 					end
 				end
 			end
@@ -177,26 +178,16 @@ AI_Base = {
 		local need_drop_items = {}
 		local drop_ids = info.reward_id
 		if #drop_ids == 0 then return need_drop_items end
+		
 		for i = 1, #drop_ids do
-			local drop_id = drop_ids[i]
-			local drop_info = tb_drop_reward[drop_id]
-			if drop_info then
-				--等级为-1就不做限制
-				if (player_lv >= drop_info.min_level and player_lv <= drop_info.max_level) or drop_info.min_level == -1 or drop_info.max_level == -1 then
-					--玩家在掉落等级内
-					local config = drop_info.nan_reward
-					if player_gender == CHAR_GENDER_FEMALE then
-						config = drop_info.nv_reward
-					end
-					local index = 1
-					if index > 0 then
-						--随机掉落物品的强化等级
-						local streng_lv = 0
-						--模板,数量,绑定与否,存在时间,保护时间
-						local temp = {config[index][1], randIntD(config[index][2], config[index][3]), config[index][5], drop_info.continue_time, drop_info.possess_time,streng_lv}						
-						table.insert(need_drop_items, temp)
-					end
-				end
+			local dict = {}
+			local dropId = drop_ids[i]
+			DoRandomDrop(dropId, dict)
+			
+			for entry, value in pairs(dict) do
+				--模板,数量,绑定与否,存在时间,保护时间,强化等级
+				local temp = {entry, value, 0, config.loot_exist_timer, config.loot_change_owner, 0}
+				table.insert(need_drop_items, temp)
 			end
 		end
 		return need_drop_items

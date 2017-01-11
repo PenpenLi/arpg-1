@@ -325,7 +325,8 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 			local playerGuid = rankInfo[ i ][ 3 ]
 			--发到应用服发宝箱
 			local player = mapLib.GetPlayerByPlayerGuid(map_ptr, playerGuid)
-			playerLib.SendToAppdDoSomething(player, SCENED_APPD_ADD_MAIL, MAIL_SOURCE_WORLD_BOSS * 65536 + i, tb_worldboss_rank_reward[ indx ].reward)
+			local mailEntry = GetMailEntryId(GIFT_PACKS_TYPE_WORLD_BOSS, i)
+			playerLib.SendToAppdDoSomething(player, SCENED_APPD_ADD_MAIL, mailEntry, tb_worldboss_rank_reward[ indx ].reward)
 		end 
 	end
 	

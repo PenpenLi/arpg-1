@@ -161,6 +161,49 @@ function AppSpellMgr:activeMountSpell(spellId)
 	end
 end
 
+--坐骑属性加成
+function AppSpellMgr:calculMountAttr(attrs)
+	local allForce = 0
+	local level = self:getMountLevel()
+	local star  = self:getMountStar()
+	local seq = (level - 1) * 11 + star + 1
+	local trainConfig = tb_mount_train[seq]
+	
+	if trainConfig then	
+		attrs[EQUIP_ATTR_MOVE_SPEED] = tb_mount_base[level].speed
+		local baseForce = DoAnyOneCalcForceByAry(trainConfig.pros)
+		allForce = allForce + baseForce
+		
+		-- 属性
+		for _, val in ipairs(trainConfig.pros)do
+			local indx = val[ 1 ]
+			-- 速度属性就不在这里计算了
+			if attrs[indx] == nil then
+				attrs[indx] = 0
+			end
+			attrs[indx] = attrs[indx] + val[ 2 ]
+		end
+	end
+	
+	local player = self:getOwner()
+		
+	-- 坐骑进阶技能战力
+	local nonForce = 0
+	for i = SPELL_INT_FIELD_MOUNT_SPELL_START, SPELL_INT_FIELD_MOUNT_SPELL_END - 1 do
+		local spellID	= self:GetUInt16(i, 0)
+		local lv 		= self:GetUInt16(i, 1)
+		if spellID > 0 then
+			local bp = player:GetSkillBattlePoint(spellID, lv)
+			allForce = allForce + bp
+			nonForce = nonForce + bp
+		end
+	end
+	
+	player:SetMountForce(allForce)
+	
+	return nonForce
+end
+
 -- 升级坐骑技能
 function AppSpellMgr:raiseMountSpell(spellId)
 	local prev = self:getSpellLevel(spellId)

@@ -46,7 +46,6 @@ config = {
 	
 	field_boss_born_time  = 1				,--野外boss刷新时间提醒(m)
 
-	
 	update_ownership_time = 1500			,--更新怪物所有者的间隔
 	left_fighting_time = 6000				,--脱离战斗时间
 	left_cast_time = 3000					,--脱离施法战斗（即备战）时间
@@ -67,9 +66,9 @@ config = {
 	mount_spell3 = 63						,--坐骑三级技能
 	mount_spell_evolve = 20					,--坐骑技能每20级变一次
 	loot_area = 2							,--战利品占地面积的边长--
-	loot_exist_timer = 20000				,--战利品存在时间
-	loot_change_owner = 10000				,--战利品改变所有者时间
-	loot_money_entry = 50					,--战利品钱的模板
+	loot_exist_timer = 20					,--战利品存在时间
+	loot_change_owner = 10					,--战利品改变所有者时间
+	loot_money_entry = 3					,--战利品钱的模板
 	loot_caishenbaoxiang_entry = 368		,--战利品财神宝箱的模板
 	respawn_max_level = 15					,--小于该等级可以原地复活
 	sub_weapon_durability = 6				,--每攻击一次武器扣的耐久

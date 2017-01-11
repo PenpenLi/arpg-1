@@ -66,6 +66,28 @@ function AppInstanceMgr:isEnoughForceByHard(id, hard, force)
 	return force >= config.forces[hard]
 end
 
+-- 一键扫荡VIP
+function AppInstanceMgr:sweepVIPInstance(id, hard)
+
+	local dict = {}
+	local dropIdTable = tb_map_vip[id].rewards[hard]
+	
+	for _, dropId in pairs(dropIdTable) do
+		DoRandomDrop(dropId, dict)
+	end
+	
+	local itemDict = {}
+	for entry, count in pairs(dict) do
+		table.insert(itemDict, {entry, count})
+	end
+	
+	local playerInfo = self:getOwner()
+	playerInfo:PlayerAddItems(itemDict, MONEY_CHANGE_VIP_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_VIP_INSTANCE_REWARD)
+	
+	-- 扫荡的结果发送
+	local list = Change_To_Item_Reward_Info(dict)
+	playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_VIP, 0, 0, 0, list)
+end
 
 -------------------------------资源副本------------------------------
 function AppInstanceMgr:checkIfCanEnterResInstance(id)
@@ -175,7 +197,26 @@ function AppInstanceMgr:sweepTrialInstance()
 	
 	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0, prevSweepTimes - 1)
 	local player = self:getOwner()
-	player:CallScenedDoSomething(APPD_SCENED_SWEEP_TRIAL_INSTANCE, layers)
+	
+	local dict = {}
+	for i = 1, layers do
+		local dropIdTable = tb_map_trial[ i ].reward
+		for _, dropId in pairs(dropIdTable) do
+			DoRandomDrop(dropId, dict)
+		end
+	end
+	
+	local itemDict = {}
+	for entry, count in pairs(dict) do
+		table.insert(itemDict, {entry, count})
+	end
+	
+	local playerInfo = self:getOwner()
+	playerInfo:PlayerAddItems(itemDict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD)
+	
+	-- 扫荡的结果发送
+	local list = Change_To_Item_Reward_Info(dict)
+	playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_TRIAL, 0, 0, 0, list)
 end
 -- 扫荡资源副本
 function AppInstanceMgr:sweepResInstance(id)

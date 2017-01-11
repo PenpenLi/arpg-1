@@ -18,5 +18,22 @@ function call_appd_send_chat(c_type, guid, content, to_guid, to_name)
 	pkt:writeUTF(content)
 	pkt:writeUTF(to_guid)
 	pkt:writeUTF(to_name)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
+
+
+-- 通知应用服加道具
+function call_appd_add_items(guid, itemDict, logtype)
+	local pkt = Packet.new(INTERNAL_OPT_ADD_ITEMS)
+	pkt:writeUTF(guid)
+	pkt:writeU16(#itemDict)
+	for i = 1, #itemDict do
+		local config = itemDict[ i ]
+		pkt:writeU32(config[ 1 ])
+		pkt:writeU32(config[ 2 ])
+	end
+	pkt:writeByte(logtype)
+	app:sendToAppd(pkt)
 	pkt:delete()
 end

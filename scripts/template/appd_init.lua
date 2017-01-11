@@ -72,3 +72,8 @@ require("template.tabset")
 
 --- 副本
 require("template.tables.tb_instance_reward")
+
+-- 掉落包
+require("template.tables.tb_drop_reward")
+require("template.tables.tb_drop_packet")
+
