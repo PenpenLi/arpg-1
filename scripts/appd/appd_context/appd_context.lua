@@ -1005,6 +1005,7 @@ function AddGiftPacksData(guid, id, gift_type,start_time,end_time,gift_name,gift
 	local player = app.objMgr:getObj(guid)
 	-- 没有就加离线文件
 	if not player then 
+		--[[
 		local path = string.format(OFFLINE_MAIL_PATH_FORMAT, guid)
 		local fp, err = io.open(path, "a")
 		if err then
@@ -1013,6 +1014,7 @@ function AddGiftPacksData(guid, id, gift_type,start_time,end_time,gift_name,gift
 		end
 		fp:write(string.format(OFFLINE_MAIL_INFO, gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from))
 		fp:close()
+		--]]
 		return 
 	end
 	
@@ -1023,6 +1025,7 @@ end
 
 -- 玩家上线读离线文件
 function PlayerInfo:GetOfflineMail()
+	--[[
 	local path = string.format(OFFLINE_MAIL_PATH_FORMAT, self:GetGuid())
 	local fp, err = io.open(path, "r+")
 	if err then
@@ -1059,6 +1062,7 @@ function PlayerInfo:GetOfflineMail()
 		return
 	end
 	fp:close()
+	--]]
 end
 
 -- 等级改变了
