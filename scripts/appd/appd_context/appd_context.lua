@@ -1026,7 +1026,7 @@ function PlayerInfo:GetOfflineMail()
 	local path = string.format(OFFLINE_MAIL_PATH_FORMAT, self:GetGuid())
 	local fp, err = io.open(path, "r+")
 	if err then
-		outFmtDebug("no such file for %s", path)
+		outFmtError("err for : %s at path %s", err, path)
 		return
 	end
 	
@@ -1037,7 +1037,7 @@ function PlayerInfo:GetOfflineMail()
 		if not content or content == "" then
 			break
 		end
-		
+		outFmtError("======================%s=====", content)
 		local values = string.split(content, "|")
 		local gift_type, start_time, end_time, gift_name, gift_desc, item_config, item_from
 		gift_type = tonumber(values[ 1 ])
@@ -1054,6 +1054,10 @@ function PlayerInfo:GetOfflineMail()
 	
 	-- 清空文件
 	local fp, err = io.open(path, "w+")
+	if err then
+		outFmtError("clear file err for : %s at path %s", err, path)
+		return
+	end
 	fp:close()
 end
 
