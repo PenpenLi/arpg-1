@@ -80,10 +80,10 @@ function AppInstanceMgr:sweepVIPInstance(id, hard)
 	end
 	
 	local playerInfo = self:getOwner()
-	playerInfo:PlayerAddItems(itemDict, MONEY_CHANGE_VIP_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_VIP_INSTANCE_REWARD)
+	playerInfo:AppdAddItems(itemDict, MONEY_CHANGE_VIP_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_VIP_INSTANCE_REWARD)
 	
 	-- 扫荡的结果发送
-	local list = Change_To_Item_Reward_Info(dict)
+	local list = Change_To_Item_Reward_Info(dict, true)
 	playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_VIP, 0, 0, 0, list)
 end
 
@@ -208,10 +208,10 @@ function AppInstanceMgr:sweepTrialInstance()
 	end
 	
 	local playerInfo = self:getOwner()
-	playerInfo:PlayerAddItems(itemDict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD)
+	playerInfo:AppdAddItems(itemDict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD)
 	
 	-- 扫荡的结果发送
-	local list = Change_To_Item_Reward_Info(dict)
+	local list = Change_To_Item_Reward_Info(dict, true)
 	playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_TRIAL, 0, 0, 0, list)
 end
 -- 扫荡资源副本

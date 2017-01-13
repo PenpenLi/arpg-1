@@ -217,10 +217,13 @@ CMSG_CHANGE_LINE		= 203	-- /*换线*/
 CMSG_ROLL_WORLD_BOSS_TREASURE		= 204	-- /*roll世界BOSS箱子*/	
 SMSG_ROLL_RESULT		= 205	-- /*roll点结果*/	
 SMSG_WORLD_BOSS_RANK		= 206	-- /*当前世界BOSS伤害排名*/	
+CMSG_RANK_ADD_LIKE		= 207	-- /*排行榜点赞*/	
+SMSG_RANK_ADD_LIKE_RESULT		= 208	-- /*排行榜点赞结果*/	
 CMSG_RES_INSTANCE_ENTER		= 210	-- /*进入资源副本*/	
 CMSG_RES_INSTANCE_SWEEP		= 211	-- /*扫荡资源副本*/	
 CMSG_SHOW_MAP_LINE		= 212	-- /*查看本地图的分线号*/	
 SMSG_SEND_MAP_LINE		= 213	-- /*返回本地图的分线号信息*/	
+SMSG_ITEM_NOTICE		= 214	-- /*获得奖励提示*/	
 
 
 ---------------------------------------------------------------------
@@ -7689,6 +7692,79 @@ function Protocols.unpack_world_boss_rank (pkt)
 end
 
 
+-- /*排行榜点赞*/	
+function Protocols.pack_rank_add_like ( type ,guid)
+	local output = Packet.new(CMSG_RANK_ADD_LIKE)
+	output:writeByte(type)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*排行榜点赞*/	
+function Protocols.call_rank_add_like ( playerInfo, type ,guid)
+	local output = Protocols.	pack_rank_add_like ( type ,guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*排行榜点赞*/	
+function Protocols.unpack_rank_add_like (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*排行榜点赞结果*/	
+function Protocols.pack_rank_add_like_result ( type ,guid ,num)
+	local output = Packet.new(SMSG_RANK_ADD_LIKE_RESULT)
+	output:writeByte(type)
+	output:writeUTF(guid)
+	output:writeU32(num)
+	return output
+end
+
+-- /*排行榜点赞结果*/	
+function Protocols.call_rank_add_like_result ( playerInfo, type ,guid ,num)
+	local output = Protocols.	pack_rank_add_like_result ( type ,guid ,num)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*排行榜点赞结果*/	
+function Protocols.unpack_rank_add_like_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.num = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 -- /*进入资源副本*/	
 function Protocols.pack_res_instance_enter ( id)
 	local output = Packet.new(CMSG_RES_INSTANCE_ENTER)
@@ -7807,6 +7883,48 @@ function Protocols.unpack_send_map_line (pkt)
 			return false
 		end
 		table.insert(param_table.info,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*获得奖励提示*/	
+function Protocols.pack_item_notice ( list)
+	local output = Packet.new(SMSG_ITEM_NOTICE)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*获得奖励提示*/	
+function Protocols.call_item_notice ( playerInfo, list)
+	local output = Protocols.	pack_item_notice ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*获得奖励提示*/	
+function Protocols.unpack_item_notice (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
 	end
 
 	return true,param_table	
@@ -8023,10 +8141,13 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_roll_world_boss_treasure = self.call_roll_world_boss_treasure
 	playerInfo.call_roll_result = self.call_roll_result
 	playerInfo.call_world_boss_rank = self.call_world_boss_rank
+	playerInfo.call_rank_add_like = self.call_rank_add_like
+	playerInfo.call_rank_add_like_result = self.call_rank_add_like_result
 	playerInfo.call_res_instance_enter = self.call_res_instance_enter
 	playerInfo.call_res_instance_sweep = self.call_res_instance_sweep
 	playerInfo.call_show_map_line = self.call_show_map_line
 	playerInfo.call_send_map_line = self.call_send_map_line
+	playerInfo.call_item_notice = self.call_item_notice
 end
 
 local unpack_handler = {
@@ -8233,10 +8354,13 @@ local unpack_handler = {
 [CMSG_ROLL_WORLD_BOSS_TREASURE] =  Protocols.unpack_roll_world_boss_treasure,
 [SMSG_ROLL_RESULT] =  Protocols.unpack_roll_result,
 [SMSG_WORLD_BOSS_RANK] =  Protocols.unpack_world_boss_rank,
+[CMSG_RANK_ADD_LIKE] =  Protocols.unpack_rank_add_like,
+[SMSG_RANK_ADD_LIKE_RESULT] =  Protocols.unpack_rank_add_like_result,
 [CMSG_RES_INSTANCE_ENTER] =  Protocols.unpack_res_instance_enter,
 [CMSG_RES_INSTANCE_SWEEP] =  Protocols.unpack_res_instance_sweep,
 [CMSG_SHOW_MAP_LINE] =  Protocols.unpack_show_map_line,
 [SMSG_SEND_MAP_LINE] =  Protocols.unpack_send_map_line,
+[SMSG_ITEM_NOTICE] =  Protocols.unpack_item_notice,
 
 }
 

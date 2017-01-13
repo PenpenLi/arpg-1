@@ -41,7 +41,7 @@ config = {
 	
 	world_boss_wait		  = 15				,--世界BOSS等待刷新时间(s)
 	world_boss_last		  = 15				,--世界BOSS持续时间(m)
-	world_boss_invincible_time	= 10		,--世界BOSS无敌持续时间(s)
+	world_boss_invincible_time	= 11		,--世界BOSS无敌持续时间(s)
 	world_boss_roll_last_time	= 7			,--世界BOSSroll点持续时间(s)
 	
 	field_boss_born_time  = 1				,--野外boss刷新时间提醒(m)

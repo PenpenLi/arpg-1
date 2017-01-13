@@ -195,7 +195,7 @@ function AppItemInstance:createAddAtrr(item, attr_config, length)
 	for i = 1,#ary do
 		local lev = randInt(0, 6)
 		local idx = ary[i]
-		outFmtDebug("idx%d",idx)
+		--outFmtDebug("idx%d",idx)
 		--item:setAddAttr(self:getAddAttKey(,lev), )
 		item:addBaseAttr(attr_config[idx][1],attr_config[idx][2]);
 	end

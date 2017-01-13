@@ -91,4 +91,7 @@ hanlders[CMSG_FACTION_FAST_JOIN] = PlayerInfo.Handle_Faction_FastJoin
 
 hanlders[CMSG_WORLD_BOSS_ENROLL] = PlayerInfo.Handle_World_Boss_Enroll
 
+---------------------------
+hanlders[CMSG_RANK_ADD_LIKE] = PlayerInfo.Handle_Rank_Like
+
 return hanlders

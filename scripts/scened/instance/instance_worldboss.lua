@@ -353,9 +353,7 @@ function AI_WorldBoss:DamageTaken(owner, unit, damage)
 	
 	currHealth = prev - damage
 	
-	outFmtInfo("before hurt==============, %d, ggggg = %d", damage, prev)
 	if prev == 0 then
-		outFmtInfo("why in prev === 0")
 		return
 	end
 	
@@ -415,14 +413,11 @@ end
 
 -- 准备roll点
 function InstanceWorldBoss:PrepareToRoll(rollId)
-	outFmtInfo("=================PrepareToRoll")
 	mapLib.AddTimer(self.ptr, 'OnTimer_RollStart', 1000, rollId)
 end
 
 -- roll提示开始
 function InstanceWorldBoss:OnTimer_RollStart(rollId)
-	
-	outFmtInfo("=======$$$$$$$$$$$$$OnTimer_RollStart")
 	
 	local lineNo = self:GetMapLineNo()
 	
@@ -442,13 +437,20 @@ function InstanceWorldBoss:OnTimer_Roll(rollId)
 	local playerGuid = InstanceWorldBoss.rollList[lineNo][ 2 ]
 	-- 没有人roll点
 	if playerGuid == "" then
-		outFmtDebug("no one roll **************************")
 		return false
 	end
 	local player = mapLib.GetPlayerByPlayerGuid(self.ptr, playerGuid)
 	local itemId = tb_worldboss_roll[rollId].itemid
 	
 	PlayerAddRewards(player, {[itemId] = 1}, MONEY_CHANGE_WORLD_BOSS_ROLL, LOG_ITEM_OPER_TYPE_WORLD_BOSS_ROLL)
+	
+	local reason = WORLD_BOSS_OPERTE_WILL_ROLL1
+	if rollId == #tb_worldboss_roll then
+		reason = WORLD_BOSS_OPERTE_WILL_ROLL2
+	end
+	local playerInfo = UnitInfo:new {ptr = player}
+	local playerName = ToShowName(playerInfo:GetName())
+	app:CallOptResult(self.ptr, OPERTE_TYPE_WORLD_BOSS, reason, {playerName})
 	
 	return false
 end

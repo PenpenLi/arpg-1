@@ -32,6 +32,25 @@ function ScenedApp:SendChat( c_type, guid, content, to_guid , to_name)
 	call_appd_send_chat(c_type, guid, content, to_guid, to_name)
 end
 
+--场景发送全地图通知包
+function ScenedApp:CallOptResult(map_ptr, typ, reason, data)
+	if type(data) == 'table' then
+		data = string.join('|', data)
+	else
+		data = tostring(data) or ''
+	end
+	print("data = ", data)
+	local pkt = protocols.pack_operation_failed(typ, reason, data)
+	self:BroadcastMap(map_ptr, pkt)
+	pkt:delete()
+end
+
+--map广播包
+function ScenedApp:BroadcastMap(map_ptr, pkt)
+	mapLib.BroadcastMap(map_ptr, pkt.ptr)
+end
+
+
 --grid广播包
 function ScenedApp:Broadcast(unit, pkt)
 	mapLib.Broadcast(unit.ptr, pkt.ptr)

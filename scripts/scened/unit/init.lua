@@ -54,7 +54,7 @@ function UnitInfo:CallOptResult( typed, reason, data )
 	end
 	--碰上字符串数组自动拼接	
 	if type(data) == 'table' then
-		data = string.join(',', data)
+		data = string.join('|', data)
 	else
 		data = tostring(data) or ''
 	end
@@ -72,7 +72,7 @@ function UnitInfo:CallCastSpellStart( caster_guid, target_guid, spellid, data, i
 	end
 	--碰上字符串数组自动拼接	
 	if type(data) == 'table' then
-		data = string.join(',', data)
+		data = string.join('|', data)
 	else
 		data = tostring(data) or ''
 	end
@@ -1813,6 +1813,14 @@ function GetTwoPointDistance(pos_x, pos_y, tar_x, tar_y)
 	local dx = pos_x - tar_x
 	local dy = pos_y - tar_y
 	return math.sqrt(math.pow(dx,2)+math.pow(dy,2))
+end
+
+function UnitInfo:GetUseRespawnMapId()
+	return self:GetUInt32(UNIT_FIELD_USE_RESPAWN_MAPID)
+end
+
+function UnitInfo:SetUseRespawnMapId(mapid)
+	self:SetUInt32(UNIT_FIELD_USE_RESPAWN_MAPID, mapid)
 end
 
 

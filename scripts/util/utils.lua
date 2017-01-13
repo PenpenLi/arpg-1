@@ -168,17 +168,36 @@ function DoRandomDrop(dropId, dict)
 	end
 end
 
-function Change_To_Item_Reward_Info(dict)
+--[[
+dict = {[itemId] = num}
+]]
+function Change_To_Item_Reward_Info(dict, exp)
+	exp = exp or false
 	-- 扫荡的结果发送
 	local list = {}
 	for item_id, num in pairs(dict) do
-		local stru = item_reward_info_t .new()
-		stru.item_id	= item_id
-		stru.num 		= num
-		table.insert(list, stru)
+		if (item_id ~= Item_Loot_Exp or exp) then
+			local stru = item_reward_info_t .new()
+			stru.item_id	= item_id
+			stru.num 		= num
+			table.insert(list, stru)
+		end
 	end
 	
 	return list
+end
+
+--[[
+	{{key1, value1}, {key2, value2}}  => {[key] = value}
+]]
+function changeTableStruct(dict)
+	local ret = {}
+	
+	for _, info in pairs(dict) do
+		ret[info[ 1 ]] = info[ 2 ]
+	end
+	
+	return ret
 end
 
 
@@ -227,4 +246,14 @@ end
 -- 获得邮件模版id
 function GetMailEntryId(gift_type, level)
 	return gift_type * 65536 + level
+end
+
+
+function ToShowName(playerName)
+	outFmtDebug("playerName=%s", playerName)
+	local A = string.byte("A")
+	local dict = string.split(playerName, ",")
+	local str = string.format("%s%s.%s", string.char((tonumber(dict[2]) - 1001) + A), dict[ 1 ], dict[ 3 ])
+	
+	return str
 end

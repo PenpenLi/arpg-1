@@ -11,5 +11,7 @@ tb_drop_reward = {
 	--  continue_time:int	存在时间（秒）
 	--  reward:array	奖励
 	[1] = {id = 1,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{1,10000},{2,10000},{3,10000},{4,10000},{5,10000},{6,10000},{7,10000},{8,10000}},},
-	[2] = {id = 2,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{1,10000},{2,10000}},},
+	[2] = {id = 2,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{3,10000},{4,10000}},},
+	[3] = {id = 3,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{5,10000},{6,10000}},},
+	[4] = {id = 4,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{7,10000},{8,10000}},},
 }

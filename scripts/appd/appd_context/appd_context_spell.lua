@@ -61,7 +61,7 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 	self:RecalcAttrAndBattlePoint()
 	-- 是否发送场景服
 	--self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
-	
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_SKILL_SUCCESS)
 	outFmtInfo("raise spell %d success, from %d to %d", spellId, prev, spellLv)
 end
 
@@ -449,6 +449,8 @@ function PlayerInfo:DoHandleRaiseMount()
 	local trainConfig = tb_mount_train[seq]
 	local limit = trainConfig.exp
 	
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_EXP, {addExp})
+	
 	-- 如果升星了
 	if addExp + trainExp >= limit then
 		local value = addExp + trainExp - limit
@@ -460,8 +462,10 @@ function PlayerInfo:DoHandleRaiseMount()
 		if nextStar < 10 or upgradeConfg.upgradeMode == UPGRADE_MODE_MANUAL then
 			spellMgr:setMountStar(nextStar)
 			self:SetMountStar(nextStar)
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_STAR)
 		else -- 自动进阶
 			self:upgraded()
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT)
 		end
 		
 		-- 重算战斗力(当前和属性绑定在一起)
@@ -504,6 +508,7 @@ function PlayerInfo:DoHandleUpgradeMount()
 	
 	if ret then
 		self:upgraded()
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT)
 		now = 0
 	end
 	
@@ -569,6 +574,7 @@ function PlayerInfo:DoHandleUpgradeMountOneStep(useItem)
 	-- 进阶了
 	if vist then
 		self:upgraded()
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT)
 	end
 	
 	-- 设置经验

@@ -316,4 +316,8 @@ function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 		print("call_appd_add_items")
 		call_appd_add_items(playerInfo:GetPlayerGuid(), itemDict, itemOperType)
 	end
+	
+	-- 获得提示
+	local list = Change_To_Item_Reward_Info(rewardDict)
+	playerInfo:call_item_notice (list)
 end

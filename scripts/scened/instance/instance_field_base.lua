@@ -92,7 +92,7 @@ function InstanceFieldBase:OnTimer_CheckRefresh()
 			local config = tb_creature_template[entry]
 			local creature = mapLib.AddCreature(self.ptr, {
 					templateid = entry, x = bossConfig.bossPosi[ 1 ], y = bossConfig.bossPosi[ 2 ], 
-					active_grid = true, alias_name = bossName, ainame = config.ainame, npcflag = {}
+					active_grid = true, alias_name = bossName, ainame = "AI_FieldBoss", npcflag = {}
 				}
 			)
 			
@@ -101,6 +101,7 @@ function InstanceFieldBase:OnTimer_CheckRefresh()
 				-- 标识为boss怪
 				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
 			end
+			app:CallOptResult(self.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_BOSS_BORN, {config.name, tb_map[mapid].name})
 		end
 		
 		return true
@@ -119,16 +120,17 @@ function InstanceFieldBase:OnTimer_CheckRefresh()
 end
 
 
--- 就怕
+-- 加宝箱
 function InstanceFieldBase:OnTimer_AddTreasure(x, y)
 	local gameObject = mapLib.GetGameObjectByEntry(self.ptr, self.Treasure_Entry)
 	if not gameObject then
 		mapLib.AddGameObject(self.ptr, self.Treasure_Entry, x, y, GO_GEAR_STATUS_END)
 	end
-	outFmtInfo("OnTimer_AddTreasure ssss")
 	-- false表示定时刷新器结束
 	return false
 end
+
+
 
 -- 加宝箱
 function InstanceFieldBase:AddTreasure(x, y, last)
@@ -142,7 +144,22 @@ function InstanceFieldBase:AddTreasure(x, y, last)
 			-- 给自己加个延迟
 			mapLib.AddTimer(self.ptr, 'OnTimer_AddTreasure', last, x, y)
 		end
+		
+			
+		local mapid = self:GetMapId()
+		local lineNo = self:GetMapLineNo()
+		local countdown = globalValue:GetProtectCooldown(mapid, lineNo)
+		
+		if countdown > 0 then
+			-- 宝箱保护倒计时
+			mapLib.AddTimer(self.ptr, 'OnTimer_Priority', countdown * 1000)
+		end
 	end
+end
+
+function InstanceFieldBase:OnTimer_Priority()
+	app:CallOptResult(self.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_PROTECT, {tb_gameobject_template[self.Treasure_Entry].name})
+	return false
 end
 
 
@@ -193,7 +210,10 @@ end
 function InstanceFieldBase:DoAfterRespawn(unit_ptr)
 	local unitInfo = UnitInfo:new{ptr = unit_ptr}
 	if unitInfo:GetTypeID() == TYPEID_PLAYER then
-		mapLib.ExitInstance(self.ptr, unit_ptr)
+		if unitInfo:GetUseRespawnMapId() ~= self:GetMapId() then
+			mapLib.ExitInstance(self.ptr, unit_ptr)
+		end
+		unitInfo:SetUseRespawnMapId(0)
 	end
 end
 
@@ -250,6 +270,8 @@ function InstanceFieldBase:OnTimer_PickingTreasure(player)
 	
 	local openguid = mapLib.GetOnOpenGuid(self.ptr)	
 	mapLib.OnOpenTreasure(self.ptr, "")
+	-- 移除计时器
+	mapLib.DelTimer(self.ptr, 'OnTimer_Priority')
 	
 	-- 删除箱子
 	mapLib.RemoveGameObjectByEntry(self.ptr, self.Treasure_Entry)
@@ -257,9 +279,20 @@ function InstanceFieldBase:OnTimer_PickingTreasure(player)
 	-- 播放消息
 	-- 拾取宝箱
 	local dropIdTable = tb_map_field_boss[mapid].dropTable
-	self:RandomReward(player, dropIdTable)
+	local dict = {}
+	DoRandomDropTable(dropIdTable, dict)
+	PlayerAddRewards(player, dict)
+	local rewards = {}
+	for entry, _ in pairs(dict) do
+		if tb_item_template[entry].show then
+			table.insert(rewards, tb_item_template[entry].name)
+		end
+	end
 	
-	outFmtInfo("treasure was picked*************************************")
+	local reward = string.join(",", rewards)
+	local playerInfo = UnitInfo:new {ptr = player}
+	local playerName = ToShowName(playerInfo:GetName())
+	app:CallOptResult(self.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_PICKED, {playerName, tb_gameobject_template[self.Treasure_Entry].name, reward})
 	
 	return false
 end
@@ -268,8 +301,6 @@ end
 function InstanceFieldBase:OnDisruptPicking(playerInfo)
 	mapLib.DelTimer(self.ptr, 'OnTimer_PickingTreasure')
 	mapLib.OnOpenTreasure(self.ptr, "")
-	-- 提示被打断
-	outFmtInfo("===================================================disruptor")
 	
 	local gameObject = mapLib.GetGameObjectByEntry(self.ptr, self.Treasure_Entry)
 	local gameObjectInfo = UnitInfo:new {ptr = gameObject}
@@ -314,13 +345,15 @@ AI_FieldBoss.ainame = "AI_FieldBoss"
 
 --死亡
 function AI_FieldBoss:JustDied( map_ptr,owner,killer_ptr )
-	outFmtInfo("============================BOSS was dead")
 	AI_Base.JustDied(self,map_ptr,owner,killer_ptr)
+	
+	local bossInfo = UnitInfo:new{ptr = owner}
 	local playerInfo = UnitInfo:new{ptr = killer_ptr}
-		
+	
 	local instanceInfo = InstanceFieldBase:new{ptr = map_ptr}
 	local mapid  = instanceInfo:GetMapId()
 	local lineNo = instanceInfo:GetMapLineNo()
+	local entry = bossInfo:GetEntry()
 	
 	globalValue:FieldBossDamageDeal(mapid, lineNo, 0)
 	-- 获得伤害最高的guid
@@ -329,6 +362,8 @@ function AI_FieldBoss:JustDied( map_ptr,owner,killer_ptr )
 	mapLib.ClearFieldBossDamage(map_ptr)
 	-- BOSS死亡
 	globalValue:FieldBossKilled(mapid, lineNo, guid, playerInfo:GetName())
+	local playerName = ToShowName(playerInfo:GetName())
+	app:CallOptResult(instanceInfo.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_BOSS_KILL, {tb_creature_template[entry].name, playerName, tb_gameobject_template[InstanceFieldBase.Treasure_Entry].name})
 	
 	-- 加宝箱
 	local posx, posy = unitLib.GetPos(owner)
@@ -345,8 +380,6 @@ function AI_FieldBoss:DamageDeal( owner, unit, damage)
 	local currHealth = bossInfo:GetHealth()
 	local maxHealth  = bossInfo:GetMaxhealth()
 	
-	print("get hurt==============", damage)	
-	
 	local map_ptr = unitLib.GetMap(owner)
 	local instanceInfo = InstanceFieldBase:new{ptr = map_ptr}
 	local mapid  = instanceInfo:GetMapId()
@@ -354,18 +387,13 @@ function AI_FieldBoss:DamageDeal( owner, unit, damage)
 	
 	globalValue:FieldBossDamageDeal(mapid, lineNo, currHealth * 100 / maxHealth)
 	
-	print("if damage > 0 then ")
 	if damage > 0 then 
 		local unitInfo = UnitInfo:new {ptr = unit}
 		local guid = unitInfo:GetPlayerGuid()
-		print("&&&&&&&&&&&&guid&&&&&&&&&&", guid)
 		mapLib.AddFiledBossDamage(map_ptr, guid, damage)
 	else
 		mapLib.ClearFieldBossDamage(map_ptr)
 	end
 end
-
-
-
 
 return InstanceFieldBase

@@ -943,7 +943,7 @@ function OperationFailedToString(type, reason, data)
 			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_WILL_START野外BOSS即将在{1}分钟后开启, 请大家安排好时间 - " .. data 
 		end
 		if (reason ==FIELD_BOSS_OPERTE_WILL_OCCUR)then
-			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_WILL_OCCUR野外boss{1}即将出现，请各位大侠做好准备 - " .. data 
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_WILL_OCCUR野外boss即将出现，请各位大侠做好准备 - " .. data 
 		end
 		if (reason ==FIELD_BOSS_OPERTE_OCCUR)then
 			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_OCCUR野外boss已经在各个地图刷新，请各位大侠火速前往击杀 查看详情 - " .. data 
@@ -961,6 +961,54 @@ function OperationFailedToString(type, reason, data)
 			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - FIELD_BOSS_OPERTE_PICKED恭喜{1}最终开启九龙宝箱，获得XXXX - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_FIELD_BOSS " .. reason .. "    "  .. data
+	end
+	if(type == OPERTE_TYPE_WORLD_BOSS)then
+		if (reason ==WORLD_BOSS_OPERTE_NOT_ENROLL)then
+			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - WORLD_BOSS_OPERTE_NOT_ENROLL本次活动您未报名，无法参加 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_WILL_START)then
+			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - WORLD_BOSS_OPERTE_WILL_START世界boss即将开启，请各位大侠做好准备 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL1)then
+			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - WORLD_BOSS_OPERTE_WILL_ROLL1恭喜{1}赢得本次拼点奖励，BOSS在3秒后恢复正常 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL2)then
+			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - WORLD_BOSS_OPERTE_WILL_ROLL2恭喜{1}赢得本次拼点奖励，现在可自由离开战场 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_ENROLL)then
+			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - WORLD_BOSS_OPERTE_ENROLL世界BOSS开始报名 - " .. data 
+		end
+		return "未知错误1  OPERTE_TYPE_WORLD_BOSS " .. reason .. "    "  .. data
+	end
+	if(type == OPRATE_TYPE_MOUNT_QICHENG)then
+		if (reason ==MOUNT_QICHENG_FIGHT)then
+			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - MOUNT_QICHENG_FIGHT战斗状态不能骑乘 - " .. data 
+		end
+		if (reason ==MOUNT_QICHENG_JUMP)then
+			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - MOUNT_QICHENG_JUMP跳跃状态不能骑乘 - " .. data 
+		end
+		return "未知错误1  OPRATE_TYPE_MOUNT_QICHENG " .. reason .. "    "  .. data
+	end
+	if(type == OPRATE_TYPE_TELEPORT)then
+		if (reason ==TELEPORT_OPRATE_PVP_STATE)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - TELEPORT_OPRATE_PVP_STATEpvp状态不能传送 - " .. data 
+		end
+		return "未知错误1  OPRATE_TYPE_TELEPORT " .. reason .. "    "  .. data
+	end
+	if(type == OPRATE_TYPE_UPGRADE)then
+		if (reason ==UPGRADE_OPRATE_SKILL_SUCCESS)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - UPGRADE_OPRATE_SKILL_SUCCESS技能升级成功 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT_EXP)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - UPGRADE_OPRATE_MOUNT_EXP坐骑经验+{1} - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT_STAR)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - UPGRADE_OPRATE_MOUNT_STAR坐骑星级+1 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - UPGRADE_OPRATE_MOUNT进阶成功 - " .. data 
+		end
+		return "未知错误1  OPRATE_TYPE_UPGRADE " .. reason .. "    "  .. data
 	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

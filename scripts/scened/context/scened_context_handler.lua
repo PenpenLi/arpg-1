@@ -328,13 +328,13 @@ function ScenedContext:Handle_Ride(packet)
 		--当前是战斗状态
 		local status = playerLib.GetPlayeCurFightStatus(player_ptr)
 		if status == COMBAT_STATE_ENTER then
---			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_FIGHT)
+			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_FIGHT)
 			return
 		end
 		
 		--当前是跳跃状态
 		if unitLib.HasBuff(player_ptr, BUFF_JUMP_JUMP) then
---			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_JUMP)
+			self:CallOptResult(OPRATE_TYPE_MOUNT_QICHENG, MOUNT_QICHENG_JUMP)
 			return
 		end
 		
@@ -549,7 +549,7 @@ function ScenedContext:Hanlde_Enter_VIP_Instance( pkt )
 	
 	--pvp状态下一律不准进
 	if self:GetPVPState() then
-		outFmtError("Hanlde_Enter_VIP_Instance player %s is pvp state!", self:GetPlayerGuid())
+		self:CallOptResult(OPRATE_TYPE_TELEPORT, TELEPORT_OPRATE_PVP_STATE)
 		return
 	end
 	
@@ -582,7 +582,7 @@ function ScenedContext:Hanlde_Enter_Trial_Instance(pkt)
 	
 	--pvp状态下一律不准进
 	if self:GetPVPState() then
-		outFmtError("Hanlde_Enter_Trial_Instance player %s is pvp state!", self:GetPlayerGuid())
+		self:CallOptResult(OPRATE_TYPE_TELEPORT, TELEPORT_OPRATE_PVP_STATE)
 		return
 	end
 	
@@ -625,7 +625,7 @@ function ScenedContext:Hanlde_Enter_Res_Instance( pkt )
 	
 	--pvp状态下一律不准进
 	if self:GetPVPState() then
-		outFmtError("Hanlde_Enter_VIP_Instance player %s is pvp state!", self:GetPlayerGuid())
+		self:CallOptResult(OPRATE_TYPE_TELEPORT, TELEPORT_OPRATE_PVP_STATE)
 		return
 	end
 	

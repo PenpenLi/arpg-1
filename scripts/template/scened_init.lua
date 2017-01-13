@@ -69,3 +69,5 @@ require("template.tables.tb_worldboss_time")
 
 require("template.tables.tb_instance_res")
 require("template.tables.tb_instance_reward")
+
+require("template.tables.tb_mount_illusion")

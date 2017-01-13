@@ -54,6 +54,7 @@ function AppdApp:InitCorn()
 		self.objMgr:foreachAllPlayer(function(player)	
 			player:DoResetDaily()
 		end)
+		self:RankReward()
 	end)
 	
 	-- 野外boss马上刷新通知
@@ -68,7 +69,7 @@ function AppdApp:InitCorn()
 	
 	-- 世界BOSS
 	local wbconfig = tb_worldboss_time[ 1 ]
-	self:InitWorldBossCorn(wbconfig.time[ 1 ], wbconfig.time[ 2 ], wbconfig.enrolllast, wbconfig.time_last)
+	self:InitWorldBossCorn(wbconfig.time[ 1 ], wbconfig.time[ 2 ], wbconfig.enrolllast, wbconfig.time_last, wbconfig.notice)
 	
 	--每隔5s检测下失效物品
 	self.cron:every("失效物品检测",5,function()
@@ -99,9 +100,14 @@ function AppdApp:InitCorn()
 	end)
 
 	-- 每个1800秒刷新排行榜信息
-	self.cron:every("刷新排行榜信息", 30,function()
+	self.cron:every("刷新排行榜信息", 1800,function()
 		OnUpdateRankList()
 	end)
+	
+	self.cron:every("刷新排行榜信息", 10,function()
+		OnUpdateRankList()
+	end)
+
 	
 end
 
@@ -113,8 +119,7 @@ function AppdApp:InitFieldBossCorn(H, M, startTime, bossTime)
 	outFmtInfo("============================born boss crontab_str = %s", crontab_str)
 	self.cron:addCron("通知全服野外BOSS刷新", crontab_str, function() 
 		-- 通知场景服刷BOSS
-		outFmtInfo("Field Boss created===============================")
-		
+		self:CallOptResult(OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_OCCUR, {startTime})
 		NoticeScene(APPD_SCENED_REBORN_FIELD_BOSS)
 	end)	
 				
@@ -123,12 +128,10 @@ function AppdApp:InitFieldBossCorn(H, M, startTime, bossTime)
 	local crontab_str1 = string.format("%d %d * * *", TM, TH)
 	outFmtInfo("------------------------------startTime crontab_str = %s", crontab_str1)
 	self.cron:addCron("通知全服野外BOSS将要开启", crontab_str1, function() 
-		--
-		outFmtInfo("------------------------------Field Boss will start at %d minutes", startTime)
 		-- 通知场景服 清理前一个BOSS的数据
 		NoticeScene(APPD_SCENED_CLEAR_FIELD_BOSS)
 		
-		--self:CallOptResult(OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_WILL_START, {startTime})
+		self:CallOptResult(OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_WILL_START, {startTime})
 	end)
 	
 	-- 即将刷新通知
@@ -136,23 +139,14 @@ function AppdApp:InitFieldBossCorn(H, M, startTime, bossTime)
 	local crontab_str2 = string.format("%d %d * * *", TM, TH)
 	outFmtInfo("+++++++++++++++++++++++++bossTime crontab_str = %s", crontab_str2)
 	self.cron:addCron("通知全服野外BOSS将要刷新", crontab_str2, function() 
-		--
-		outFmtInfo("+++++++++++++++++++++++++Field Boss will reborn after %d minutes", bossTime)
-		-- self:CallOptResult(OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_WILL_START, {bossTime})
+		self:CallOptResult(OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_WILL_OCCUR, {bossTime})
 	end)
 end
 
 
 -- 世界BOSS
-function AppdApp:InitWorldBossCorn(sh, sm, enrollLast, time_last)
-	--[[
-	
-	tb_worldboss_time = {
-	--  id:int	序号
-	--  time:array	开始的时间
-	--  enrolllast:int	世界BOSS报名持续分钟
-	--  time_last:int	世界BOSS持续分钟
-	--]]
+function AppdApp:InitWorldBossCorn(sh, sm, enrollLast, time_last, noticeTime)
+	noticeTime = noticeTime or 1
 	
 	local M, H
 	H, M = sh, sm
@@ -162,8 +156,17 @@ function AppdApp:InitWorldBossCorn(sh, sm, enrollLast, time_last)
 	self.cron:addCron("通知全服世界BOSS开始报名", crontab_str, function()		
 		OnEnrollWorldBoss()
 		-- 通知全服世界BOSS开始报名
-		outFmtInfo("InitWorldBossCorn enroll ===============================")
+		self:CallOptResult(OPERTE_TYPE_WORLD_BOSS, WORLD_BOSS_OPERTE_ENROLL, {})
 	end)
+	
+	-- 世界BOSS即将开始
+	H, M = self:ModifyTimeMinutes(sh, sm, -noticeTime)
+	crontab_str = string.format("%d %d * * *", M, H)
+	outFmtInfo("WWWWWWWWWWWWWWWWWWWWWWWWWWorld boss will start crontab_str = %s", crontab_str)
+	self.cron:addCron("通知全服世界BOSS即将开启", crontab_str, function() 
+		self:CallOptResult(OPERTE_TYPE_WORLD_BOSS, WORLD_BOSS_OPERTE_WILL_START, {})
+	end)
+	
 
 	-- BOSS挑战时间
 	H, M = self:ModifyTimeMinutes(sh, sm, enrollLast)
@@ -216,6 +219,31 @@ function AppdApp:ModifyTimeMinutes(H, M, addM)
 	
 	return H, M
 end
+-- 每日排行榜奖励
+function AppdApp:RankReward()
+	
+	--RANK_TYPE_FACTION
+	--FIXME
+	local ranktype = {RANK_TYPE_POWER,RANK_TYPE_LEVEL,RANK_TYPE_MONEY,RANK_TYPE_DIVINE,RANK_TYPE_MOUNT}
+	
+	for _,rt in ipairs(ranktype) do
+		local tab = GetRankGuidTable(rt)
+		for k,v in ipairs(tab) do
+			local idx = (10 + i)*65536 + k
+			local config = tb_mail[idx]
+			
+			if config then
+				local desc = config.desc
+				local name = config.name
+				local giftType = config.source
+				AddGiftPacksData(v,0,giftType,os.time(),os.time() + 86400*30, name, desc, config.items, "系统")
+			end
+		end
+	end
+	
+	
+	
+end
 
 
 -- 通知场景服做某些事
@@ -233,7 +261,7 @@ end
 --全服发送通知包
 function AppdApp:CallOptResult(typ, reason, data)
 	if type(data) == 'table' then
-		data = string.join(',', data)
+		data = string.join('|', data)
 	else
 		data = tostring(data) or ''
 	end	

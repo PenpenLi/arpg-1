@@ -140,6 +140,8 @@ config = {
 		-------------------------------
 		CMSG_WORLD_BOSS_ENROLL,	-- /*世界BOSS报名*/	
 		-----------------------------
+		CMSG_RANK_ADD_LIKE,
+		-------------------------------
 		CMSG_RES_INSTANCE_SWEEP,
 	},
 	--pk服命令表

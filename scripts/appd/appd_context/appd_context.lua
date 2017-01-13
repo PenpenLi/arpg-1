@@ -22,7 +22,7 @@ end
 function PlayerInfo:CallOptResult( typed, reason, data )
 	--碰上字符串数组自动拼接	
 	if type(data) == 'table' then
-		data = string.join(',', data)
+		data = string.join('|', data)
 	else
 		data = tostring(data) or ''
 	end
@@ -69,6 +69,18 @@ function PlayerInfo:SetMountStar(star)
 end
 
 --[[
+rewardDict :  {{itemId, count},{itemId1, count1}}
+--]]
+function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type)
+	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type)
+	-- 获得信息
+	local dict = changeTableStruct(rewardDict)
+	local list = Change_To_Item_Reward_Info(dict)
+	playerInfo:call_item_notice (list)
+end
+
+--[[
+有可能场景服发来的增加道具的接口也是这个
 rewardDict :  {{itemId, count},{itemId1, count1}}
 --]]
 function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type)
@@ -1109,6 +1121,7 @@ require("appd/appd_context/handler/spell_handler")
 require("appd/appd_context/handler/instance_handler")
 require("appd/appd_context/handler/social_handler")
 require("appd/appd_context/handler/shop_handler")
+require("appd/appd_context/handler/rank_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

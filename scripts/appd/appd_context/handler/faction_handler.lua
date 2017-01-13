@@ -32,6 +32,16 @@ function PlayerInfo:factionLogOut()
 		end
 	end
 end
+--帮派每日重置
+function PlayerInfo:factionReset()
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			faction:RefreshShop()
+		end
+	end
+end
 
 function PlayerInfo:factionUpLevel()
 	local factionID = self:GetFactionId()
@@ -173,6 +183,8 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	
 	rankInsertTask(faction:GetGuid(), RANK_TYPE_FACTION)
 end
+
+
 
 -- 升级
 function PlayerInfo:Handle_Faction_Upgrade(pkt)

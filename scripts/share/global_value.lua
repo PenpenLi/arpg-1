@@ -125,6 +125,14 @@ function GlobalValue:FieldBossKilled(mapid, lineNo, guid, name)
 	self:SetStr(strStart + FIELD_BOSS_DATA_NAME, name)
 end
 
+function GlobalValue:GetProtectCooldown(mapid, lineNo)
+	local indx = self:GetFieldBossIndex(mapid, lineNo)
+	local intStart = self:GetFieldBossIntStart(indx)
+	
+	local future = self:GetUInt32(intStart + FIELD_BOSS_DATA_PRIORITY_TIME)
+	return future - os.time()
+end
+
 
 -- 箱子被领取, 活动结束
 function GlobalValue:FieldBossTreasurePicked(mapid, lineNo)

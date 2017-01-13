@@ -18,7 +18,7 @@ tb_map_vip = {
 	--  bossx:int	boss坐标x
 	--  bossy:int	boss坐标y
 	--  time:int	所需时限
-	[1] = {id = 1,mapid = 2003,x = 32,y = 21,vip = 1,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},quests = {{{1,1,3001}},{{1,1,3001}},{{1,1,3001}}},rewards = {{1},{1},{1}},bossx = 25,bossy = 25,time = 120,},
-	[2] = {id = 2,mapid = 2003,x = 32,y = 21,vip = 3,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},quests = {{{1,1,3001}},{{1,1,3001}},{{1,1,3001}}},rewards = {{1},{1},{1}},bossx = 25,bossy = 25,time = 120,},
-	[3] = {id = 3,mapid = 2003,x = 32,y = 21,vip = 5,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},quests = {{{1,1,3001}},{{1,1,3001}},{{1,1,3001}}},rewards = {{1},{1},{1}},bossx = 25,bossy = 25,time = 120,},
+	[1] = {id = 1,mapid = 2003,x = 32,y = 21,vip = 1,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},quests = {{{1,1,3001}},{{1,1,3001}},{{1,1,3001}}},rewards = {{2},{3},{4}},bossx = 25,bossy = 25,time = 120,},
+	[2] = {id = 2,mapid = 2003,x = 32,y = 21,vip = 3,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},quests = {{{1,1,3001}},{{1,1,3001}},{{1,1,3001}}},rewards = {{2},{3},{4}},bossx = 25,bossy = 25,time = 120,},
+	[3] = {id = 3,mapid = 2003,x = 32,y = 21,vip = 5,forces = {0,2000,4000},times = 1,cost = {20,30,40},creatures = {3001,3001,3001},quests = {{{1,1,3001}},{{1,1,3001}},{{1,1,3001}}},rewards = {{2},{4},{4}},bossx = 25,bossy = 25,time = 120,},
 }
