@@ -75,7 +75,7 @@ faction_info,/*帮派信息*/
 	faction_guid,String,50,/*帮派guid*/
 	faction_name,String,50,/*名字*/
 	faction_bz,String,50,/*帮主名字*/
-	faction_gg,String,50,/*公告*/
+	faction_gg,String,108,/*公告*/
 	level,uint16,0,/*等级*/
 	icon,uint8,0,/*头像*/
 	player_count,uint16,0,/*帮派人数*/

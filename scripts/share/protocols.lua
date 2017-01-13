@@ -857,7 +857,7 @@ function faction_info_t:read( input )
 	if not ret then
 		return ret
 	end
-	ret,self.faction_gg = input:readUTFByLen(50)  --/*公告*/
+	ret,self.faction_gg = input:readUTFByLen(108)  --/*公告*/
 
 	if not ret then
 		return ret
@@ -909,7 +909,7 @@ function faction_info_t:write( output )
 	if(self.faction_gg == nil)then
 		self.faction_gg = ''
 	end
-	output:writeUTFByLen(self.faction_gg , 50 ) 
+	output:writeUTFByLen(self.faction_gg , 108 ) 
 	
 	if(self.level == nil)then
 		self.level = 0
