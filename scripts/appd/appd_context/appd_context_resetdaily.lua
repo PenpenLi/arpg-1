@@ -90,4 +90,6 @@ end
 -- reset
 function PlayerInfo:onRealReset()
 	self:instanceDailyReset()
+	self:RankLikeRest()
+	self:factionReset()
 end
