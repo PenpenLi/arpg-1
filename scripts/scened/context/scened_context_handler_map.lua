@@ -22,6 +22,11 @@ OpcodeHandlerFuncTable[CMSG_ROLL_WORLD_BOSS_TREASURE] = ScenedContext.Handle_Rol
 
 OpcodeHandlerFuncTable[CMSG_RES_INSTANCE_ENTER] = ScenedContext.Hanlde_Enter_Res_Instance
 
+OpcodeHandlerFuncTable[CMSG_TELEPORT_MAP] = ScenedContext.Hanlde_Teleport_Map
+
+OpcodeHandlerFuncTable[CMSG_TELEPORT_FIELD_BOSS] = ScenedContext.Hanlde_Teleport_Field_Boss
+
+
 --OpcodeHandlerFuncTable[CMSG_CHANGE_LINE] = ScenedContext.Hanlde_Change_Line
 
 

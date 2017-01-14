@@ -634,6 +634,58 @@ function ScenedContext:Hanlde_Enter_Res_Instance( pkt )
 end
 --end 资源副本-----------
 
+
+-- 
+function ScenedContext:Hanlde_Teleport_Map(pkt)
+	local mapid = pkt.mapid
+	local lineNo = pkt.lineNo
+	
+	-- 地图id不对
+	if not tb_map[mapid] and tb_map[mapid].type ~= MAP_TYPE_FIELD then
+		return
+	end
+	
+	-- 该地图还未处理
+	if not INSTANCE_SCRIPT_TABLE[mapid] then
+		return
+	end
+	
+	-- 分线不对
+	if lineNo < 1 or lineNo > MAX_DEFAULT_LINE_COUNT then
+		return
+	end
+	
+	local teleInfo = tb_map[mapid].tele
+	
+	playerLib.Teleport(self.ptr, mapid, teleInfo[1], teleInfo[2], lineNo)
+end
+
+
+function ScenedContext:Hanlde_Teleport_Field_Boss(pkt)
+	local mapid = pkt.mapid
+	local lineNo = pkt.lineNo
+	
+	-- 地图id不对
+	if not tb_map[mapid] and tb_map[mapid].type ~= MAP_TYPE_FIELD then
+		return
+	end
+	
+	-- 该地图还未处理
+	if not INSTANCE_SCRIPT_TABLE[mapid] then
+		return
+	end
+	
+	-- 分线不对
+	if lineNo < 1 or lineNo > MAX_DEFAULT_LINE_COUNT then
+		return
+	end
+	
+	local pos = tb_map_field_boss[mapid].bossPosi
+	local x = randInt(-5, 5) + pos[ 1 ]
+	local y = randInt(-5, 5) + pos[ 2 ]
+	playerLib.Teleport(self.ptr, mapid, x, y, lineNo)
+end
+
 function ScenedContext:Handle_ForceInto(pkt)
 	DoForceInto(self)
 end

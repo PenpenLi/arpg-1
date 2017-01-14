@@ -29,5 +29,5 @@ tb_map_trial = {
 	[12] = {id = 12,mapid = 2004,x = 32,y = 21,firstReward = {{50001,1},{50003,1}},reward = {1,2},resetgold = 20,quests = {{1,10,2102}},monsterInfo = {27,26,2102,5,10},bossInfo = {},time = 120,},
 	[13] = {id = 13,mapid = 2004,x = 32,y = 21,firstReward = {{50001,1},{50003,1}},reward = {1,2},resetgold = 30,quests = {{1,10,2103}},monsterInfo = {27,26,2103,5,10},bossInfo = {},time = 120,},
 	[14] = {id = 14,mapid = 2004,x = 32,y = 21,firstReward = {{50001,1},{50003,1}},reward = {1,2},resetgold = 40,quests = {{1,10,2104}},monsterInfo = {27,26,2104,5,10},bossInfo = {},time = 120,},
-	[15] = {id = 15,mapid = 2004,x = 32,y = 21,firstReward = {{50001,1},{50003,1}},reward = {1,2},resetgold = 50,quests = {{1,1,3101}},monsterInfo = {},bossInfo = {27,26,3101},time = 120,},
+	[15] = {id = 15,mapid = 2004,x = 32,y = 21,firstReward = {{50001,1},{50003,1}},reward = {1,2},resetgold = 50,quests = {{1,1,3103}},monsterInfo = {},bossInfo = {27,26,3103},time = 120,},
 }

@@ -1560,8 +1560,8 @@ INSTANCE_INT_FIELD_VIP_START = 0	-- vip副本开始	每个信息4个byte[0:预�
 INSTANCE_INT_FIELD_VIP_END = 3	-- vip副本结束
 INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT = 3	-- (0:今日可扫荡层数,1:历史通关层数)
 INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT = 4	-- (0:扫荡次数,1:可购买扫荡次数)
-INSTANCE_INT_FIELD_RES_START = 4	-- 资源副本开始 每个信息4个byte[0:挑战次数,1:是否通关,2:预留,3:预留]
-INSTANCE_INT_FIELD_RES_END = 9	-- 资源副本结束
+INSTANCE_INT_FIELD_RES_START = 5	-- 资源副本开始 每个信息4个byte[0:挑战次数,1:是否通关,2:预留,3:预留]
+INSTANCE_INT_FIELD_RES_END = 10	-- 资源副本结束
 --  战斗模式
 PEACE_MODE = 0	-- 和平模式
 FAMILY_MODE = 1	-- 家族模式

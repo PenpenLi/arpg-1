@@ -570,9 +570,6 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==RANK_LIST_OPERATE_OUT_OF_RANGE)then
 			return "ShowOperationFailed OPERTE_TYPE_RANK_LIST排行榜 - RANK_LIST_OPERATE_OUT_OF_RANGE查询范围超出界限 - " .. data 
 		end
-		if (reason ==RANK_LIST_OPERATE_OUT_OF_RANGE)then
-			return "ShowOperationFailed OPERTE_TYPE_RANK_LIST排行榜 - RANK_LIST_OPERATE_OUT_OF_RANGE查询范围超出界限 - " .. data 
-		end
 		if (reason ==RANK_LIST_OPERATE_MAX_LIKE)then
 			return "ShowOperationFailed OPERTE_TYPE_RANK_LIST排行榜 - RANK_LIST_OPERATE_MAX_LIKE点赞已超过最大次数 - " .. data 
 		end

@@ -139,7 +139,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 		faction_num = faction_num + 1
 	end)
 	if faction_num >= config.maxnum then
-		self:CallOptResult(OPERTE_TYPE_FACTION, OPRATE_TYPE_FACTION_CREATE_MAX)
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_CREATE_MAX)
 		return
 	end
 	

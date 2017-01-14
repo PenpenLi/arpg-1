@@ -964,3 +964,8 @@ item_notice,s2c,214,/*获得奖励提示*/,STATUS_NEVER,False
 teleport_map,c2s,216,/*传送到某个世界地图*/,STATUS_NEVER,False
 	mapid,uint32,False,/*地图id*/
 	lineNo,uint32,False,/*分线号*/
+
+#
+teleport_field_boss,c2s,217,/*传送到野外boss旁边*/,STATUS_NEVER,False
+	mapid,uint32,False,/*地图id*/
+	lineNo,uint32,False,/*分线号*/

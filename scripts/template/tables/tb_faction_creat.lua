@@ -7,5 +7,5 @@ tb_faction_creat = {
 	--  id:int	序号
 	--  cost:array	消耗资源
 	--  maxnum:int	全服最大帮派数
-	[1] = {id = 1,cost = {{0, 100}},maxnum = 10,},
+	[1] = {id = 1,cost = {{0, 100}},maxnum = 100,},
 }

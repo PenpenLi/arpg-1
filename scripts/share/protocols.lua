@@ -224,6 +224,8 @@ CMSG_RES_INSTANCE_SWEEP		= 211	-- /*扫荡资源副本*/
 CMSG_SHOW_MAP_LINE		= 212	-- /*查看本地图的分线号*/	
 SMSG_SEND_MAP_LINE		= 213	-- /*返回本地图的分线号信息*/	
 SMSG_ITEM_NOTICE		= 214	-- /*获得奖励提示*/	
+CMSG_TELEPORT_MAP		= 216	-- /*传送到某个世界地图*/	
+CMSG_TELEPORT_FIELD_BOSS		= 217	-- /*传送到野外boss旁边*/	
 
 
 ---------------------------------------------------------------------
@@ -7932,6 +7934,74 @@ function Protocols.unpack_item_notice (pkt)
 end
 
 
+-- /*传送到某个世界地图*/	
+function Protocols.pack_teleport_map ( mapid ,lineNo)
+	local output = Packet.new(CMSG_TELEPORT_MAP)
+	output:writeU32(mapid)
+	output:writeU32(lineNo)
+	return output
+end
+
+-- /*传送到某个世界地图*/	
+function Protocols.call_teleport_map ( playerInfo, mapid ,lineNo)
+	local output = Protocols.	pack_teleport_map ( mapid ,lineNo)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*传送到某个世界地图*/	
+function Protocols.unpack_teleport_map (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.mapid = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.lineNo = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*传送到野外boss旁边*/	
+function Protocols.pack_teleport_field_boss ( mapid ,lineNo)
+	local output = Packet.new(CMSG_TELEPORT_FIELD_BOSS)
+	output:writeU32(mapid)
+	output:writeU32(lineNo)
+	return output
+end
+
+-- /*传送到野外boss旁边*/	
+function Protocols.call_teleport_field_boss ( playerInfo, mapid ,lineNo)
+	local output = Protocols.	pack_teleport_field_boss ( mapid ,lineNo)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*传送到野外boss旁边*/	
+function Protocols.unpack_teleport_field_boss (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.mapid = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.lineNo = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -8148,6 +8218,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_show_map_line = self.call_show_map_line
 	playerInfo.call_send_map_line = self.call_send_map_line
 	playerInfo.call_item_notice = self.call_item_notice
+	playerInfo.call_teleport_map = self.call_teleport_map
+	playerInfo.call_teleport_field_boss = self.call_teleport_field_boss
 end
 
 local unpack_handler = {
@@ -8361,6 +8433,8 @@ local unpack_handler = {
 [CMSG_SHOW_MAP_LINE] =  Protocols.unpack_show_map_line,
 [SMSG_SEND_MAP_LINE] =  Protocols.unpack_send_map_line,
 [SMSG_ITEM_NOTICE] =  Protocols.unpack_item_notice,
+[CMSG_TELEPORT_MAP] =  Protocols.unpack_teleport_map,
+[CMSG_TELEPORT_FIELD_BOSS] =  Protocols.unpack_teleport_field_boss,
 
 }
 
