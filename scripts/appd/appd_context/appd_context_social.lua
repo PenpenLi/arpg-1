@@ -61,7 +61,8 @@ function PlayerInfo:FriendIsFull()
 	local config = tb_social_num[lev]
 	if config then
 		local maxnum = config.num
-		local curnum = self:getFriendNum()
+		local socialMgr = self:getSocialMgr()
+		local curnum = socialMgr:getFriendNum()
 		if curnum >= maxnum then
 			return true
 		else 
