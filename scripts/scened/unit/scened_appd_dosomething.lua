@@ -113,6 +113,8 @@ end
 
 -- 进入战斗房间
 function OnFightWorldBoss(rooms)
+	-- 随机BOSS
+	globalValue:RandomTodayWorldBossID()
 	-- 设置战斗等待状态
 	globalValue:SetWorldBossState(WORLD_BOSS_PROCESS_BORN)
 	-- 每个房间先置空

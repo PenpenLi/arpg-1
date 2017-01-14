@@ -76,7 +76,7 @@ function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type)
 	-- 获得信息
 	local dict = changeTableStruct(rewardDict)
 	local list = Change_To_Item_Reward_Info(dict)
-	playerInfo:call_item_notice (list)
+	self:call_item_notice (list)
 end
 
 --[[

@@ -199,10 +199,7 @@ function ArrangeWorldBossRoom()
 		end
 		table.insert(roomInfo, num)
 	end
-		
-	-- 先把BOSS随机出来
-	globalValue:RandomTodayWorldBossID()
-
+	
 	return playerDict, roomInfo
 end
 
