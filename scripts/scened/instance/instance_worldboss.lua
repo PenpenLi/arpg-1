@@ -194,7 +194,7 @@ function InstanceWorldBoss:OnTimer_UpdateRank()
 	if self:IsEnd() then
 		InstanceWorldBoss.rankList[lineNo] = {}
 		-- 设置提前结束时间
-		self:SetMapEndTime(os.time() + 20)
+		-- self:SetMapEndTime(os.time() + 20)
 		return false
 	end
 	
@@ -308,7 +308,7 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 	
 	-- 设置状态
 	globalValue:SetWorldBossEndInLine(lineNo)
-	instanceInfo:SetMapEndTime(os.time() + 10)
+	instanceInfo:SetMapEndTime(os.time() + 12)
 	
 	-- 根据排名 发邮件
 	local rankInfo = InstanceWorldBoss.rankList[lineNo]

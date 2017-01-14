@@ -55,41 +55,81 @@ function InstanceResGem:ApplyRefreshMonsterBatch(player,batchIdx)
 	local entry = config.monster[1]
 	local monsterposlist = config.monsterInfo
 	
+	local ds = 0
+	local bornPos
+	local bornPos2
+	local bornX
+	local bornY
+	local indx
+	
+	for i = 1, cnt do
+		bornPos = monsterposlist[1]
+		bornPos2 = monsterposlist[2]
+		bornX = randInt(bornPos[ 1 ],bornPos2[1])
+		bornY = randInt(bornPos[ 2 ],bornPos2[2])
+		indx = REFRESH_MONSTER_FIELD_INFO_START + ds * 2
+		self:AddMonsterInfo(indx, entry, prev, bornX, bornY)
+		ds = ds + 1
+		
+		bornPos = monsterposlist[3]
+		bornPos2 = monsterposlist[4]
+		
+		bornX = randInt(bornPos[ 1 ],bornPos2[1])
+		bornY = randInt(bornPos[ 2 ],bornPos2[2])
+		
+		indx = REFRESH_MONSTER_FIELD_INFO_START + ds * 2
+		self:AddMonsterInfo(indx, entry, prev, bornX, bornY)
+		ds = ds + 1
+	end
+	
+	cnt = cnt + cnt
+	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 0, 0)
+	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 1, cnt)
+	
+	mapLib.DelTimer(self.ptr, 'OnTimer_MonsterBornOneByOne')
+	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval)
+	
+	return true,cnt
+end
+
+function InstanceResGem:AddMonsterInfo(indx, entry, level, bornX, bornY)
+	self:SetUInt16(indx, 0, entry)
+	self:SetUInt16(indx, 1, level)
+	self:SetUInt16(indx+1, 0, bornX)
+	self:SetUInt16(indx+1, 1, bornY)
+end
+
+function InstanceResGem:OnTimer_MonsterBornOneByOne()
+	local dids = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 0)
+	local need = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 1)
+	if dids >= need then
+		return false
+	end
+	
+	local indx = dids * 2 + REFRESH_MONSTER_FIELD_INFO_START
+	self:CreateMonster(indx)
+
+	indx = indx + 2
+	self:CreateMonster(indx)
+	
+	self:AddUInt16(REFRESH_MONSTER_FIELD_ID, 0, 2)
+	
+	return true
+end
+
+function InstanceResGem:CreateMonster(indx)
+	local entry = self:GetUInt16(indx  , 0)
+	local level = self:GetUInt16(indx  , 1)
+	local bornX = self:GetUInt16(indx+1, 0)
+	local bornY = self:GetUInt16(indx+1, 1)
+	
+	local creature = mapLib.AddCreature(self.ptr, 
+			{templateid = entry, x = bornX, y = bornY, level=level, active_grid = true, 
+			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
+	
+	-- 设置仇恨度
 	local GEM_NPC = mapLib.AliasCreature(self.ptr, InstanceResGem.GEM_NAME)
-	
-	for i = 1, cnt do
-		--randInt(0, self.RefreshOffset)
-		local bornPos = monsterposlist[1]
-		local bornPos2 = monsterposlist[2]
-		
-		local bornX = randInt(bornPos[ 1 ],bornPos2[1])
-		local bornY = randInt(bornPos[ 2 ],bornPos2[2])
-
-		local creature = mapLib.AddCreature(self.ptr, 
-			{templateid = entry, x = bornX, y = bornY, level=prev, active_grid = true, attackType = REACT_AGGRESSIVE,
-			ainame = "AI_res", npcflag = {}})
-		
-		-- 设置仇恨度
-		creatureLib.ModifyThreat(creature, GEM_NPC, InstanceResGem.THREAT_V)
-	end
-	
-	for i = 1, cnt do
-		--randInt(0, self.RefreshOffset)
-		local bornPos = monsterposlist[3]
-		local bornPos2 = monsterposlist[4]
-		
-		local bornX = randInt(bornPos[ 1 ],bornPos2[1])
-		local bornY = randInt(bornPos[ 2 ],bornPos2[2])
-
-		local creature = mapLib.AddCreature(self.ptr, 
-			{templateid = entry, x = bornX, y = bornY, level=prev, active_grid = true, attackType = REACT_AGGRESSIVE,
-			ainame = "AI_res", npcflag = {}})
-		
-		-- 设置仇恨度
-		creatureLib.ModifyThreat(creature, GEM_NPC, InstanceResGem.THREAT_V)
-	end
-	
-	return true,cnt+cnt
+	creatureLib.ModifyThreat(creature, GEM_NPC, InstanceResGem.THREAT_V)
 end
 
 --刷新boss

@@ -55,17 +55,43 @@ function PlayerInfo:RemoveFriend(guid,twoway)
 
 
 end
+--好友是否已满
+function PlayerInfo:FriendIsFull()
+	local lev = self:GetLevel()
+	local config = tb_social_num[lev]
+	if config then
+		local maxnum = config.num
+		local curnum = self:getFriendNum()
+		if curnum >= maxnum then
+			return true
+		else 
+			return false
+		end
+	else 
+		return true
+	end
+	
+end
 --申请添加好友
 function PlayerInfo:ApplyFriend(guid)
-	-- self:AddEnemy(guid,5)
-	-- if true then
-	-- 	return
-	-- end
+
+	
 	local friend = app.objMgr:getObj(guid)
 	if not friend then 
-		outFmtDebug("friend not on line or not extis, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_NOT_FIND)
 		return false
 	end
+	
+	if self:FriendIsFull() then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
+		return false
+	end
+	
+	if friend:FriendIsFull() then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_TARGET_FULL)
+		return false
+	end
+	
 	--向目标申请加好友
 	friend:AddApplyFriend(self)
 end
@@ -82,7 +108,8 @@ function PlayerInfo:SureApplyFriend(guid)
 		if not friend then 
 			--清除申请对象
 			socialMgr:setSocilaItem(idx,0,0,"","")
-			outFmtDebug("friend not on line or not extis, %s", guid)
+			--outFmtDebug("friend not on line or not extis, %s", guid)
+			self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_NOT_FIND)
 			return false
 		end
 
@@ -106,6 +133,8 @@ function PlayerInfo:SureApplyFriend(guid)
 		
 
 		return true
+	else
+		socialMgr:setSocilaItem(idx,0,0,"","")
 	end
 	return false
 end
@@ -117,18 +146,21 @@ function PlayerInfo:AddApplyFriend(friend)
 
 	--判断是不是好友
 	if socialMgr:isFriend(guid) then
-		outFmtDebug("player is already friend, %s", guid)
+		--outFmtDebug("player is already friend, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
 		return false
 	end
 	--判断是不是自己
 	if self:GetName() == guid then
-		outFmtDebug("you self is a friend, %s", guid)
+		--outFmtDebug("you self is a friend, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
 		return false
 	end
 
 	--判断是不是已经在列表中
 	if socialMgr:isApply(guid) then
-		outFmtDebug("player is already in apply, %s", guid)
+		--outFmtDebug("player is already in apply, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_HAS_SEND_ADD)
 		return false
 	end
 
@@ -142,19 +174,30 @@ function PlayerInfo:AddFriend(friend)
 
 	--判断是不是好友
 	if socialMgr:isFriend(guid) then
-		outFmtDebug("player is already friend, %s", guid)
+		--outFmtDebug("player is already friend, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
 		return false
 	end
 	--判断是不是自己
 	if self:GetName() == guid then
-		outFmtDebug("you self is a friend, %s", guid)
+		--outFmtDebug("you self is a friend, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
 		return false
 	end
 
-	local tf = socialMgr:addFriendPlayer(friend)
-	if tf == false then
-		outFmtDebug("target friend is full")
+	
+	
+	if self:FriendIsFull() then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
+		return false
 	end
+	
+	local tf = socialMgr:addFriendPlayer(friend)
+	
+	--if tf == false then
+	--	outFmtDebug("target friend is full")
+	--end
+
 	return tf
 
 end
@@ -165,17 +208,23 @@ function PlayerInfo:CanAddFriend(friend)
 
 	--判断是不是好友
 	if socialMgr:isFriend(guid) then
-		outFmtDebug("player is already friend, %s", guid)
+		--outFmtDebug("player is already friend, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
 		return false
 	end
 	--判断是不是自己
 	if self:GetName() == guid then
-		outFmtDebug("you self is a friend, %s", guid)
+		--outFmtDebug("you self is a friend, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
 		return false
 	end
 
+	if self:FriendIsFull() then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
+		return false
+	end
+	
 	local idx = socialMgr:getEmptyFriendIndex()
-
 	if idx == -1 then
 		return false
 	end
@@ -186,7 +235,8 @@ end
 function PlayerInfo:AddGiftFriend(guid,gift)
 	local friend = app.objMgr:getObj(guid)
 	if not friend then 
-		outFmtDebug("friend not on line or not extis, %s", guid)
+		--outFmtDebug("friend not on line or not extis, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_NOT_FIND)
 		return
 	end
 	local famNum = 0
@@ -210,7 +260,8 @@ function PlayerInfo:AddGiftFriend(guid,gift)
 
 	--是否有足够的资源
 	if not self:checkMoneyEnoughs(money) then
-		outFmtError("resouce not enough")
+		--outFmtError("resouce not enough")
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_NO_MONEY)
 		return
 	end
 
@@ -242,7 +293,8 @@ function PlayerInfo:AddEnemy(guid,num)
 	--socialMgr:addFamiliay(guid,num)
 	local enemy = app.objMgr:getObj(guid)
 	if not enemy then 
-		outFmtDebug("enemy not on line or not extis, %s", guid)
+		--outFmtDebug("enemy not on line or not extis, %s", guid)
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_NOT_FIND)
 		return
 	end
 	socialMgr:addEnemyPlayerNum(enemy,guid,num)

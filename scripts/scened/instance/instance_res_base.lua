@@ -5,6 +5,8 @@ InstanceResBase.exit_time = 10
 --刷新坐标偏移值
 InstanceResBase.RefreshOffset = 3;
 
+InstanceResBase.MonsterRefreshInterval = 500
+
 function InstanceResBase:ctor(  )
 	
 end
@@ -173,17 +175,45 @@ function InstanceResBase:ApplyRefreshMonsterBatch(player,batchIdx)
 	local bornPos = config.monsterInfo[batchPos]
 	local cnt = config.monsternum
 	
-
+	
+	--REFRESH_MONSTER_FIELD_ID			=	MAP_INT_FIELD_INSTANCE_TYPE + 1,	//2个short(0:当前已经刷的,1:总共需要刷多少怪
 	for i = 1, cnt do
 		local bornX = bornPos[ 1 ] + randInt(0, self.RefreshOffset)
 		local bornY = bornPos[ 2 ] + randInt(0, self.RefreshOffset)
-
-		local creature = mapLib.AddCreature(self.ptr, 
-			{templateid = entry, x = bornX, y = bornY, level=plev, active_grid = true, alias_name = config.name, 
-			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
-		
+		local indx = REFRESH_MONSTER_FIELD_INFO_START + (i - 1) * 2
+		self:SetUInt16(indx, 0, entry)
+		self:SetUInt16(indx, 1, plev)
+		self:SetUInt16(indx+1, 0, bornX)
+		self:SetUInt16(indx+1, 1, bornY)
 	end
+	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 0, 0)
+	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 1, cnt)
+	
+	mapLib.DelTimer(self.ptr, 'OnTimer_MonsterBornOneByOne')
+	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval)
+	
 	return true,cnt
+end
+
+function InstanceResBase:OnTimer_MonsterBornOneByOne()
+	local dids = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 0)
+	local need = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 1)
+	if dids >= need then
+		return false
+	end
+	
+	local indx = dids * 2 + REFRESH_MONSTER_FIELD_INFO_START
+	local entry = self:GetUInt16(indx  , 0)
+	local level = self:GetUInt16(indx  , 1)
+	local bornX = self:GetUInt16(indx+1, 0)
+	local bornY = self:GetUInt16(indx+1, 1)
+	
+	local creature = mapLib.AddCreature(self.ptr, 
+			{templateid = entry, x = bornX, y = bornY, level=level, active_grid = true, 
+			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
+	self:AddUInt16(REFRESH_MONSTER_FIELD_ID, 0, 1)
+	
+	return true
 end
 
 --刷怪

@@ -4,9 +4,10 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 	local types = pkt.type
 	
 	local usenum = self:GetUInt32(PLAYER_FIELD_USE_RANK_LIKE)
-	outFmtDebug("day usenu %d",usenum)
+	--outFmtDebug("day usenu %d",usenum)
 	if usenum >= MAX_RANK_LIKE then
-		outFmtDebug("day max use like")
+		--outFmtDebug("day max use like")
+		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_MAX_LIKE)
 		return
 	end
 	
@@ -51,10 +52,10 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 	data.my_guid = self:GetGuid()
 	data.ranktype = types
 	function data.fun (data, objs)
-		print("callbacked ===================")
+		--print("callbacked ===================")
 		local targetPlayer = objs[data.callback_guid]
 		if not targetPlayer then return end
-		print("target player =", targetPlayer:GetGuid())
+		--print("target player =", targetPlayer:GetGuid())
 		
 		local myplayer = app.objMgr:getObj(data.my_guid)
 		if not myplayer then return end
@@ -99,7 +100,8 @@ end
 --对某个排行榜的某个人点赞
 function PlayerInfo:ApplyRankLike(types,guid)
 	if self:HasRankLike(types,guid) then
-		outFmtDebug("has like it")
+		--outFmtDebug("has like it")
+		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_HAS_LIKE)
 		return false
 	end
 	local usenum = self:GetUInt32(PLAYER_FIELD_USE_RANK_LIKE)

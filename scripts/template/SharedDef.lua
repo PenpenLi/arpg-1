@@ -1425,7 +1425,7 @@ SPELL_DIVINE_COUNT = 219	-- 神兵个数
 SPELL_DIVINE_START = 220	-- 神兵开始
 SPELL_DIVINE_END = 310	-- 神兵结束
 SOCIAL_FRIEND_MAX_NUM = 60	-- 好友数
-SOCIAL_APPLY_MAX_NUM = 5	--  申请数
+SOCIAL_APPLY_MAX_NUM = 10	--  申请数
 SOCIAL_ENEMY_MAX_NUM = 20	-- 仇人数
 SOCIAL_START = 4
 SOCIAL_ICON_VIP_LEV = 0	-- 图标 vip 等级
@@ -1439,10 +1439,10 @@ SOCIAL_FRIEND_END = 126	-- 好友结束
 SOCIAL_ENEMY_START = 126	-- 仇人开始
 SOCIAL_ENEMY_END = 166	-- 仇人结束
 SOCIAL_APPLY_START = 166	-- 申请开始
-SOCIAL_APPLY_END = 176	-- 申请结束
-SOCIAL_APPLY_CLEAR_FLAG = 176	-- 申请清除标记
-SOCIAL_ENEMY_TIME_START = 177	-- 仇人时间戳开始
-SOCIAL_ENEMY_TIME_END = 197	-- 仇人时间戳结束
+SOCIAL_APPLY_END = 186	-- 申请结束
+SOCIAL_APPLY_CLEAR_FLAG = 186	-- 申请清除标记
+SOCIAL_ENEMY_TIME_START = 187	-- 仇人时间戳开始
+SOCIAL_ENEMY_TIME_END = 207	-- 仇人时间戳结束
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 帮派下标
 -- 帮派事件
@@ -1718,6 +1718,9 @@ MAP_INT_FIELD_INSTANCE_TYPE = 40	-- 副本类型
 -- 地图字符串部分
 MAP_STR_GENERAL_ID = 4
 MAP_STR_REWARD = 5	-- 副本奖励物品字符串
+-- 小怪陆续刷
+REFRESH_MONSTER_FIELD_ID = 44	-- 2个short(0:当前已经刷的,1:总共需要刷多少怪)
+REFRESH_MONSTER_FIELD_INFO_START = 45	-- 怪物信息开始2个short(0:entry,1:level)
 -- VIP BOSS
 VIP_INSTANCE_FIELD_ID = 41	--  0:VIP副本序号,1:副本难度
 WORLDBOSS_FIELDS_WAIT_TIME = 41	-- 报名等待时间戳

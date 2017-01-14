@@ -30,6 +30,7 @@ function InstanceResZhenQi:ApplyRefreshMonsterBatch(player,batchIdx)
 	local monsterlist = config.monster
 	local monsterposlist = config.monsterInfo
 
+	local ds = 0
 	for i = 1, cnt do
 
 		for j = 1,#monsterlist do
@@ -39,15 +40,22 @@ function InstanceResZhenQi:ApplyRefreshMonsterBatch(player,batchIdx)
 			local bornY = bornPos[ 2 ] + randInt(0, self.RefreshOffset)
 			local entry = monsterlist[j]
 
-			local creature = mapLib.AddCreature(self.ptr, 
-				{templateid = entry, x = bornX, y = bornY, level=plev, active_grid = true, alias_name = config.name, 
-				ainame = "AI_res", npcflag = {}})
-			
+			local indx = REFRESH_MONSTER_FIELD_INFO_START + ds * 2
+			self:SetUInt16(indx, 0, entry)
+			self:SetUInt16(indx, 1, plev)
+			self:SetUInt16(indx+1, 0, bornX)
+			self:SetUInt16(indx+1, 1, bornY)
+			ds = ds + 1
 		end
 		
 	end
-	
 	cnt = cnt * #monsterlist
+	
+	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 0, 0)
+	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 1, cnt)
+	
+	mapLib.DelTimer(self.ptr, 'OnTimer_MonsterBornOneByOne')
+	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval)
 	
 	return true,cnt
 end

@@ -45,6 +45,7 @@ require("template.tables.tb_map_trial")
 --社交
 require("template.tables.tb_social_shop")
 require("template.tables.tb_social_familiay")
+require("template.tables.tb_social_num")
 --帮派
 require("template.tables.tb_faction_creat")
 require("template.tables.tb_faction_base")

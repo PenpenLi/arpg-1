@@ -252,6 +252,7 @@ function AppInstanceMgr:sweepResInstance(id)
 		local list = {}
 		
 		for _,v in ipairs(tab) do
+			
 			playerInfo:PlayerAddItem(v[1],v[2])
 			--½±ÀøÍ¨Öª
 			local stru = item_reward_info_t .new()

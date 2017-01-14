@@ -95,9 +95,9 @@ function AppSocialMgr:resetItemInfo(index,needclear)
 
 		if friend then
 			--判断自己还是否是对方好友
-			outFmtDebug("test friend %s",guid)
+			--outFmtDebug("test friend %s",guid)
 			if needclear and (not friend:isFriend(selfGuid)) then
-				outFmtDebug("time clear friend")
+				--outFmtDebug("time clear friend")
 				owner:RemoveFriend(guid,false)
 				return
 			end
@@ -105,7 +105,7 @@ function AppSocialMgr:resetItemInfo(index,needclear)
 			local level = friend:GetLevel()
 			local vip = friend:GetVIP()
 			local name = friend:GetName()
-			local faction = friend:GetFactionId()
+			local faction = friend:GetFactionName()
 			
 			local baseLev = self:GetUInt16(index,1)
 			if baseLev ~= level then
@@ -227,7 +227,16 @@ function AppSocialMgr:setEnemyIndex(guid,index)
 	local owner = self:getOwner()
 	playerLib.SetSocialEnemy(owner.ptr, guid,index)
 end
-
+--当前朋友的数量
+function  AppSocialMgr:getFriendNum()
+	local num = 0;
+	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END-1,MAX_FRIENT_COUNT do
+		if self:getGuid(i) ~= '' then
+			num = num + 1
+		end
+	end
+	return num
+end
 --获取一个空的朋友位
 function AppSocialMgr:getEmptyFriendIndex()
 	for i=SOCIAL_FRIEND_START,SOCIAL_FRIEND_END-1,MAX_FRIENT_COUNT do
@@ -316,9 +325,9 @@ function AppSocialMgr:addEnemyPlayerNum(player,guid,num)
 		self:SetUInt16(idx + 1,0,hatred)
 		self:setEnemyTime(idx)
 	else
-		outFmtDebug("begin chouren kong wei")
+		--outFmtDebug("begin chouren kong wei")
 		local emIdx = self:getEmptyEnemyIndex(guid)
-		outFmtDebug("chou ren kong wei %d",emIdx)
+		--outFmtDebug("chou ren kong wei %d",emIdx)
 		--如果有空位则添加
 		if emIdx ~= -1 then
 			self:addSocialItem(player,emIdx,num)
@@ -397,7 +406,7 @@ function AppSocialMgr:addFamiliay(guid,num)
 	--outFmtDebug("current fam %d,%d,%d",fam,num,famlev)
 	for i=famlev,#tb_social_familiay do
 		local config = tb_social_familiay[i]
-		if fam > config.exp then
+		if fam >= config.exp then
 			fam = fam - config.exp
 			famlev = famlev + 1
 		else

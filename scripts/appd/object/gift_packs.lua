@@ -211,7 +211,7 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	local itemMgr = playerInfo:getItemMgr()
 	local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
 	if emptys < size then
-		self:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
+		playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
 		return
 	end
 	

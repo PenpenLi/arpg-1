@@ -128,11 +128,11 @@ end
 -- 世界BOSS结束
 function OnWorldBossEnd()
 	globalValue:SetWorldBossState(WORLD_BOSS_PROCESS_TYPE_FINISH)
-	-- 每个房间先置空
-	globalValue:UnSetWorldBossEndInLine()
 	--------------------------- 结束以后的处理--------------------------
 	-- BOSS是否升级
 	DoIfBOSSLevelUp()
+	-- 每个房间先置空
+	globalValue:UnSetWorldBossEndInLine()
 	-- 看看是否需要生成下一阶段的BOSS
 	globalValue:RandomWorldBossIfNextStep()
 	-- 清理世界BOSS数据

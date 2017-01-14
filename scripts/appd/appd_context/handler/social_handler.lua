@@ -22,9 +22,9 @@ function PlayerInfo:Handle_Add_Friend_ByName(pkt)
 	end)
 	
 	if flag then
-		outFmtDebug("has send info")
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_HAS_SEND)
 	else
-		outFmtDebug("can not find player")	
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_NOT_FIND)
 	end
 end
 --同意申请加好友
@@ -44,7 +44,6 @@ function PlayerInfo:Handle_Gift_Friend(pkt)
 	self:AddGiftFriend(guid,gift)
 end 
 function PlayerInfo:Handle_Recommend_Friend(pkt)
-	--outFmtDebug("huoqu tui jian lie biao")
 	self:RecommendFriend()
 end
 function PlayerInfo:Handle_Revenge_Enemy(pkt)
