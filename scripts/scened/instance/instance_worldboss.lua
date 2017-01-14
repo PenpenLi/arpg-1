@@ -302,7 +302,7 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 	outFmtInfo("============================ world BOSS was dead")
 	AI_Base.JustDied(self,map_ptr,owner,killer_ptr)
 	
-	local instanceInfo = InstanceFieldBase:new{ptr = map_ptr}
+	local instanceInfo = InstanceWorldBoss:new{ptr = map_ptr}
 	local mapid  = instanceInfo:GetMapId()
 	local lineNo = instanceInfo:GetMapLineNo()
 	

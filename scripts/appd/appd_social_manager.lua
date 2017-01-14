@@ -278,6 +278,7 @@ function AppSocialMgr:clearApplyList()
 			self:SetStr(i+1,"")
 		end
 	end
+	self:SetUInt32(SOCIAL_APPLY_CLEAR_FLAG,0)
 end
 --清除一条数据
 function AppSocialMgr:clearSocialItem(index)

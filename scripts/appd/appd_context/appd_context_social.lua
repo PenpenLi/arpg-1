@@ -113,14 +113,41 @@ function PlayerInfo:SureApplyFriend(guid)
 			self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_NOT_FIND)
 			return false
 		end
-
-		if not friend:CanAddFriend(self) then
+		
+		local addTest = friend:CanAddFriend(self)
+		if addTest ~= 0 then
+			if addTest == 1 then
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
+			elseif addTest == 2 then
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
+			elseif addTest == 3 then
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
+			end
+			socialMgr:setSocilaItem(idx,0,0,"","")
+			return false
+		end
+		--if not friend:CanAddFriend(self) then
+		--	socialMgr:setSocilaItem(idx,0,0,"","")
+		--	return false
+		--end
+		
+		addTest = self:CanAddFriend(friend)
+		if addTest ~= 0 then
+			if addTest == 1 then
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_TARGET_FULL)
+			elseif addTest == 2 then
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
+			elseif addTest == 3 then
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
+			end
+			socialMgr:setSocilaItem(idx,0,0,"","")
 			return false
 		end
 		
-		if not self:CanAddFriend(friend) then
-			return false
-		end
+		--if not self:CanAddFriend(friend) then
+		--	socialMgr:setSocilaItem(idx,0,0,"","")
+		--	return false
+		--end
 
 
 		if friend:AddFriend(self) == false then
@@ -202,7 +229,7 @@ function PlayerInfo:AddFriend(friend)
 	return tf
 
 end
-
+-- 0 可添加 1 列表已满 2 添加自己 3 已经是好友
 function PlayerInfo:CanAddFriend(friend)
 	local socialMgr = self:getSocialMgr()
 	local guid = friend:GetGuid()
@@ -210,27 +237,27 @@ function PlayerInfo:CanAddFriend(friend)
 	--判断是不是好友
 	if socialMgr:isFriend(guid) then
 		--outFmtDebug("player is already friend, %s", guid)
-		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
-		return false
+		--self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
+		return 3
 	end
 	--判断是不是自己
 	if self:GetName() == guid then
 		--outFmtDebug("you self is a friend, %s", guid)
-		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
-		return false
+		--self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
+		return 2
 	end
 
 	if self:FriendIsFull() then
-		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
-		return false
+		--self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
+		return 1
 	end
 	
 	local idx = socialMgr:getEmptyFriendIndex()
 	if idx == -1 then
-		return false
+		return 1
 	end
 
-	return true
+	return 0
 end
 --赠送礼物
 function PlayerInfo:AddGiftFriend(guid,gift)
