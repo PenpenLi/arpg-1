@@ -56,26 +56,19 @@ function InstanceResGem:ApplyRefreshMonsterBatch(player,batchIdx)
 	local monsterposlist = config.monsterInfo
 	
 	local ds = 0
-	local bornPos
-	local bornPos2
 	local bornX
 	local bornY
 	local indx
 	
 	for i = 1, cnt do
-		bornPos = monsterposlist[1]
-		bornPos2 = monsterposlist[2]
-		bornX = randInt(bornPos[ 1 ],bornPos2[1])
-		bornY = randInt(bornPos[ 2 ],bornPos2[2])
+		bornX = monsterposlist[ 1 ][ 1 ]
+		bornY = monsterposlist[ 1 ][ 2 ]
 		indx = REFRESH_MONSTER_FIELD_INFO_START + ds * 2
 		self:AddMonsterInfo(indx, entry, prev, bornX, bornY)
 		ds = ds + 1
 		
-		bornPos = monsterposlist[3]
-		bornPos2 = monsterposlist[4]
-		
-		bornX = randInt(bornPos[ 1 ],bornPos2[1])
-		bornY = randInt(bornPos[ 2 ],bornPos2[2])
+		bornX = monsterposlist[ 2 ][ 1 ]
+		bornY = monsterposlist[ 2 ][ 2 ]
 		
 		indx = REFRESH_MONSTER_FIELD_INFO_START + ds * 2
 		self:AddMonsterInfo(indx, entry, prev, bornX, bornY)
