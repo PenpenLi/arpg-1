@@ -38,7 +38,7 @@ function InstanceResGold:ApplyRefreshMonsterBatch(player,batchIdx)
 			{templateid = entry, x = bornX, y = bornY, level=plev, active_grid = true, alias_name = config.name, 
 			ainame = "AI_res", npcflag = {}})
 		
-		
+		creatureLib.ModifyThreat(creature, player.ptr, self.THREAT_V)
 	end
 	
 	return true,cnt

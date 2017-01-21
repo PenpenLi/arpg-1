@@ -87,7 +87,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 			local val = tonumber(tokens[2])
 			player:SetPKValue(val)
 		end
-	elseif(tokens[1] == "@充值数")then		
+	elseif(tokens[1] == "@充值")then		
 		if(#tokens == 2)then
 			local val = tonumber(tokens[2])
 			player:SetUInt32(PLAYER_APPD_INT_FIELD_RECHARGE_SUM, val)

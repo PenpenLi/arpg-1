@@ -89,6 +89,11 @@ function InstanceTrial:OnRefreshMonster(player)
 	local time = os.time()
 	local startTime = self:GetMapCreateTime()
 	if time - startTime > 2 then
+		-- 重新给怪物加仇恨度
+		local creatureTable = mapLib.GetAllCreature(self.ptr)
+		for _, creature in pairs(creatureTable) do
+			creatureLib.ModifyThreat(creature, player, self.THREAT_V)
+		end
 		return
 	end
 	
@@ -124,11 +129,12 @@ function InstanceTrial:OnRefreshMonster(player)
 			bornX = lx + offx
 			bornY = ly + offy
 			
-			mapLib.AddCreature(self.ptr, {
+			local creature = mapLib.AddCreature(self.ptr, {
 				templateid = entry, x = bornX, y = bornY, 
 				active_grid = true, alias_name = "", ainame = tb_creature_template[entry].ainame, npcflag = {}
-			}
-		)
+			})
+			
+			creatureLib.ModifyThreat(creature, player, self.THREAT_V)
 		end
 	end
 	
@@ -136,15 +142,13 @@ function InstanceTrial:OnRefreshMonster(player)
 		entry = config.bossInfo[ 3 ]
 		bornX = config.bossInfo[ 1 ]
 		bornY = config.bossInfo[ 2 ]
-		mapLib.AddCreature(self.ptr, {
+		local creature = mapLib.AddCreature(self.ptr, {
 				templateid = entry, x = bornX, y = bornY, 
 				active_grid = true, alias_name = "TrialBoss", ainame = tb_creature_template[entry].ainame, npcflag = {}
 			}
 		)
+		creatureLib.ModifyThreat(creature, player, self.THREAT_V)
 	end
-
-
-	
 end
 
 --当玩家加入后触发

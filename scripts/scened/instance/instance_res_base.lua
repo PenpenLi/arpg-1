@@ -190,12 +190,12 @@ function InstanceResBase:ApplyRefreshMonsterBatch(player,batchIdx)
 	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 1, cnt)
 	
 	mapLib.DelTimer(self.ptr, 'OnTimer_MonsterBornOneByOne')
-	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval)
+	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval, player.ptr)
 	
 	return true,cnt
 end
 
-function InstanceResBase:OnTimer_MonsterBornOneByOne()
+function InstanceResBase:OnTimer_MonsterBornOneByOne(player_ptr)
 	local dids = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 0)
 	local need = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 1)
 	if dids >= need then
@@ -211,6 +211,7 @@ function InstanceResBase:OnTimer_MonsterBornOneByOne()
 	local creature = mapLib.AddCreature(self.ptr, 
 			{templateid = entry, x = bornX, y = bornY, level=level, active_grid = true, 
 			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
+	creatureLib.ModifyThreat(creature, player_ptr, self.THREAT_V)
 	self:AddUInt16(REFRESH_MONSTER_FIELD_ID, 0, 1)
 	
 	return true
@@ -224,6 +225,11 @@ function InstanceResBase:OnRefreshMonster(player)
 	local time = os.time()
 	local startTime = self:GetMapCreateTime()
 	if time - startTime > 2 then
+		-- 重新给怪物加仇恨度
+		local creatureTable = mapLib.GetAllCreature(self.ptr)
+		for _, creature in pairs(creatureTable) do
+			creatureLib.ModifyThreat(creature, player.ptr, self.THREAT_V)
+		end
 		return
 	end
 	
@@ -309,7 +315,7 @@ function InstanceResBase:RefreshBoss(player)
 	
 	local creature = mapLib.AddCreature(self.ptr, {templateid = entry, x = bornPos[1], y = bornPos[2], level=plev, 
 		active_grid = true, alias_name = config.name, ainame = "AI_resBoss", npcflag = {}})
-	
+	creatureLib.ModifyThreat(creature, player.ptr, self.THREAT_V)
 end
 
 function InstanceResBase:SetCreaturePro(creature, pros, bRecal, mul)

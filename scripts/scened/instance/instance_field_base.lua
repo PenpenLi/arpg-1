@@ -298,7 +298,7 @@ function InstanceFieldBase:OnTimer_PickingTreasure(player)
 end
 
 -- 箱子开启打断
-function InstanceFieldBase:OnDisruptPicking(playerInfo)
+function InstanceFieldBase:OnDisruptPicking()
 	mapLib.DelTimer(self.ptr, 'OnTimer_PickingTreasure')
 	mapLib.OnOpenTreasure(self.ptr, "")
 	
@@ -310,22 +310,34 @@ function InstanceFieldBase:OnDisruptPicking(playerInfo)
 end
 
 -- 被打断
-function InstanceFieldBase:OnDisrupt(killer, targetInfo)
-	local openguid = mapLib.GetOnOpenGuid(self.ptr)
-	if openguid == targetInfo:GetPlayerGuid() then
-		self:OnDisruptPicking(targetInfo)
-	end
+function InstanceFieldBase:OnDisrupt(killer)
+	self:OnDisruptPicking()
 end
 
 -- 当玩家移动后
 function InstanceFieldBase:OnPlayerAfterMove(player)
-	local openguid = mapLib.GetOnOpenGuid(self.ptr)
-	local playerInfo = UnitInfo:new {ptr = player}
-	if openguid == playerInfo:GetPlayerGuid() then
-		self:OnDisruptPicking(playerInfo)
-	end
+	self:OnPlayerCancelPicking(player)
 end
 
+--跳跃前需要处理的逻辑
+function InstanceFieldBase:OnStartJump(playerInfo)
+	self:OnPlayerCancelPicking(playerInfo.ptr)
+end
+
+--释放技能需要处理的逻辑
+function InstanceFieldBase:OnSpell(player)
+	self:OnPlayerCancelPicking(player)
+end
+
+-- 自动取消采集
+function InstanceFieldBase:OnPlayerCancelPicking(player)
+	local openguid = mapLib.GetOnOpenGuid(self.ptr)
+	local myguid = playerLib.GetPlayerGuid(player)
+	if myguid and openguid ~= myguid then
+		return
+	end
+	self:OnDisruptPicking()
+end
 
 --当玩家离开时触发
 function InstanceFieldBase:OnLeavePlayer( player, is_offline)

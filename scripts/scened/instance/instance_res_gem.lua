@@ -4,7 +4,6 @@ InstanceResGem.Name = "InstanceResGem"
 InstanceResGem.exit_time = 10
 
 InstanceResGem.GEM_NAME = "GEM11:11"
-InstanceResGem.THREAT_V = 9999999
 
 function InstanceResGem:ctor(  )
 	
@@ -25,6 +24,22 @@ function InstanceResGem:InitRes(config)
 	
 	mapLib.AddTimer(self.ptr, 'OnTimerRefreshGemHp', 1000)
 end
+
+--刷怪
+function InstanceResGem:OnRefreshMonster(player)
+	
+	-- 由于是进副本就刷的, 判断如果进入时间比开始时间开始时间超过2秒以上则不刷了
+	-- 主要为了解决离线重连的问题
+	local time = os.time()
+	local startTime = self:GetMapCreateTime()
+	if time - startTime > 2 then
+		return
+	end
+	
+	self:RefreshMonsterBatch(player)
+
+end
+
 
 -- 更新晶石血量
 function InstanceResGem:OnTimerRefreshGemHp()
@@ -116,13 +131,15 @@ function InstanceResGem:CreateMonster(indx)
 	local bornX = self:GetUInt16(indx+1, 0)
 	local bornY = self:GetUInt16(indx+1, 1)
 	
+	local GEM_NPC = mapLib.AliasCreature(self.ptr, InstanceResGem.GEM_NAME)
+	local tar_x, tar_y = unitLib.GetPos(GEM_NPC)
+	local angle = postion.angle(bornX, bornY, tar_x, tar_y)
 	local creature = mapLib.AddCreature(self.ptr, 
 			{templateid = entry, x = bornX, y = bornY, level=level, active_grid = true, 
-			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
+			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE, toward = angle})
 	
 	-- 设置仇恨度
-	local GEM_NPC = mapLib.AliasCreature(self.ptr, InstanceResGem.GEM_NAME)
-	creatureLib.ModifyThreat(creature, GEM_NPC, InstanceResGem.THREAT_V)
+	creatureLib.ModifyThreat(creature, GEM_NPC, self.THREAT_V)
 end
 
 --刷新boss
@@ -145,7 +162,7 @@ function InstanceResGem:OnTimerRefreshBoss(id, level)
 	
 	-- 设置仇恨度
 	local GEM_NPC = mapLib.AliasCreature(self.ptr, InstanceResGem.GEM_NAME)
-	creatureLib.ModifyThreat(creature, GEM_NPC, InstanceResGem.THREAT_V)
+	creatureLib.ModifyThreat(creature, GEM_NPC, self.THREAT_V)
 	
 	return false
 end

@@ -34,11 +34,17 @@ function DOPlayerPvP(player,target)
 		假如当前为和平模式，则切换为自卫模式
 	]]
 	
-	local targetInfo = UnitInfo:new{ptr = target}
+	
 	local mapid = unitLib.GetMapID(target)
 	local map_ptr = unitLib.GetMap(target)
+	local openguid = mapLib.GetOnOpenGuid(map_ptr)
+	local myguid = playerLib.GetPlayerGuid(target)
+	if openguid ~= myguid then
+		return
+	end
+	
 	local mapInfo = Select_Instance_Script(mapid):new {ptr = map_ptr}
-	mapInfo:OnDisrupt(player, targetInfo)
+	mapInfo:OnDisrupt(player)
 	
 	--取消打坐	
 	--[[if playerInfo:GetDaZuoTime() > 0 then
@@ -49,11 +55,16 @@ end
 -- 怪物攻击玩家时的一些处理
 function DOPlayerPvE(creature, target)
 	
-	local targetInfo = UnitInfo:new{ptr = target}
 	local mapid = unitLib.GetMapID(target)
 	local map_ptr = unitLib.GetMap(target)
+	local openguid = mapLib.GetOnOpenGuid(map_ptr)
+	local myguid = playerLib.GetPlayerGuid(target)
+	if openguid ~= myguid then
+		return
+	end
+	
 	local mapInfo = Select_Instance_Script(mapid):new {ptr = map_ptr}
-	mapInfo:OnDisrupt(player, targetInfo)
+	mapInfo:OnDisrupt(player)
 	
 	--取消打坐
 	--[[

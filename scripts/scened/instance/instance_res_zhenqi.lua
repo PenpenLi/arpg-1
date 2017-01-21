@@ -55,12 +55,12 @@ function InstanceResZhenQi:ApplyRefreshMonsterBatch(player,batchIdx)
 	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 1, cnt)
 	
 	mapLib.DelTimer(self.ptr, 'OnTimer_MonsterBornOneByOne')
-	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval)
+	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval, player.ptr)
 	
 	return true,cnt
 end
 
-function InstanceResZhenQi:OnTimer_MonsterBornOneByOne()
+function InstanceResZhenQi:OnTimer_MonsterBornOneByOne(player_ptr)
 	local dids = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 0)
 	local need = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 1)
 	if dids >= need then
@@ -68,17 +68,17 @@ function InstanceResZhenQi:OnTimer_MonsterBornOneByOne()
 	end
 	
 	local indx = dids * 2 + REFRESH_MONSTER_FIELD_INFO_START
-	self:CreateMonster(indx)
+	self:CreateMonster(player_ptr, indx)
 
 	indx = indx + 2
-	self:CreateMonster(indx)
+	self:CreateMonster(player_ptr, indx)
 	
 	self:AddUInt16(REFRESH_MONSTER_FIELD_ID, 0, 2)
 	
 	return true
 end
 
-function InstanceResZhenQi:CreateMonster(indx)
+function InstanceResZhenQi:CreateMonster(player_ptr, indx)
 	local entry = self:GetUInt16(indx  , 0)
 	local level = self:GetUInt16(indx  , 1)
 	local bornX = self:GetUInt16(indx+1, 0)
@@ -87,6 +87,8 @@ function InstanceResZhenQi:CreateMonster(indx)
 	local creature = mapLib.AddCreature(self.ptr, 
 			{templateid = entry, x = bornX, y = bornY, level=level, active_grid = true, 
 			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
+	
+	creatureLib.ModifyThreat(creature, player_ptr, self.THREAT_V)
 end
 
 return InstanceResZhenQi

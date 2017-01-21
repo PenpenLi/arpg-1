@@ -129,7 +129,7 @@ function AppInstanceMgr:checkIfCanEnterResInstance(id)
 	
 	self:AddByte(indx, 0, 1)
 
-	
+	player:AddActiveItem(1)
 	
 	local gerneralId = string.format("%d:%d:%s", id, getMsTime(), player:GetGuid())
 	
@@ -264,6 +264,7 @@ function AppInstanceMgr:sweepResInstance(id)
 		--添加次数
 		self:AddByte(baseIdx, 0, 1)
 		
+		player:AddActiveItem(1)
 		
 		protocols.call_sweep_instance_reward ( player, INSTANCE_SUB_TYPE_RES, id, 0, 0, list)
 		
@@ -335,6 +336,35 @@ function AppInstanceMgr:instanceDailyReset()
 	end
 end
 
+-------------------------------活动------------------------------
+--设置活动次数
+function AppInstanceMgr:setActiveNum(id,num)
+	self:SetUInt32(INSTANCE_INT_FIELD_ACTIVE_START + id - 1,num)
+end
+
+function AppInstanceMgr:getActiveNum(id)
+	return self:GetUInt32(INSTANCE_INT_FIELD_ACTIVE_START + id - 1)
+end
+
+--增加活跃度
+function AppInstanceMgr:addActivity(num)
+	self:AddUInt32(INSTANCE_INT_FIELD_ACTIVE,num)
+end
+
+--获取总活跃度
+function AppInstanceMgr:getActivity()
+	return self:GetUInt32(INSTANCE_INT_FIELD_ACTIVE)
+end
+
+function AppInstanceMgr:hasGetActivityReward(offset)
+	return self:GetBit(INSTANCE_INT_FIELD_ACTIVE_REWARD,offset)
+end
+
+function AppInstanceMgr:SetActivityReward(offset)
+	self:SetBit(INSTANCE_INT_FIELD_ACTIVE_REWARD,offset)
+end
+
+-------------------------------活动end------------------------------
 -- 获得玩家guid
 function AppInstanceMgr:getPlayerGuid()
 	--物品管理器guid转玩家guid

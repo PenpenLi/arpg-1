@@ -29,6 +29,7 @@ OPERTE_TYPE_WORLD_BOSS = 24	-- 世界BOSS
 OPRATE_TYPE_MOUNT_QICHENG = 25	-- 坐骑骑乘
 OPRATE_TYPE_TELEPORT = 26	-- 传送
 OPRATE_TYPE_UPGRADE = 27	-- 游戏中的升级操作
+OPRATE_TYPE_ACTIVITY = 28	-- 活动
 -- 登录相关操作返回
 OPRATE_RESULT_SUCCESS = 1	-- 成功
 OPRATE_RESULT_NAME_REPEAT = 2	-- 名称重复
@@ -195,6 +196,7 @@ NPC_BUY_ITEM_OUT_TIME = 3	-- 商品已过期
 NPC_BUY_BAG_OUT_SIZE = 4	-- 包裹放不下了
 NPC_BUY_MONEY_NO_ENOUGH = 5	-- 钱不够了
 NPC_BUY_MONEY_TRANSFINITE = 6	-- 购买金额过大
+NPC_BUY_SELL_OUT = 7	-- 超出商品限购次数
 -- 副本
 FUBEN_OPRATE_NO_GROUP_STATE = 0	-- 玩家不在组队状态
 FUBEN_OPRATE_NOT_TWO_PEOPLE = 1	-- 队伍不是2个人
@@ -220,6 +222,9 @@ RANK_LIST_OPERATE_TYPE_ERROR = 1	-- 查询类型错误
 RANK_LIST_OPERATE_OUT_OF_RANGE = 2	-- 查询范围超出界限
 RANK_LIST_OPERATE_MAX_LIKE = 4	-- 点赞已超过最大次数
 RANK_LIST_OPERATE_HAS_LIKE = 5	-- 已点过赞了
+ACTIVITY_OPERATE_NOTVIP = 0	-- 你不是vip无法领取vip奖励
+ACTIVITY_OPERATE_NOENOUGH = 1	-- 活跃度不够无法领取
+ACTIVITY_OPERATE_HASGET = 2	-- 已经领取过该奖励
 -- 游戏关闭信息
 PLAYER_CLOSE_OPERTE_APPD_ONE1 = 1000	-- 插入单个物品时，包裹id 超过最大值
 PLAYER_CLOSE_OPERTE_APPD_ONE2 = 1001	-- 创建玩家其他的对象的时候，发现之前已经创建过了
@@ -355,6 +360,7 @@ FIELD_BOSS_OPERTE_BOSS_BORN = 4	-- {1}已出现在{2}，请各位大侠火速前
 FIELD_BOSS_OPERTE_BOSS_KILL = 5	-- {1}已被成功击杀！恭喜{2}获得{3}1分钟的优先开启权利
 FIELD_BOSS_OPERTE_PROTECT = 6	-- 九龙宝箱保护时间结束，静待各位大侠开启
 FIELD_BOSS_OPERTE_PICKED = 7	-- 恭喜{1}最终开启九龙宝箱，获得XXXX
+FIELD_BOSS_OPERTE_TOO_FAR = 8	-- 太远了，你不可能开启这个宝箱
 --  世界BOSS
 --  OPERTE_TYPE_WORLD_BOSS
 WORLD_BOSS_OPERTE_NOT_ENROLL = 0	-- 本次活动您未报名，无法参加

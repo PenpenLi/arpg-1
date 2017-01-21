@@ -193,6 +193,20 @@ function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, uni
 	--落雁斩1
 	if spell_id >= 5 and spell_id <= 65536 then
 		SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+		-- 如果是玩家 且 是野外地图的话就看看会不会打断采集动作
+		if GetUnitTypeID(caster) == TYPEID_PLAYER then
+			local mapid = unitLib.GetMapID(caster)
+			if tb_map[mapid].type == MAP_TYPE_FIELD then
+				
+				local map_ptr = unitLib.GetMap(caster)
+				local openguid = mapLib.GetOnOpenGuid(map_ptr)
+				local myguid = playerLib.GetPlayerGuid(caster)
+				if openguid == myguid then
+					local instanceInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
+					instanceInfo:OnSpell(caster)
+				end
+			end
+		end
 	end
 	return true
 end

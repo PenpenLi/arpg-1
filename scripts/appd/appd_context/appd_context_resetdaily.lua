@@ -92,4 +92,5 @@ function PlayerInfo:onRealReset()
 	self:instanceDailyReset()
 	self:RankLikeRest()
 	self:factionReset()
+	self:resetDailyShop()
 end

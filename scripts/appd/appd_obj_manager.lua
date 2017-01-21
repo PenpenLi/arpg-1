@@ -8,6 +8,7 @@ local FactionInfo = require('appd.faction_info')
 local AppSpellMgr = require('appd.appd_spell_manager')
 local AppInstanceMgr = require('appd.appd_instance_manager')
 local AppSocialMgr = require('appd.appd_social_manager')
+local AppQuestMgr = require('appd.appd_quest_manager')
 
 function AppObjectManager:ctor( )
 	self.binlogTypes = {}
@@ -22,6 +23,7 @@ function AppObjectManager:ctor( )
 	self.binlogTypes[guidMgr.ObjectTypeFaction]  = FactionInfo	--帮派
 	self.binlogTypes[guidMgr.ObjectTypeSpell]    = AppSpellMgr	--技能
 	self.binlogTypes[guidMgr.ObjectTypeInstance] = AppInstanceMgr	--副本
+	self.binlogTypes[guidMgr.ObjectTypeQuest]    = AppQuestMgr	--任务
 	
 	--由于基类会构建实例，所有需要在调用基类构造函数前给类型表赋值
 	super(self)	

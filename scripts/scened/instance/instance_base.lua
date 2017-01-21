@@ -29,6 +29,9 @@ Instance_base = {
 		return object
 	end,
 	
+	-- 仇恨度
+	THREAT_V = 9999999,
+	
 	--名称
 	Name = "Instance_base",
 	--副本启动
@@ -724,7 +727,7 @@ Instance_base = {
 
 	-- 打断
 	OnDisrupt =
-		function(self, killer, targetInfo)
+		function(self, killer)
 			
 		end,
 

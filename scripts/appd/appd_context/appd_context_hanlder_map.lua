@@ -94,4 +94,7 @@ hanlders[CMSG_WORLD_BOSS_ENROLL] = PlayerInfo.Handle_World_Boss_Enroll
 ---------------------------
 hanlders[CMSG_RANK_ADD_LIKE] = PlayerInfo.Handle_Rank_Like
 
+---------------------------
+hanlders[CMSG_GET_ACTIVITY_REWARD] = PlayerInfo.Handle_Avtive_Reward
+
 return hanlders

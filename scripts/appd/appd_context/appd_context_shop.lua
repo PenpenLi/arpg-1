@@ -21,8 +21,14 @@ end
 function PlayerInfo:shopBuyItem(id, count)
 
 	local itemMgr = self:getItemMgr()
-	local entry = GetItemIdByShopId(id)
-	local added = count * tb_shop[id].count
+	
+	local config = tb_shop[id]
+	if not config then
+		return
+	end
+	
+	local entry = config.itemId
+	local added = count * config.count
 	
 	-- 判断背包是否足够
 	if not itemMgr:canHold(BAG_TYPE_MAIN_BAG, entry, added, 1, 0) then
@@ -30,15 +36,130 @@ function PlayerInfo:shopBuyItem(id, count)
 		return
 	end
 	
-	local costTable = tb_shop[id].costResource
-	if not self:costMoneys(MONEY_CHANGE_TYPE_MALL_BUY, costTable, count) then
+	--限购
+	local limtype = config.limtype
+	
+	if limtype ~= 0 then--限购
+		local hasShopNum = self:getShopLimtNum(config.id)
+		outFmtDebug("hasShopNum %d",hasShopNum)
+		hasShopNum = hasShopNum + added
+		if hasShopNum > config.limdata then
+			self:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_SELL_OUT)
+			return
+		end
+	end
+	
+	--上下线时间
+	local limtime = config.time
+	if #limtime ~= 0 then
+		local cyear = os.date("*t").year
+		
+		local begintab = {year=cyear, month=limtime[1], day=limtime[2], hour=0,min=0,sec=0,isdst=false}
+		local begintime = os.time(begintab);
+		
+		local endtab = {year=cyear, month=limtime[3], day=limtime[4], hour=0,min=0,sec=0,isdst=false}
+		local endtime = os.time(endtab);
+		
+		local ctime = os.time()
+		if ctime < begintime then
+			self:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_ITEM_NO_OPEN)
+			return
+		end
+		
+		if ctime >= endtime then
+			self:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_ITEM_OUT_TIME)
+			return
+		end
+		
+	end
+	
+	
+	--折扣
+	local discount = config.discount / 10.0	
+	local costTable = {}
+	if discount ~= 1 then
+		for k,v in ipairs(config.costResource) do
+			--table.insert(costTable,)
+			local itemtab = {}
+			table.insert(itemtab,v[1]) 
+			table.insert(itemtab,math.ceil(v[2]*discount)) 
+			
+			table.insert(costTable,itemtab)
+		end
+	else
+		costTable = config.costResource
+	end
+	
+	if not self:costMoneys(MONEY_CHANGE_TYPE_MALL_BUY, costTable, added) then
+		self:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_MONEY_NO_ENOUGH)
 		return
 	end
 	
-	-- 加道具
-	itemMgr:addItem(entry,added,1,true,true,0,0)
+	self:PlayerAddItem(entry,added,LOG_ITEM_OPER_TYPE_SHOP_BUY)
+	
+	if limtype ~= 0 then--限购
+		self:addShopLimtNum(config.id,added)
+	end
+	
 end
-
+--获取对应id的已购买次数
+function PlayerInfo:getShopLimtNum(id)
+	for i=PLAYER_FIELD_SHOP_LIMIT_START,PLAYER_FIELD_SHOP_LIMIT_END-1 do
+		local tid = self:GetUInt16(i,0)
+		if tid == id then
+			return self:GetUInt16(i,1)
+		end
+	end
+	return 0
+end
+--添加限购次数
+function PlayerInfo:addShopLimtNum(id,num)
+	for i=PLAYER_FIELD_SHOP_LIMIT_START,PLAYER_FIELD_SHOP_LIMIT_END-1 do
+		local tid = self:GetUInt16(i,0)
+		if tid == id then
+			local tnum = self:GetUInt16(i,1)
+			tnum = tnum + num
+			self:SetUInt16(i,1,tnum)
+			return
+		end
+	end
+	
+	for i=PLAYER_FIELD_SHOP_LIMIT_START,PLAYER_FIELD_SHOP_LIMIT_END-1 do
+		local tid = self:GetUInt16(i,0)
+		if tid == 0 then
+			self:SetUInt16(i,0,id)
+			self:SetUInt16(i,1,num)
+			return
+		end
+	end
+	
+end
+--重置每日限购
+function PlayerInfo:resetDailyShop()
+	for i=PLAYER_FIELD_SHOP_LIMIT_START,PLAYER_FIELD_SHOP_LIMIT_END-1 do
+		local tid = self:GetUInt16(i,0)
+		if tid ~= 0 then
+			local config = tb_shop[tid]
+			if config.limtype == 1 then
+				self:SetUInt16(i,0,0)
+				self:SetUInt16(i,1,0)
+			end
+		end
+	end
+end
+--重置每周限购 
+function PlayerInfo:resetWeekShop() --FIXME 尚未调用
+	for i=PLAYER_FIELD_SHOP_LIMIT_START,PLAYER_FIELD_SHOP_LIMIT_END-1 do
+		local tid = self:GetUInt16(i,0)
+		if tid ~= 0 then
+			local config = tb_shop[tid]
+			if config.limtype == 2 then
+				self:SetUInt16(i,0,0)
+				self:SetUInt16(i,1,0)
+			end
+		end
+	end
+end
 -- 元宝复活
 function PlayerInfo:goldRespawn(useGold)
 	local resItemId = tb_hook_hp_item[ 2 ].items[ 1 ]

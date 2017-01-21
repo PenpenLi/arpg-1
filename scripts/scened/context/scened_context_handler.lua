@@ -254,7 +254,9 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 			self:MountUnride() 
 		end
 		
-		Select_Instance_Script(self:GetMapID()):OnStartJump(self)
+		if tb_map[mapid].type == MAP_TYPE_FIELD then
+			Select_Instance_Script(self:GetMapID()):new{ptr = map_ptr}:OnStartJump(self)
+		end
 		--增加BUFF, 通过BUFF来控制跳跃时间
 		SpelladdBuff(player_ptr, BUFF_JUMP_JUMP, player_ptr, 1,tb_buff_template[BUFF_JUMP_JUMP].duration)
 		
@@ -708,6 +710,14 @@ function ScenedContext:Handle_Use_Broadcast_gameobject(pkt)
 	local map_ptr = unitLib.GetMap(self.ptr)
 	local gameobject = mapLib.GetGameObjectByGuid(map_ptr, target)
 	if not gameobject then return end
+	
+	-- 判断距离是否足够
+	local posx, posy = unitLib.GetPos(gameobject)
+	local distance = self:GetDistance(posx, posy)
+	if distance > config.field_boss_pick_max_distance then
+		self:CallOptResult(OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_TOO_FAR)
+		return
+	end
 	
 	-- 至少是需要读进度条
 	local gameObjectInfo = UnitInfo:new {ptr = gameobject}

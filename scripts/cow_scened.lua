@@ -32,6 +32,8 @@ config = {
 	
 	peace_mode_cd = 60						,--和平模式CD(秒)
 	
+	field_boss_pick_max_distance = 5		,-- 野外boss开宝箱最大距离
+	
 	dead_protect_CD = 3600					,--死亡保护时间
 	
 	evil_max_value = 10						,--恶人值最大值					

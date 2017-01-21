@@ -969,3 +969,8 @@ teleport_map,c2s,216,/*传送到某个世界地图*/,STATUS_NEVER,False
 teleport_field_boss,c2s,217,/*传送到野外boss旁边*/,STATUS_NEVER,False
 	mapid,uint32,False,/*地图id*/
 	lineNo,uint32,False,/*分线号*/
+	
+#
+get_activity_reward,c2s,218,/*活跃度奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*礼包序号*/
+	vip,uint8,False,/*vip奖励*/

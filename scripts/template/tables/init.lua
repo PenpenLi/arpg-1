@@ -1,3 +1,5 @@
+require("tables.tb_activity_base")
+require("tables.tb_activity_reward")
 require("tables.tb_anger_limit")
 require("tables.tb_assistangerspell_upgrade")
 require("tables.tb_assistspell")

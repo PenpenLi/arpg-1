@@ -10,7 +10,7 @@ GuidManager.ObjectTypeUnit					= 'U'	--//生物
 GuidManager.ObjectTypePlayer				= 'p'	--//玩家
 GuidManager.ObjectTypeItemMgr				= 'I'	--//物品
 
-
+GuidManager.ObjectTypeQuest 				= 'Q'	--//任务
 GuidManager.ObjectTypeInstance				= 'C'	--//副本
 GuidManager.ObjectTypeFaction				= 'L'	--//帮派
 GuidManager.ObjectTypeSpell					= 'X'	--//技能

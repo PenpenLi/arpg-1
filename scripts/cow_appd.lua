@@ -143,6 +143,8 @@ config = {
 		CMSG_RANK_ADD_LIKE,
 		-------------------------------
 		CMSG_RES_INSTANCE_SWEEP,
+		--------------------------
+		CMSG_GET_ACTIVITY_REWARD,
 	},
 	--pk服命令表
 	pk_external_router_map = {

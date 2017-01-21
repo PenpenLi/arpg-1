@@ -71,8 +71,9 @@ end
 --[[
 rewardDict :  {{itemId, count},{itemId1, count1}}
 --]]
-function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type)
-	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type)
+function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, deadline)
+	deadline = deadline or 0
+	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, deadline)
 	-- 获得信息
 	local dict = changeTableStruct(rewardDict)
 	local list = Change_To_Item_Reward_Info(dict)
@@ -83,9 +84,10 @@ end
 有可能场景服发来的增加道具的接口也是这个
 rewardDict :  {{itemId, count},{itemId1, count1}}
 --]]
-function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type)
+function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, deadline)
 	money_oper_type = money_oper_type or MONEY_CHANGE_SELECT_LOOT
 	item_oper_type  = item_oper_type  or LOG_ITEM_OPER_TYPE_LOOT
+	deadline	= deadline or 0
 	
 	local itemDict = {}
 	-- 先把资源和经验加了, 放背包的道具第二步算
@@ -121,7 +123,7 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type)
 				break
 			end
 			local bind = tb_item_template[entry].bind_type
-			self:AddItemByEntry(entry, count, nil, item_oper_type, bind, true, true, 0, 0)
+			self:AddItemByEntry(entry, count, nil, item_oper_type, bind, true, true, 0, deadline)
 		end
 		
 		-- 放不下的存邮件
@@ -143,9 +145,10 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type)
 end
 
 -- 玩家加道具
-function PlayerInfo:PlayerAddItem(itemId, count, item_oper_type)
+function PlayerInfo:PlayerAddItem(itemId, count, item_oper_type, deadline)
 
 	item_oper_type  = item_oper_type  or LOG_ITEM_OPER_TYPE_LOOT
+	deadline = deadline or 0
 	
 	if IsResource(itemId) or itemId == Item_Loot_Exp  then
 		return
@@ -153,7 +156,7 @@ function PlayerInfo:PlayerAddItem(itemId, count, item_oper_type)
 		if tb_item_template[itemId] then
 			-- 加道具
 			local bind = tb_item_template[itemId].bind_type
-			self:AddItemByEntry(itemId, count, nil, item_oper_type, bind, true, true, 0, 0)
+			self:AddItemByEntry(itemId, count, nil, item_oper_type, bind, true, true, 0, deadline)
 		end
 	end
 end
@@ -733,6 +736,20 @@ function PlayerInfo:DoAddRechargeSum (recharge_id,val,recharge_time)
 		if(pay_level ~= self:GetPayLevel())then
 			self:SetPayLevel(pay_level)
 		end
+		
+		local vipLev = 0
+		for k,v in ipairs(tb_vip_base) do
+			local cz = v.chongzhi
+			if rechage >= cz then
+				vipLev = v.id
+			else
+				break
+			end
+		end
+		
+		local tm = os.time() + 30 * 24 * 3600
+		self:SetVIP(vipLev,tm)
+		
 	end
 end
 
@@ -1122,6 +1139,7 @@ require("appd/appd_context/handler/instance_handler")
 require("appd/appd_context/handler/social_handler")
 require("appd/appd_context/handler/shop_handler")
 require("appd/appd_context/handler/rank_handler")
+require("appd/appd_context/handler/active_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

@@ -226,6 +226,7 @@ SMSG_SEND_MAP_LINE		= 213	-- /*返回本地图的分线号信息*/
 SMSG_ITEM_NOTICE		= 214	-- /*获得奖励提示*/	
 CMSG_TELEPORT_MAP		= 216	-- /*传送到某个世界地图*/	
 CMSG_TELEPORT_FIELD_BOSS		= 217	-- /*传送到野外boss旁边*/	
+CMSG_GET_ACTIVITY_REWARD		= 218	-- /*活跃度奖励*/	
 
 
 ---------------------------------------------------------------------
@@ -8002,6 +8003,40 @@ function Protocols.unpack_teleport_field_boss (pkt)
 end
 
 
+-- /*活跃度奖励*/	
+function Protocols.pack_get_activity_reward ( id ,vip)
+	local output = Packet.new(CMSG_GET_ACTIVITY_REWARD)
+	output:writeByte(id)
+	output:writeByte(vip)
+	return output
+end
+
+-- /*活跃度奖励*/	
+function Protocols.call_get_activity_reward ( playerInfo, id ,vip)
+	local output = Protocols.	pack_get_activity_reward ( id ,vip)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*活跃度奖励*/	
+function Protocols.unpack_get_activity_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.vip = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -8220,6 +8255,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_item_notice = self.call_item_notice
 	playerInfo.call_teleport_map = self.call_teleport_map
 	playerInfo.call_teleport_field_boss = self.call_teleport_field_boss
+	playerInfo.call_get_activity_reward = self.call_get_activity_reward
 end
 
 local unpack_handler = {
@@ -8435,6 +8471,7 @@ local unpack_handler = {
 [SMSG_ITEM_NOTICE] =  Protocols.unpack_item_notice,
 [CMSG_TELEPORT_MAP] =  Protocols.unpack_teleport_map,
 [CMSG_TELEPORT_FIELD_BOSS] =  Protocols.unpack_teleport_field_boss,
+[CMSG_GET_ACTIVITY_REWARD] =  Protocols.unpack_get_activity_reward,
 
 }
 

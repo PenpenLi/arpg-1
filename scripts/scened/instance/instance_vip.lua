@@ -111,12 +111,12 @@ function InstanceVIP:OnRefreshBoss(player)
 	local bornX		= tb_map_vip[id].bossx
 	local bornY		= tb_map_vip[id].bossy
 
-	mapLib.AddCreature(self.ptr, {
+	local creature = mapLib.AddCreature(self.ptr, {
 			templateid = entry, x = bornX, y = bornY, 
 			active_grid = true, alias_name = InstanceVIP.BOSS_NAME, ainame = config.ainame, npcflag = {}
 		}
 	)
-	
+	creatureLib.ModifyThreat(creature, player, self.THREAT_V)
 end
 
 --当玩家加入后触发
