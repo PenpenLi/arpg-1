@@ -71,3 +71,7 @@ require("template.tables.tb_instance_res")
 require("template.tables.tb_instance_reward")
 
 require("template.tables.tb_mount_illusion")
+
+-- 地图采集物
+require("template.tables.tb_map_gameobject")
+require("template.tables.tb_map_gameobject_detail")

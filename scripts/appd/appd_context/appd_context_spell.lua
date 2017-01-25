@@ -62,6 +62,10 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 	-- 是否发送场景服
 	--self:sendSpellInfoIfEnabled(config.is_initiative, spellTable)
 	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_SKILL_SUCCESS)
+	
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_RAISE_SKILL, {spellId, spellLv})
+	
 	outFmtInfo("raise spell %d success, from %d to %d", spellId, prev, spellLv)
 end
 
@@ -475,6 +479,9 @@ function PlayerInfo:DoHandleRaiseMount()
 		spellMgr:addTrainExp(addExp)
 	end
 	
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_TRAIN_MOUNT)
+	
 	outFmtInfo("raise from (%d, %d, %d) to (%d, %d, %d)", level, star, trainExp, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getTrainExp())
 end
 
@@ -768,7 +775,16 @@ function PlayerInfo:onDivineActivedSpell(divineId, spellId,isPassive)
 	-- 重算战斗力(当前和属性绑定在一起)
 	self:RecalcAttrAndBattlePoint()
 end
-
+--是否装配神兵
+function PlayerInfo:hasEquDivine(divineId)
+	local prev = self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID)
+	if divineId == 0 and prev ~= 0 then
+		return true
+	elseif divineId ~= 0 and divineId == prev then
+		return true
+	end
+	return false
+end
 
 -- 替换神兵
 function PlayerInfo:switchDivine(divineId)
@@ -806,6 +822,10 @@ function PlayerInfo:switchDivine(divineId)
 	
 	-- 重算战斗力(当前和属性绑定在一起)
 	self:RecalcAttrAndBattlePoint()
+	
+	-- 加任务
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_EQUIP_DIVINE, {divineId})
 end
 
 
@@ -851,6 +871,10 @@ function PlayerInfo:DivineActive(divineId)
 	elseif activeType == 5 then
 
 	end
+	
+	
+	
+	
 end
 --应用激活
 function PlayerInfo:ApplyDivineActive(id,t)
@@ -920,9 +944,13 @@ function PlayerInfo:DivineUpLev(divineId)
 	 	else
 	 		spellMgr:setDivinLevBless(idx,curlev,now)
 	 	end
+		
+		-- 加任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_STRENGTH_DIVINE, {divineId})
 	end
 
-
+	
 end
 
 --[[

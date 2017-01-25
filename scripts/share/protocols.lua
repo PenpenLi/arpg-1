@@ -227,6 +227,11 @@ SMSG_ITEM_NOTICE		= 214	-- /*获得奖励提示*/
 CMSG_TELEPORT_MAP		= 216	-- /*传送到某个世界地图*/	
 CMSG_TELEPORT_FIELD_BOSS		= 217	-- /*传送到野外boss旁边*/	
 CMSG_GET_ACTIVITY_REWARD		= 218	-- /*活跃度奖励*/	
+CMSG_GET_ACHIEVE_REWARD		= 220	-- /*成就奖励*/	
+CMSG_GET_ACHIEVE_ALL_REWARD		= 221	-- /*总成就奖励*/	
+CMSG_SET_TITLE		= 222	-- /*装备称号*/	
+CMSG_PICK_QUEST_REWARD		= 230	-- /*领取任务奖励*/	
+CMSG_TALK_WITH_NPC		= 231	-- /*和npc对话*/	
 
 
 ---------------------------------------------------------------------
@@ -8037,6 +8042,147 @@ function Protocols.unpack_get_activity_reward (pkt)
 end
 
 
+-- /*成就奖励*/	
+function Protocols.pack_get_achieve_reward ( id)
+	local output = Packet.new(CMSG_GET_ACHIEVE_REWARD)
+	output:writeByte(id)
+	return output
+end
+
+-- /*成就奖励*/	
+function Protocols.call_get_achieve_reward ( playerInfo, id)
+	local output = Protocols.	pack_get_achieve_reward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*成就奖励*/	
+function Protocols.unpack_get_achieve_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*总成就奖励*/	
+function Protocols.pack_get_achieve_all_reward (  )
+	local output = Packet.new(CMSG_GET_ACHIEVE_ALL_REWARD)
+	return output
+end
+
+-- /*总成就奖励*/	
+function Protocols.call_get_achieve_all_reward ( playerInfo )
+	local output = Protocols.	pack_get_achieve_all_reward (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*总成就奖励*/	
+function Protocols.unpack_get_achieve_all_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*装备称号*/	
+function Protocols.pack_set_title ( id)
+	local output = Packet.new(CMSG_SET_TITLE)
+	output:writeByte(id)
+	return output
+end
+
+-- /*装备称号*/	
+function Protocols.call_set_title ( playerInfo, id)
+	local output = Protocols.	pack_set_title ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*装备称号*/	
+function Protocols.unpack_set_title (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*领取任务奖励*/	
+function Protocols.pack_pick_quest_reward ( indx)
+	local output = Packet.new(CMSG_PICK_QUEST_REWARD)
+	output:writeByte(indx)
+	return output
+end
+
+-- /*领取任务奖励*/	
+function Protocols.call_pick_quest_reward ( playerInfo, indx)
+	local output = Protocols.	pack_pick_quest_reward ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取任务奖励*/	
+function Protocols.unpack_pick_quest_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*和npc对话*/	
+function Protocols.pack_talk_with_npc ( entry)
+	local output = Packet.new(CMSG_TALK_WITH_NPC)
+	output:writeI16(entry)
+	return output
+end
+
+-- /*和npc对话*/	
+function Protocols.call_talk_with_npc ( playerInfo, entry)
+	local output = Protocols.	pack_talk_with_npc ( entry)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*和npc对话*/	
+function Protocols.unpack_talk_with_npc (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.entry = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -8256,6 +8402,11 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_teleport_map = self.call_teleport_map
 	playerInfo.call_teleport_field_boss = self.call_teleport_field_boss
 	playerInfo.call_get_activity_reward = self.call_get_activity_reward
+	playerInfo.call_get_achieve_reward = self.call_get_achieve_reward
+	playerInfo.call_get_achieve_all_reward = self.call_get_achieve_all_reward
+	playerInfo.call_set_title = self.call_set_title
+	playerInfo.call_pick_quest_reward = self.call_pick_quest_reward
+	playerInfo.call_talk_with_npc = self.call_talk_with_npc
 end
 
 local unpack_handler = {
@@ -8472,6 +8623,11 @@ local unpack_handler = {
 [CMSG_TELEPORT_MAP] =  Protocols.unpack_teleport_map,
 [CMSG_TELEPORT_FIELD_BOSS] =  Protocols.unpack_teleport_field_boss,
 [CMSG_GET_ACTIVITY_REWARD] =  Protocols.unpack_get_activity_reward,
+[CMSG_GET_ACHIEVE_REWARD] =  Protocols.unpack_get_achieve_reward,
+[CMSG_GET_ACHIEVE_ALL_REWARD] =  Protocols.unpack_get_achieve_all_reward,
+[CMSG_SET_TITLE] =  Protocols.unpack_set_title,
+[CMSG_PICK_QUEST_REWARD] =  Protocols.unpack_pick_quest_reward,
+[CMSG_TALK_WITH_NPC] =  Protocols.unpack_talk_with_npc,
 
 }
 

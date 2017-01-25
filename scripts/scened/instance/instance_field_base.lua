@@ -350,6 +350,11 @@ function InstanceFieldBase:OnLeavePlayer( player, is_offline)
 	end
 end
 
+-- 获得单人的复活时间
+function InstanceFieldBase:GetSingleRespawnTime(player)
+	return self.player_auto_respan
+end
+
 
 -------------------------野外boss---------------------------
 AI_FieldBoss = class("AI_FieldBoss", AI_Base)
@@ -384,7 +389,7 @@ function AI_FieldBoss:JustDied( map_ptr,owner,killer_ptr )
 	return 0
 end
 
-
+-- TODO:需要修复, DamageTaken 才精确
 -- 受到伤害后
 function AI_FieldBoss:DamageDeal( owner, unit, damage)
 	local bossInfo = UnitInfo:new{ptr = owner}
@@ -403,6 +408,8 @@ function AI_FieldBoss:DamageDeal( owner, unit, damage)
 		local unitInfo = UnitInfo:new {ptr = unit}
 		local guid = unitInfo:GetPlayerGuid()
 		mapLib.AddFiledBossDamage(map_ptr, guid, damage)
+		-- 参加野外BOSS
+		playerLib.SendToAppdDoSomething(unit, SCENED_APPD_JOIN_FIELD_BOSS, mapid)
 	else
 		mapLib.ClearFieldBossDamage(map_ptr)
 	end

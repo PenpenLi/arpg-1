@@ -643,7 +643,7 @@ function ScenedContext:Hanlde_Teleport_Map(pkt)
 	local lineNo = pkt.lineNo
 	
 	-- 地图id不对
-	if not tb_map[mapid] and tb_map[mapid].type ~= MAP_TYPE_FIELD then
+	if not tb_map[mapid] or tb_map[mapid].inst_type ~= 0 then
 		return
 	end
 	
@@ -651,15 +651,19 @@ function ScenedContext:Hanlde_Teleport_Map(pkt)
 	if not INSTANCE_SCRIPT_TABLE[mapid] then
 		return
 	end
-	
+	--[[
 	-- 分线不对
-	if lineNo < 1 or lineNo > MAX_DEFAULT_LINE_COUNT then
+	if lineNo < 0 or lineNo > MAX_DEFAULT_LINE_COUNT then
 		return
 	end
-	
+	--]]
 	local teleInfo = tb_map[mapid].tele
-	
-	playerLib.Teleport(self.ptr, mapid, teleInfo[1], teleInfo[2], lineNo)
+	lineNo = 0
+	if #teleInfo >= 2 then
+		playerLib.Teleport(self.ptr, mapid, teleInfo[1], teleInfo[2], lineNo)
+	else
+		outFmtDebug("has no teleportinfo for mapid = %u", mapid)
+	end
 end
 
 
@@ -668,7 +672,7 @@ function ScenedContext:Hanlde_Teleport_Field_Boss(pkt)
 	local lineNo = pkt.lineNo
 	
 	-- 地图id不对
-	if not tb_map[mapid] and tb_map[mapid].type ~= MAP_TYPE_FIELD then
+	if not tb_map[mapid] or tb_map[mapid].type ~= MAP_TYPE_FIELD then
 		return
 	end
 	
@@ -762,6 +766,18 @@ function ScenedContext:Handle_World_Boss_Fight(pkt)
 	if line > 0 and line <= rooms and not globalValue:IsWorldBossEndInLine(line) then
 		playerLib.Teleport(self.ptr, toMapId, toX, toY, line, "")
 	end
+end
+
+
+-- 和NPC对话
+function ScenedContext:Handle_Talk_With_Npc(pkt)
+	local entry = pkt.entry
+	
+	if not tb_creature_template[entry] then
+		return
+	end
+	
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_TALK, entry)
 end
 
 --[[-- 换线

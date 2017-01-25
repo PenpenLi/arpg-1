@@ -38,7 +38,8 @@ function PlayerInfo:factionReset()
 	if factionID ~= "" then
 		local faction = app.objMgr:getObj(factionID)
 		if faction then
-			faction:RefreshShop()
+			--faction:RefreshShop()
+			faction:ResetMember(self)
 		end
 	end
 end

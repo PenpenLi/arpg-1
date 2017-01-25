@@ -145,6 +145,11 @@ config = {
 		CMSG_RES_INSTANCE_SWEEP,
 		--------------------------
 		CMSG_GET_ACTIVITY_REWARD,
+		--------------------------
+		CMSG_GET_ACHIEVE_REWARD,
+		CMSG_GET_ACHIEVE_ALL_REWARD,
+		CMSG_SET_TITLE,
+		CMSG_PICK_QUEST_REWARD,
 	},
 	--pk服命令表
 	pk_external_router_map = {

@@ -82,3 +82,10 @@ require("template.tables.tb_activity_reward")
 require("template.tables.tb_drop_reward")
 require("template.tables.tb_drop_packet")
 
+--成就称号
+require("template.tables.tb_achieve_base")
+require("template.tables.tb_achieve_progress")
+require("template.tables.tb_title_base")
+
+-- 任务
+require("template.tables.tb_quest")

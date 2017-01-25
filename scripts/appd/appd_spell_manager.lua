@@ -214,6 +214,10 @@ function AppSpellMgr:raiseMountSpell(spellId)
 		elseif self:GetUInt16(i, SHORT_SPELL_ID) == spellId then
 			self:SetUInt16(i, SHORT_SPELL_LV, prev + 1)
 			self:SetSpellLevel(spellId, prev+1)
+			-- 任务
+			local player = self:getOwner()
+			local questMgr = player:getQuestMgr()
+			questMgr:OnUpdate(QUEST_TARGET_TYPE_RAISE_MOUNT_SKILL, {spellId})
 			return
 		end
 	end
@@ -375,6 +379,20 @@ function AppSpellMgr:hasDivine(divineId)
 	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
 		--outFmtInfo("divine %d",i)
 		if self:GetByte(i,0) == divineId then
+			return true
+		end
+	end
+	
+	return false
+end
+-- 任务判断是否存在神兵
+function AppSpellMgr:hasDivineQuest(divineId)
+	
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		local div = self:GetByte(i,0)
+		if divineId ~= 0 and div == divineId then
+			return true
+		elseif divineId == 0 and div ~= 0 then
 			return true
 		end
 	end

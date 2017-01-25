@@ -32,5 +32,21 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		local name = tb_mail[data].name
 		local giftType = tb_mail[data].source
 		AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, str, "系统")
+	elseif SCENED_APPD_KILL_MONSTER == ntype then
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_KILL_MONSTER, {data})
+	elseif SCENED_APPD_JOIN_FIELD_BOSS == ntype then
+		-- 参加野外BOSS
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_FIELD_BOSS, {data})
+	elseif SCENED_APPD_GAMEOBJECT == ntype then
+		-- 采集物品
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_PICK_GAME_OBJECT, {data})
+	elseif SCENED_APPD_TALK == ntype then
+		-- 对话
+		-- 加任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_TALK, {data})
 	end
 end

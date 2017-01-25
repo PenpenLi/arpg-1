@@ -64,3 +64,11 @@ function PlayerInfo:getInstanceMgr()
 	end
 	return self:getObj(self.guid_instanceMgr)
 end
+
+--根据玩家guid获得任务管理器
+function PlayerInfo:getQuestMgr()
+	if not self.guid_questMgr then
+		self.guid_questMgr = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeQuest)
+	end
+	return self:getObj(self.guid_questMgr)	
+end

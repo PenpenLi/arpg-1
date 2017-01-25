@@ -404,7 +404,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 		local M = tonumber(tokens[ 3 ])
 		local a = tonumber(tokens[ 4 ])
 		local b = tonumber(tokens[ 5 ])
-		app:InitWorldBossCorn(H, M, a, b)
+		app:InitWorldBossCorn(H, M, 1, 3)
 		
 	elseif(tokens[1] == "@NA")then
 		--发放礼包
@@ -1192,6 +1192,13 @@ function  DoGMScripts(player_ptr, gm_commands)
 		local level = paras[3] or 1 
 		player:SetSpellSysSpellLevel(spell_id,level)
 		playerLib.SendAttr(player_ptr)
+	elseif tokens[1] == "@成就" then
+		if(#tokens < 3)then
+			return result
+		end
+		
+		player:AddAchieve(paras[2],paras[3])
+		
 	end
 	
 	return result

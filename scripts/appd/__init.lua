@@ -30,3 +30,6 @@ require("appd/object/gift_packs")
 
 outString('load appd/appd_internal_handler"')
 require("appd/appd_internal_handler")
+
+outString('load appd/quest/__init script')
+require("appd/quest/init")

@@ -911,6 +911,8 @@ function FactionInfo:MemberAdd( player)
 	--app.objMgr:callAddWatch(player:GetSessionId(), self:getFactionEventsGuid())
 
 	--rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
+	local questMgr = player:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_FACTION)
 	return true
 end
 
@@ -1733,7 +1735,13 @@ function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
 		elseif money_type == 2 then
 			self:AddFactionMemberYbDonation(pos,money_sum)
 		end
+		
+		-- 加任务
+		local questMgr = player:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_FACTION_DONATION, {money_type, money_sum})
 	end
+	
+
 	
 	
 	--local cost_table = {}
@@ -1755,6 +1763,26 @@ function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
 	--self:AddFactionMoney(pos,zijin)
 
 	--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_JUANXIAN,money_type,money_sum,gongxian)
+end
+
+--帮派每日重置
+function FactionInfo:ResetFaction()
+	--for i = 0, MAX_FACTION_MAMBER_COUNT - 1 do
+	--	if self:GetFactionMemberGuid(i) ~= "" then
+	--		self:SetFactionMemberGoldDonation(i,0)
+	--		self:SetFactionMemberYbDonation(i,0)
+	--	end
+	--end
+	
+	self:RefreshShop()
+end
+--帮派重置成员每日信息
+function FactionInfo:ResetMember(player)
+	local pos = self:FindPlayerIndex(player:GetGuid())
+	if pos then
+		self:SetFactionMemberGoldDonation(pos,0)
+		self:SetFactionMemberYbDonation(pos,0)
+	end
 end
 --领取福利
 function FactionInfo:FactionFuLi(player,pos)

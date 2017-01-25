@@ -92,6 +92,9 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	-- 神兵
 	spellMgr:calculDivineAttr(attrs)
 	
+	--称号
+	self:calculTitleAttr(attrs)
+	
 	-- 设置到playerBase中
 	for attrId, val in pairs(attrs) do
 		local index = attrId - 1

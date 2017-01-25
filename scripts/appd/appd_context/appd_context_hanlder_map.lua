@@ -97,4 +97,12 @@ hanlders[CMSG_RANK_ADD_LIKE] = PlayerInfo.Handle_Rank_Like
 ---------------------------
 hanlders[CMSG_GET_ACTIVITY_REWARD] = PlayerInfo.Handle_Avtive_Reward
 
+hanlders[CMSG_GET_ACHIEVE_REWARD] = PlayerInfo.Handle_Achieve_Reward
+hanlders[CMSG_GET_ACHIEVE_ALL_REWARD] = PlayerInfo.Handle_Achieve_All_Reward
+hanlders[CMSG_SET_TITLE] = PlayerInfo.Handle_Set_Title
+
+
+--------------------------------
+hanlders[CMSG_PICK_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest
+
 return hanlders

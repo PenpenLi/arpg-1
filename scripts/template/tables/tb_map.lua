@@ -27,7 +27,7 @@ tb_map = {
 	--  rebornX:int	复活点X
 	--  rebornY:int	复活点Y
 	--  situ:int	是否原地复活
-	[1] = {id = 1,parentid = 1,name = "蜀山",tele = {},levellimit = 0,type = 0,inst_type = 0,inst_sub_type = 0,is_instance = 0,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 31,inst_id = {},is_cast = 0,is_PK = 0,is_jump = 1,is_ride = 1,is_sit = 1,rebornX = 0,rebornY = 0,situ = 0,},
+	[1] = {id = 1,parentid = 1,name = "蜀山",tele = {118,180},levellimit = 0,type = 0,inst_type = 0,inst_sub_type = 0,is_instance = 0,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 31,inst_id = {},is_cast = 0,is_PK = 0,is_jump = 1,is_ride = 1,is_sit = 1,rebornX = 0,rebornY = 0,situ = 0,},
 	[1001] = {id = 1001,parentid = 1001,name = "凝碧崖",tele = {65,93},levellimit = 0,type = 1,inst_type = 0,inst_sub_type = 0,is_instance = 0,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 0,inst_id = {},is_cast = 1,is_PK = 1,is_jump = 1,is_ride = 1,is_sit = 1,rebornX = 0,rebornY = 0,situ = 0,},
 	[1002] = {id = 1002,parentid = 1002,name = "莽苍山",tele = {107,194},levellimit = 0,type = 1,inst_type = 0,inst_sub_type = 0,is_instance = 0,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 0,inst_id = {},is_cast = 1,is_PK = 1,is_jump = 1,is_ride = 1,is_sit = 1,rebornX = 0,rebornY = 0,situ = 0,},
 	[1003] = {id = 1003,parentid = 1003,name = "慈云寺",tele = {},levellimit = 0,type = 1,inst_type = 0,inst_sub_type = 0,is_instance = 0,shadow = 0,count = 0,day_limit = 0,week_limit = 0,enter_mask = 0,inst_id = {},is_cast = 1,is_PK = 1,is_jump = 1,is_ride = 1,is_sit = 1,rebornX = 0,rebornY = 0,situ = 0,},

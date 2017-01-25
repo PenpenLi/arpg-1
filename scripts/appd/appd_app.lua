@@ -55,6 +55,14 @@ function AppdApp:InitCorn()
 			player:DoResetDaily()
 		end)
 		self:RankReward()
+		self.objMgr:foreachAllFaction(function(faction)
+			faction:ResetFaction()
+		end)
+	end)
+	
+	-- 每周重置
+	self.cron:addCron("每周重置",'0 0 * * 1',function() 
+		
 	end)
 	
 	-- 野外boss马上刷新通知
@@ -104,8 +112,11 @@ function AppdApp:InitCorn()
 		OnUpdateRankList()
 	end)
 	
-	self.cron:every("刷新排行榜信息", 10,function()
-		OnUpdateRankList()
+	--每隔60s检测下失效称号
+	self.cron:every("刷新排行榜信息", 60,function()
+		self.objMgr:foreachAllPlayer(function(player)
+			player:removeExpireTitle()
+		end)
 	end)
 
 	

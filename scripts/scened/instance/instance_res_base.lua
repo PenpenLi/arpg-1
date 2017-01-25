@@ -190,12 +190,12 @@ function InstanceResBase:ApplyRefreshMonsterBatch(player,batchIdx)
 	self:SetUInt16(REFRESH_MONSTER_FIELD_ID, 1, cnt)
 	
 	mapLib.DelTimer(self.ptr, 'OnTimer_MonsterBornOneByOne')
-	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval, player.ptr)
+	mapLib.AddTimer(self.ptr, 'OnTimer_MonsterBornOneByOne', self.MonsterRefreshInterval, player:GetPlayerGuid())
 	
 	return true,cnt
 end
 
-function InstanceResBase:OnTimer_MonsterBornOneByOne(player_ptr)
+function InstanceResBase:OnTimer_MonsterBornOneByOne(playerGuid)
 	local dids = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 0)
 	local need = self:GetUInt16(REFRESH_MONSTER_FIELD_ID, 1)
 	if dids >= need then
@@ -211,7 +211,11 @@ function InstanceResBase:OnTimer_MonsterBornOneByOne(player_ptr)
 	local creature = mapLib.AddCreature(self.ptr, 
 			{templateid = entry, x = bornX, y = bornY, level=level, active_grid = true, 
 			ainame = "AI_res", npcflag = {}, attackType = REACT_AGGRESSIVE})
-	creatureLib.ModifyThreat(creature, player_ptr, self.THREAT_V)
+	
+	local player_ptr = mapLib.GetPlayerByPlayerGuid(self.ptr, playerGuid)
+	if player_ptr then
+		creatureLib.ModifyThreat(creature, player_ptr, self.THREAT_V)
+	end
 	self:AddUInt16(REFRESH_MONSTER_FIELD_ID, 0, 1)
 	
 	return true

@@ -213,5 +213,8 @@ function DoWorldBossTeleport(playerDict, roomInfo)
 		if roomInfo[line] == 0 then
 			line = line + 1
 		end
+		-- ≤Œº”“∞Õ‚BOSS
+		local questMgr = playerInfo:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_WORLD_BOSS)
 	end
 end

@@ -26,6 +26,8 @@ OpcodeHandlerFuncTable[CMSG_TELEPORT_MAP] = ScenedContext.Hanlde_Teleport_Map
 
 OpcodeHandlerFuncTable[CMSG_TELEPORT_FIELD_BOSS] = ScenedContext.Hanlde_Teleport_Field_Boss
 
+OpcodeHandlerFuncTable[CMSG_TALK_WITH_NPC]	= ScenedContext.Handle_Talk_With_Npc
+
 
 --OpcodeHandlerFuncTable[CMSG_CHANGE_LINE] = ScenedContext.Hanlde_Change_Line
 

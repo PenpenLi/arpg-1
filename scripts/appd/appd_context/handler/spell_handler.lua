@@ -250,8 +250,11 @@ function PlayerInfo:Handle_Divine_Active(pkt)
 		return
 	end
 
-	self:DivineActive(id)
-
+	if self:DivineActive(id) then
+		-- 加任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_OWN_DIVINE, {id})
+	end
 end
 
 -- 升级神兵

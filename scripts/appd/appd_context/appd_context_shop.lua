@@ -52,12 +52,11 @@ function PlayerInfo:shopBuyItem(id, count)
 	--上下线时间
 	local limtime = config.time
 	if #limtime ~= 0 then
-		local cyear = os.date("*t").year
 		
-		local begintab = {year=cyear, month=limtime[1], day=limtime[2], hour=0,min=0,sec=0,isdst=false}
+		local begintab = {year=limtime[1], month=limtime[2], day=limtime[3], hour=0,min=0,sec=0,isdst=false}
 		local begintime = os.time(begintab);
 		
-		local endtab = {year=cyear, month=limtime[3], day=limtime[4], hour=0,min=0,sec=0,isdst=false}
+		local endtab = {year=limtime[4], month=limtime[5], day=limtime[6], hour=0,min=0,sec=0,isdst=false}
 		local endtime = os.time(endtab);
 		
 		local ctime = os.time()

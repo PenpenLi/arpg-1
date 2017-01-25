@@ -482,6 +482,7 @@ Instance_base = {
 				--设置地图创建时间
 				self:SetMapCreateTime(os.time())
 			end
+			self:OnInitGameObject()
 		end,
 	
 	--开始移动前需要处理的逻辑
@@ -729,6 +730,22 @@ Instance_base = {
 	OnDisrupt =
 		function(self, killer)
 			
+		end,
+	
+	-- 初始化采集物
+	OnInitGameObject = 
+		function(self)
+			local mapid = self:GetMapId()
+			if tb_map_gameobject[mapid] then
+				local objects = tb_map_gameobject[mapid].gameobjects
+				for _, id in pairs(objects) do
+					local config = tb_map_gameobject_detail[id]
+					if config then
+						local gameObject = mapLib.AddGameObject(self.ptr, config.entry, config.position[ 1 ], config.position[ 2 ], GO_GEAR_STATUS_END)
+						unitLib.SetOrientation(gameObject, config.orient / 100)
+					end
+				end
+			end
 		end,
 
  	--按怪物等级初始化怪物信息

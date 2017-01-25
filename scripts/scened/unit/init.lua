@@ -1775,6 +1775,11 @@ function creatureInit(creature, entry)
 	creatureLib.SetReactState(creature, obj.attack_type)
 end
 
+-- 采集任务物品
+function DoHandlePickGameObject(player_ptr, gameObjectEntry)
+	playerLib.SendToAppdDoSomething(player_ptr, SCENED_APPD_GAMEOBJECT, gameObjectEntry)
+end
+
 --应用服通知场景服消耗元宝或铜钱做些什么
 function DoScenedComsumeMoney(player_ptr, money_type, use_type, use_param)
 	local map_ptr = unitLib.GetMap(player_ptr)

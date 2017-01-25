@@ -1055,7 +1055,7 @@ function PlayerInfo:GetOfflineMail()
 	local path = string.format(OFFLINE_MAIL_PATH_FORMAT, self:GetGuid())
 	local fp, err = io.open(path, "r+")
 	if err then
-		outFmtDebug("err for : %s at path %s", err, path)
+		--outFmtDebug("err for : %s at path %s", err, path)
 		return
 	end
 	
@@ -1083,7 +1083,7 @@ function PlayerInfo:GetOfflineMail()
 	-- 清空文件
 	local fp, err = io.open(path, "w+")
 	if err then
-		outFmtDebug("clear file err for : %s at path %s", err, path)
+		--outFmtDebug("clear file err for : %s at path %s", err, path)
 		return
 	end
 	fp:close()
@@ -1093,12 +1093,35 @@ end
 function PlayerInfo:OnLevelChanged()
 	print("level changed")
 	self:factionUpLevel()
+	-- 加任务
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_PLAYER_LEVEL, {self:GetLevel()})
+	questMgr:OnCheckMainQuestActive(self:GetLevel())
 end
 
 -- 战力改变了
 function PlayerInfo:OnForceChanged()
 	print("force changed")
 	self:factionUpForce()
+	-- 加任务
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_PLAYER_FORCE, {self:GetForce()})
+end
+
+-- 增加主线任务
+function PlayerInfo:AddFirstQuest()
+	local questMgr = self:getQuestMgr()
+	questMgr:OnAddQuest(INIT_QUEST_ID)
+end
+
+-- 获得当前主线任务id
+function PlayerInfo:GetMainQuestID()
+	return self:GetUInt32(PLAYER_INT_FIELD_MAIN_QUEST_ID)
+end
+
+-- 设置当前主线任务id
+function PlayerInfo:SetMainQuestID(value)
+	self:SetUInt32(PLAYER_INT_FIELD_MAIN_QUEST_ID, value)
 end
 
 -- 关闭连接
@@ -1129,6 +1152,7 @@ require("appd/appd_context/appd_context_spell")
 require("appd/appd_context/appd_context_social")
 require("appd/appd_context/appd_context_shop")
 require("appd/appd_context/appd_context_giftpacks")
+require("appd/appd_context/appd_context_achieve_title")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")
@@ -1140,6 +1164,7 @@ require("appd/appd_context/handler/social_handler")
 require("appd/appd_context/handler/shop_handler")
 require("appd/appd_context/handler/rank_handler")
 require("appd/appd_context/handler/active_handler")
+require("appd/appd_context/handler/achieve_title_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

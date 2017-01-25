@@ -32,7 +32,7 @@ function PlayerInfo:strength (pkt)
 	end
 
 	--扣除相应资源 + 祝福值
-	 if self:costMoneys(MONEY_CHANGE_FORGE_STRENG,config.cost) then
+	if self:costMoneys(MONEY_CHANGE_FORGE_STRENG,config.cost) then
 	 	local baseBless = spellMgr:getStrengBlessExp(part)
 	 	local bless = GetRandomExp(config.blessrate)
 	 	local now = baseBless + bless
@@ -46,7 +46,10 @@ function PlayerInfo:strength (pkt)
 	 		spellMgr:setStrengBlessExp(part,now)
 	 	end
 	 	
-	 end
+		-- 加任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_STRENGTH_SUIT, {part})
+	end
 
 end
 -- 设置全身强化加成
@@ -133,7 +136,10 @@ function PlayerInfo:gem (pkt)
 			-- 添加祝福值
 			spellMgr:setGemCurBless(part,now)
 		end
-
+	
+		-- 加任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_STRENGTH_GEM, {part})
 	end
 
 

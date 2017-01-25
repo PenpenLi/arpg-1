@@ -137,6 +137,9 @@ function AppInstanceMgr:checkIfCanEnterResInstance(id)
 	
 	-- ·¢Æð´«ËÍ
 	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, gerneralId)
+	
+	local questMgr = player:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_RESOURCE_INSTANCE, {mapid})
 end
 
 
@@ -160,6 +163,9 @@ function AppInstanceMgr:checkIfCanEnterTrial()
 	local gerneralId = string.format("%d:%d:%s", nextId, getMsTime(), player:GetGuid())
 	
 	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), config.x, config.y, config.mapid, gerneralId)
+	
+	local questMgr = player:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_TRIAL_INSTANCE)
 end
 
 

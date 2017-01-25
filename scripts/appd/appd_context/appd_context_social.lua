@@ -303,6 +303,10 @@ function PlayerInfo:AddGiftFriend(guid,gift)
 			local config = tb_social_shop[v.item_id]
 			friend:AddItemByEntry(config.itemId, v.num, nil, 8, true)--FIXME
 		end
+		
+		-- 加任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_FRIEND_DONATION)
 	end
 
 end

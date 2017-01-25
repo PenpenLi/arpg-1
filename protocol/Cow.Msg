@@ -974,3 +974,22 @@ teleport_field_boss,c2s,217,/*传送到野外boss旁边*/,STATUS_NEVER,False
 get_activity_reward,c2s,218,/*活跃度奖励*/,STATUS_NEVER,False
 	id,uint8,False,/*礼包序号*/
 	vip,uint8,False,/*vip奖励*/
+	
+#
+get_achieve_reward,c2s,220,/*成就奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*成就序号*/
+
+#
+get_achieve_all_reward,c2s,221,/*总成就奖励*/,STATUS_NEVER,False
+
+#
+set_title,c2s,222,/*装备称号*/,STATUS_NEVER,False
+	id,uint8,False,/*称号序号*/
+
+#
+pick_quest_reward,c2s,230,/*领取任务奖励*/,STATUS_NEVER,False
+	indx,uint8,False,/*任务序号*/
+	
+#
+talk_with_npc,c2s,231,/*和npc对话*/,STATUS_NEVER,False
+	entry,uint16,False,/*npcid*/
