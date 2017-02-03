@@ -8,6 +8,6 @@ tb_map_gameobject_detail = {
 	--  entry:int	采集物模版id
 	--  position:array	采集物位置
 	--  orient:int	采集物朝向
-	[1] = {id = 1,entry = 8,position = {65,80},orient = 100,},
+	[1] = {id = 1,entry = 8,position = {109,50},orient = 100,},
 	[2] = {id = 2,entry = 9,position = {53,99},orient = 100,},
 }
