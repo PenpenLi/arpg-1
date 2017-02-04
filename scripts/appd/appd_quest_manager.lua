@@ -197,6 +197,7 @@ function AppQuestMgr:OnPickQuest(indx)
 				gender = 1
 			end
 			local rewards = tb_quest[questId].rewards[gender]
+			-- 这里判断背包满了就不能领取
 			playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
 		end
 		self:ActiveFlowingQuests(questId)

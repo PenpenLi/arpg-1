@@ -21,6 +21,7 @@ require("appd.quest.QuestNPCTalk")
 require("appd.quest.QuestPick")
 require("appd.quest.QuestInspect")
 require("appd.quest.QuestKillMonster")
+require("appd.quest.QuestUseItem")
 
 -- 这个一定要放到最后
 require("appd.quest.QuestManager")

@@ -105,4 +105,6 @@ hanlders[CMSG_SET_TITLE] = PlayerInfo.Handle_Set_Title
 --------------------------------
 hanlders[CMSG_PICK_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest
 
+hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
+
 return hanlders

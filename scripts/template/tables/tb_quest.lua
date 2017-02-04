@@ -17,7 +17,7 @@ tb_quest = {
 	--  acitveIds:array	额外激活的任务id
 	[1] = {id = 1,type = 0,chapterName = "第一章",chapter = 1,questName = "主线1",level = 1,moduleId = 0,targets = {{1,2}},rewards = {},nextid = 10020,acitveIds = {20040,20020},},
 	[10020] = {id = 10020,type = 0,chapterName = "第一章",chapter = 1,questName = "主线2",level = 1,moduleId = 0,targets = {{22,2002,4},{4,1,5},{22,2003,4}},rewards = {{{10001,1}},{{10011,1}}},nextid = 10030,acitveIds = {20010,20030},},
-	[10030] = {id = 10030,type = 0,chapterName = "第二章",chapter = 2,questName = "主线3",level = 1,moduleId = 0,targets = {{2,1999}},rewards = {{{50001,1}}},nextid = 10040,acitveIds = {},},
+	[10030] = {id = 10030,type = 0,chapterName = "第二章",chapter = 2,questName = "主线3",level = 1,moduleId = 0,targets = {{2,1999}},rewards = {{{50001,1}}},nextid = 10040,acitveIds = {20110,20120},},
 	[10040] = {id = 10040,type = 0,chapterName = "第二章",chapter = 2,questName = "主线4",level = 1,moduleId = 0,targets = {{19,1012}},rewards = {{{50001,5}}},nextid = 10050,acitveIds = {},},
 	[10050] = {id = 10050,type = 0,chapterName = "第三章",chapter = 3,questName = "主线5",level = 1,moduleId = 0,targets = {{20,8,3}},rewards = {{{50001,6}}},nextid = 10060,acitveIds = {},},
 	[10060] = {id = 10060,type = 0,chapterName = "第三章",chapter = 3,questName = "主线6",level = 1,moduleId = 0,targets = {{20,9,1}},rewards = {{{50001,7}}},nextid = 10070,acitveIds = {},},
@@ -42,4 +42,6 @@ tb_quest = {
 	[20080] = {id = 20080,type = 1,chapterName = "",chapter = 0,questName = "支线8",level = 5,moduleId = 0,targets = {{3}},rewards = {{{50001,2}}},nextid = 0,acitveIds = {20090},},
 	[20090] = {id = 20090,type = 1,chapterName = "",chapter = 0,questName = "支线9",level = 5,moduleId = 0,targets = {{4,1,5}},rewards = {{{50001,3}}},nextid = 0,acitveIds = {20100},},
 	[20100] = {id = 20100,type = 1,chapterName = "",chapter = 0,questName = "支线10",level = 5,moduleId = 0,targets = {{4,2,5}},rewards = {{{50001,4}}},nextid = 0,acitveIds = {},},
+	[20110] = {id = 20110,type = 1,chapterName = "",chapter = 0,questName = "支线11",level = 1,moduleId = 0,targets = {{23,50001,5}},rewards = {{{10001,1}}},nextid = 0,acitveIds = {},},
+	[20120] = {id = 20120,type = 1,chapterName = "",chapter = 0,questName = "支线12",level = 1,moduleId = 0,targets = {{23,50005,3}},rewards = {{{10001,1}}},nextid = 0,acitveIds = {},},
 }

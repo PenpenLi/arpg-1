@@ -100,6 +100,9 @@ function ScenedUseItemResult(player_guid, item_entry, count, result)
 			WriteItemLog(player, LOG_ITEM_OPER_TYPE_FORGE_DECOMPOSE, item_entry, count, item:isBind())
 		end		
 	end
+	
+	local questMgr = player:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_USE_ITEM, {item_entry})
 end
 
 
@@ -242,8 +245,12 @@ UseItemScripts = {
 			elseif item_type == ITEM_TYPE_MEDICINE or item_type == ITEM_TYPE_BUFF or item_type == ITEM_TYPE_PK_MEDICINE or item_type == ITEM_TYPE_PET_MEDICINE then
 				--药品、获得buff、pk药、宠物药发到场景服处理
 				self:Send2ScenedUseItem(player, item_entry, count)	
+				return
 			end			
 		end
+		
+		local questMgr = player:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_USE_ITEM, {item_entry})
 	end,
 	
 }

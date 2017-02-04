@@ -184,6 +184,17 @@ end
 function PlayerInfo:Hanlde_Bag_Item_User(pkt)
 	UseItem(self, pkt.item_guid, pkt.count)
 end
+
+function PlayerInfo:Handle_Use_Virtual_Item(pkt)
+	local entry = pkt.entry
+	if not tb_item_template[entry] or tb_item_template[entry].out_bag ~= 1 then
+		return
+	end
+	
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_USE_ITEM, {entry})
+end
+
 --交换物品 （穿装备）
 function PlayerInfo:Hanlde_Bag_Exchange_Pos(pkt)
 	local src_bag = pkt.src_bag

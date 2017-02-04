@@ -993,3 +993,7 @@ pick_quest_reward,c2s,230,/*领取任务奖励*/,STATUS_NEVER,False
 #
 talk_with_npc,c2s,231,/*和npc对话*/,STATUS_NEVER,False
 	entry,uint16,False,/*npcid*/
+	
+#
+use_virtual_item,c2s,232,/*使用虚拟物品*/,STATUS_NEVER,False
+	entry,uint16,False,/*itemid*/

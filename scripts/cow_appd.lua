@@ -150,6 +150,7 @@ config = {
 		CMSG_GET_ACHIEVE_ALL_REWARD,
 		CMSG_SET_TITLE,
 		CMSG_PICK_QUEST_REWARD,
+		CMSG_USE_VIRTUAL_ITEM,
 	},
 	--pk服命令表
 	pk_external_router_map = {

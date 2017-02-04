@@ -232,6 +232,7 @@ CMSG_GET_ACHIEVE_ALL_REWARD		= 221	-- /*总成就奖励*/
 CMSG_SET_TITLE		= 222	-- /*装备称号*/	
 CMSG_PICK_QUEST_REWARD		= 230	-- /*领取任务奖励*/	
 CMSG_TALK_WITH_NPC		= 231	-- /*和npc对话*/	
+CMSG_USE_VIRTUAL_ITEM		= 232	-- /*使用虚拟物品*/	
 
 
 ---------------------------------------------------------------------
@@ -8183,6 +8184,35 @@ function Protocols.unpack_talk_with_npc (pkt)
 end
 
 
+-- /*使用虚拟物品*/	
+function Protocols.pack_use_virtual_item ( entry)
+	local output = Packet.new(CMSG_USE_VIRTUAL_ITEM)
+	output:writeI16(entry)
+	return output
+end
+
+-- /*使用虚拟物品*/	
+function Protocols.call_use_virtual_item ( playerInfo, entry)
+	local output = Protocols.	pack_use_virtual_item ( entry)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*使用虚拟物品*/	
+function Protocols.unpack_use_virtual_item (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.entry = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -8407,6 +8437,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_set_title = self.call_set_title
 	playerInfo.call_pick_quest_reward = self.call_pick_quest_reward
 	playerInfo.call_talk_with_npc = self.call_talk_with_npc
+	playerInfo.call_use_virtual_item = self.call_use_virtual_item
 end
 
 local unpack_handler = {
@@ -8628,6 +8659,7 @@ local unpack_handler = {
 [CMSG_SET_TITLE] =  Protocols.unpack_set_title,
 [CMSG_PICK_QUEST_REWARD] =  Protocols.unpack_pick_quest_reward,
 [CMSG_TALK_WITH_NPC] =  Protocols.unpack_talk_with_npc,
+[CMSG_USE_VIRTUAL_ITEM] =  Protocols.unpack_use_virtual_item,
 
 }
 
