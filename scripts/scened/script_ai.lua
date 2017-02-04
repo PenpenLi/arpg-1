@@ -56,29 +56,13 @@ AI_Base = {
 	end,
 	JustDied =									--当被别人杀死前
 		function(self,map,owner,killer_ptr)
-			--如果被云飞玉皇二段打死。清理有效时间
-			if(GetUnitTypeID(killer_ptr) == TYPEID_PLAYER) then
-				local playerInfo = UnitInfo:new{ptr = killer_ptr}
-				local spell_id = unitLib.GetCurSpell(killer_ptr)
-				if spell_id == SPELL_ID_YUNFEIYUHUANG_2 then
-					--清理技能的有效时间
-					for _,val in pairs(spell_valid_time_config)do
-						playerInfo:SetSpellValid(val,0)
-					end
-				end
-			end
 			
-			for i = 0, MAX_UNIT_BUFF-1, 1 do
-				local unitInfo = UnitInfo:new{ptr = owner}
-				local buff_id = unitInfo:GetBuffByPos(i)
-				local config = tb_buff_template[buff_id]
-				if config and config.die_clear == 1 then	-- 有死亡清除标识
-					unitLib.RemoveBuff(owner, buff_id)
-					ClearBuffFlags(owner, buff_id)
-				end
+			-- 记录杀怪任务
+			local creatureInfo = UnitInfo:new {ptr = owner}
+			local entry = creatureInfo:GetEntry()
+			if GetUnitTypeID(killer_ptr) == TYPEID_PLAYER then
+				playerLib.SendToAppdDoSomething(killer_ptr, SCENED_APPD_KILL_MONSTER, entry)
 			end
-			
-			--统计全服杀怪人数
 			return 0							--返回尸体的存活时间
 		end,
 	--添加地图杀怪数
@@ -120,6 +104,7 @@ AI_Base = {
 			local map_ptr = unitLib.GetMap(owner)
 			local info = tb_creature_template[creature_entry]
 			if not info then return end
+			--[[
 			--先处理铜钱掉落
 			for i = 1, info.money_num do
 				--循环处理要掉落的铜钱堆数
@@ -132,14 +117,28 @@ AI_Base = {
 			end
 			
 			--处理道具掉落
-			-- local need_drop_items = self:ItemLoot(player_lv, player_gender, info,player,owner)		-- {{模板,数量,绑定与否,存在时间,保护时间}, }
-			
-			
+			local need_drop_items = self:ItemLoot(player_lv, player_gender, info,player,owner)		-- {{模板,数量,绑定与否,存在时间,保护时间}, }
+			for i = 1, #need_drop_items do
+				local drop_item_config = need_drop_items[i]
+				local loot_entry = drop_item_config[ 1 ]
+				local count      = drop_item_config[ 2 ]
+				if loot_entry == Item_Loot_Silver then
+					--playerInfo:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_SELECT_LOOT, drop_item_config[2])
+					AddLootGameObject(map_ptr, owner, player_guid, loot_entry, count, fcm)
+				else
+					for j = 1, drop_item_config[2] do
+						--playerLib.AddItem(player, loot_entry, 1, ITEM_BIND_NONE, LOG_ITEM_OPER_TYPE_LOOT)
+						AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 0, fcm, drop_item_config[4], drop_item_config[5], drop_item_config[6])
+					end
+				end
+			end
+			--]]
+			--[[
 			local drop_ids = info.reward_id
 			local rewardDict = {}
-			DoRandomDropTable(drop_ids, rewardDict)
-			
+			DoRandomDropTable(drop_ids, rewardDict)			
 			PlayerAddRewards(player, rewardDict)
+			--]]
 			-- --兽魂
 			-- local shouhun = self:ShouHunLoot(info) 
 			-- if shouhun > 0 then
@@ -167,7 +166,8 @@ AI_Base = {
 	end,
 	--处理道具掉落
 	ItemLoot = function( self, player_lv, player_gender, info,player,owner)
-		--[[local need_drop_items = {}
+		
+		local need_drop_items = {}
 		local drop_ids = info.reward_id
 		if #drop_ids == 0 then return need_drop_items end
 		
@@ -182,7 +182,8 @@ AI_Base = {
 				table.insert(need_drop_items, temp)
 			end
 		end
-		return need_drop_items--]]
+		return need_drop_items
+		
 	end,	
 }
 
