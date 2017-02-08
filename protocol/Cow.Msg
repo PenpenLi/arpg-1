@@ -651,6 +651,7 @@ field_death_cooldown,s2c,136,/*野外死亡倒计时*/,STATUS_NEVER,False
 mall_buy,c2s,137,/*商城购买*/,STATUS_NEVER,False
 	id,uint32,False,/*商品序列号*/
 	count,uint32,False,/*商品数量*/
+	time,uint32,False,/*时效ID*/
 
 #
 strength,c2s,139,/*强化*/,STATUS_NEVER,False
@@ -987,13 +988,22 @@ set_title,c2s,222,/*装备称号*/,STATUS_NEVER,False
 	id,uint8,False,/*称号序号*/
 
 #
+init_title,c2s,223,/*初始化称号*/,STATUS_NEVER,False
+	id,uint8,False,/*称号序号*/
+
+#
 pick_quest_reward,c2s,230,/*领取任务奖励*/,STATUS_NEVER,False
 	indx,uint8,False,/*任务序号*/
 	
 #
 talk_with_npc,c2s,231,/*和npc对话*/,STATUS_NEVER,False
 	entry,uint16,False,/*npcid*/
+	questId,uint16,False,/*任务id*/
 	
 #
 use_virtual_item,c2s,232,/*使用虚拟物品*/,STATUS_NEVER,False
 	entry,uint16,False,/*itemid*/
+
+#
+pick_quest_chapter_reward,c2s,233,/*领取任务章节奖励*/,STATUS_NEVER,False
+	indx,uint8,False,/*章节id*/

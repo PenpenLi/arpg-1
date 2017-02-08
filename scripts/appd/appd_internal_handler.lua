@@ -92,6 +92,10 @@ local function on_scened_player_upgrade( pkt )
 	-- 到C++中改变等级列表
 	playerLevelChanged(player_guid, prevLevel, player_lv)
 	
+	-- 等级解锁任务
+	for level = prevLevel + 1, player_lv do
+		player:AddLevelActiveQuest(level)
+	end
 	--[[
 	-- 如技能解锁
 	local socialSysInfo = player:getSocialSystem()

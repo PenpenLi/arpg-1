@@ -230,9 +230,11 @@ CMSG_GET_ACTIVITY_REWARD		= 218	-- /*活跃度奖励*/
 CMSG_GET_ACHIEVE_REWARD		= 220	-- /*成就奖励*/	
 CMSG_GET_ACHIEVE_ALL_REWARD		= 221	-- /*总成就奖励*/	
 CMSG_SET_TITLE		= 222	-- /*装备称号*/	
+CMSG_INIT_TITLE		= 223	-- /*初始化称号*/	
 CMSG_PICK_QUEST_REWARD		= 230	-- /*领取任务奖励*/	
 CMSG_TALK_WITH_NPC		= 231	-- /*和npc对话*/	
 CMSG_USE_VIRTUAL_ITEM		= 232	-- /*使用虚拟物品*/	
+CMSG_PICK_QUEST_CHAPTER_REWARD		= 233	-- /*领取任务章节奖励*/	
 
 
 ---------------------------------------------------------------------
@@ -5622,16 +5624,17 @@ end
 
 
 -- /*商城购买*/	
-function Protocols.pack_mall_buy ( id ,count)
+function Protocols.pack_mall_buy ( id ,count ,time)
 	local output = Packet.new(CMSG_MALL_BUY)
 	output:writeU32(id)
 	output:writeU32(count)
+	output:writeU32(time)
 	return output
 end
 
 -- /*商城购买*/	
-function Protocols.call_mall_buy ( playerInfo, id ,count)
-	local output = Protocols.	pack_mall_buy ( id ,count)
+function Protocols.call_mall_buy ( playerInfo, id ,count ,time)
+	local output = Protocols.	pack_mall_buy ( id ,count ,time)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -5646,6 +5649,10 @@ function Protocols.unpack_mall_buy (pkt)
 		return false
 	end	
 	ret,param_table.count = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.time = input:readU32()
 	if not ret then
 		return false
 	end	
@@ -8126,6 +8133,35 @@ function Protocols.unpack_set_title (pkt)
 end
 
 
+-- /*初始化称号*/	
+function Protocols.pack_init_title ( id)
+	local output = Packet.new(CMSG_INIT_TITLE)
+	output:writeByte(id)
+	return output
+end
+
+-- /*初始化称号*/	
+function Protocols.call_init_title ( playerInfo, id)
+	local output = Protocols.	pack_init_title ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*初始化称号*/	
+function Protocols.unpack_init_title (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 -- /*领取任务奖励*/	
 function Protocols.pack_pick_quest_reward ( indx)
 	local output = Packet.new(CMSG_PICK_QUEST_REWARD)
@@ -8156,15 +8192,16 @@ end
 
 
 -- /*和npc对话*/	
-function Protocols.pack_talk_with_npc ( entry)
+function Protocols.pack_talk_with_npc ( entry ,questId)
 	local output = Packet.new(CMSG_TALK_WITH_NPC)
 	output:writeI16(entry)
+	output:writeI16(questId)
 	return output
 end
 
 -- /*和npc对话*/	
-function Protocols.call_talk_with_npc ( playerInfo, entry)
-	local output = Protocols.	pack_talk_with_npc ( entry)
+function Protocols.call_talk_with_npc ( playerInfo, entry ,questId)
+	local output = Protocols.	pack_talk_with_npc ( entry ,questId)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -8175,6 +8212,10 @@ function Protocols.unpack_talk_with_npc (pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.entry = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.questId = input:readU16()
 	if not ret then
 		return false
 	end
@@ -8204,6 +8245,35 @@ function Protocols.unpack_use_virtual_item (pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.entry = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*领取任务章节奖励*/	
+function Protocols.pack_pick_quest_chapter_reward ( indx)
+	local output = Packet.new(CMSG_PICK_QUEST_CHAPTER_REWARD)
+	output:writeByte(indx)
+	return output
+end
+
+-- /*领取任务章节奖励*/	
+function Protocols.call_pick_quest_chapter_reward ( playerInfo, indx)
+	local output = Protocols.	pack_pick_quest_chapter_reward ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取任务章节奖励*/	
+function Protocols.unpack_pick_quest_chapter_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readByte()
 	if not ret then
 		return false
 	end
@@ -8435,9 +8505,11 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_get_achieve_reward = self.call_get_achieve_reward
 	playerInfo.call_get_achieve_all_reward = self.call_get_achieve_all_reward
 	playerInfo.call_set_title = self.call_set_title
+	playerInfo.call_init_title = self.call_init_title
 	playerInfo.call_pick_quest_reward = self.call_pick_quest_reward
 	playerInfo.call_talk_with_npc = self.call_talk_with_npc
 	playerInfo.call_use_virtual_item = self.call_use_virtual_item
+	playerInfo.call_pick_quest_chapter_reward = self.call_pick_quest_chapter_reward
 end
 
 local unpack_handler = {
@@ -8657,9 +8729,11 @@ local unpack_handler = {
 [CMSG_GET_ACHIEVE_REWARD] =  Protocols.unpack_get_achieve_reward,
 [CMSG_GET_ACHIEVE_ALL_REWARD] =  Protocols.unpack_get_achieve_all_reward,
 [CMSG_SET_TITLE] =  Protocols.unpack_set_title,
+[CMSG_INIT_TITLE] =  Protocols.unpack_init_title,
 [CMSG_PICK_QUEST_REWARD] =  Protocols.unpack_pick_quest_reward,
 [CMSG_TALK_WITH_NPC] =  Protocols.unpack_talk_with_npc,
 [CMSG_USE_VIRTUAL_ITEM] =  Protocols.unpack_use_virtual_item,
+[CMSG_PICK_QUEST_CHAPTER_REWARD] =  Protocols.unpack_pick_quest_chapter_reward,
 
 }
 

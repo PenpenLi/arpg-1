@@ -417,11 +417,12 @@ equip_attr_type = {
 	[EQUIP_ATTR_MEILI			] = "meili",
 	[EQUIP_ATTR_PHYSICAL		] = "physical",
 	[EQUIP_ATTR_MOVE_SPD		] = "mvspd",
+	]]
 	[ITEM_OTHER_ATTR_FAIL_TIME 	] = "ifailtm",
 	[ITEM_OTHER_ATTR_STRONG_LV 	] = "istronglv",
 	[ITEM_OTHER_ATTR_STRONG_FAIL_COUNT] = "isfcount",
 	[ITEM_OTHER_ATTR_FORCE		] = "force",	
-	]]
+	
 }
 
 --通过属性类型获得对应的key

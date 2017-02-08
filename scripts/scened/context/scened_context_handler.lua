@@ -772,12 +772,13 @@ end
 -- 和NPC对话
 function ScenedContext:Handle_Talk_With_Npc(pkt)
 	local entry = pkt.entry
+	local questId = pkt.questId
 	
 	if not tb_creature_template[entry] then
 		return
 	end
 	
-	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_TALK, entry)
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_TALK, entry, ""..questId)
 end
 
 --[[-- 换线

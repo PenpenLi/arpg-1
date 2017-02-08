@@ -89,3 +89,4 @@ require("template.tables.tb_title_base")
 
 -- 任务
 require("template.tables.tb_quest")
+require("template.tables.tb_quest_chapter")

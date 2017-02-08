@@ -100,10 +100,13 @@ hanlders[CMSG_GET_ACTIVITY_REWARD] = PlayerInfo.Handle_Avtive_Reward
 hanlders[CMSG_GET_ACHIEVE_REWARD] = PlayerInfo.Handle_Achieve_Reward
 hanlders[CMSG_GET_ACHIEVE_ALL_REWARD] = PlayerInfo.Handle_Achieve_All_Reward
 hanlders[CMSG_SET_TITLE] = PlayerInfo.Handle_Set_Title
+hanlders[CMSG_INIT_TITLE] = PlayerInfo.Handle_Init_Title
 
 
 --------------------------------
 hanlders[CMSG_PICK_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest
+
+hanlders[CMSG_PICK_QUEST_CHAPTER_REWARD] = PlayerInfo.Handle_Pick_Quest_Chapter_Reward
 
 hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 

@@ -21,6 +21,11 @@ function PlayerInfo:Handle_Set_Title(pkt)
 	local id = pkt.id
 	self:SetTitle(id)
 end
+--初始化称号
+function PlayerInfo:Handle_Init_Title(pkt)
+	local id = pkt.id
+	self:InitTitle(id)
+end
 
 -- 领取任务奖励(包括进行下一步任务)
 function PlayerInfo:Handle_Pick_Quest(pkt)
@@ -32,4 +37,10 @@ function PlayerInfo:Handle_Pick_Quest(pkt)
 	end
 	
 	self:pickQuest(indx)
+end
+
+-- 领取章节奖励
+function PlayerInfo:Handle_Pick_Quest_Chapter_Reward(pkt)
+	local indx = pkt.indx
+	
 end

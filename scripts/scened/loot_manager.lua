@@ -35,8 +35,10 @@ function AddLootGameObject(map, unit, player_id, loot_entry, bind_state, fcm,exi
 	if(cons_ok)then
 		--这里太频繁调用了，就不封装成类了，要不然每次都得new
 		local public_obj, private_obj, index = mapLib.GetLootObject(map, x, y)		
-		--outDebug(string.format('AddLootGameObject %f %f %u', x, y, index))
-		
+		outDebug(string.format('AddLootGameObject %f %f %d', x, y, index))
+		if index < 0 then
+			return false
+		end
 		local guid = binLogLib.GetStr(unit, BINLOG_STRING_FIELD_GUID)
 		local name = binLogLib.GetStr(unit, BINLOG_STRING_FIELD_NAME)
 		local flags_int = 0

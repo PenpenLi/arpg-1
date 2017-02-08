@@ -1110,8 +1110,22 @@ end
 
 -- 增加主线任务
 function PlayerInfo:AddFirstQuest()
+	local level = self:GetLevel()
+	self:AddLevelActiveQuest(level)
+end
+
+-- 增加等级解锁的任务
+function PlayerInfo:AddLevelActiveQuest(level)
+	if not tb_char_level[level] then
+		return
+	end
+	
+	local quests = tb_char_level[level].activeQuests
 	local questMgr = self:getQuestMgr()
-	questMgr:OnAddQuest(INIT_QUEST_ID)
+	
+	for _, questId in pairs(quests) do
+		questMgr:OnAddQuest(questId)
+	end
 end
 
 -- 获得当前主线任务id
@@ -1122,6 +1136,16 @@ end
 -- 设置当前主线任务id
 function PlayerInfo:SetMainQuestID(value)
 	self:SetUInt32(PLAYER_INT_FIELD_MAIN_QUEST_ID, value)
+end
+
+-- 章节奖励是否领取
+function PlayerInfo:IsQuestChapterPicked(indx)
+	return self:GetBit(PLAYER_INT_FIELD_QUEST_CHAPTER, indx)
+end
+
+-- 设置章节奖励领取
+function PlayerInfo:SetQuestChapterPicked(indx)
+	self:SetBit(PLAYER_INT_FIELD_QUEST_CHAPTER, indx)
 end
 
 -- 关闭连接

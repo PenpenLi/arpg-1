@@ -53,7 +53,30 @@ function  DoGMScripts(player_ptr, gm_commands)
 			player:SetResetDailyTime(tonumber(tokens[2]), os.time()-86400)
 		end
 		player:DoResetDaily()
-
+	
+	elseif(tokens[1] == "@选择主线")then
+		if tokens[2] then
+			local id = tonumber(tokens[ 2 ])
+			if id then
+				if tb_quest[id].type == QUEST_TYPE_MAIN then
+					local questMgr = player:getQuestMgr()
+					questMgr:OnSelectMainQuest(id)
+				end
+			end
+		end
+	elseif(tokens[1] == "@下一个主线")then
+		if tokens[2] then
+			local id = tonumber(tokens[ 2 ])
+			if id then
+				if tb_quest[id].type == QUEST_TYPE_MAIN then
+					local nextid = tb_quest[id].nextid
+					if nextid > 0 then
+						local questMgr = player:getQuestMgr()
+						questMgr:OnSelectMainQuest(nextid)
+					end
+				end
+			end
+		end
 	elseif(tokens[1] == "@军团等级")then
 		local faction = app.objMgr:getObj(player:GetFactionId())
 		if (faction ~= nil) then
@@ -65,7 +88,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 				level = 5
 			end
 			faction:SetFactionLevel(level)
-		end		
+		end
 
 	elseif(tokens[1] == "@声望")then		
 		if(#tokens == 2)then

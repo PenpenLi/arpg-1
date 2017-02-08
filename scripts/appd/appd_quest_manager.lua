@@ -76,6 +76,7 @@ function AppQuestMgr:addTitle(id)
 	for i=QUEST_FIELD_TITLE_START,QUEST_FIELD_TITLE_END-1,MAX_TITLE_FIELD do
 		if self:GetUInt16(i,0) == 0 then
 			self:SetUInt16(i,0,id)
+			self:SetUInt16(i,1,0)
 			if config.limtime > 0 then
 				self:SetUInt32(i + TITLE_FIELD_TIME,os.time() + config.limtime * 60)
 			else
@@ -96,6 +97,13 @@ function AppQuestMgr:hasTitle(id)
 		end
 	end
 	return false,0
+end
+
+--初始化称号
+function AppQuestMgr:initTitle(idx)
+	if self:GetUInt16(idx,1) == 0 then
+		self:SetUInt16(idx,1,1)
+	end
 end
 
 --称号装备重算
@@ -181,6 +189,14 @@ function AppQuestMgr:ActiveFlowingQuests(questId)
 	end
 end
 
+-- 领取章节奖励
+function AppQuestMgr:OnPickQuestChapterReward(indx)
+	local rewards = tb_quest_chapter[indx].items
+	local playerInfo = self:getOwner()
+	playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
+	--playerInfo:SetQuestChapterPicked(indx)
+end
+
 -- 领取奖励
 function AppQuestMgr:OnPickQuest(indx)
 	local start = QUEST_FIELD_QUEST_START + indx * MAX_QUEST_INFO_COUNT
@@ -197,8 +213,25 @@ function AppQuestMgr:OnPickQuest(indx)
 				gender = 1
 			end
 			local rewards = tb_quest[questId].rewards[gender]
-			-- 这里判断背包满了就不能领取
+			-- 判断背包格子是否足够
+			local itemMgr = playerInfo:getItemMgr()
+			local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
+			if emptys < #rewards then
+				playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
+				return
+			end
 			playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
+		end
+		
+		-- 如果是主线任务 当前主线任务id + 1000000 表示完成
+		if tb_quest[questId].type == QUEST_TYPE_MAIN then
+			playerInfo:SetMainQuestID(1000000 + questId)
+		end
+		
+		-- 如果是章节最后一个任务 自动领取章节奖励
+		if tb_quest[questId].chapterLast == 1 then
+			local chapterIndex = tb_quest[questId].chapter
+			self:OnPickQuestChapterReward(chapterIndex)
 		end
 		self:ActiveFlowingQuests(questId)
 	end
@@ -292,6 +325,29 @@ function AppQuestMgr:OnRemoveQuestByQuestID(removeQuestId)
 			return
 		end
 	end
+end
+
+-- 选择主线任务
+function AppQuestMgr:OnSelectMainQuest(id)
+	-- 换的不是主线任务 不让换
+	if tb_quest[id].type ~= QUEST_TYPE_MAIN then
+		return
+	end
+	
+	-- 删除原来的主线任务
+	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+
+		if questId > 0 then
+			if tb_quest[questId].type == QUEST_TYPE_MAIN then
+				self:OnRemoveQuest(start)
+				break
+			end
+		end
+	end
+	
+	-- 加入新的主线任务
+	self:OnAddQuest(id)
 end
 
 -- 遍历任务是否需要更新

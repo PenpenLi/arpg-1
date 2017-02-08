@@ -64,7 +64,7 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_SKILL_SUCCESS)
 	
 	local questMgr = self:getQuestMgr()
-	questMgr:OnUpdate(QUEST_TARGET_TYPE_RAISE_SKILL, {spellId, spellLv})
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_RAISE_SKILL, {spellId})
 	
 	outFmtInfo("raise spell %d success, from %d to %d", spellId, prev, spellLv)
 end

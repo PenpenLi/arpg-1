@@ -47,6 +47,6 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		-- 对话
 		-- 加任务
 		local questMgr = self:getQuestMgr()
-		questMgr:OnUpdate(QUEST_TARGET_TYPE_TALK, {data})
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_TALK, {data, tonumber(str)})
 	end
 end

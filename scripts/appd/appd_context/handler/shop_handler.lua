@@ -2,6 +2,7 @@
 function PlayerInfo:Handle_Store_Buy(pkt)
 	local itemId	= pkt.id
 	local count		= pkt.count
+	local timeID 	= pkt.time
 	
 	-- 判断道具是否存在
 	if not tb_store[itemId] then
@@ -21,6 +22,7 @@ end
 function PlayerInfo:Handle_Mall_Buy(pkt)
 	local id	= pkt.id
 	local count	= pkt.count
+	local timeid = pkt.time
 	
 	-- 判断道具是否存在
 	if not tb_shop[id] then
@@ -32,7 +34,7 @@ function PlayerInfo:Handle_Mall_Buy(pkt)
 		return
 	end
 	
-	self:shopBuyItem(id, count)
+	self:shopBuyItem(id, count,timeid)
 	
 end
 

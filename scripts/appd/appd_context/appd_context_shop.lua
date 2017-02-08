@@ -18,7 +18,7 @@ function PlayerInfo:storeBuyItem(itemId, count)
 end
 
 -- 商城购买物品
-function PlayerInfo:shopBuyItem(id, count)
+function PlayerInfo:shopBuyItem(id, count, timeid)
 
 	local itemMgr = self:getItemMgr()
 	
@@ -72,12 +72,34 @@ function PlayerInfo:shopBuyItem(id, count)
 		
 	end
 	
+	local baseCostTable
+	local itemendtime = 0
+	if #config.timeCostResource > 0 and timeid > 0 then
+		
+		if not config.timeCostResource[timeid] then
+			return
+		end
+		baseCostTable = {}
+		
+		local timeitemtab = {}
+		table.insert(timeitemtab,config.timeCostResource[timeid][1]) 
+		table.insert(timeitemtab,config.timeCostResource[timeid][2]) 
+		
+		table.insert(baseCostTable,timeitemtab)
+		
+		itemendtime = os.time() + config.timeCostResource[timeid][3] * 24 * 60 * 60
+	elseif timeid == 0 then
+		baseCostTable = config.costResource
+	else 
+		return
+	end
+	
 	
 	--折扣
 	local discount = config.discount / 10.0	
 	local costTable = {}
 	if discount ~= 1 then
-		for k,v in ipairs(config.costResource) do
+		for k,v in ipairs(baseCostTable) do
 			--table.insert(costTable,)
 			local itemtab = {}
 			table.insert(itemtab,v[1]) 
@@ -86,7 +108,7 @@ function PlayerInfo:shopBuyItem(id, count)
 			table.insert(costTable,itemtab)
 		end
 	else
-		costTable = config.costResource
+		costTable = baseCostTable
 	end
 	
 	if not self:costMoneys(MONEY_CHANGE_TYPE_MALL_BUY, costTable, added) then
@@ -94,7 +116,7 @@ function PlayerInfo:shopBuyItem(id, count)
 		return
 	end
 	
-	self:PlayerAddItem(entry,added,LOG_ITEM_OPER_TYPE_SHOP_BUY)
+	self:PlayerAddItem(entry,added,LOG_ITEM_OPER_TYPE_SHOP_BUY,itemendtime)
 	
 	if limtype ~= 0 then--限购
 		self:addShopLimtNum(config.id,added)

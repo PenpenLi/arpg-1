@@ -101,6 +101,11 @@ end
 function PlayerInfo:SetTitle(id)
 	local questMgr = self:getQuestMgr()
 	local has,idx = questMgr:hasTitle(id)
+	
+	if has and id ~=0 then
+		questMgr:initTitle(idx)
+	end
+	
 	if id == 0 then
 		has = true
 	end
@@ -112,6 +117,15 @@ function PlayerInfo:SetTitle(id)
 		self:CallOptResult(OPRATE_TYPE_ACHIEVE, ACHIEVE_OPERATE_TITLE_FAL)
 	end
 	self:RecalcAttrAndBattlePoint()
+end
+--初始化称号
+function PlayerInfo:InitTitle(id)
+	local questMgr = self:getQuestMgr()
+	local has,idx = questMgr:hasTitle(id)
+	
+	if has and id ~=0 then
+		questMgr:initTitle(idx)
+	end
 end
 --称号装备重算
 function PlayerInfo:calculTitleAttr(attrs)

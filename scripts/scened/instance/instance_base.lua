@@ -735,6 +735,12 @@ Instance_base = {
 	-- 初始化采集物
 	OnInitGameObject = 
 		function(self)
+			local time = os.time()
+			local startTime = self:GetMapCreateTime()
+			if time - startTime > 2 then
+				return
+			end
+			
 			local mapid = self:GetMapId()
 			if tb_map_gameobject[mapid] then
 				local objects = tb_map_gameobject[mapid].gameobjects
