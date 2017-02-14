@@ -231,10 +231,17 @@ CMSG_GET_ACHIEVE_REWARD		= 220	-- /*成就奖励*/
 CMSG_GET_ACHIEVE_ALL_REWARD		= 221	-- /*总成就奖励*/	
 CMSG_SET_TITLE		= 222	-- /*装备称号*/	
 CMSG_INIT_TITLE		= 223	-- /*初始化称号*/	
+CMSG_WELFARE_SHOUCHONG_REWARD		= 224	-- /*领取首充奖励*/	
+CMSG_WELFARE_CHECKIN		= 225	-- /*每日签到奖励*/	
+CMSG_WELFARE_CHECKIN_ALL		= 226	-- /*累积签到奖励*/	
+CMSG_WELFARE_CHECKIN_GETBACK		= 227	-- /*补签奖励*/	
+CMSG_WELFARE_LEVEL		= 228	-- /*等级奖励*/	
+CMSG_WELFARE_ACTIVE_GETBACK		= 229	-- /*活动找回奖励*/	
 CMSG_PICK_QUEST_REWARD		= 230	-- /*领取任务奖励*/	
 CMSG_TALK_WITH_NPC		= 231	-- /*和npc对话*/	
 CMSG_USE_VIRTUAL_ITEM		= 232	-- /*使用虚拟物品*/	
 CMSG_PICK_QUEST_CHAPTER_REWARD		= 233	-- /*领取任务章节奖励*/	
+CMSG_KUAFU_3V3_MATCH		= 234	-- /*3v3跨服匹配*/	
 
 
 ---------------------------------------------------------------------
@@ -8162,6 +8169,182 @@ function Protocols.unpack_init_title (pkt)
 end
 
 
+-- /*领取首充奖励*/	
+function Protocols.pack_welfare_shouchong_reward (  )
+	local output = Packet.new(CMSG_WELFARE_SHOUCHONG_REWARD)
+	return output
+end
+
+-- /*领取首充奖励*/	
+function Protocols.call_welfare_shouchong_reward ( playerInfo )
+	local output = Protocols.	pack_welfare_shouchong_reward (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取首充奖励*/	
+function Protocols.unpack_welfare_shouchong_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*每日签到奖励*/	
+function Protocols.pack_welfare_checkin (  )
+	local output = Packet.new(CMSG_WELFARE_CHECKIN)
+	return output
+end
+
+-- /*每日签到奖励*/	
+function Protocols.call_welfare_checkin ( playerInfo )
+	local output = Protocols.	pack_welfare_checkin (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*每日签到奖励*/	
+function Protocols.unpack_welfare_checkin (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*累积签到奖励*/	
+function Protocols.pack_welfare_checkin_all ( id)
+	local output = Packet.new(CMSG_WELFARE_CHECKIN_ALL)
+	output:writeByte(id)
+	return output
+end
+
+-- /*累积签到奖励*/	
+function Protocols.call_welfare_checkin_all ( playerInfo, id)
+	local output = Protocols.	pack_welfare_checkin_all ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*累积签到奖励*/	
+function Protocols.unpack_welfare_checkin_all (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*补签奖励*/	
+function Protocols.pack_welfare_checkin_getback ( id)
+	local output = Packet.new(CMSG_WELFARE_CHECKIN_GETBACK)
+	output:writeByte(id)
+	return output
+end
+
+-- /*补签奖励*/	
+function Protocols.call_welfare_checkin_getback ( playerInfo, id)
+	local output = Protocols.	pack_welfare_checkin_getback ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*补签奖励*/	
+function Protocols.unpack_welfare_checkin_getback (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*等级奖励*/	
+function Protocols.pack_welfare_level ( id)
+	local output = Packet.new(CMSG_WELFARE_LEVEL)
+	output:writeByte(id)
+	return output
+end
+
+-- /*等级奖励*/	
+function Protocols.call_welfare_level ( playerInfo, id)
+	local output = Protocols.	pack_welfare_level ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*等级奖励*/	
+function Protocols.unpack_welfare_level (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*活动找回奖励*/	
+function Protocols.pack_welfare_active_getback ( id ,best ,num)
+	local output = Packet.new(CMSG_WELFARE_ACTIVE_GETBACK)
+	output:writeByte(id)
+	output:writeByte(best)
+	output:writeI16(num)
+	return output
+end
+
+-- /*活动找回奖励*/	
+function Protocols.call_welfare_active_getback ( playerInfo, id ,best ,num)
+	local output = Protocols.	pack_welfare_active_getback ( id ,best ,num)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*活动找回奖励*/	
+function Protocols.unpack_welfare_active_getback (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.best = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.num = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 -- /*领取任务奖励*/	
 function Protocols.pack_pick_quest_reward ( indx)
 	local output = Packet.new(CMSG_PICK_QUEST_REWARD)
@@ -8279,6 +8462,31 @@ function Protocols.unpack_pick_quest_chapter_reward (pkt)
 	end
 
 	return true,param_table	
+
+end
+
+
+-- /*3v3跨服匹配*/	
+function Protocols.pack_kuafu_3v3_match (  )
+	local output = Packet.new(CMSG_KUAFU_3V3_MATCH)
+	return output
+end
+
+-- /*3v3跨服匹配*/	
+function Protocols.call_kuafu_3v3_match ( playerInfo )
+	local output = Protocols.	pack_kuafu_3v3_match (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*3v3跨服匹配*/	
+function Protocols.unpack_kuafu_3v3_match (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
 
 end
 
@@ -8506,10 +8714,17 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_get_achieve_all_reward = self.call_get_achieve_all_reward
 	playerInfo.call_set_title = self.call_set_title
 	playerInfo.call_init_title = self.call_init_title
+	playerInfo.call_welfare_shouchong_reward = self.call_welfare_shouchong_reward
+	playerInfo.call_welfare_checkin = self.call_welfare_checkin
+	playerInfo.call_welfare_checkin_all = self.call_welfare_checkin_all
+	playerInfo.call_welfare_checkin_getback = self.call_welfare_checkin_getback
+	playerInfo.call_welfare_level = self.call_welfare_level
+	playerInfo.call_welfare_active_getback = self.call_welfare_active_getback
 	playerInfo.call_pick_quest_reward = self.call_pick_quest_reward
 	playerInfo.call_talk_with_npc = self.call_talk_with_npc
 	playerInfo.call_use_virtual_item = self.call_use_virtual_item
 	playerInfo.call_pick_quest_chapter_reward = self.call_pick_quest_chapter_reward
+	playerInfo.call_kuafu_3v3_match = self.call_kuafu_3v3_match
 end
 
 local unpack_handler = {
@@ -8730,10 +8945,17 @@ local unpack_handler = {
 [CMSG_GET_ACHIEVE_ALL_REWARD] =  Protocols.unpack_get_achieve_all_reward,
 [CMSG_SET_TITLE] =  Protocols.unpack_set_title,
 [CMSG_INIT_TITLE] =  Protocols.unpack_init_title,
+[CMSG_WELFARE_SHOUCHONG_REWARD] =  Protocols.unpack_welfare_shouchong_reward,
+[CMSG_WELFARE_CHECKIN] =  Protocols.unpack_welfare_checkin,
+[CMSG_WELFARE_CHECKIN_ALL] =  Protocols.unpack_welfare_checkin_all,
+[CMSG_WELFARE_CHECKIN_GETBACK] =  Protocols.unpack_welfare_checkin_getback,
+[CMSG_WELFARE_LEVEL] =  Protocols.unpack_welfare_level,
+[CMSG_WELFARE_ACTIVE_GETBACK] =  Protocols.unpack_welfare_active_getback,
 [CMSG_PICK_QUEST_REWARD] =  Protocols.unpack_pick_quest_reward,
 [CMSG_TALK_WITH_NPC] =  Protocols.unpack_talk_with_npc,
 [CMSG_USE_VIRTUAL_ITEM] =  Protocols.unpack_use_virtual_item,
 [CMSG_PICK_QUEST_CHAPTER_REWARD] =  Protocols.unpack_pick_quest_chapter_reward,
+[CMSG_KUAFU_3V3_MATCH] =  Protocols.unpack_kuafu_3v3_match,
 
 }
 

@@ -44,7 +44,9 @@ function  DoGMScripts(player_ptr, gm_commands)
 		end
 		
 		player:SetDailyOnlineTime(minute)
-			
+		
+	elseif(tokens[1] == "@http") then
+		player:OnWorld3v3Match()
 	elseif(tokens[1] == "@重置")then		
 		if(#tokens > 2)then
 			return result
@@ -1026,7 +1028,12 @@ function  DoGMScripts(player_ptr, gm_commands)
 	elseif(tokens[1] == "@军功")then
 		local val = paras[2] or 1
 		player:SetUInt32(PLAYER_INT_FIELD_JUNGONG,val)
-
+	elseif(tokens[1] == "@签到")then
+		if(#tokens < 2)then
+			return result
+		end
+		local day = paras[2]
+		player:WelfareCheckIn(day)
 	elseif(tokens[1] == "@制造")then
 		
 		if(#tokens < 2)then
@@ -1215,6 +1222,13 @@ function  DoGMScripts(player_ptr, gm_commands)
 		local level = paras[3] or 1 
 		player:SetSpellSysSpellLevel(spell_id,level)
 		playerLib.SendAttr(player_ptr)
+	elseif tokens[1] == "@找回重置" then
+		player:SetWelfareBackAllNum()
+	elseif tokens[1] == "@找回" then
+		if(#tokens < 4)then
+			return result
+		end
+		player:AddWelfareBackGmLog(paras[2],paras[3],paras[4])
 	elseif tokens[1] == "@成就" then
 		if(#tokens < 3)then
 			return result

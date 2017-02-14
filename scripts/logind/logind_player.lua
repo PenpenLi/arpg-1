@@ -48,11 +48,12 @@ function LogindPlayer:SetTeleportInfo(mapid, posx, posy, general_id)
 	end
 end
 
+KUAFU_FENGLIUZHEN_MAPID = 3002
 --pk服，根据跨服类型选择要传送到的地图id
 function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number)
 	if(kuafu_type == KUAFU_TYPE_FENGLIUZHEN)then	
 		local general_id = string.format("flz_%d", warid)		--warid即房间id
-		self:SetTeleportInfo(KUAFU_FENGLIUZHEN_MAPID, 30, 30, general_id)
+		self:SetTeleportInfo(KUAFU_FENGLIUZHEN_MAPID, 19, 64, general_id)
 		
 	end
 	
@@ -184,6 +185,11 @@ function LogindPlayer:SetResistCritMultiple(val)
 	self:SetDouble(PLAYER_FIELD_RESIST_CRIT_MULTIPLE, val)
 end
 
+-- 设置战力
+function LogindPlayer:SetForce(val)
+	self:SetDouble(PLAYER_FIELD_FORCE, val)
+end
+
 -- LogindPlayer的属性映射方法
 InitAttrFunc = {
 	[EQUIP_ATTR_MAXHEALTH] = LogindPlayer.SetMaxhealth,
@@ -224,6 +230,10 @@ function LogindPlayer:SetNewPlayerInfo()
 			end
 		end
 	end
+	
+	-- 计算战力
+	local force = DoAnyOneCalcForceByAry(config.prop)
+	self:SetForce(force)
 
 	-- 初始化玩家技能
 	local gender = self:GetGender()

@@ -163,14 +163,15 @@ end
 
 --坐骑属性加成
 function AppSpellMgr:calculMountAttr(attrs)
+	local player = self:getOwner()
+	
 	local allForce = 0
 	local level = self:getMountLevel()
 	local star  = self:getMountStar()
 	local seq = (level - 1) * 11 + star + 1
 	local trainConfig = tb_mount_train[seq]
 	
-	if trainConfig then	
-		attrs[EQUIP_ATTR_MOVE_SPEED] = tb_mount_base[level].speed
+	if trainConfig then
 		local baseForce = DoAnyOneCalcForceByAry(trainConfig.pros)
 		allForce = allForce + baseForce
 		
@@ -181,11 +182,11 @@ function AppSpellMgr:calculMountAttr(attrs)
 			if attrs[indx] == nil then
 				attrs[indx] = 0
 			end
-			attrs[indx] = attrs[indx] + val[ 2 ]
+			if indx ~= EQUIP_ATTR_MOVE_SPEED then
+				attrs[indx] = attrs[indx] + val[ 2 ]
+			end
 		end
 	end
-	
-	local player = self:getOwner()
 		
 	-- 坐骑进阶技能战力
 	local nonForce = 0

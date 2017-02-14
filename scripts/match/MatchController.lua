@@ -1,4 +1,17 @@
 
+require('match.config.CombineExpandConfig')
+require('match.config.MatchConfig')
+require('match.config.MatchExpandConfig')
+
+require('match.CombineTRExpander')
+require('match.MatchManager')
+require('match.MatchProcessor')
+require('match.MatchProcessorNotifier')
+require('match.MatchTask')
+require('match.MatchTRExpander')
+require('match.TeamPart')
+require('match.User')
+
 local matchProcessor
 
 function initMatch()
@@ -23,7 +36,7 @@ function submitMatchTask(userList)
 end
 
 function cancelMatch(id)
-	local task = getMatchTask(id)
+	local task = MatchManager.getMatchTask(id)
 	if task then
 		matchProcessor:cancelMatch(task)
 	end

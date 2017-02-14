@@ -257,3 +257,61 @@ function ToShowName(playerName)
 	
 	return str
 end
+
+-- 获得今天刚开始的时间戳
+function GetTodayStartTimestamp(days)
+	local cur_date = os.date('*t', os.time())
+	cur_date.hour = 0
+	cur_date.sec = 0
+	cur_date.min = 0
+	return os.time(cur_date) + days * 86400
+end
+-- 价格打折
+function GetCostMulTab(baseTab,mul)
+	
+	if mul == 1 then
+		return baseTab
+	else 
+		local resultdic = {}
+		for _,v in ipairs(baseTab) do
+			local tab = {}
+			table.insert(tab,v[1])
+			table.insert(tab,math.ceil(v[2] * mul))
+			
+			table.insert(resultdic,tab)
+		end
+		return resultdic
+	end
+
+end
+
+-- 获得玩家的当前速度
+function GetPlayerSpeed(playerLevel, mountLevel, illusionId, isRidable)
+	local speed = 0
+	
+	-- 未骑乘的取玩家速度
+	if not isRidable then
+		local config = tb_char_level[playerLevel]
+		if config then
+			for _, val in ipairs(config.prop) do
+				local indx = val[ 1 ]
+				if indx == EQUIP_ATTR_MOVE_SPEED then
+					return val[ 2 ]
+				end
+			end
+		end
+		outFmtError("player level = %d has no speed attr", playerLevel)
+		return 60
+	end
+
+	if tb_mount_base[mountLevel] then
+		speed = tb_mount_base[mountLevel].speed
+	end
+	if illusionId > 0 then
+		if speed < tb_mount_illusion[illusionId].speed then
+			speed = tb_mount_illusion[illusionId].speed
+		end
+	end
+	
+	return speed
+end

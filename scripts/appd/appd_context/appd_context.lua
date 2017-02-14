@@ -71,9 +71,10 @@ end
 --[[
 rewardDict :  {{itemId, count},{itemId1, count1}}
 --]]
-function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, deadline)
+function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline)
+	times = times or 1
 	deadline = deadline or 0
-	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, deadline)
+	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline)
 	-- 获得信息
 	local dict = changeTableStruct(rewardDict)
 	local list = Change_To_Item_Reward_Info(dict)
@@ -84,7 +85,8 @@ end
 有可能场景服发来的增加道具的接口也是这个
 rewardDict :  {{itemId, count},{itemId1, count1}}
 --]]
-function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, deadline)
+function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline)
+	times = times or 1
 	money_oper_type = money_oper_type or MONEY_CHANGE_SELECT_LOOT
 	item_oper_type  = item_oper_type  or LOG_ITEM_OPER_TYPE_LOOT
 	deadline	= deadline or 0
@@ -94,7 +96,7 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 	for _, itemInfo in pairs(rewardDict) do
 		
 		local itemId = itemInfo[ 1 ]
-		local count  = itemInfo[ 2 ]		
+		local count  = itemInfo[ 2 ] * times
 		if IsResource(itemId) then
 			-- 加人物资源
 			local moneyType = GetMoneyType(itemId)
@@ -164,6 +166,14 @@ end
 -- 骑乘状态
 function PlayerInfo:rideFlag()
 	return self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 2)
+end
+
+-- 设置骑乘状态
+function PlayerInfo:SetRideState(val)
+	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 2, val)
+	local spellMgr = self:getSpellMgr()
+	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide())
+	self:SetMoveSpeed(speed)
 end
 
 -- 幻化id
@@ -652,13 +662,20 @@ end
 
 --pk服玩家登陆做点啥
 function PlayerInfo:LoginPk()
- end 
+end 
 
 --玩家下线后
 function PlayerInfo:Logout ()
+	local isPkServer = globalGameConfig:IsPKServer()
+	if isPkServer then
+		return
+	end
+	
 	--清空好友申请列表
 	self:socialLogOut()
 	self:factionLogOut()
+	-- 取消跨服匹配
+	self:OnCancelKuafuMatch()
 end
 
 --有多少个物品
@@ -1148,6 +1165,14 @@ function PlayerInfo:SetQuestChapterPicked(indx)
 	self:SetBit(PLAYER_INT_FIELD_QUEST_CHAPTER, indx)
 end
 
+function PlayerInfo:GetMatchingKuafuType()
+	return self:GetUInt32(PLAYER_APPD_INT_FIELD_MATCHING_KUAFU_TPYE)
+end
+
+function PlayerInfo:SetMatchingKuafuType(kuafuType)
+	self:SetUInt32(PLAYER_APPD_INT_FIELD_MATCHING_KUAFU_TPYE, kuafuType)
+end
+
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)
 	if is_force == nil then is_force = false end
@@ -1177,6 +1202,8 @@ require("appd/appd_context/appd_context_social")
 require("appd/appd_context/appd_context_shop")
 require("appd/appd_context/appd_context_giftpacks")
 require("appd/appd_context/appd_context_achieve_title")
+require("appd/appd_context/appd_context_kuafu")
+require("appd/appd_context/appd_context_welfare")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")
@@ -1187,8 +1214,10 @@ require("appd/appd_context/handler/instance_handler")
 require("appd/appd_context/handler/social_handler")
 require("appd/appd_context/handler/shop_handler")
 require("appd/appd_context/handler/rank_handler")
+require("appd/appd_context/handler/kuafu_handler")
 require("appd/appd_context/handler/active_handler")
 require("appd/appd_context/handler/achieve_title_handler")
+require("appd/appd_context/handler/welfare_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

@@ -1358,14 +1358,14 @@ end
 
 -- 骑乘
 function UnitInfo:MountRide()
-	playerLib.SendMountJumpDown(self.ptr, 1)
+	--playerLib.SendMountJumpDown(self.ptr, 1)
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_RIDE, 1)
 end
 
 -- 下骑
 function UnitInfo:MountUnride()
-	playerLib.SendMountJumpDown(self.ptr, 0)
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_RIDE, 0)
 end
-
 
 --获得当前生命	
 function UnitInfo:GetHealth()
@@ -1615,67 +1615,25 @@ UnitInfo_Get_Attr_Func = {
 
 --属性重算（场景服）
 function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)
-	local unitInfo = UnitInfo:new {ptr = player}
-
-	local attrs = {}
-	local battlePoint = 0
-	local speed = 0
 	
-	-- 先把基础属性加上去
-	local level = unitInfo:GetLevel()
-	local config = tb_char_level[level]
-	if config then
-		for _, val in ipairs(config.prop) do
-			local indx = val[ 1 ]
-			-- 不是速度属性
-			if indx ~= EQUIP_ATTR_MOVE_SPEED then
-				attrs[indx] = val[ 2 ]
-			else
-				if not unitInfo:isRide() then
-					speed = val[ 2 ]
-				end
-			end
-		end
-	end
-	
-	-- 设置属性
-	local size = binLogLib.GetUInt32Len(attrBinlog)
-	for attrId, func in pairs(UnitInfo_Set_Attr_Func) do
-		local index = attrId - 1
-		local value = 0
-		if index < size then
-			value = binLogLib.GetUInt32(attrBinlog, index)
-		end
-		
-		if attrId == EQUIP_ATTR_MOVE_SPEED then
-			-- 坐骑幻化速度
-			if unitInfo:isRide() then
-				local illusionId = unitInfo:GetCurrIllusionId()
-				if illusionId > 0 then
-					local speed = tb_mount_illusion[illusionId].speed
-					if value < speed then
-						value = speed
-					end
-				end
-			else
-				value = speed
-			end
-		elseif attrs[attrId] then
-			value = value + attrs[attrId]
-		end
-		func(unitInfo, value)
-		attrs[attrId] = value
-	end
-	
-	battlePoint = battlePoint + DoAnyOneCalcForce(attrs)
-	
-	local nonePorpPoint = binLogLib.GetUInt32(attrBinlog, #UnitInfo_Battle_Point_Rate)
-	battlePoint = battlePoint + nonePorpPoint
-	
-	battlePoint = math.floor(battlePoint)
-	unitInfo:SetForce(battlePoint)
 end
 
+-- 升级后增加的hp值 需要在场景服先算, 保证升级了血先满
+function CalLevelUpRaisedHp(prev, curr)
+	return calLevelHp(curr) - calLevelHp(prev)
+end
+
+function calLevelHp(level)
+	local config = tb_char_level[level].prop
+	if config then
+		for _, attrInfo in pairs(config) do
+			if attrInfo[ 1 ] == EQUIP_ATTR_MAXHEALTH then
+				return attrInfo[ 2 ]
+			end 
+		end
+	end
+	return 100
+end
 
 -- PVP战斗死亡的逻辑
 function OnPVPKilled(killer, target)

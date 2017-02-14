@@ -86,6 +86,12 @@ require("template.tables.tb_drop_packet")
 require("template.tables.tb_achieve_base")
 require("template.tables.tb_achieve_progress")
 require("template.tables.tb_title_base")
+require("template.tables.tb_welfare_shouchong")
+require("template.tables.tb_welfare_checkin")
+require("template.tables.tb_welfare_checkin_all")
+require("template.tables.tb_welfare_level")
+require("template.tables.tb_welfare_back_data")
+require("template.tables.tb_welfare_back")
 
 -- 任务
 require("template.tables.tb_quest")

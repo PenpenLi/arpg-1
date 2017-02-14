@@ -119,7 +119,12 @@ function AppdApp:InitCorn()
 		end)
 	end)
 
-	
+	--每隔3s查询匹配情况
+	self.cron:every("查询跨服匹配", 3, function()
+		self.objMgr:foreachAllPlayer(function(player)
+			player:QueryKuafuMatchInfo()
+		end)
+	end)
 end
 
 -- 全服野外BOSS定时器初始化

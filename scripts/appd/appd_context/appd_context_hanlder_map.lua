@@ -101,12 +101,18 @@ hanlders[CMSG_GET_ACHIEVE_REWARD] = PlayerInfo.Handle_Achieve_Reward
 hanlders[CMSG_GET_ACHIEVE_ALL_REWARD] = PlayerInfo.Handle_Achieve_All_Reward
 hanlders[CMSG_SET_TITLE] = PlayerInfo.Handle_Set_Title
 hanlders[CMSG_INIT_TITLE] = PlayerInfo.Handle_Init_Title
-
-
+hanlders[CMSG_WELFARE_SHOUCHONG_REWARD] = PlayerInfo.Handle_Welfare_Shouchong
+hanlders[CMSG_WELFARE_CHECKIN] = PlayerInfo.Handle_Welfare_CheckIn
+hanlders[CMSG_WELFARE_CHECKIN_ALL] = PlayerInfo.Handle_Welfare_CheckInAll
+hanlders[CMSG_WELFARE_CHECKIN_GETBACK] = PlayerInfo.Handle_Welfare_CheckIn_Getback
+hanlders[CMSG_WELFARE_LEVEL] = PlayerInfo.Handle_Welfare_Level
+hanlders[CMSG_WELFARE_ACTIVE_GETBACK] = PlayerInfo.Handle_Welfare_ActiveGetback
 --------------------------------
 hanlders[CMSG_PICK_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest
 
 hanlders[CMSG_PICK_QUEST_CHAPTER_REWARD] = PlayerInfo.Handle_Pick_Quest_Chapter_Reward
+
+hanlders[CMSG_KUAFU_3V3_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Match
 
 hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 

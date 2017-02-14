@@ -93,4 +93,5 @@ function PlayerInfo:onRealReset()
 	self:RankLikeRest()
 	self:factionReset()
 	self:resetDailyShop()
+	self:SetWelfareBackAllNum()
 end

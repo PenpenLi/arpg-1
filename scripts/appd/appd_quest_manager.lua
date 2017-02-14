@@ -141,6 +141,138 @@ function AppQuestMgr:removeExpireTitle()
 		end
 	end
 end
+-------------------------------福利-------------------------------
+--是否领取首冲奖励
+function AppQuestMgr:getWelfareShouchong()
+	return self:GetUInt32(QUEST_FIELD_WELFARE_SHOUCHONG)
+end
+--领取首冲奖励标记
+function AppQuestMgr:setWelfareShouchong()
+	self:SetUInt32(QUEST_FIELD_WELFARE_SHOUCHONG,1)
+end
+
+--每日签到奖励是否已领取
+function AppQuestMgr:getWelfareCheckIn(day)
+	return self:GetBit(QUEST_FIELD_WELFARE_CHECKIN,day-1)
+end
+--领取每日签到奖励
+function AppQuestMgr:setWelfareCheckIn(day)
+	return self:SetBit(QUEST_FIELD_WELFARE_CHECKIN,day-1)
+end
+--本月累积签到次数
+function AppQuestMgr:getWelfareCheckInDayNum()
+	local num = 0
+	for i = 0,31 do
+		if self:GetBit(QUEST_FIELD_WELFARE_CHECKIN,i) then
+			num = num + 1
+		end
+	end
+	return num
+end
+
+--累积每日签到奖励是否已领取
+function AppQuestMgr:getWelfareCheckInAll(id)
+	return self:GetBit(QUEST_FIELD_WELFARE_CHECKIN_ALL,id)
+end
+
+--领取累积每日签到奖励
+function AppQuestMgr:setWelfareCheckInAll(id)
+	return self:SetBit(QUEST_FIELD_WELFARE_CHECKIN_ALL,id)
+end
+
+--等级是否已领取
+function AppQuestMgr:getWelfareLev(id)
+	return self:GetBit(QUEST_FIELD_WELFARE_LEVEL,id-1)
+end
+--领取等级奖励
+function AppQuestMgr:setWelfareLev(id)
+	return self:SetBit(QUEST_FIELD_WELFARE_LEVEL,id-1)
+end
+
+--type类型所有可以找回的次数
+function AppQuestMgr:setWelfareBackAllNum(type,allnum)
+	local idx = QUEST_FIELD_WELFARE_BACK_START + (type-1) * MAX_WELFA_BACK_ITEM + WELFA_BACK_ITEM_NUM
+	self:SetUInt32(idx,allnum)
+end
+function AppQuestMgr:getWelfareBackAllNum(type)
+	local idx = QUEST_FIELD_WELFARE_BACK_START + (type-1) * MAX_WELFA_BACK_ITEM + WELFA_BACK_ITEM_NUM
+	return self:GetUInt32(idx)
+end
+--type类型下指定时间的已使用次数
+function AppQuestMgr:getWelfareBackNum(type,time)
+	local startIdx = QUEST_FIELD_WELFARE_BACK_START + (type-1) * MAX_WELFA_BACK_ITEM
+	
+	for i=WELFA_BACK_ITEM,WELFA_BACK_ITEM_END,2 do
+		local idx = startIdx + i
+		local dtime = self:GetUInt32(idx)
+		if time == dtime then
+			return self:GetUInt32(idx+1)
+		end
+	end
+	
+	return 0
+end
+
+--添加type类型下指定时间的已使用次数
+function AppQuestMgr:addWelfareBackNum(type,time,num)
+	
+	local targetIdx,outTimeIdx = self:getWelfareTimeIdx(type,time)
+
+	if targetIdx ~= 0 then
+		local curnum = self:GetUInt32(targetIdx+1)
+		curnum = curnum + num
+		self:SetUInt32(targetIdx+1,curnum)
+	elseif outTimeIdx ~=0 then
+		self:SetUInt32(outTimeIdx,time)
+		self:SetUInt32(outTimeIdx+1,num)
+	end
+	
+end
+
+function AppQuestMgr:setWelfareBackNum(type,time,num)
+	
+	local targetIdx,outTimeIdx = self:getWelfareTimeIdx(type,time)
+
+	if targetIdx ~= 0 then
+		self:SetUInt32(targetIdx+1,num)
+	elseif outTimeIdx ~=0 then
+		self:SetUInt32(outTimeIdx,time)
+		self:SetUInt32(outTimeIdx+1,num)
+	end
+	
+end
+
+
+function AppQuestMgr:getWelfareTimeIdx(type,time)
+	local startIdx = QUEST_FIELD_WELFARE_BACK_START + (type-1) * MAX_WELFA_BACK_ITEM
+	local targetIdx = 0
+	local outTimeIdx = 0
+	local curTime = GetTodayStartTimestamp(0)
+	for i=WELFA_BACK_ITEM,WELFA_BACK_ITEM_END-1,2 do
+		--outFmtDebug("welf %d",i)
+		local idx = startIdx + i
+		local dtime = self:GetUInt32(idx)
+		if time == dtime then
+			targetIdx = idx
+			break
+		elseif dtime == 0 then
+			outTimeIdx = idx
+		elseif self:testOutTime(curTime,dtime) then
+			outTimeIdx = idx
+		end
+	end
+	return targetIdx,outTimeIdx
+end
+
+function AppQuestMgr:testOutTime(curTime,targetTime)
+	local num = curTime - targetTime
+	--outFmtDebug("chazhi %d",num)
+	if num >= 345600 then
+		return true
+	end
+	return false
+end
+
 
 -------------------------------下面是任务-------------------------------
 --[[

@@ -122,7 +122,7 @@ function MatchTask:Mark()
 	for _, teamPart in pairs(self.partList) do
 		local userIdList = teamPart:getUserIdList()
 		for _, id in pairs(userIdList) do
-			MarkUserMatchTask(id, self)
+			MatchManager.MarkUserMatchTask(id, self)
 		end
 	end
 end
@@ -131,7 +131,7 @@ function MatchTask:Unmark()
 	for _, teamPart in pairs(self.partList) do
 		local userIdList = teamPart:getUserIdList()
 		for _, id in pairs(userIdList) do
-			UnmarkUserMatchTask(id)
+			MatchManager.UnmarkUserMatchTask(id)
 		end
 	end
 end

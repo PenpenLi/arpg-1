@@ -10,7 +10,7 @@ tb_achieve_base = {
 	--  reward:array	奖励
 	--  achval:int	成就点
 	--  title:int	称号
-	[1] = {id = 1,name = "屠龙宝刀",maxnum = 10,reward = {{50001, 10}},achval = 10,title = 1,},
+	[1] = {id = 1,name = "屠龙宝刀",maxnum = 10,reward = {{50001, 10},{50001, 10}},achval = 10,title = 1,},
 	[2] = {id = 2,name = "点击就送",maxnum = 20,reward = {{50001, 11}},achval = 20,title = 2,},
 	[3] = {id = 3,name = "极品装备",maxnum = 10,reward = {{50001, 12}},achval = 3,title = 3,},
 	[4] = {id = 4,name = "一秒刷爆",maxnum = 20,reward = {{50001, 13}},achval = 4,title = 4,},

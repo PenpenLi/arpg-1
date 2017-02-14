@@ -11,6 +11,7 @@ require("template/appd_init")
 require("template/conditions")
 
 require("util/utils")
+require("util.json")
 
 outString('load share.tick_name script')
 require("share/tick_name")
@@ -150,9 +151,16 @@ config = {
 		CMSG_GET_ACHIEVE_ALL_REWARD,
 		CMSG_SET_TITLE,
 		CMSG_INIT_TITLE,
+		CMSG_WELFARE_SHOUCHONG_REWARD,
+		CMSG_WELFARE_CHECKIN,
+		CMSG_WELFARE_CHECKIN_ALL,
+		CMSG_WELFARE_CHECKIN_GETBACK,
+		CMSG_WELFARE_LEVEL,
+		CMSG_WELFARE_ACTIVE_GETBACK,
 		CMSG_PICK_QUEST_REWARD,
 		CMSG_USE_VIRTUAL_ITEM,
 		CMSG_PICK_QUEST_CHAPTER_REWARD,
+		CMSG_KUAFU_3V3_MATCH,
 	},
 	--pk服命令表
 	pk_external_router_map = {

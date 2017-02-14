@@ -1,25 +1,29 @@
-local taskHash = {}
-local removed = {}
+MatchManager = class('MatchManager')
 
-
-function MarkUserMatchTask(id, task)
-	if (removed[id] == 1) then
-		outFmtError("Mark error !! userid = %d has already removed", id)
-	end
-	taskHash[id] = task
+--¹¹Ôìº¯Êý
+function MatchManager:ctor()
+	self.taskHash = {}
+	self.removed = {}
 end
 
 
-function UnmarkUserMatchTask(id)
-	if (not taskHash[id]) then
+function MatchManager:MarkUserMatchTask(id, task)
+	if (self.removed[id] == 1) then
+		outFmtError("Mark error !! userid = %d has already removed", id)
+	end
+	self.taskHash[id] = task
+end
+
+
+function MatchManager:UnmarkUserMatchTask(id)
+	if (not self.taskHash[id]) then
 		outFmtError("repeat remove !! userid = %d has already removed", id)
 	end
 	
-	taskHash[id] = nil
-	removed[id] = 1
+	self.taskHash[id] = nil
+	self.removed[id] = 1
 end
 
-
-function getMatchTask(id)
-	return taskHash[id]
+function MatchManager:getMatchTask(id)
+	return self.taskHash[id]
 end

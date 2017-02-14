@@ -16,6 +16,8 @@ outString('开始载入名字校验脚本')
 require("logind/illegal_char")
 require("template/logind_init")
 
+require("util/utils")
+
 -------------------------------------------------------------------------------
 --配置文件信息
 config = {

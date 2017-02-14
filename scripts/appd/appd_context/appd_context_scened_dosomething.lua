@@ -48,5 +48,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		-- 加任务
 		local questMgr = self:getQuestMgr()
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_TALK, {data, tonumber(str)})
+	elseif SCENED_APPD_RIDE == ntype then
+		self:SetRideState(data)
 	end
 end

@@ -992,6 +992,30 @@ init_title,c2s,223,/*初始化称号*/,STATUS_NEVER,False
 	id,uint8,False,/*称号序号*/
 
 #
+welfare_shouchong_reward,c2s,224,/*领取首充奖励*/,STATUS_NEVER,False
+	
+#
+welfare_checkin,c2s,225,/*每日签到奖励*/,STATUS_NEVER,False
+
+#
+welfare_checkin_all,c2s,226,/*累积签到奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*签到序号*/
+	
+#
+welfare_checkin_getback,c2s,227,/*补签奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*签到序号*/
+	
+#
+welfare_level,c2s,228,/*等级奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*等级序号*/
+	
+#
+welfare_active_getback,c2s,229,/*活动找回奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*活动类型*/
+	best,uint8,False,/*完美找回*/
+	num,uint16,False,/*找回次数*/
+	
+#
 pick_quest_reward,c2s,230,/*领取任务奖励*/,STATUS_NEVER,False
 	indx,uint8,False,/*任务序号*/
 	
@@ -1007,3 +1031,7 @@ use_virtual_item,c2s,232,/*使用虚拟物品*/,STATUS_NEVER,False
 #
 pick_quest_chapter_reward,c2s,233,/*领取任务章节奖励*/,STATUS_NEVER,False
 	indx,uint8,False,/*章节id*/
+
+#
+kuafu_3v3_match,c2s,234,/*3v3跨服匹配*/,STATUS_NEVER,False
+	
