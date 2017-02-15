@@ -107,7 +107,7 @@ end
 --福利找回奖励
 function PlayerInfo:GetWelfareBackReward(type,bestGetback,backNum)
 	local questMgr = self:getQuestMgr()
-	local curnum = questMgr:getWelfareBackAllNum(type)
+	--local curnum = questMgr:getWelfareBackAllNum(type)
 	
 	local maxNum = self:GetWelfareBackMaxNum(type)
 	
@@ -160,6 +160,105 @@ function PlayerInfo:GetWelfareBackReward(type,bestGetback,backNum)
 	self:SetWelfareBackAllNum()
 	
 end
+--一键找回所有奖励
+function PlayerInfo:GetWelfareAllReward(bestGetback)
+	local rewardList,costList = self:GetWelfareAllRewardListApply(bestGetback)
+	
+	if #rewardList == 0 or #costList == 0 then
+		return
+	end
+	
+	if not self:costMoneys(MONEY_CHANGE_WELF_ACTIVE_GETBACK, costList) then
+		self:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_MONEY_NO_ENOUGH)
+		return
+	end
+	
+	self:AppdAddItems(rewardList,LOG_ITEM_OPER_TYPE_GETBACK,LOG_ITEM_OPER_TYPE_GETBACK)
+	
+	self:ClearWelfareBackAllNum()
+	
+end
+--一键找回资源列表
+function PlayerInfo:GetWelfareAllRewardList(bestGetback)
+	local rewardList,costList = self:GetWelfareAllRewardListApply(bestGetback)
+	
+	local rewardStr = ""
+
+	for _,v in ipairs(rewardList) do
+		local str = v[1] ..",".. v[2]..","
+		rewardStr = rewardStr .. str
+	end
+	local costStr
+	for _,v in ipairs(costList) do
+		costStr = v[1] ..",".. v[2]..","
+	end
+	
+	if #rewardList == 0 then
+		rewardStr = ","
+	end
+	
+	if #costList == 0 then
+		costStr = ","
+	end
+	
+	self:call_welfare_rewardlist_getback (rewardStr,costStr)
+end
+
+function PlayerInfo:GetWelfareAllRewardListApply(bestGetback)
+	local questMgr = self:getQuestMgr()
+	local typeary = self:GetWelfareBackTypeAry()
+	
+	local rewardList = {}
+	local costList = {}
+	for _,type in ipairs(typeary) do
+		local allNum = questMgr:getWelfareBackAllNum(type)
+		if allNum > 0 then
+			local rewardConfig = self:GetWelfareBackRewardData(type,bestGetback)
+			self:AddWelfareReward2List(rewardList,rewardConfig,allNum)
+			
+			local costConfig = tb_welfare_back[type]
+			if bestGetback then
+				self:AddWelfareReward2List(costList,costConfig.allcost,math.ceil(allNum * costConfig.alldc * 0.1))
+			else 
+				self:AddWelfareReward2List(costList,costConfig.basecost,math.ceil(allNum * costConfig.basedc * 0.1))
+			end
+		end
+		
+		
+	end
+	return rewardList,costList
+	
+end
+
+function PlayerInfo:AddWelfareReward2List(targetTab,tab,num)
+	
+	for _,v in ipairs(tab) do
+		local key = v[1]
+		local val = v[2] * num
+		local idx = self:GetWelfareRewardTargetIdx(targetTab,key)
+		
+		if idx == -1 then
+			local item = {}
+			table.insert(item,key)
+			table.insert(item,val)
+			
+			table.insert(targetTab,item)
+		else
+			targetTab[idx][2] = targetTab[idx][2] + val
+		end
+		
+	end
+	
+end
+
+function PlayerInfo:GetWelfareRewardTargetIdx(targetTab,key)
+	for i,v in ipairs(targetTab) do
+		if v[1] == key then
+			return i
+		end
+	end
+	return -1
+end
 
 --添加可以找回的记录
 function PlayerInfo:AddWelfareBackLog(type,num)
@@ -193,7 +292,10 @@ function PlayerInfo:SetWelfareBackAllNum()
 			for j=-3,-1 do
 				local time = GetTodayStartTimestamp(j)
 				local curnum = questMgr:getWelfareBackNum(type,time)
-				allNum = allNum + maxNum - curnum
+				if curnum < maxNum then
+					allNum = allNum + maxNum - curnum
+				end
+				
 				outFmtDebug("type:%d curnum:%d",type,curnum)
 			end
 			
@@ -205,6 +307,43 @@ function PlayerInfo:SetWelfareBackAllNum()
 			outFmtDebug("--------")
 		end
 	end
+end
+--清理可以找回的次数
+function PlayerInfo:ClearWelfareBackAllNum()
+
+	local questMgr = self:getQuestMgr()
+	--找回类型循环
+	for i=0,WELFA_BACK_TYPE_COUNT do
+		local type = i+1
+		local maxNum = self:GetWelfareBackMaxNum(type)
+		if maxNum > 0 then
+			local allNum = 0
+			--找回天数循环
+			for j=-3,-1 do
+				local time = GetTodayStartTimestamp(j)
+				questMgr:setWelfareBackNum(type,time,maxNum)
+			end
+
+			questMgr:setWelfareBackAllNum(type,0)
+		end
+	end
+end
+
+function PlayerInfo:GetWelfareBackRewardCost(type,bestGetback)
+	local config = tb_welfare_back[type]
+	local cost
+	if bestGetback then
+		cost = GetCostMulTab(config.allcost,config.alldc/10)
+	else
+		cost = GetCostMulTab(config.basecost,config.basedc/10)
+	end
+	return cost
+end
+
+------需要根据逻辑特殊处理---------------------------------------
+--所有类型列表
+function PlayerInfo:GetWelfareBackTypeAry()
+	return {1,2,3,4,5}
 end
 
 function PlayerInfo:GetWelfareBackMaxNum(type)
@@ -234,13 +373,4 @@ function PlayerInfo:GetWelfareBackRewardData(type,bestGetback)
 	return nil
 end
 
-function PlayerInfo:GetWelfareBackRewardCost(type,bestGetback)
-	local config = tb_welfare_back[type]
-	local cost
-	if bestGetback then
-		cost = GetCostMulTab(config.allcost,config.alldc/10)
-	else
-		cost = GetCostMulTab(config.basecost,config.basedc/10)
-	end
-	return cost
-end
+------需要根据逻辑特殊处理-end--------------------------------------

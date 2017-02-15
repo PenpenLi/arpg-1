@@ -1165,12 +1165,9 @@ function PlayerInfo:SetQuestChapterPicked(indx)
 	self:SetBit(PLAYER_INT_FIELD_QUEST_CHAPTER, indx)
 end
 
-function PlayerInfo:GetMatchingKuafuType()
-	return self:GetUInt32(PLAYER_APPD_INT_FIELD_MATCHING_KUAFU_TPYE)
-end
-
-function PlayerInfo:SetMatchingKuafuType(kuafuType)
-	self:SetUInt32(PLAYER_APPD_INT_FIELD_MATCHING_KUAFU_TPYE, kuafuType)
+-- 获得3v3匹配值
+function PlayerInfo:GetWorld3v3MatchValue()
+	return 50
 end
 
 -- 关闭连接

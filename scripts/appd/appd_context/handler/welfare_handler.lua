@@ -38,10 +38,18 @@ function PlayerInfo:Handle_Welfare_Level(pkt)
 	self:WelfareLevel(id)
 end
 
---领取等级奖励
+--领取找回奖励
 function PlayerInfo:Handle_Welfare_ActiveGetback(pkt)
 	local type = pkt.id
 	local best = pkt.best
 	local num = pkt.num
 	self:GetWelfareBackReward(type,best,num)
+end
+--一键找回奖励列表
+function PlayerInfo:Handle_Welfare_List_Getback(pkt)
+	self:GetWelfareAllRewardList(pkt.best)
+end
+--一键领取找回奖励
+function PlayerInfo:Handle_Welfare_All_Getback(pkt)
+	self:GetWelfareAllReward(pkt.best)
 end

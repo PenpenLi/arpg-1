@@ -214,10 +214,11 @@ end
 
 -- 通知登录服 跨服数据
 -- player_guid >> war_id >> battle_server >> watcher_guid >> kuafu_type;
-function call_appd_login_to_send_kuafu_info(scened_fd, guid, war_id, battle_server, watcher_guid, kuafu_type)
+function call_appd_login_to_send_kuafu_info(scened_fd, guid, war_id, pos, battle_server, watcher_guid, kuafu_type)
 	local pkt = Packet.new(INTERNAL_OPT_KUAFU_ENTER)
 	pkt:writeUTF(guid)
 	pkt:writeUTF(war_id)
+	pkt:writeU32(pos)
 	pkt:writeUTF(battle_server)
 	pkt:writeUTF(watcher_guid or '')
 	pkt:writeU32(kuafu_type or KUAFU_TYPE_FENGLIUZHEN)

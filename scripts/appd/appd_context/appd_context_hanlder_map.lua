@@ -107,6 +107,8 @@ hanlders[CMSG_WELFARE_CHECKIN_ALL] = PlayerInfo.Handle_Welfare_CheckInAll
 hanlders[CMSG_WELFARE_CHECKIN_GETBACK] = PlayerInfo.Handle_Welfare_CheckIn_Getback
 hanlders[CMSG_WELFARE_LEVEL] = PlayerInfo.Handle_Welfare_Level
 hanlders[CMSG_WELFARE_ACTIVE_GETBACK] = PlayerInfo.Handle_Welfare_ActiveGetback
+hanlders[CMSG_WELFARE_GETALLLIST_GETBACK] = PlayerInfo.Handle_Welfare_List_Getback
+hanlders[CMSG_WELFARE_GETALL_GETBACK] = PlayerInfo.Handle_Welfare_All_Getback
 --------------------------------
 hanlders[CMSG_PICK_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest
 

@@ -28,6 +28,28 @@ function AppdApp:ctor( )
 	end)
 	
 	self:InitCorn()
+	
+	-- 3v3组队信息 team_guid:{player_guid1, player_guid2, player_guid3}
+	self.world_3v3_team_dict = {}
+	-- 3v3组队中个人所在的队伍 player_guid:team_guid
+	self.world_3v3_player_team = {}
+	-- 正在匹配的跨服信息
+	self.kuafu_dict = {}
+end
+
+-- 设置正在进行的跨服操作类型
+function AppdApp:SetMatchingKuafuType(player_guid, kuafu_type)
+	self.kuafu_dict[player_guid] = kuafu_type
+end
+
+-- 是否正在进行指定跨服类型操作
+function AppdApp:IsKuafuTypeMatching(player_guid, kuafu_type)
+	return self.kuafu_dict[player_guid] == kuafu_type and kuafu_type
+end
+
+-- 是否在进行跨服操作
+function AppdApp:IsInKuafuTypeMatching(player_guid)
+	return self.kuafu_dict[player_guid]
 end
 
 function AppdApp:update( diff )

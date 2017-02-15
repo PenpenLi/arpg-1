@@ -26,6 +26,11 @@ function UnitInfo:isUseRespawnItem()
 	return self:GetPlayerByte(PLAYER_FIELD_HOOK_BYTE3, 0) > 0
 end
 
+-- 获得玩家的虚拟阵营
+function UnitInfo:GetVirtualCamp()
+	return self:GetPlayerUInt32(PLAYER_INT_FIELD_VIRTUAL_CAMP)
+end
+
 -- 是否拒绝接受附近消息
 function UnitInfo:isDeclineNearMsg()
 	return self:GetPlayerByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE1, 0) > 0

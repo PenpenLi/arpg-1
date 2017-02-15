@@ -1426,6 +1426,7 @@ PLAYER_INT_FIELD_MOUNT_LEVEL = 575	-- 4个bytes(0:当前坐骑阶数 1:当前坐
 PLAYER_INT_FIELD_DIVINE_ID = 576	-- 当前装备的神兵id
 PLAYER_INT_FIELD_PASSIVE_SPELL_START = 577	-- 被动技能开始
 PLAYER_INT_FIELD_PASSIVE_SPELL_END = 627	-- 被动技能个数
+PLAYER_INT_FIELD_VIRTUAL_CAMP = 627	-- 虚拟阵营
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 字符串部分
 PLAYER_STRING_FIELD_ACCOUNT = 4	-- 账号

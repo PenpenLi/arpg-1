@@ -642,10 +642,10 @@ show_position,c2s,134,/*显示当前坐标*/,STATUS_NEVER,False
 #
 gold_respawn,c2s,135,/*元宝复活*/,STATUS_NEVER,False
 	useGold,uint8,False,/*是否使用元宝*/
-	
+
 #
 field_death_cooldown,s2c,136,/*野外死亡倒计时*/,STATUS_NEVER,False
-	cooldown,uint16,False,/*倒计时*/	
+	cooldown,uint16,False,/*倒计时*/
 
 #
 mall_buy,c2s,137,/*商城购买*/,STATUS_NEVER,False
@@ -816,7 +816,7 @@ teleport_main_city,c2s,178,/*回城*/,STATUS_NEVER,False
 chat_by_channel,c2s,179,/*不同频道聊天*/,STATUS_NEVER,False
 	channel,uint8,False,/*聊天频道*/
 	content,String,False,/*说话内容*/
-	
+
 #
 send_chat,s2c,180,/*发送聊天*/,STATUS_NEVER,False
 	channel,uint8,False,/*聊天频道*/
@@ -830,7 +830,7 @@ send_chat,s2c,180,/*发送聊天*/,STATUS_NEVER,False
 	content,String,False,/*说话内容*/
 	to_guid,String,False,/*收到的guid*/
 	faction_guid,String,False,/*帮派guid*/
-	
+
 #
 social_clear_apply,c2s,181,/*清空申请列表*/,STATUS_NEVER,False
 
@@ -838,7 +838,7 @@ social_clear_apply,c2s,181,/*清空申请列表*/,STATUS_NEVER,False
 msg_decline,c2s,182,/*设置拒绝接受消息*/,STATUS_NEVER,False
 	value0,uint32,False,/*PLAYER_FIELD_DECLINE_CHANNEL_BYTE0*/
 	value1,uint32,False,/*PLAYER_FIELD_DECLINE_CHANNEL_BYTE1*/
-	
+
 #
 faction_get_list_result,s2c,183,/*帮派列表*/,STATUS_NEVER,False
 	list,faction_info,True,/*帮派列表*/
@@ -850,7 +850,7 @@ faction_getlist,c2s,184,/*获取帮派列表*/,STATUS_NEVER,False
 	page,uint8,False,/*当前页*/
 	num,uint8,False,/*每页数量*/
 	grep,uint8,False,/*自动过滤*/
-	
+
 #
 faction_manager,c2s,185,/*帮派管理*/,STATUS_NEVER,False
 	opt_type,uint8,False,/*操作类型*/
@@ -873,7 +873,7 @@ faction_fast_join,c2s,187,/*快速加入帮派*/,STATUS_NEVER,False
 #
 social_add_friend_byname,c2s,188,/*通过名字添加好友*/,STATUS_NEVER,False
 	name,String,False,/*好友name*/
-	
+
 #
 read_mail,c2s,190,/*读邮件*/,STATUS_NEVER,False
 	indx,uint16,False,/*邮件索引*/
@@ -885,7 +885,7 @@ pick_mail,c2s,191,/*领取邮件*/,STATUS_NEVER,False
 #
 remove_mail,c2s,192,/*删除邮件*/,STATUS_NEVER,False
 	indx,uint16,False,/*邮件索引*/
-	
+
 #
 pick_mail_one_step,c2s,193,/*一键领取邮件*/,STATUS_NEVER,False
 
@@ -899,7 +899,7 @@ block_chat,c2s,195,/*屏蔽某人*/,STATUS_NEVER,False
 #
 cancel_block_chat,c2s,196,/*取消屏蔽*/,STATUS_NEVER,False
 	indx,uint8,False,/*索引*/
-	
+
 #
 use_broadcast_gameobject,c2s,200,/*使用需要广播的游戏对象*/,STATUS_NEVER,False
 	target,uint32,False,/*gameobject uintguid*/
@@ -913,7 +913,7 @@ world_boss_fight,c2s,202,/*世界BOSS挑战*/,STATUS_NEVER,False
 #
 change_line,c2s,203,/*换线*/,STATUS_NEVER,False
 	lineNo,uint32,False,/*线号*/
-	
+
 #
 roll_world_boss_treasure,c2s,204,/*roll世界BOSS箱子*/,STATUS_NEVER,False
 
@@ -924,28 +924,27 @@ roll_result,s2c,205,/*roll点结果*/,STATUS_NEVER,False
 	isHighest,uint8,False,/*是否当前最高*/
 	timestamp,uint32,False,/*服务器结束roll点时间戳*/
 	rollid,uint8,False,/*rollid*/
-	
+
 #
 world_boss_rank,s2c,206,/*当前世界BOSS伤害排名*/,STATUS_NEVER,False
 	rankList,rank_info,True,/*排名*/
 	mine,uint8,False,/*我的排名*/
-	
+
 #
 rank_add_like,c2s,207,/*排行榜点赞*/,STATUS_NEVER,False
 	type,uint8,False,/*排行榜类型*/
 	guid,String,False,/*GUID*/
-	
+
 #
 rank_add_like_result,s2c,208,/*排行榜点赞结果*/,STATUS_NEVER,False
 	type,uint8,False,/*排行榜类型*/
 	guid,String,False,/*GUID*/
 	num,uint32,False,/*like*/
 
-	
 #
 res_instance_enter,c2s,210,/*进入资源副本*/,STATUS_NEVER,False
 	id,uint8,False,/*副本类型*/
-	
+
 #
 res_instance_sweep,c2s,211,/*扫荡资源副本*/,STATUS_NEVER,False
 	id,uint8,False,/*副本类型*/
@@ -960,7 +959,7 @@ send_map_line,s2c,213,/*返回本地图的分线号信息*/,STATUS_NEVER,False
 #
 item_notice,s2c,214,/*获得奖励提示*/,STATUS_NEVER,False
 	list,item_reward_info,True,/*道具列表*/
-	
+
 #
 teleport_map,c2s,216,/*传送到某个世界地图*/,STATUS_NEVER,False
 	mapid,uint32,False,/*地图id*/
@@ -970,12 +969,12 @@ teleport_map,c2s,216,/*传送到某个世界地图*/,STATUS_NEVER,False
 teleport_field_boss,c2s,217,/*传送到野外boss旁边*/,STATUS_NEVER,False
 	mapid,uint32,False,/*地图id*/
 	lineNo,uint32,False,/*分线号*/
-	
+
 #
 get_activity_reward,c2s,218,/*活跃度奖励*/,STATUS_NEVER,False
 	id,uint8,False,/*礼包序号*/
 	vip,uint8,False,/*vip奖励*/
-	
+
 #
 get_achieve_reward,c2s,220,/*成就奖励*/,STATUS_NEVER,False
 	id,uint8,False,/*成就序号*/
@@ -993,37 +992,37 @@ init_title,c2s,223,/*初始化称号*/,STATUS_NEVER,False
 
 #
 welfare_shouchong_reward,c2s,224,/*领取首充奖励*/,STATUS_NEVER,False
-	
+
 #
 welfare_checkin,c2s,225,/*每日签到奖励*/,STATUS_NEVER,False
 
 #
 welfare_checkin_all,c2s,226,/*累积签到奖励*/,STATUS_NEVER,False
 	id,uint8,False,/*签到序号*/
-	
+
 #
 welfare_checkin_getback,c2s,227,/*补签奖励*/,STATUS_NEVER,False
 	id,uint8,False,/*签到序号*/
-	
+
 #
 welfare_level,c2s,228,/*等级奖励*/,STATUS_NEVER,False
 	id,uint8,False,/*等级序号*/
-	
+
 #
 welfare_active_getback,c2s,229,/*活动找回奖励*/,STATUS_NEVER,False
 	id,uint8,False,/*活动类型*/
 	best,uint8,False,/*完美找回*/
 	num,uint16,False,/*找回次数*/
-	
+
 #
 pick_quest_reward,c2s,230,/*领取任务奖励*/,STATUS_NEVER,False
 	indx,uint8,False,/*任务序号*/
-	
+
 #
 talk_with_npc,c2s,231,/*和npc对话*/,STATUS_NEVER,False
 	entry,uint16,False,/*npcid*/
 	questId,uint16,False,/*任务id*/
-	
+
 #
 use_virtual_item,c2s,232,/*使用虚拟物品*/,STATUS_NEVER,False
 	entry,uint16,False,/*itemid*/
@@ -1034,4 +1033,16 @@ pick_quest_chapter_reward,c2s,233,/*领取任务章节奖励*/,STATUS_NEVER,False
 
 #
 kuafu_3v3_match,c2s,234,/*3v3跨服匹配*/,STATUS_NEVER,False
-	
+
+#
+welfare_getalllist_getback,c2s,240,/*福利所有奖励列表*/,STATUS_NEVER,False
+	best,uint8,False,/*完美找回*/
+
+#
+welfare_rewardlist_getback,s2c,241,/*奖励列表*/,STATUS_NEVER,False
+	list,String,False,/*道具列表*/
+	cost,String,False,/*消耗资源*/
+
+#
+welfare_getall_getback,c2s,242,/*一键领取所有福利*/,STATUS_NEVER,False
+	best,uint8,False,/*完美找回*/
