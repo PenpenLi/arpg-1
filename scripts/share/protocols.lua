@@ -245,6 +245,7 @@ CMSG_KUAFU_3V3_MATCH		= 234	-- /*3v3跨服匹配*/
 CMSG_WELFARE_GETALLLIST_GETBACK		= 240	-- /*福利所有奖励列表*/	
 SMSG_WELFARE_REWARDLIST_GETBACK		= 241	-- /*奖励列表*/	
 CMSG_WELFARE_GETALL_GETBACK		= 242	-- /*一键领取所有福利*/	
+SMSG_KUAFU_3V3_KILL_DETAIL		= 250	-- /*击杀数据*/	
 
 
 ---------------------------------------------------------------------
@@ -8586,6 +8587,40 @@ function Protocols.unpack_welfare_getall_getback (pkt)
 end
 
 
+-- /*击杀数据*/	
+function Protocols.pack_kuafu_3v3_kill_detail ( indx1 ,indx2)
+	local output = Packet.new(SMSG_KUAFU_3V3_KILL_DETAIL)
+	output:writeU32(indx1)
+	output:writeU32(indx2)
+	return output
+end
+
+-- /*击杀数据*/	
+function Protocols.call_kuafu_3v3_kill_detail ( playerInfo, indx1 ,indx2)
+	local output = Protocols.	pack_kuafu_3v3_kill_detail ( indx1 ,indx2)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*击杀数据*/	
+function Protocols.unpack_kuafu_3v3_kill_detail (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx1 = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.indx2 = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -8823,6 +8858,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_welfare_getalllist_getback = self.call_welfare_getalllist_getback
 	playerInfo.call_welfare_rewardlist_getback = self.call_welfare_rewardlist_getback
 	playerInfo.call_welfare_getall_getback = self.call_welfare_getall_getback
+	playerInfo.call_kuafu_3v3_kill_detail = self.call_kuafu_3v3_kill_detail
 end
 
 local unpack_handler = {
@@ -9057,6 +9093,7 @@ local unpack_handler = {
 [CMSG_WELFARE_GETALLLIST_GETBACK] =  Protocols.unpack_welfare_getalllist_getback,
 [SMSG_WELFARE_REWARDLIST_GETBACK] =  Protocols.unpack_welfare_rewardlist_getback,
 [CMSG_WELFARE_GETALL_GETBACK] =  Protocols.unpack_welfare_getall_getback,
+[SMSG_KUAFU_3V3_KILL_DETAIL] =  Protocols.unpack_kuafu_3v3_kill_detail,
 
 }
 

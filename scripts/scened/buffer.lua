@@ -4,6 +4,13 @@
 function DoBuffTriggerScript(unit,buff_id,buff_lv)
 	local unitInfo = UnitInfo:new{ptr = unit}
 	local giver_ptr = unitLib.GetBuffGiverUnit(unit, buff_id)
+	
+	local config = tb_buff_template[buff_id]
+	if not config then
+		return
+	end
+	local buff_type = config.buff_type
+	--[[
 	if buff_id == BUFF_LIANJIE then		--连接
 		local dst_x, dst_y = unitLib.GetPos(unit)
 		local targets = mapLib.GetCircleTargets(dst_x, dst_y, 15, unit, TARGET_TYPE_ENEMY)
@@ -124,14 +131,12 @@ function DoBuffTriggerScript(unit,buff_id,buff_lv)
 		if config then
 			unitInfo:ModifyHealth(config.effect)
 		end
-	elseif buff_id == BUFF_COMMON_ADD_HP_PER then --百分比回血
-		local id = unitLib.GetBuffReserve(unit,buff_id)
-		local config = tb_normal_buff[id]
-		if config then
-			local add_hp = math.floor(unitInfo:GetMaxHealth()*config.effect/100)
-			unitInfo:ModifyHealth(add_hp)
-		end
-	end	
+	--]]
+	if buff_type == BUFF_TYPE_ADD_HP_PER_RATE then --百分比回血
+		local value = config.value * buff_lv
+		local add_hp = math.floor(unitInfo:GetMaxhealth()*value/100)
+		unitInfo:ModifyHealth(add_hp)
+	end
 end
 
 --BUFF结束时需要做的一些事情
@@ -207,14 +212,27 @@ end
 --计算BUFF属性 --加属性的BUFF在这搞就可以了
 function DOComputeBuffAttr(unit,buff_id,buff_lv)
 	local unitInfo = UnitInfo:new{ptr = unit}
-	--百分比
-	local percentage = unitLib.GetBuffReserve(unit,buff_id) / 100
-	if buff_id == BUFF_JIANSU then	--减速
-		local speed = unitLib.GetMoveSpeed(unit)
-		speed = speed + speed * unitLib.GetBuffReserve(unit,buff_id)/100
-		unitLib.SetMoveSpeed(unit, speed)
-		
-	end	
+	
+	local config = tb_buff_template[buff_id]
+	if not config then
+		return
+	end
+	local buff_type = config.buff_type
+	local value = config.value * buff_lv
+	
+	-- 攻击增强百分比
+	if buff_type == BUFF_TYPE_ADD_DAMAGE_RATE then
+		local val = math.floor(unitInfo:GetDamage() * (100 + value) / 100)
+		unitInfo:SetDamage(val)
+	-- 防御增强百分比
+	elseif buff_type == BUFF_TYPE_ADD_ARMOR_RATE then
+		local val = math.floor(unitInfo:GetArmor() * (100 + value) / 100)
+		unitInfo:SetArmor(val)
+	-- 暴击增强百分比
+	elseif buff_type == BUFF_TYPE_ADD_CRIT_RATE then
+		local val = math.floor(unitInfo:GetCrit() * (100 + value) / 100)
+		unitInfo:SetCrit(val)
+	end
 end
 
 -----------------------------------------------------------------

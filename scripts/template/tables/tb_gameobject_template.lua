@@ -23,4 +23,8 @@ tb_gameobject_template = {
 	[7] = {id = 7,name = "大宝箱",time = 5,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 1,go_flag = 1280,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
 	[8] = {id = 8,name = "任务大宝箱",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 2340,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
 	[9] = {id = 9,name = "探索大宝箱",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
+	[10] = {id = 10,name = "回血",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 3,go_flag = 4096,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
+	[11] = {id = 11,name = "攻击增强",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 3,go_flag = 4096,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
+	[12] = {id = 12,name = "防御增强",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 3,go_flag = 4096,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
+	[13] = {id = 13,name = "暴击增强",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 3,go_flag = 4096,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
 }

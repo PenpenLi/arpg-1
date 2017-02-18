@@ -1,12 +1,6 @@
 --地图传送检验
 function Script_Teleport_Check(player_ptr, entry, x, y)
 	
-	local px, py = unitLib.GetPos(player_ptr)
-	local config = tb_gameobject_template[entry]
-	if config == nil then
-		return false
-	end
-	
 	-- 在战斗状态不能传送
 	local status = playerLib.GetPlayeCurFightStatus(player_ptr)
 	if status == COMBAT_STATE_ENTER then
@@ -14,7 +8,17 @@ function Script_Teleport_Check(player_ptr, entry, x, y)
 		return false
 	end
 	
-	-- 左上
+	return Script_Gameobject_Pick_Check(player_ptr, entry, x, y)
+end
+
+function Script_Gameobject_Pick_Check(player_ptr, entry, x, y)
+	local px, py = unitLib.GetPos(player_ptr)
+	local config = tb_gameobject_template[entry]
+	if config == nil then
+		return false
+	end
+	
+		-- 左上
 	local lx = x - config.trigger_width
 	local ly = y - config.trigger_height
 	-- 右下

@@ -36,6 +36,69 @@ function UnitInfo:isDeclineNearMsg()
 	return self:GetPlayerByte(PLAYER_FIELD_DECLINE_CHANNEL_BYTE1, 0) > 0
 end
 
+-- 获得跨服3v3积分
+function UnitInfo:GetKuafu3v3Score()
+	return self:GetPlayerUInt32(PLAYER_INT_FIELD_WORLD_3V3_SCORE)
+end
+
+-- 设置跨服3v3积分
+function UnitInfo:SetKuafu3v3Score(val)
+	self:SetPlayerUInt32(PLAYER_INT_FIELD_WORLD_3V3_SCORE, val)
+end
+
+-- 增加跨服3v3积分
+function UnitInfo:AddKuafu3v3Score(val)
+	-- 加临时积分
+	local ret = val + self:GetKuafu3v3Score()
+	ret = math.max(ret, 0)
+	self:SetKuafu3v3Score(ret)
+	
+	-- 加总积分
+	local totalret = val + self:GetKuafu3v3TotalScore()
+	totalret = math.max(totalret, 0)
+	self:SetKuafu3v3TotalScore(totalret)
+end
+
+-- 获得跨服3v3总积分
+function UnitInfo:GetKuafu3v3TotalScore()
+	return self:GetPlayerUInt32(PLAYER_INT_FIELD_WORLD_3V3_TOTAL_SCORE)
+end
+
+-- 设置跨服3v3总积分
+function UnitInfo:SetKuafu3v3TotalScore(val)
+	self:SetPlayerUInt32(PLAYER_INT_FIELD_WORLD_3V3_TOTAL_SCORE, val)
+end
+
+-- 获得跨服3v3胜负趋势
+function UnitInfo:GetKuafu3v3TrendInfo()
+	return self:GetPlayerInt32(PLAYER_INT_FIELD_WORLD_3V3_TREND_INFO)
+end
+
+-- 设置跨服3v3胜负趋势
+function UnitInfo:SetKuafu3v3TrendInfo(value)
+	self:SetPlayerInt32(PLAYER_INT_FIELD_WORLD_3V3_TREND_INFO, value)
+end
+
+-- 增加跨服3v3胜负趋势
+function UnitInfo:Kuafu3v3Win()
+	local value = self:GetKuafu3v3TrendInfo()
+	if value < 0 then
+		value = 0
+	end
+	value = value + 1
+	self:SetKuafu3v3TrendInfo(value)
+end
+
+-- 减少跨服3v3胜负趋势
+function UnitInfo:Kuafu3v3Lose()
+	local value = self:GetKuafu3v3TrendInfo()
+	if value > 0 then
+		value = 0
+	end
+	value = value - 1
+	self:SetKuafu3v3TrendInfo(value)
+end
+
 --获得int guid
 function UnitInfo:GetIntGuid(  )
 	return unitLib.GetIntGuid(self.ptr)
@@ -97,6 +160,26 @@ function UnitInfo:CheckPlayer(name)
 		outDebug(string.format("func CheckPlayer  not player call player function !!! guid = %s name = %s   %s", self:GetGuid(), self:GetName(), name))
 		bengdiaoba()
 	end
+end
+
+function UnitInfo:GetPlayerInt32(index)
+	self:CheckPlayer(string.format("GetPlayerInt32-- index = %d", index))
+	return binLogLib.GetInt32(self.ptr_player_data, index)
+end
+
+function UnitInfo:AddPlayerInt32(index, value)
+	self:CheckPlayer(string.format("AddPlayerInt32-- index = %d", index))
+	binLogLib.AddInt32(self.ptr_player_data, index, value)
+end
+
+function UnitInfo:SubPlayerInt32(index, value)
+	self:CheckPlayer(string.format("SubPlayerInt32-- index = %d", index))
+	binLogLib.SubInt32(self.ptr_player_data, index, value)
+end
+
+function UnitInfo:SetPlayerInt32(index, value)
+	self:CheckPlayer(string.format("SetPlayerInt32-- index = %d ", index))
+	binLogLib.SetInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:GetPlayerBit(index, offset)

@@ -7,3 +7,6 @@ require("template.tables.tb_skill_base")
 
 -- 地图
 require("template.tables.tb_map")
+
+-- 跨服
+require("template.tables.tb_kuafu3v3_base")

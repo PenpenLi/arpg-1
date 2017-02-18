@@ -321,6 +321,11 @@ function PlayerInfo:AddFamiliay(num,guid)
 end
 --增加仇恨度 仇人id 仇恨度
 function PlayerInfo:AddEnemy(guid,num)
+	local isPkServer = globalGameConfig:IsPKServer()
+	if isPkServer then
+		return
+	end
+	
 	local socialMgr = self:getSocialMgr()
 	--socialMgr:addFamiliay(guid,num)
 	local enemy = app.objMgr:getObj(guid)

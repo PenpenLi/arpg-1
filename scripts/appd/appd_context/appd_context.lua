@@ -658,6 +658,9 @@ function PlayerInfo:Login()
 	
 	self:GetOfflineMail()
 	globalSystemMail:checkIfHasSystemMail(self)
+	
+	-- 检查奖励
+	self:CheckMatchReward()
 end
 
 --pk服玩家登陆做点啥
@@ -1168,6 +1171,87 @@ end
 -- 获得3v3匹配值
 function PlayerInfo:GetWorld3v3MatchValue()
 	return 50
+end
+
+
+-- 获得跨服3v3积分
+function PlayerInfo:GetKuafu3v3Score()
+	return self:GetUInt32(PLAYER_INT_FIELD_WORLD_3V3_SCORE)
+end
+
+-- 设置跨服3v3积分
+function PlayerInfo:SetKuafu3v3Score(val)
+	self:SetUInt32(PLAYER_INT_FIELD_WORLD_3V3_SCORE, val)
+end
+
+-- 增加跨服3v3积分
+function PlayerInfo:AddKuafu3v3Score(val)
+	-- 加临时积分
+	local ret = val + self:GetKuafu3v3Score()
+	ret = math.max(ret, 0)
+	self:SetKuafu3v3Score(ret)
+	
+	-- 加总积分
+	local totalret = val + self:GetKuafu3v3TotalScore()
+	totalret = math.max(totalret, 0)
+	self:SetKuafu3v3TotalScore(totalret)
+	-- 对积分进行排名
+	self:World3v3Rank()
+end
+
+-- 获得跨服3v3总积分
+function PlayerInfo:GetKuafu3v3TotalScore()
+	return self:GetUInt32(PLAYER_INT_FIELD_WORLD_3V3_TOTAL_SCORE)
+end
+
+-- 设置跨服3v3总积分
+function PlayerInfo:SetKuafu3v3TotalScore(val)
+	self:SetUInt32(PLAYER_INT_FIELD_WORLD_3V3_TOTAL_SCORE, val)
+end
+
+-- 获得跨服3v3胜负趋势
+function PlayerInfo:GetKuafu3v3TrendInfo()
+	return self:GetInt32(PLAYER_INT_FIELD_WORLD_3V3_TREND_INFO)
+end
+
+-- 设置跨服3v3胜负趋势
+function PlayerInfo:SetKuafu3v3TrendInfo(value)
+	self:SetInt32(PLAYER_INT_FIELD_WORLD_3V3_TREND_INFO, value)
+end
+
+-- 增加跨服3v3胜负趋势
+function PlayerInfo:Kuafu3v3Win()
+	local value = self:GetKuafu3v3TrendInfo()
+	if value < 0 then
+		value = 0
+	end
+	value = value + 1
+	self:SetKuafu3v3TrendInfo(value)
+end
+
+-- 减少跨服3v3胜负趋势
+function PlayerInfo:Kuafu3v3Lose()
+	local value = self:GetKuafu3v3TrendInfo()
+	if value > 0 then
+		value = 0
+	end
+	value = value - 1
+	self:SetKuafu3v3TrendInfo(value)
+end
+
+-- 获得avatar
+function PlayerInfo:GetAvatar()
+	return self:GetUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_COAT)
+end
+
+-- 获得武器
+function PlayerInfo:GetWeapon()
+	return self:GetUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_MAIN_WEAPON)
+end
+
+-- 获得神兵
+function PlayerInfo:GetDivine()
+	return self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID)
 end
 
 -- 关闭连接

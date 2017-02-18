@@ -4,7 +4,7 @@
 require("template.tables.tb_creature_template")
 require("template.tables.tb_creature_resource")
 require("template.tables.tb_anger_limit")
-require("template.tables.tb_buff_template")
+
 require("template.tables.tb_dailymission")
 require("template.tables.tb_dailymission_buy")
 require("template.tables.tb_dailymission_reward")
@@ -75,3 +75,10 @@ require("template.tables.tb_mount_illusion")
 -- 地图采集物
 require("template.tables.tb_map_gameobject")
 require("template.tables.tb_map_gameobject_detail")
+
+-- buff
+require("template.tables.tb_buff_template")
+require("template.tables.tb_buff_kuafu3v3")
+
+-- 跨服
+require("template.tables.tb_kuafu3v3_base")

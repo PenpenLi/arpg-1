@@ -232,6 +232,7 @@ ACHIEVE_OPERATE_HASGET = 2	-- 已经领取过成就奖励
 ACHIEVE_OPERATE_NO_ALL = 3	-- 总成就不够无法领取
 ACHIEVE_OPERATE_TITLE_SUC = 4	-- 设置称号成功
 ACHIEVE_OPERATE_TITLE_FAL = 5	-- 称号不存在无法设置
+ACHIEVE_OPERATE_NO_MONEY = 6	-- 钱不够了不能找回
 -- 游戏关闭信息
 PLAYER_CLOSE_OPERTE_APPD_ONE1 = 1000	-- 插入单个物品时，包裹id 超过最大值
 PLAYER_CLOSE_OPERTE_APPD_ONE2 = 1001	-- 创建玩家其他的对象的时候，发现之前已经创建过了

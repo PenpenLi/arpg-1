@@ -37,3 +37,12 @@ function call_appd_add_items(guid, itemDict, logtype)
 	app:sendToAppd(pkt)
 	pkt:delete()
 end
+
+
+-- 通知登录服 跨服数据
+function call_scene_login_to_kuafu_back(login_fd, guid)
+	local pkt = Packet.new(INTERNAL_OPT_KUAFU_BACK)
+	pkt:writeUTF(guid)
+	app:sendToConnection(login_fd, pkt)
+	pkt:delete()
+end

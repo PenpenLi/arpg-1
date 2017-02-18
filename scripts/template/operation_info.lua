@@ -612,6 +612,9 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==ACHIEVE_OPERATE_TITLE_FAL)then
 			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - ACHIEVE_OPERATE_TITLE_FAL称号不存在无法设置 - " .. data 
 		end
+		if (reason ==ACHIEVE_OPERATE_NO_MONEY)then
+			return "ShowOperationFailed OPERTE_TYPE_HOSTING托管 - ACHIEVE_OPERATE_NO_MONEY钱不够了不能找回 - " .. data 
+		end
 		return "未知错误1  OPERTE_TYPE_HOSTING " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_STRENGTH)then

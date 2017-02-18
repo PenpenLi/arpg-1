@@ -370,7 +370,17 @@ Instance_base = {
 			self:SetUInt32(MAP_INT_FIELD_CREATE_TM, val)
 		end		
 	end,
-		--获得已刷怪物数量
+
+	-- 获取地图实际开始行动时间
+	GetMapStartTime = function(self)
+		return self:GetUInt32(MAP_INT_FIELD_START_TM)
+	end,
+	-- 设置地图实际开始行动时间
+	SetMapStartTime = function(self, val)
+		self:SetUInt32(MAP_INT_FIELD_START_TM, val)
+	end,
+	
+	--获得已刷怪物数量
 	GetRefreshCreatureCount = function(self)
 		return self:GetUInt32(MAP_INT_FIELD_REFRESH_CREATURE_COUNT)
 	end,
@@ -481,6 +491,8 @@ Instance_base = {
 				self:SetMapState(self.STATE_START)
 				--设置地图创建时间
 				self:SetMapCreateTime(os.time())
+				-- 默认开始时间和创建时间一致, 有倒计时显示的除外
+				self:SetMapStartTime(os.time())
 			end
 			self:OnInitGameObject()
 		end,
@@ -603,6 +615,11 @@ Instance_base = {
 	OnLeavePlayer = function(self, player, is_offline)
 	
 	end,
+	
+	--地图需要清空人时要做的事
+	IsNeedTeleportWhileMapClear = function(self, player)
+		return 1
+	end,
 	--获得怪物的基础经验 			param2 怪物   param3 怪物的所有者
 	DoGetCreatureBaseExp = function(self, creature, owner) 
 		local xp = 0
@@ -681,6 +698,11 @@ Instance_base = {
 		local playerInfo = UnitInfo:new{ptr = killer}
 		--增加击杀玩家次数
 		--playerInfo:AddKillPlayerCount(1)
+		return 0
+	end,
+	
+	-- 玩家受到实际伤害(负数表示加血)
+	OnPlayerHurt = function(self, killer, player, damage)
 		return 0
 	end,
 	

@@ -1046,3 +1046,8 @@ welfare_rewardlist_getback,s2c,241,/*奖励列表*/,STATUS_NEVER,False
 #
 welfare_getall_getback,c2s,242,/*一键领取所有福利*/,STATUS_NEVER,False
 	best,uint8,False,/*完美找回*/
+	
+#
+kuafu_3v3_kill_detail,s2c,250,/*击杀数据*/,STATUS_NEVER,False
+	indx1,uint32,False,/*击杀者下标*/
+	indx2,uint32,False,/*被击杀者下标*/

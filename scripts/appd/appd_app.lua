@@ -35,6 +35,9 @@ function AppdApp:ctor( )
 	self.world_3v3_player_team = {}
 	-- 正在匹配的跨服信息
 	self.kuafu_dict = {}
+	-------------------------------------------
+	-- 跨服排行榜信息
+	self.kuafu_rank = {}
 end
 
 -- 设置正在进行的跨服操作类型
@@ -146,6 +149,11 @@ function AppdApp:InitCorn()
 		self.objMgr:foreachAllPlayer(function(player)
 			player:QueryKuafuMatchInfo()
 		end)
+	end)
+	
+	--每隔3600s更新跨服排行榜
+	self.cron:every("更新跨服排行", 60, function()
+		UpdateKuafuRank()
 	end)
 end
 

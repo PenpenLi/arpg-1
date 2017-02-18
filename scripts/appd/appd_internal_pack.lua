@@ -213,8 +213,7 @@ function call_scened_appd_to_send_do_something(scened_fd, guid, typ, data, str)
 end
 
 -- 通知登录服 跨服数据
--- player_guid >> war_id >> battle_server >> watcher_guid >> kuafu_type;
-function call_appd_login_to_send_kuafu_info(scened_fd, guid, war_id, pos, battle_server, watcher_guid, kuafu_type)
+function call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, pos, battle_server, watcher_guid, kuafu_type)
 	local pkt = Packet.new(INTERNAL_OPT_KUAFU_ENTER)
 	pkt:writeUTF(guid)
 	pkt:writeUTF(war_id)
@@ -222,7 +221,7 @@ function call_appd_login_to_send_kuafu_info(scened_fd, guid, war_id, pos, battle
 	pkt:writeUTF(battle_server)
 	pkt:writeUTF(watcher_guid or '')
 	pkt:writeU32(kuafu_type or KUAFU_TYPE_FENGLIUZHEN)
-	app:sendToConnection(scened_fd, pkt)
+	app:sendToConnection(login_fd, pkt)
 	pkt:delete()
 end
 

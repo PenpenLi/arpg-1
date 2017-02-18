@@ -690,6 +690,15 @@ function isInProtected(killer, target)
 		return true
 	end
 	
+	-- 当前地图还在倒计时中
+	local map_ptr = unitLib.GetMap(killer)
+	local mapid = unitLib.GetMapID(killer)
+	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
+	if mapInfo:GetMapStartTime() > os.time() then
+		return true
+	end
+	
+	
 	-- 在传送中
 	if not playerLib.IsLogined(target) then
 		return true

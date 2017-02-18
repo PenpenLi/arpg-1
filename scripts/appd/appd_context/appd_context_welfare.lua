@@ -2,13 +2,13 @@
 function PlayerInfo:WelfareShouchong()
 	local questMgr = self:getQuestMgr()
 	if questMgr:getWelfareShouchong() == 1 then
-		outFmtDebug("has get shouchong")
+		--outFmtDebug("has get shouchong")
 		return
 	end
 	
 	
 	if self:GetRechageSum() == 0 then
-		outFmtDebug("has never Rechage")
+		--outFmtDebug("has never Rechage")
 		return
 	end
 	
@@ -17,7 +17,7 @@ function PlayerInfo:WelfareShouchong()
 		return
 	end
 	
-	self:AppdAddItems(config.item,LOG_ITEM_OPER_TYPE_SHOUCHONG)
+	self:AppdAddItems(config.item,MONEY_CHANGE_SHOUCHONG,LOG_ITEM_OPER_TYPE_SHOUCHONG)
 	questMgr:setWelfareShouchong()
 end
 --Ã¿ÈÕÇ©µ½½±Àø
@@ -26,7 +26,7 @@ function PlayerInfo:WelfareCheckIn(day)
 	local questMgr = self:getQuestMgr()
 	
 	if questMgr:getWelfareCheckIn(day) then 
-		self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
+		--self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
 		return
 	end
 	
@@ -55,7 +55,7 @@ function PlayerInfo:WelfareCheckIn(day)
 		end
 	end
 	
-	self:AppdAddItems(itemdic,LOG_ITEM_OPER_TYPE_CHECKIN)
+	self:AppdAddItems(itemdic,MONEY_CHANGE_CHECKIN,LOG_ITEM_OPER_TYPE_CHECKIN)
 	
 	questMgr:setWelfareCheckIn(day)
 end
@@ -64,7 +64,7 @@ function PlayerInfo:WelfareCheckInAll(id)
 	local questMgr = self:getQuestMgr()
 	
 	if questMgr:getWelfareCheckInAll(id) then 
-		self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
+		--self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
 		return
 	end
 	
@@ -76,7 +76,7 @@ function PlayerInfo:WelfareCheckInAll(id)
 	local allnum = questMgr:getWelfareCheckInDayNum()
 	
 	if allnum >= config.num then
-		self:AppdAddItems(config.item,LOG_ITEM_OPER_TYPE_CHECKIN)
+		self:AppdAddItems(config.item,MONEY_CHANGE_TOTAL_CHECKIN,LOG_ITEM_OPER_TYPE_TOTAL_CHECKIN)
 		questMgr:setWelfareCheckInAll(id)
 	end
 	
@@ -87,7 +87,7 @@ function PlayerInfo:WelfareLevel(id)
 	local questMgr = self:getQuestMgr()
 	
 	if questMgr:getWelfareLev(id) then 
-		self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
+		--self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
 		return
 	end
 	
@@ -100,7 +100,7 @@ function PlayerInfo:WelfareLevel(id)
 		return
 	end
 	
-	self:AppdAddItems(config.item,LOG_ITEM_OPER_TYPE_CHECKIN)
+	self:AppdAddItems(config.item,MONEY_CHANGE_WELFARE_LEVEL,LOG_ITEM_OPER_TYPE_WELFARE_LEVEL)
 	
 	questMgr:setWelfareLev(id)
 end
@@ -127,14 +127,14 @@ function PlayerInfo:GetWelfareBackReward(type,bestGetback,backNum)
 	local cost = self:GetWelfareBackRewardCost(type,bestGetback)
 	
 	if not self:costMoneys(MONEY_CHANGE_WELF_ACTIVE_GETBACK, cost, backNum) then
-		self:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_MONEY_NO_ENOUGH)
+		self:CallOptResult(OPRATE_TYPE_ACHIEVE, ACHIEVE_OPERATE_NO_MONEY)
 		return
 	end
 	
 	local rewardConfig = self:GetWelfareBackRewardData(type,bestGetback)
 	
 	if rewardConfig then
-		self:AppdAddItems(rewardConfig,LOG_ITEM_OPER_TYPE_GETBACK,LOG_ITEM_OPER_TYPE_GETBACK,backNum)
+		self:AppdAddItems(rewardConfig,MONEY_CHANGE_WELF_ACTIVE_GETBACK,LOG_ITEM_OPER_TYPE_GETBACK,backNum)
 	end
 	
 	local lastNum = backNum
@@ -169,11 +169,11 @@ function PlayerInfo:GetWelfareAllReward(bestGetback)
 	end
 	
 	if not self:costMoneys(MONEY_CHANGE_WELF_ACTIVE_GETBACK, costList) then
-		self:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_MONEY_NO_ENOUGH)
+		self:CallOptResult(OPRATE_TYPE_ACHIEVE, ACHIEVE_OPERATE_NO_MONEY)
 		return
 	end
 	
-	self:AppdAddItems(rewardList,LOG_ITEM_OPER_TYPE_GETBACK,LOG_ITEM_OPER_TYPE_GETBACK)
+	self:AppdAddItems(rewardList,MONEY_CHANGE_WELF_ACTIVE_GETBACK,LOG_ITEM_OPER_TYPE_GETBACK)
 	
 	self:ClearWelfareBackAllNum()
 	
@@ -292,7 +292,7 @@ function PlayerInfo:SetWelfareBackAllNum()
 			for j=-3,-1 do
 				local time = GetTodayStartTimestamp(j)
 				local curnum = questMgr:getWelfareBackNum(type,time)
-				if curnum < maxNum then
+				if curnum < maxNum and curnum >= 0 then
 					allNum = allNum + maxNum - curnum
 				end
 				

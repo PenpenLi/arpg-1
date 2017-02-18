@@ -49,15 +49,13 @@ function LogindPlayer:SetTeleportInfo(mapid, posx, posy, general_id)
 end
 
 KUAFU_FENGLIUZHEN_MAPID = 3002
-local KUAFU_POSITION = {
-	{20, 116},
-	{19, 16}
-}
 --pk服，根据跨服类型选择要传送到的地图id
 function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, reverse_str)
-	if(kuafu_type == KUAFU_TYPE_FENGLIUZHEN)then	
+	if(kuafu_type == KUAFU_TYPE_FENGLIUZHEN)then
 		local general_id = string.format("flz_%s", reverse_str)		--warid即房间id
-		local pos = KUAFU_POSITION[reverse]
+		outFmtDebug("######################SelectKuafuMapid general_id = %s, pos = %d", general_id, reverse)
+		local config = tb_kuafu3v3_base[ 1 ].bornPos
+		local pos = config[reverse]
 		-- 设置玩家的虚拟阵营
 		self:SetUInt32(PLAYER_INT_FIELD_VIRTUAL_CAMP, reverse)
 		self:SetTeleportInfo(KUAFU_FENGLIUZHEN_MAPID, pos[ 1 ], pos[ 2 ], general_id)

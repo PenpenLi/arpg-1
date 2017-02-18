@@ -56,7 +56,7 @@ function PlayerInfo:AchieveReward(id)
 		return
 	end
 	
-	self:AppdAddItems(config.reward,LOG_ITEM_OPER_TYPE_ACHIEVE)
+	self:AppdAddItems(config.reward,MONEY_CHANGE_ACHIEVE,LOG_ITEM_OPER_TYPE_ACHIEVE)
 	
 	questMgr:setAchieveReward(id)
 	
@@ -84,7 +84,7 @@ function PlayerInfo:AchieveAllReward()
 	outFmtDebug("rewardID %d %d %d",targetReward,allnum,config.achval)
 	
 	if allnum >= config.achval then
-		self:AppdAddItems(config.reward,LOG_ITEM_OPER_TYPE_ACHIEVE)
+		self:AppdAddItems(config.reward,MONEY_CHANGE_ACHIEVE,LOG_ITEM_OPER_TYPE_ACHIEVE)
 		questMgr:addAchieveAllReward()
 	else 
 		self:CallOptResult(OPRATE_TYPE_ACHIEVE, ACHIEVE_OPERATE_NO_ALL)
