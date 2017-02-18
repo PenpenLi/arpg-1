@@ -266,6 +266,15 @@ function GetTodayStartTimestamp(days)
 	cur_date.min = 0
 	return os.time(cur_date) + days * 86400
 end
+--获得今日指定时分秒的时间戳
+function GetTodayHMSTimestamp(h,m,s)
+	local cur_date = os.date('*t', os.time())
+	cur_date.hour = h
+	cur_date.sec = s
+	cur_date.min = m
+	return os.time(cur_date)
+end
+
 -- 价格打折
 function GetCostMulTab(baseTab,mul)
 	

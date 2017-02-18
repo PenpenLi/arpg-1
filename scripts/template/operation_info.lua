@@ -618,466 +618,493 @@ function OperationFailedToString(type, reason, data)
 		return "未知错误1  OPERTE_TYPE_HOSTING " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_STRENGTH)then
-		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE1)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_APPD_ONE1插入单个物品时，包裹id 超过最大值 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_NO_LEV)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_LEV等级不够{1}，不能参加3v3 - " .. data 
 		end
-		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE2)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_APPD_ONE2创建玩家其他的对象的时候，发现之前已经创建过了 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_NO_FORCE)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_FORCE战力不够{1}，不能参加3v3 - " .. data 
 		end
-		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE3)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_APPD_ONE3托管到期 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_NO_OPEN)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_OPEN不在活动时间，不能参加 - " .. data 
 		end
-		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE4)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_APPD_ONE4GM命令 踢人 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_NO_TIME_BUY)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_TIME_BUY3v3次数已用完，可以购买次数 - " .. data 
 		end
-		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE5)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_APPD_ONE5GM命令 回档数据 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_NO_TIME)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_TIME3v3次数已用完，请明天再来 - " .. data 
 		end
-		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE6)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_APPD_ONE6 踢玩家下线 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_IN_MATCH)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_IN_MATCH正在匹配中 - " .. data 
 		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE4)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE4帐号信息不完整 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_MAX_BUY)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_MAX_BUY超出最大购买次数 - " .. data 
 		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE5)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE5Char_Create put  fail! - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE6)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE6登录时候不是我的角色 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE7)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE7待定 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE8)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE8跨服回来的玩家 m_player 不存在 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE9)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE9初始化数据库数据失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE10)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE10看看有没有玩家数据需要修复或者升级的 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE11)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE11重设元宝数量 取数据时失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE12)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE12踢人 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE13)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE13如果连接不存在,则根据解开的session结果进行创建对应的session实例(on_create_conn_get_session create_sesstion duplicate) - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE14)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE14客户端连接失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE15)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE15把玩家由pk服回到游戏服,登录失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE16)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE16检测跨服玩家是否可以登陆 -玩家不存在 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE17)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE17检测跨服玩家是否可以登陆 -超时 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE18)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE18登陆队列 context->GetGuid().empty(） - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE19)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE19合服检测 手游下线 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE20)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE20通知场景服玩家加入地图 m_scened_conn不存在 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE21)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE21玩家加入地图实例时，玩家binlg不存在  - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE22)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE22玩家加入地图 创建实例失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE23)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE23如果已登录过 !m_account.empty() - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE24)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE24帐号名称超长 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE25)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE25验证是否可以登录本服验证失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE26)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE26账户表数据不存在 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE27)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE27玩家已在线关闭掉旧链接 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE28)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE28手游登录，但是还没有玩家角色 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE39)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE39数据准备完毕，玩家开始登录 玩家不存在 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE40)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE40获取sessionKey对象,已经登录过 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE41)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE41获取sessionKey对象，帐户名称，并且判断一下是否超长(超长则失败) - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE42)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE42获取sessionKey对象，Get_Session: other_data size is wrong - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE43)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE43获取sessionKey对象，验证session_key是否可以登录这个服务器（为不可登录时候断开） - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE44)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE44获取sessionKey对象，LogindContext::Get_Session:%s load account fail(获取帐号表数据异常) - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE45)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE45获取sessionKey对象，LogindContext::Get_Session:%s Get_Chars_List fail（获取角色列表数据异常） - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE46)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE46跨服读取数据失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE47)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE47运气不好，登录时碰上正在释放自己数据 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE48)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE48合服检测，从服玩家状态 不为 STATUS_LOGGEDIN - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE49)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE49封号 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE50)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE50踢人 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE51)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE51玩家不存在时关闭连接 LuaPlayerLogin %s, but not found - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE52)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE52角色在其他地方登陆 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE53)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE53登陆是无法获得数据 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE54)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE54登陆时 player login call puts fail %s, fd %u - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE55)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE55on_create_conn_get_session create_mobile_context duplicate - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE56)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE56登陆失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE57)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE57Gm命令 @自爆 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE58)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE58PK服登陆数据异常 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE59)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE59从数据库读取玩家数据失败 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_2046)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_2046一个角色对应两个账号	 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_2047)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_2047改名字的时候找不到account，刷新就可以过了 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_2048)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_LOGDIN_2048session的account不等于player的account,简单来说,串号了. - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE29)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE29停止移动，地图模板为null - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE30)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE30对象移动，地图模板为null - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE31)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE31对象移动的时候  状态不为 STATUS_LOGGEDIN  时候 （assert error: Handle_Unit_Move  ASSERT(status_ == STATUS_LOGGEDIN)） - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE32)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE32传送是 状态不为 STATUS_LOGGEDIN （ScenedContext::Teleport status_ != STATUS_LOGGEDIN） - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE33)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE33如果玩家未正确的加入地图，这个时间传送也是失败的 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE34)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE34任务链条中断 assert error: Handle_QuestGiver_Status_Query  ASSERT(questGetter) - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE35)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE35玩家被杀死时，地图数据不存在 Player::OnKilled ASSERT(GetMap()) - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE36)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE36加入地图宠物不存在的时候  Player::OnJoinMap ASSERT(m_pets.empty()) - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE37)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE37任务管理者不存在的时候 Player::Create ASSERT(!m_questMgr) - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE38)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_SCREND_ONE38传送超时1分钟 - " .. data 
-		end
-		if (reason ==PLAYER_CLOSE_OPERTE_POLICED_4001)then
-			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - PLAYER_CLOSE_OPERTE_POLICED_4001在日志服重复登录 - " .. data 
+		if (reason ==ATHLETICS_OPERATE_NO_MONEY)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_MONEY超出最大购买次数 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_STRENGTH " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE)then
-		if (reason ==OPERTE_TYPE_FACTION_IS_HAVE)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_IS_HAVE你已经在帮派中 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE1)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_APPD_ONE1插入单个物品时，包裹id 超过最大值 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_NAME_ERR)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_NAME_ERR帮派名称超过6个字符 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE2)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_APPD_ONE2创建玩家其他的对象的时候，发现之前已经创建过了 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_NAME_HAVE_FUCK)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_NAME_HAVE_FUCK帮派名称中有非法字符 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE3)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_APPD_ONE3托管到期 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_NAME_REPEAT)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_NAME_REPEAT帮派名称重复 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE4)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_APPD_ONE4GM命令 踢人 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_CREATE_MAX)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_CREATE_MAX帮派数量达到上限 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE5)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_APPD_ONE5GM命令 回档数据 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_CREATE_COST)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_CREATE_COST元宝不足无法创建帮派 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_APPD_ONE6)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_APPD_ONE6 踢玩家下线 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_NOT_MANAGER)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_NOT_MANAGER不是帮主或副帮主无法编辑 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE4)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE4帐号信息不完整 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_NOTICE_ERR)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_NOTICE_ERR帮派公告超过144个字符 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE5)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE5Char_Create put  fail! - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_NOTICE_ERR_PB)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_NOTICE_ERR_PB帮派公告包含非法字符 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE6)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE6登录时候不是我的角色 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_LEV_LOW)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_LEV_LOW等级不够，不能加入帮派 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE7)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE7待定 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT帮派人数已满无法加入 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE8)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE8跨服回来的玩家 m_player 不存在 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_JOIN_SUCESS)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_JOIN_SUCESS恭喜你加入帮派 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE9)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE9初始化数据库数据失败 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN你被拒绝加入帮派 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE10)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE10看看有没有玩家数据需要修复或者升级的 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_KICKED)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_KICKED你被移出帮派 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE11)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE11重设元宝数量 取数据时失败 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_KICK_SUCCESS)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_KICK_SUCCESS踢出帮派成员 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE12)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE12踢人 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_MAX_ZHIWEI)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_MAX_ZHIWEI职位人数已满 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE13)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE13如果连接不存在,则根据解开的session结果进行创建对应的session实例(on_create_conn_get_session create_sesstion duplicate) - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_APPOINT_SUCCESS)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_APPOINT_SUCCESS任命成功 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE14)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE14客户端连接失败 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_PROMOTED)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_PROMOTED你被任命为 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE15)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE15把玩家由pk服回到游戏服,登录失败 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_APPOINT_NOSELF)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_APPOINT_NOSELF自己不能任命自己  - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE16)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE16检测跨服玩家是否可以登陆 -玩家不存在 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_DONATIONMAX)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_DONATIONMAX捐献次数超过最大次数 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE17)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE17检测跨服玩家是否可以登陆 -超时 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_DONATION_GOLD)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_DONATION_GOLD捐献所需金币不够 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE18)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE18登陆队列 context->GetGuid().empty(） - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_DONATION_YB)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_DONATION_YB捐献所需元宝不够 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE19)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE19合服检测 手游下线 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_SHOP_NUMLOW)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_SHOP_NUMLOW商品剩余数量不足无法购买 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE20)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE20通知场景服玩家加入地图 m_scened_conn不存在 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_FACTION_DEVOTE)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPERTE_TYPE_FACTION_DEVOTE帮贡不足 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE21)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE21玩家加入地图实例时，玩家binlg不存在  - " .. data 
 		end
-		if (reason ==OPEATE_TYPE_FACTION_MONEY_ERR)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPEATE_TYPE_FACTION_MONEY_ERR帮派资金不足 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE22)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE22玩家加入地图 创建实例失败 - " .. data 
 		end
-		if (reason ==OPEATE_TYPE_FACTION_LEVEL_UP)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPEATE_TYPE_FACTION_LEVEL_UP帮派升级成功 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE23)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE23如果已登录过 !m_account.empty() - " .. data 
 		end
-		if (reason ==OPEATE_TYPE_FACTION_NOT_JOIN)then
-			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - OPEATE_TYPE_FACTION_NOT_JOIN没有可以加入的帮派 - " .. data 
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE24)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE24帐号名称超长 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE25)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE25验证是否可以登录本服验证失败 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE26)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE26账户表数据不存在 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE27)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE27玩家已在线关闭掉旧链接 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE28)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE28手游登录，但是还没有玩家角色 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE39)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE39数据准备完毕，玩家开始登录 玩家不存在 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE40)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE40获取sessionKey对象,已经登录过 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE41)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE41获取sessionKey对象，帐户名称，并且判断一下是否超长(超长则失败) - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE42)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE42获取sessionKey对象，Get_Session: other_data size is wrong - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE43)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE43获取sessionKey对象，验证session_key是否可以登录这个服务器（为不可登录时候断开） - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE44)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE44获取sessionKey对象，LogindContext::Get_Session:%s load account fail(获取帐号表数据异常) - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE45)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE45获取sessionKey对象，LogindContext::Get_Session:%s Get_Chars_List fail（获取角色列表数据异常） - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE46)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE46跨服读取数据失败 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE47)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE47运气不好，登录时碰上正在释放自己数据 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE48)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE48合服检测，从服玩家状态 不为 STATUS_LOGGEDIN - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE49)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE49封号 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE50)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE50踢人 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE51)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE51玩家不存在时关闭连接 LuaPlayerLogin %s, but not found - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE52)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE52角色在其他地方登陆 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE53)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE53登陆是无法获得数据 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE54)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE54登陆时 player login call puts fail %s, fd %u - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE55)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE55on_create_conn_get_session create_mobile_context duplicate - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE56)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE56登陆失败 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE57)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE57Gm命令 @自爆 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE58)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE58PK服登陆数据异常 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_ONE59)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_ONE59从数据库读取玩家数据失败 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_2046)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_2046一个角色对应两个账号	 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_2047)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_2047改名字的时候找不到account，刷新就可以过了 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_LOGDIN_2048)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_LOGDIN_2048session的account不等于player的account,简单来说,串号了. - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE29)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE29停止移动，地图模板为null - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE30)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE30对象移动，地图模板为null - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE31)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE31对象移动的时候  状态不为 STATUS_LOGGEDIN  时候 （assert error: Handle_Unit_Move  ASSERT(status_ == STATUS_LOGGEDIN)） - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE32)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE32传送是 状态不为 STATUS_LOGGEDIN （ScenedContext::Teleport status_ != STATUS_LOGGEDIN） - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE33)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE33如果玩家未正确的加入地图，这个时间传送也是失败的 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE34)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE34任务链条中断 assert error: Handle_QuestGiver_Status_Query  ASSERT(questGetter) - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE35)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE35玩家被杀死时，地图数据不存在 Player::OnKilled ASSERT(GetMap()) - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE36)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE36加入地图宠物不存在的时候  Player::OnJoinMap ASSERT(m_pets.empty()) - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE37)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE37任务管理者不存在的时候 Player::Create ASSERT(!m_questMgr) - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_SCREND_ONE38)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_SCREND_ONE38传送超时1分钟 - " .. data 
+		end
+		if (reason ==PLAYER_CLOSE_OPERTE_POLICED_4001)then
+			return "ShowOperationFailed OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE切换战斗模式失败 - PLAYER_CLOSE_OPERTE_POLICED_4001在日志服重复登录 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_SOCIAL)then
-		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_HAS_SEND好友请求信息已发送 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_IS_HAVE)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_IS_HAVE你已经在帮派中 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_NOT_FIND)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_NOT_FIND角色不存在或者角色不在线 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NAME_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_NAME_ERR帮派名称超过6个字符 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_SELF_FULL)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_SELF_FULL自己好友列表已满 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NAME_HAVE_FUCK)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_NAME_HAVE_FUCK帮派名称中有非法字符 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_TARGET_FULL)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_TARGET_FULL对方好友列表已满 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NAME_REPEAT)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_NAME_REPEAT帮派名称重复 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_ALREADY_FRIEND对方已经是你的好友 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_CREATE_MAX)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_CREATE_MAX帮派数量达到上限 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_ADD_MYSELF)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_ADD_MYSELF不能自己添加自己为好友 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_CREATE_COST)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_CREATE_COST元宝不足无法创建帮派 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND_ADD)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_HAS_SEND_ADD已经发送申请 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NOT_MANAGER)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_NOT_MANAGER不是帮主或副帮主无法编辑 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_NO_MONEY)then
-			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_SOCIAL_NO_MONEY元宝或者金币不足 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_NOTICE_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_NOTICE_ERR帮派公告超过144个字符 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_NOTICE_ERR_PB)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_NOTICE_ERR_PB帮派公告包含非法字符 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_LEV_LOW)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_LEV_LOW等级不够，不能加入帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT帮派人数已满无法加入 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_JOIN_SUCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_JOIN_SUCESS恭喜你加入帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_FACTION_REFUSED_JOIN你被拒绝加入帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_KICKED)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_KICKED你被移出帮派 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_KICK_SUCCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_KICK_SUCCESS踢出帮派成员 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_MAX_ZHIWEI)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_MAX_ZHIWEI职位人数已满 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_APPOINT_SUCCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_APPOINT_SUCCESS任命成功 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_PROMOTED)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_PROMOTED你被任命为 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_APPOINT_NOSELF)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_APPOINT_NOSELF自己不能任命自己  - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DONATIONMAX)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_DONATIONMAX捐献次数超过最大次数 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DONATION_GOLD)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_DONATION_GOLD捐献所需金币不够 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DONATION_YB)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_DONATION_YB捐献所需元宝不够 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_SHOP_NUMLOW)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_SHOP_NUMLOW商品剩余数量不足无法购买 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_FACTION_DEVOTE)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPERTE_TYPE_FACTION_DEVOTE帮贡不足 - " .. data 
+		end
+		if (reason ==OPEATE_TYPE_FACTION_MONEY_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPEATE_TYPE_FACTION_MONEY_ERR帮派资金不足 - " .. data 
+		end
+		if (reason ==OPEATE_TYPE_FACTION_LEVEL_UP)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPEATE_TYPE_FACTION_LEVEL_UP帮派升级成功 - " .. data 
+		end
+		if (reason ==OPEATE_TYPE_FACTION_NOT_JOIN)then
+			return "ShowOperationFailed OPERTE_TYPE_SOCIAL社交 - OPEATE_TYPE_FACTION_NOT_JOIN没有可以加入的帮派 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_SOCIAL " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_FACTION)then
-		if (reason ==HOSTING_OPERTE_IS_SELF)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_IS_SELF无法对自己操作 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_HAS_SEND好友请求信息已发送 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_LEVEL_NOT)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_LEVEL_NOT等级不足 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_NOT_FIND)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_NOT_FIND角色不存在或者角色不在线 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_IS_HOSTING)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_IS_HOSTING托管中 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_SELF_FULL)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_SELF_FULL自己好友列表已满 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_IS_HOSTING_APPLY)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_IS_HOSTING_APPLY托管申请 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_TARGET_FULL)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_TARGET_FULL对方好友列表已满 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_FRIEND_NOT)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_FRIEND_NOT好友不存在 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_ALREADY_FRIEND对方已经是你的好友 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_HAS_NOT_24H)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_HAS_NOT_24H还没到24小时 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_ADD_MYSELF)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_ADD_MYSELF不能自己添加自己为好友 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_FRIEND_OUTLINE)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_FRIEND_OUTLINE好友不在线 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND_ADD)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_HAS_SEND_ADD已经发送申请 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_FRIEND_ERR)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_FRIEND_ERR托管好友错误 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_NOT_HOSTING)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_NOT_HOSTING不在托管中 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_ONLINE)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_FRIEND_ONLINE好友在线 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_LOGIN_HOSTING)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_LOGIN_HOSTING托管登录中 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_APPLY)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_FRIEND_APPLY申请发送 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_LOGIN)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_LOGIN登录 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_SUCCESS)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_SUCCESS托管申请成功 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_CANCEL)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_CANCEL取消托管 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_REFUSED)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_REFUSED拒绝托管 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_NOT_DUE_TO)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_NOT_DUE_TO托管未到期 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_HOSTING_LOGIN)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_FRIEND_HOSTING_LOGIN对方托管登录中，无法操作 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_NOT_HAS_YOU)then
-			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - HOSTING_OPERTE_FRIEND_NOT_HAS_YOU对方好友列表没有你 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_NO_MONEY)then
+			return "ShowOperationFailed OPERTE_TYPE_FACTION帮派 - OPERTE_TYPE_SOCIAL_NO_MONEY元宝或者金币不足 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_FACTION " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_FIELD_BOSS)then
-		if (reason ==STRENGTH_OPERTE_FAIL)then
-			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
+		if (reason ==HOSTING_OPERTE_IS_SELF)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_IS_SELF无法对自己操作 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LEVEL_NOT)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_LEVEL_NOT等级不足 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_IS_HOSTING)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_IS_HOSTING托管中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_IS_HOSTING_APPLY)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_IS_HOSTING_APPLY托管申请 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_NOT)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_FRIEND_NOT好友不存在 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_HAS_NOT_24H)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_HAS_NOT_24H还没到24小时 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_OUTLINE)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_FRIEND_OUTLINE好友不在线 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_ERR)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_FRIEND_ERR托管好友错误 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_NOT_HOSTING)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_NOT_HOSTING不在托管中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_ONLINE)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_FRIEND_ONLINE好友在线 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LOGIN_HOSTING)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_LOGIN_HOSTING托管登录中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_APPLY)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_FRIEND_APPLY申请发送 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LOGIN)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_LOGIN登录 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_SUCCESS)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_SUCCESS托管申请成功 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_CANCEL)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_CANCEL取消托管 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_REFUSED)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_REFUSED拒绝托管 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_NOT_DUE_TO)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_NOT_DUE_TO托管未到期 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_HOSTING_LOGIN)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_FRIEND_HOSTING_LOGIN对方托管登录中，无法操作 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_NOT_HAS_YOU)then
+			return "ShowOperationFailed OPERTE_TYPE_FIELD_BOSS野外BOSS - HOSTING_OPERTE_FRIEND_NOT_HAS_YOU对方好友列表没有你 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_FIELD_BOSS " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_WORLD_BOSS)then
-		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_DENY)then
-			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - BATTLE_MODE_OPERTE_PEACE_MODE_DENY战斗中不能切换和平模式 - " .. data 
-		end
-		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)then
-			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD和平模式在CD中 - " .. data 
+		if (reason ==STRENGTH_OPERTE_FAIL)then
+			return "ShowOperationFailed OPERTE_TYPE_WORLD_BOSS世界BOSS - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
 		end
 		return "未知错误1  OPERTE_TYPE_WORLD_BOSS " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_MOUNT_QICHENG)then
-		if (reason ==FIELD_BOSS_OPERTE_WILL_START)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_WILL_START野外BOSS即将在{1}分钟后开启, 请大家安排好时间 - " .. data 
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_DENY)then
+			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - BATTLE_MODE_OPERTE_PEACE_MODE_DENY战斗中不能切换和平模式 - " .. data 
 		end
-		if (reason ==FIELD_BOSS_OPERTE_WILL_OCCUR)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_WILL_OCCUR野外boss即将出现，请各位大侠做好准备 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_OCCUR)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_OCCUR野外boss已经在各个地图刷新，请各位大侠火速前往击杀 查看详情 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_BOSS_BORN)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_BOSS_BORN{1}已出现在{2}，请各位大侠火速前往击杀 立即前往 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_BOSS_KILL)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_BOSS_KILL{1}已被成功击杀！恭喜{2}获得{3}1分钟的优先开启权利 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_PROTECT)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_PROTECT九龙宝箱保护时间结束，静待各位大侠开启 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_PICKED)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_PICKED恭喜{1}最终开启九龙宝箱，获得XXXX - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_TOO_FAR)then
-			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - FIELD_BOSS_OPERTE_TOO_FAR太远了，你不可能开启这个宝箱 - " .. data 
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)then
+			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD和平模式在CD中 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_MOUNT_QICHENG " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_TELEPORT)then
-		if (reason ==WORLD_BOSS_OPERTE_NOT_ENROLL)then
-			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - WORLD_BOSS_OPERTE_NOT_ENROLL本次活动您未报名，无法参加 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_WILL_START)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_WILL_START野外BOSS即将在{1}分钟后开启, 请大家安排好时间 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_WILL_START)then
-			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - WORLD_BOSS_OPERTE_WILL_START世界boss即将开启，请各位大侠做好准备 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_WILL_OCCUR)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_WILL_OCCUR野外boss即将出现，请各位大侠做好准备 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL1)then
-			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - WORLD_BOSS_OPERTE_WILL_ROLL1恭喜{1}赢得本次拼点奖励，BOSS在3秒后恢复正常 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_OCCUR)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_OCCUR野外boss已经在各个地图刷新，请各位大侠火速前往击杀 查看详情 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL2)then
-			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - WORLD_BOSS_OPERTE_WILL_ROLL2恭喜{1}赢得本次拼点奖励，现在可自由离开战场 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_BOSS_BORN)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_BOSS_BORN{1}已出现在{2}，请各位大侠火速前往击杀 立即前往 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_ENROLL)then
-			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - WORLD_BOSS_OPERTE_ENROLL世界BOSS开始报名 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_BOSS_KILL)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_BOSS_KILL{1}已被成功击杀！恭喜{2}获得{3}1分钟的优先开启权利 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_PROTECT)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_PROTECT九龙宝箱保护时间结束，静待各位大侠开启 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_PICKED)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_PICKED恭喜{1}最终开启九龙宝箱，获得XXXX - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_TOO_FAR)then
+			return "ShowOperationFailed OPRATE_TYPE_TELEPORT传送 - FIELD_BOSS_OPERTE_TOO_FAR太远了，你不可能开启这个宝箱 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_TELEPORT " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_UPGRADE)then
-		if (reason ==MOUNT_QICHENG_FIGHT)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - MOUNT_QICHENG_FIGHT战斗状态不能骑乘 - " .. data 
+		if (reason ==WORLD_BOSS_OPERTE_NOT_ENROLL)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - WORLD_BOSS_OPERTE_NOT_ENROLL本次活动您未报名，无法参加 - " .. data 
 		end
-		if (reason ==MOUNT_QICHENG_JUMP)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - MOUNT_QICHENG_JUMP跳跃状态不能骑乘 - " .. data 
+		if (reason ==WORLD_BOSS_OPERTE_WILL_START)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - WORLD_BOSS_OPERTE_WILL_START世界boss即将开启，请各位大侠做好准备 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL1)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - WORLD_BOSS_OPERTE_WILL_ROLL1恭喜{1}赢得本次拼点奖励，BOSS在3秒后恢复正常 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL2)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - WORLD_BOSS_OPERTE_WILL_ROLL2恭喜{1}赢得本次拼点奖励，现在可自由离开战场 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_ENROLL)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - WORLD_BOSS_OPERTE_ENROLL世界BOSS开始报名 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_UPGRADE " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_ACTIVITY)then
-		if (reason ==TELEPORT_OPRATE_PVP_STATE)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - TELEPORT_OPRATE_PVP_STATEpvp状态不能传送 - " .. data 
+		if (reason ==MOUNT_QICHENG_FIGHT)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - MOUNT_QICHENG_FIGHT战斗状态不能骑乘 - " .. data 
+		end
+		if (reason ==MOUNT_QICHENG_JUMP)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - MOUNT_QICHENG_JUMP跳跃状态不能骑乘 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_ACTIVITY " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_ACHIEVE)then
-		if (reason ==UPGRADE_OPRATE_SKILL_SUCCESS)then
-			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - UPGRADE_OPRATE_SKILL_SUCCESS技能升级成功 - " .. data 
-		end
-		if (reason ==UPGRADE_OPRATE_MOUNT_EXP)then
-			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - UPGRADE_OPRATE_MOUNT_EXP坐骑经验+{1} - " .. data 
-		end
-		if (reason ==UPGRADE_OPRATE_MOUNT_STAR)then
-			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - UPGRADE_OPRATE_MOUNT_STAR坐骑星级+1 - " .. data 
-		end
-		if (reason ==UPGRADE_OPRATE_MOUNT)then
-			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - UPGRADE_OPRATE_MOUNT进阶成功 - " .. data 
+		if (reason ==TELEPORT_OPRATE_PVP_STATE)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - TELEPORT_OPRATE_PVP_STATEpvp状态不能传送 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_ACHIEVE " .. reason .. "    "  .. data
+	end
+	if(type == OPRATE_TYPE_ATHLETICS)then
+		if (reason ==UPGRADE_OPRATE_SKILL_SUCCESS)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - UPGRADE_OPRATE_SKILL_SUCCESS技能升级成功 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT_EXP)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - UPGRADE_OPRATE_MOUNT_EXP坐骑经验+{1} - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT_STAR)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - UPGRADE_OPRATE_MOUNT_STAR坐骑星级+1 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - UPGRADE_OPRATE_MOUNT进阶成功 - " .. data 
+		end
+		return "未知错误1  OPRATE_TYPE_ATHLETICS " .. reason .. "    "  .. data
 	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

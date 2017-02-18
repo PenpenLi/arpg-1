@@ -18,5 +18,11 @@ tb_kuafu3v3_base = {
 	--  winStreakScore:int	连胜积分
 	--  bestScore:int	最佳积分
 	--  resultHonor:array	胜负荣誉
-	[1] = {id = 1,buffPos = {{19,91},{19,41}},bornPos = {{19,116},{19,16}},interval = 30,times = 2,seconds = 5,cd = 10,last = 300,damageScore = {3,2,1},resultScore = {10,5},scorePerKill = 1,winStreakScore = 2,bestScore = 2,resultHonor = {10,5},},
+	--  daytimes:int	每日进入次数
+	--  daybuytimes:int	每日可购买进入次数
+	--  daybuycost:array	购买进入次数消耗
+	--  limlev:int	进入限制等级
+	--  limforce:int	进入限制战力
+	--  activetime:array	活动时间
+	[1] = {id = 1,buffPos = {{19,91},{19,41}},bornPos = {{19,116},{19,16}},interval = 30,times = 2,seconds = 5,cd = 10,last = 300,damageScore = {3,2,1},resultScore = {10,5},scorePerKill = 1,winStreakScore = 2,bestScore = 2,resultHonor = {10,5},daytimes = 2,daybuytimes = 5,daybuycost = {{0,10}},limlev = 5,limforce = 2000,activetime = {{13,0,14,30},{1,0,23,50}},},
 }

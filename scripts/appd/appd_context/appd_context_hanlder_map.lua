@@ -116,6 +116,13 @@ hanlders[CMSG_PICK_QUEST_CHAPTER_REWARD] = PlayerInfo.Handle_Pick_Quest_Chapter_
 
 hanlders[CMSG_KUAFU_3V3_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Match
 
+hanlders[CMSG_KUAFU_3V3_MATCH_OPER]	= PlayerInfo.Handle_Kuafu_3v3_Match_Oper
+
+hanlders[MSG_KUAFU_3V3_CANCEL_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Cancel_Match
+
+
+hanlders[CMSG_KUAFU_3V3_BUYTIMES]	= PlayerInfo.Handle_Kuafu_3v3_BuyTimes
+
 hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 
 return hanlders

@@ -12,7 +12,7 @@ function PlayerInfo:OnCheckWorld3v3Match()
 	local url = globalGameConfig:GetExtWebInterface().."world_3v3/check_match"
 	local data = {}
 	-- 这里获得3v3队伍匹配的信息
-	data.player_guid = self:GetGuid()
+	data.player_guid = self:GetPlayerMatchKey()
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug(response)
@@ -35,11 +35,24 @@ function PlayerInfo:OnCheckWorld3v3Match()
 				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, pos, battle_server)
 				-- 已经匹配到了
 				app:SetMatchingKuafuType(self:GetGuid(), nil)
+				
+				-- 增加进入次数
+				local instMgr = self:getInstanceMgr()
+				instMgr:add3v3EnterTimes()
+			-- timeout取消匹配
 			elseif dict.ret == 2 then
-				if dict.msg == "cancel" then
-					-- timeout取消匹配
-					app:SetMatchingKuafuType(self:GetGuid(), nil)
+				
+				self:OnCancelMatch()
+			-- 有人未准备好
+			elseif dict.ret == 3 then
+				self:OnCancelMatch()
+			-- 准备情况
+			elseif dict.ret == 4 then
+				local wait_info = dict.wait_info
+				if type(wait_info) == "string" then
+					wait_info = json.decode(wait_info)
 				end
+				self:OnSendWaitInfo(wait_info)
 			end
 		end
 	end)
@@ -60,11 +73,11 @@ function PlayerInfo:OnCancelWorld3v3MatchBeforeOffline()
 	
 	local url = globalGameConfig:GetExtWebInterface().."world_3v3/cancel_match"
 	local data = {}
-	data.player_guid = self:GetGuid()
+	data.player_guid = self:GetPlayerMatchKey()
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug(response)
-		app:SetMatchingKuafuType(self:GetGuid(), nil)
+		self:OnCancelMatch()
 	end)
 end
 
@@ -72,11 +85,11 @@ end
 function PlayerInfo:OnWorld3v3Match()
 	-- 已经在匹配其他了
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
-		return
+		return false
 	end
 	app.world_3v3_team_dict[self:GetGuid()] = {self:GetGuid()}
 	app.world_3v3_player_team[self:GetGuid()] = self:GetGuid()
-	self:OnWorld3v3GroupMatch()
+	return self:OnWorld3v3GroupMatch()
 end
 
 -- 队伍匹配3v3
@@ -85,12 +98,12 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 	-- 队长才能进行匹配, 不是的不让进
 	local group_guid = self:GetGuid()
 	if app.world_3v3_player_team[self:GetGuid()] ~= group_guid then
-		return
+		return false
 	end
 	
 	-- 已经在匹配其他了
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
-		return
+		return false
 	end
 	
 	local teamdict = {}
@@ -105,7 +118,7 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 	
 	local url = globalGameConfig:GetExtWebInterface().."world_3v3/match"
 	local data = {}
-	data.group_guid = group_guid
+	data.group_guid = self:GetPlayerMatchKey()
 	data.open_time = 1
 	data.team_info = string.join(",", teamdict)
 	
@@ -117,6 +130,8 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 			print(dict.ret, dict.msg)
 		end
 	end)
+	
+	return true
 end
 
 -- 进行奖励检查
@@ -136,11 +151,13 @@ function PlayerInfo:CheckWorld3v3Reward()
 	local data = {}
 	data.player_guid = self:GetGuid()
 	data.open_time = 1
+	
+	local askguid = self:GetGuid()
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug(response)
 		local dict = json.decode(response)
 		if dict then
-			print(dict.ret, dict.msg)
+			print(dict.ret, dict.msg, askguid)
 			
 			if dict.ret == 0 then
 				local data = dict.details
@@ -200,4 +217,59 @@ function UpdateKuafuRank()
 		end
 		
 	end)
+end
+
+-- 准备比赛
+function PlayerInfo:OnPrepareMatch(oper)
+	print("OnPrepareMatch ", oper)
+	local url = globalGameConfig:GetExtWebInterface().."world_3v3/prepare_match"
+	
+	local data = {}
+	data.player_guid = self:GetPlayerMatchKey()
+	data.oper = oper
+	
+	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
+		outFmtDebug("response = ", response)
+		local dict = json.decode(response)
+		if dict then
+			print(dict.ret, dict.msg)
+		
+			if dict.ret == 0 then
+				local wait_info = dict.wait_info
+				if type(wait_info) == "string" then
+					wait_info = json.decode(wait_info)
+				end
+				self:OnSendWaitInfo(wait_info)
+			-- 取消等待
+			elseif dict.ret == 2 then
+				self:OnCancelMatch()
+			end
+		end
+		
+	end)
+end
+
+-- 发送等待列表
+function PlayerInfo:OnSendWaitInfo(wait_info)
+
+	local wait_info_list = {}
+	for _, info in ipairs(wait_info) do
+		local stru = wait_info_t .new()
+		stru.name = info[ 2 ]
+		stru.state = info[ 1 ]
+		table.insert(wait_info_list, stru)
+	end
+	
+	self:call_kuafu_3v3_wait_info(wait_info_list)
+end
+
+-- 匹配取消
+function PlayerInfo:OnCancelMatch()
+	app:SetMatchingKuafuType(self:GetGuid(), nil)
+	self:call_kuafu_3v3_cancel_match(KUAFU_TYPE_FENGLIUZHEN)
+end
+
+
+function PlayerInfo:GetPlayerMatchKey()
+	return self:GetGuid()
 end

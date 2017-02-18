@@ -1035,6 +1035,14 @@ pick_quest_chapter_reward,c2s,233,/*领取任务章节奖励*/,STATUS_NEVER,False
 kuafu_3v3_match,c2s,234,/*3v3跨服匹配*/,STATUS_NEVER,False
 
 #
+kuafu_3v3_match_start,s2c,235,/*3v3跨服开始匹配*/,STATUS_NEVER,False
+
+#
+kuafu_3v3_buytimes,c2s,236,/*3v3购买次数*/,STATUS_NEVER,False
+	num,uint8,False,/*购买次数*/
+
+
+#
 welfare_getalllist_getback,c2s,240,/*福利所有奖励列表*/,STATUS_NEVER,False
 	best,uint8,False,/*完美找回*/
 
@@ -1051,3 +1059,15 @@ welfare_getall_getback,c2s,242,/*一键领取所有福利*/,STATUS_NEVER,False
 kuafu_3v3_kill_detail,s2c,250,/*击杀数据*/,STATUS_NEVER,False
 	indx1,uint32,False,/*击杀者下标*/
 	indx2,uint32,False,/*被击杀者下标*/
+
+#
+kuafu_3v3_wait_info,s2c,251,/*跨服匹配等待数据*/,STATUS_NEVER,False
+	list,wait_info,True,/*匹配数据*/
+	
+#
+kuafu_3v3_cancel_match,both,252,/*取消匹配*/,STATUS_NEVER,False
+	type,uint32,False,/*取消匹配跨服类型*/
+
+#
+kuafu_3v3_match_oper,c2s,253,/*匹配到人,接受或者拒绝*/,STATUS_NEVER,False
+	oper,uint32,False,/*0:取消, 1:接受*/

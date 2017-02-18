@@ -648,7 +648,7 @@ function PlayerInfo:Login()
 	if(self:GetFlags(PLAYER_APPD_INT_FIELD_FLAGS_NEW_PLAYER) == false)then
 		--置为老玩家
 		self:SetFlags(PLAYER_APPD_INT_FIELD_FLAGS_NEW_PLAYER)
-	else
+		
 		--发送玩家属性到场景服
 		playerLib.SendAttr(self.ptr)
 	end
@@ -660,7 +660,7 @@ function PlayerInfo:Login()
 	globalSystemMail:checkIfHasSystemMail(self)
 	
 	-- 检查奖励
-	self:CheckMatchReward()
+	self:CheckMatchReward()	
 end
 
 --pk服玩家登陆做点啥

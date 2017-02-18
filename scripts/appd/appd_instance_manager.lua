@@ -371,6 +371,29 @@ function AppInstanceMgr:SetActivityReward(offset)
 end
 
 -------------------------------活动end------------------------------
+
+-------------------------------竞技------------------------------
+--3v3已参加次数
+function AppInstanceMgr:get3v3EnterTimes()
+	return self:GetUInt16(INSTANCE_INT_FIELD_3V3_TIMES,0)
+end
+
+--增加3v3参加次数
+function AppInstanceMgr:add3v3EnterTimes()
+	self:AddUInt16(INSTANCE_INT_FIELD_3V3_TIMES,0,1)
+end
+
+--3v3已购买次数
+function AppInstanceMgr:get3v3BuyTimes()
+	return self:GetUInt16(INSTANCE_INT_FIELD_3V3_TIMES,1)
+end
+
+function AppInstanceMgr:add3v3BuyTimes(num)
+	self:AddUInt16(INSTANCE_INT_FIELD_3V3_TIMES,1,num)
+end
+
+-------------------------------竞技end------------------------------
+
 -- 获得玩家guid
 function AppInstanceMgr:getPlayerGuid()
 	--物品管理器guid转玩家guid

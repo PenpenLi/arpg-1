@@ -90,3 +90,8 @@ rank_info,/*排名信息*/
 line_info,/*坐标结构体*/
 	lineNo,uint16,0,/*分线号*/
 	rate,uint8,0,/*玩家比率*/
+
+#等待信息
+wait_info,/*等待信息*/
+	name,String,50,/*名字*/
+	state,uint8,0,/*状态*/

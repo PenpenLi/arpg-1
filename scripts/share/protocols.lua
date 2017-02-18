@@ -242,10 +242,15 @@ CMSG_TALK_WITH_NPC		= 231	-- /*和npc对话*/
 CMSG_USE_VIRTUAL_ITEM		= 232	-- /*使用虚拟物品*/	
 CMSG_PICK_QUEST_CHAPTER_REWARD		= 233	-- /*领取任务章节奖励*/	
 CMSG_KUAFU_3V3_MATCH		= 234	-- /*3v3跨服匹配*/	
+SMSG_KUAFU_3V3_MATCH_START		= 235	-- /*3v3跨服开始匹配*/	
+CMSG_KUAFU_3V3_BUYTIMES		= 236	-- /*3v3购买次数*/	
 CMSG_WELFARE_GETALLLIST_GETBACK		= 240	-- /*福利所有奖励列表*/	
 SMSG_WELFARE_REWARDLIST_GETBACK		= 241	-- /*奖励列表*/	
 CMSG_WELFARE_GETALL_GETBACK		= 242	-- /*一键领取所有福利*/	
 SMSG_KUAFU_3V3_KILL_DETAIL		= 250	-- /*击杀数据*/	
+SMSG_KUAFU_3V3_WAIT_INFO		= 251	-- /*跨服匹配等待数据*/	
+MSG_KUAFU_3V3_CANCEL_MATCH		= 252	-- /*取消匹配*/	
+CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人&接受或者拒绝*/	
 
 
 ---------------------------------------------------------------------
@@ -1028,6 +1033,46 @@ function line_info_t:write( output )
 		self.rate = 0
 	end
 	output:writeByte(self.rate)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*等待信息*/
+
+wait_info_t = class('wait_info_t')
+
+function wait_info_t:read( input )
+
+	local ret
+	ret,self.name = input:readUTFByLen(50)  --/*名字*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.state = input:readByte() --/*状态*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function wait_info_t:write( output )
+	if(self.name == nil)then
+		self.name = ''
+	end
+	output:writeUTFByLen(self.name , 50 ) 
+	
+	if(self.state == nil)then
+		self.state = 0
+	end
+	output:writeByte(self.state)
 	
 	return output
 end
@@ -8495,6 +8540,60 @@ function Protocols.unpack_kuafu_3v3_match (pkt)
 end
 
 
+-- /*3v3跨服开始匹配*/	
+function Protocols.pack_kuafu_3v3_match_start (  )
+	local output = Packet.new(SMSG_KUAFU_3V3_MATCH_START)
+	return output
+end
+
+-- /*3v3跨服开始匹配*/	
+function Protocols.call_kuafu_3v3_match_start ( playerInfo )
+	local output = Protocols.	pack_kuafu_3v3_match_start (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*3v3跨服开始匹配*/	
+function Protocols.unpack_kuafu_3v3_match_start (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*3v3购买次数*/	
+function Protocols.pack_kuafu_3v3_buytimes ( num)
+	local output = Packet.new(CMSG_KUAFU_3V3_BUYTIMES)
+	output:writeByte(num)
+	return output
+end
+
+-- /*3v3购买次数*/	
+function Protocols.call_kuafu_3v3_buytimes ( playerInfo, num)
+	local output = Protocols.	pack_kuafu_3v3_buytimes ( num)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*3v3购买次数*/	
+function Protocols.unpack_kuafu_3v3_buytimes (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.num = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 -- /*福利所有奖励列表*/	
 function Protocols.pack_welfare_getalllist_getback ( best)
 	local output = Packet.new(CMSG_WELFARE_GETALLLIST_GETBACK)
@@ -8612,6 +8711,106 @@ function Protocols.unpack_kuafu_3v3_kill_detail (pkt)
 		return false
 	end	
 	ret,param_table.indx2 = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*跨服匹配等待数据*/	
+function Protocols.pack_kuafu_3v3_wait_info ( list)
+	local output = Packet.new(SMSG_KUAFU_3V3_WAIT_INFO)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*跨服匹配等待数据*/	
+function Protocols.call_kuafu_3v3_wait_info ( playerInfo, list)
+	local output = Protocols.	pack_kuafu_3v3_wait_info ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*跨服匹配等待数据*/	
+function Protocols.unpack_kuafu_3v3_wait_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = wait_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*取消匹配*/	
+function Protocols.pack_kuafu_3v3_cancel_match ( type)
+	local output = Packet.new(MSG_KUAFU_3V3_CANCEL_MATCH)
+	output:writeU32(type)
+	return output
+end
+
+-- /*取消匹配*/	
+function Protocols.call_kuafu_3v3_cancel_match ( playerInfo, type)
+	local output = Protocols.	pack_kuafu_3v3_cancel_match ( type)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*取消匹配*/	
+function Protocols.unpack_kuafu_3v3_cancel_match (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.type = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*匹配到人&接受或者拒绝*/	
+function Protocols.pack_kuafu_3v3_match_oper ( oper)
+	local output = Packet.new(CMSG_KUAFU_3V3_MATCH_OPER)
+	output:writeU32(oper)
+	return output
+end
+
+-- /*匹配到人&接受或者拒绝*/	
+function Protocols.call_kuafu_3v3_match_oper ( playerInfo, oper)
+	local output = Protocols.	pack_kuafu_3v3_match_oper ( oper)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*匹配到人&接受或者拒绝*/	
+function Protocols.unpack_kuafu_3v3_match_oper (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.oper = input:readU32()
 	if not ret then
 		return false
 	end	
@@ -8855,10 +9054,15 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_use_virtual_item = self.call_use_virtual_item
 	playerInfo.call_pick_quest_chapter_reward = self.call_pick_quest_chapter_reward
 	playerInfo.call_kuafu_3v3_match = self.call_kuafu_3v3_match
+	playerInfo.call_kuafu_3v3_match_start = self.call_kuafu_3v3_match_start
+	playerInfo.call_kuafu_3v3_buytimes = self.call_kuafu_3v3_buytimes
 	playerInfo.call_welfare_getalllist_getback = self.call_welfare_getalllist_getback
 	playerInfo.call_welfare_rewardlist_getback = self.call_welfare_rewardlist_getback
 	playerInfo.call_welfare_getall_getback = self.call_welfare_getall_getback
 	playerInfo.call_kuafu_3v3_kill_detail = self.call_kuafu_3v3_kill_detail
+	playerInfo.call_kuafu_3v3_wait_info = self.call_kuafu_3v3_wait_info
+	playerInfo.call_kuafu_3v3_cancel_match = self.call_kuafu_3v3_cancel_match
+	playerInfo.call_kuafu_3v3_match_oper = self.call_kuafu_3v3_match_oper
 end
 
 local unpack_handler = {
@@ -9090,10 +9294,15 @@ local unpack_handler = {
 [CMSG_USE_VIRTUAL_ITEM] =  Protocols.unpack_use_virtual_item,
 [CMSG_PICK_QUEST_CHAPTER_REWARD] =  Protocols.unpack_pick_quest_chapter_reward,
 [CMSG_KUAFU_3V3_MATCH] =  Protocols.unpack_kuafu_3v3_match,
+[SMSG_KUAFU_3V3_MATCH_START] =  Protocols.unpack_kuafu_3v3_match_start,
+[CMSG_KUAFU_3V3_BUYTIMES] =  Protocols.unpack_kuafu_3v3_buytimes,
 [CMSG_WELFARE_GETALLLIST_GETBACK] =  Protocols.unpack_welfare_getalllist_getback,
 [SMSG_WELFARE_REWARDLIST_GETBACK] =  Protocols.unpack_welfare_rewardlist_getback,
 [CMSG_WELFARE_GETALL_GETBACK] =  Protocols.unpack_welfare_getall_getback,
 [SMSG_KUAFU_3V3_KILL_DETAIL] =  Protocols.unpack_kuafu_3v3_kill_detail,
+[SMSG_KUAFU_3V3_WAIT_INFO] =  Protocols.unpack_kuafu_3v3_wait_info,
+[MSG_KUAFU_3V3_CANCEL_MATCH] =  Protocols.unpack_kuafu_3v3_cancel_match,
+[CMSG_KUAFU_3V3_MATCH_OPER] =  Protocols.unpack_kuafu_3v3_match_oper,
 
 }
 

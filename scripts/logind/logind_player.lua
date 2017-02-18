@@ -236,10 +236,6 @@ function LogindPlayer:SetNewPlayerInfo()
 		end
 	end
 	
-	-- 计算战力
-	local force = DoAnyOneCalcForceByAry(config.prop)
-	self:SetForce(force)
-
 	-- 初始化玩家技能
 	local gender = self:GetGender()
 	local config = tb_char_skill[gender]
