@@ -1,7 +1,7 @@
 InstanceKuafu3v3 = class("InstanceKuafu3v3", InstanceInstBase)
 
 InstanceKuafu3v3.Name = "InstanceKuafu3v3"
-InstanceKuafu3v3.exit_time = 10
+InstanceKuafu3v3.exit_time = 30
 InstanceKuafu3v3.Time_Out_Fail_Callback = "timeoutCallback"
 
 function InstanceKuafu3v3:ctor(  )
@@ -393,11 +393,13 @@ function InstanceKuafu3v3:OnPlayerHurt(killer, player, damage)
 	
 	-- 计算玩家血量
 	local indx = self:findIndexByName(targetInfo:GetName())
-	local rate = math.floor(targetInfo:GetHealth() * 100 / targetInfo:GetMaxhealth())
+	local rate = math.floor((targetInfo:GetHealth() - damage) * 100 / targetInfo:GetMaxhealth())
 	local intStart = KUAFU_3V3_FIELDS_INT_INFO_START + indx * MAX_KUAFU_3V3_INT_COUNT
 	self:SetByte(intStart + KUAFU_3V3_PLAYER_SHOW_INFO, 1, rate)
 	-- 计算玩家伤害
 	if damage > 0 then
+		indx = self:findIndexByName(killerInfo:GetName())
+		intStart = KUAFU_3V3_FIELDS_INT_INFO_START + indx * MAX_KUAFU_3V3_INT_COUNT
 		self:AddDouble(intStart + KUAFU_3V3_PLAYER_DAMAGE, damage)
 	end
 	
@@ -447,6 +449,12 @@ function InstanceKuafu3v3:OnLeavePlayer( player, is_offline)
 	local intStart = KUAFU_3V3_FIELDS_INT_INFO_START + indx * MAX_KUAFU_3V3_INT_COUNT
 	if self:GetByte(intStart + KUAFU_3V3_PLAYER_SETTLEMENT, 1) == 0 then
 		self:SetByte(intStart + KUAFU_3V3_PLAYER_SETTLEMENT, 1, 1)
+	end
+	
+	-- 判断某方阵营全部死亡
+	if self:IsOneCmapAllDead() then
+		self:SyncResultToWeb()
+		self:SetMapState(self.STATE_FINISH)
 	end
 end
 

@@ -41,11 +41,10 @@ function PlayerInfo:OnCheckWorld3v3Match()
 				instMgr:add3v3EnterTimes()
 			-- timeout取消匹配
 			elseif dict.ret == 2 then
-				
 				self:OnCancelMatch()
 			-- 有人未准备好
 			elseif dict.ret == 3 then
-				self:OnCancelMatch()
+				self:SomeOneDeclineMatch()
 			-- 准备情况
 			elseif dict.ret == 4 then
 				local wait_info = dict.wait_info
@@ -76,7 +75,7 @@ function PlayerInfo:OnCancelWorld3v3MatchBeforeOffline()
 	data.player_guid = self:GetPlayerMatchKey()
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		outFmtDebug("cancel_match response = ", response)
 		self:OnCancelMatch()
 	end)
 end
@@ -269,6 +268,11 @@ function PlayerInfo:OnCancelMatch()
 	self:call_kuafu_3v3_cancel_match(KUAFU_TYPE_FENGLIUZHEN)
 end
 
+-- 有人未准备好
+function PlayerInfo:SomeOneDeclineMatch()
+	app:SetMatchingKuafuType(self:GetGuid(), nil)
+	self:call_kuafu_3v3_decline_match(KUAFU_TYPE_FENGLIUZHEN)
+end
 
 function PlayerInfo:GetPlayerMatchKey()
 	return self:GetGuid()

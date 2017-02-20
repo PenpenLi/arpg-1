@@ -250,7 +250,8 @@ CMSG_WELFARE_GETALL_GETBACK		= 242	-- /*一键领取所有福利*/
 SMSG_KUAFU_3V3_KILL_DETAIL		= 250	-- /*击杀数据*/	
 SMSG_KUAFU_3V3_WAIT_INFO		= 251	-- /*跨服匹配等待数据*/	
 MSG_KUAFU_3V3_CANCEL_MATCH		= 252	-- /*取消匹配*/	
-CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人&接受或者拒绝*/	
+CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人(接受或者拒绝)*/	
+SMSG_KUAFU_3V3_DECLINE_MATCH		= 254	-- /*拒绝比赛*/	
 
 
 ---------------------------------------------------------------------
@@ -8791,26 +8792,55 @@ function Protocols.unpack_kuafu_3v3_cancel_match (pkt)
 end
 
 
--- /*匹配到人&接受或者拒绝*/	
+-- /*匹配到人(接受或者拒绝)*/	
 function Protocols.pack_kuafu_3v3_match_oper ( oper)
 	local output = Packet.new(CMSG_KUAFU_3V3_MATCH_OPER)
 	output:writeU32(oper)
 	return output
 end
 
--- /*匹配到人&接受或者拒绝*/	
+-- /*匹配到人(接受或者拒绝)*/	
 function Protocols.call_kuafu_3v3_match_oper ( playerInfo, oper)
 	local output = Protocols.	pack_kuafu_3v3_match_oper ( oper)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
--- /*匹配到人&接受或者拒绝*/	
+-- /*匹配到人(接受或者拒绝)*/	
 function Protocols.unpack_kuafu_3v3_match_oper (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.oper = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*拒绝比赛*/	
+function Protocols.pack_kuafu_3v3_decline_match ( type)
+	local output = Packet.new(SMSG_KUAFU_3V3_DECLINE_MATCH)
+	output:writeU32(type)
+	return output
+end
+
+-- /*拒绝比赛*/	
+function Protocols.call_kuafu_3v3_decline_match ( playerInfo, type)
+	local output = Protocols.	pack_kuafu_3v3_decline_match ( type)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*拒绝比赛*/	
+function Protocols.unpack_kuafu_3v3_decline_match (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.type = input:readU32()
 	if not ret then
 		return false
 	end	
@@ -9063,6 +9093,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_kuafu_3v3_wait_info = self.call_kuafu_3v3_wait_info
 	playerInfo.call_kuafu_3v3_cancel_match = self.call_kuafu_3v3_cancel_match
 	playerInfo.call_kuafu_3v3_match_oper = self.call_kuafu_3v3_match_oper
+	playerInfo.call_kuafu_3v3_decline_match = self.call_kuafu_3v3_decline_match
 end
 
 local unpack_handler = {
@@ -9303,6 +9334,7 @@ local unpack_handler = {
 [SMSG_KUAFU_3V3_WAIT_INFO] =  Protocols.unpack_kuafu_3v3_wait_info,
 [MSG_KUAFU_3V3_CANCEL_MATCH] =  Protocols.unpack_kuafu_3v3_cancel_match,
 [CMSG_KUAFU_3V3_MATCH_OPER] =  Protocols.unpack_kuafu_3v3_match_oper,
+[SMSG_KUAFU_3V3_DECLINE_MATCH] =  Protocols.unpack_kuafu_3v3_decline_match,
 
 }
 

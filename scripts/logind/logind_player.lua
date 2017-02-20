@@ -56,6 +56,9 @@ function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, rever
 		outFmtDebug("######################SelectKuafuMapid general_id = %s, pos = %d", general_id, reverse)
 		local config = tb_kuafu3v3_base[ 1 ].bornPos
 		local pos = config[reverse]
+		
+		--生命回满
+		self:SetHealth(self:GetMaxhealth())
 		-- 设置玩家的虚拟阵营
 		self:SetUInt32(PLAYER_INT_FIELD_VIRTUAL_CAMP, reverse)
 		self:SetTeleportInfo(KUAFU_FENGLIUZHEN_MAPID, pos[ 1 ], pos[ 2 ], general_id)
@@ -93,6 +96,11 @@ end
 --生命
 function LogindPlayer:SetHealth(val)
 	self:SetDouble(PLAYER_FIELD_HEALTH, val)
+end
+
+--设置最大生命
+function LogindPlayer:GetMaxhealth()
+	return self:GetDouble(PLAYER_FIELD_MAXHEALTH)
 end
 
 --设置最大生命

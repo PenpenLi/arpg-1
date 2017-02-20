@@ -364,6 +364,11 @@ function PlayerInfo:GetLevel ()
 	return self:GetUInt32(PLAYER_FIELD_LEVEL)
 end
 
+--设置等级
+function PlayerInfo:SetLevel (value)
+	self:SetUInt32(PLAYER_FIELD_LEVEL, value)
+end
+
 --获取经验
 function PlayerInfo:GetExp ()
 	return self:GetDouble(PLAYER_EXPAND_INT_XP)

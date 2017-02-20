@@ -136,6 +136,11 @@ function DoBuffTriggerScript(unit,buff_id,buff_lv)
 		local value = config.value * buff_lv
 		local add_hp = math.floor(unitInfo:GetMaxhealth()*value/100)
 		unitInfo:ModifyHealth(add_hp)
+		
+		local mapid = unitLib.GetMapID(unit)
+		local map_ptr = unitLib.GetMap(unit)
+		local mapInfo = Select_Instance_Script(mapid):new {ptr = map_ptr}
+		mapInfo:OnPlayerHurt(unit, unit, -add_hp)
 	end
 end
 

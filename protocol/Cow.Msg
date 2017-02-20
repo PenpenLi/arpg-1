@@ -1071,3 +1071,7 @@ kuafu_3v3_cancel_match,both,252,/*取消匹配*/,STATUS_NEVER,False
 #
 kuafu_3v3_match_oper,c2s,253,/*匹配到人,接受或者拒绝*/,STATUS_NEVER,False
 	oper,uint32,False,/*0:取消, 1:接受*/
+
+#
+kuafu_3v3_decline_match,s2c,254,/*拒绝比赛*/,STATUS_NEVER,False
+	type,uint32,False,/*拒绝匹配跨服类型*/

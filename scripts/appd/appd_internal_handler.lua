@@ -75,6 +75,11 @@ local function on_scened_player_upgrade( pkt )
 		return
 	end
 	
+	-- 为了重算属性用的
+	player:SetLevel(player_lv)
+	-- 通知重算属性
+	playerLib.SendAttr(player.ptr)
+	
 	-- 处理升级以后的逻辑
 	local gender = player:GetGender()
 	local config = tb_char_skill[gender]
@@ -96,9 +101,6 @@ local function on_scened_player_upgrade( pkt )
 	for level = prevLevel + 1, player_lv do
 		player:AddLevelActiveQuest(level)
 	end
-	
-	-- 通知重算属性
-	playerLib.SendAttr(player.ptr)
 	--[[
 	-- 如技能解锁
 	local socialSysInfo = player:getSocialSystem()

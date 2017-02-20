@@ -152,7 +152,7 @@ function AppdApp:InitCorn()
 	end)
 	
 	--每隔3600s更新跨服排行榜
-	self.cron:every("更新跨服排行", 60, function()
+	self.cron:every("更新跨服排行", 3600, function()
 		UpdateKuafuRank()
 	end)
 end
