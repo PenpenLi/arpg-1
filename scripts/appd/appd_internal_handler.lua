@@ -44,7 +44,7 @@ local function on_scened_quest_add_item( pkt )
 		outFmtDebug("quest_add_item:player %s not online item_entry %d count %d", player_guid, item_entry, count)
 		return
 	end
-	player:PlayerAddItems({{item_entry, count}}, nil, logtype)
+	player:AppdAddItems({{item_entry, count}}, nil, logtype)
 	--player:AddItemByEntry(item_entry, count, nil, logtype, bind, true, true, stronglv, failtime)
 end
 
@@ -59,7 +59,7 @@ local function on_scened_add_items(pkt)
 		outFmtDebug("on_scened_quest_add_item:player %s not online", player_guid)
 		return
 	end
-	player:PlayerAddItems(itemDict, nil, logtype)
+	player:AppdAddItems(itemDict, nil, logtype)
 end
 
 --场景服通知应用服玩家升级了

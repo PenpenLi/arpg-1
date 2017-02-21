@@ -461,6 +461,11 @@ end
 --使用游戏对象之前
 --返回1的话就继续使用游戏对象，返回0的话就不使用
 function InstanceKuafu3v3:OnBeforeUseGameObject(user, go, go_entryid, posX, posY)
+	-- 如果已经死了 就不能捡了
+	if unitLib.HasBuff(user, BUFF_INVINCIBLE) then
+		return 0
+	end
+	
 	if Script_Gameobject_Pick_Check(user, go_entryid, posX, posY) then
 		return 1
 	end

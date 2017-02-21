@@ -119,7 +119,6 @@ function PlayerInfo:shopBuyItem(id, count, timeid)
 	local buyDic = {{entry,added}}
 	
 	self:AppdAddItems(buyDic,MONEY_CHANGE_TYPE_MALL_BUY,LOG_ITEM_OPER_TYPE_SHOP_BUY,1,itemendtime)
-	--self:PlayerAddItem(entry,added,LOG_ITEM_OPER_TYPE_SHOP_BUY,itemendtime)
 	
 	if limtype ~= 0 then--ÏÞ¹º
 		self:addShopLimtNum(config.id,added)

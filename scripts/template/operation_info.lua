@@ -642,6 +642,12 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==ATHLETICS_OPERATE_NO_MONEY)then
 			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_MONEY超出最大购买次数 - " .. data 
 		end
+		if (reason ==ATHLETICS_OPERATE_HAS_DAY_REWARD)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_HAS_DAY_REWARD已经领取该奖励 - " .. data 
+		end
+		if (reason ==ATHLETICS_OPERATE_NO_DAY_REWARD)then
+			return "ShowOperationFailed OPERTE_TYPE_STRENGTH强化 - ATHLETICS_OPERATE_NO_DAY_REWARD尚未到达次数{1} - " .. data 
+		end
 		return "未知错误1  OPERTE_TYPE_STRENGTH " .. reason .. "    "  .. data
 	end
 	if(type == OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE)then

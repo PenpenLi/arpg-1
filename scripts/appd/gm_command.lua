@@ -1229,6 +1229,13 @@ function  DoGMScripts(player_ptr, gm_commands)
 			return result
 		end
 		player:AddWelfareBackGmLog(paras[2],paras[3],paras[4])
+	elseif tokens[1] == "@次数3v3" then
+		if(#tokens < 2)then
+			return result
+		end
+		player:Gm3v3EnterTimes(paras[2])
+	elseif tokens[1] == "@发奖3v3" then
+		Rank3v3kuafuWeek()
 	elseif tokens[1] == "@成就" then
 		if(#tokens < 3)then
 			return result

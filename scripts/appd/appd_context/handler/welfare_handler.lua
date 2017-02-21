@@ -41,15 +41,32 @@ end
 --领取找回奖励
 function PlayerInfo:Handle_Welfare_ActiveGetback(pkt)
 	local type = pkt.id
-	local best = pkt.best
+	local best
+	if pkt.best == 1 then
+		best = true
+	else 
+		best = false
+	end
 	local num = pkt.num
 	self:GetWelfareBackReward(type,best,num)
 end
 --一键找回奖励列表
 function PlayerInfo:Handle_Welfare_List_Getback(pkt)
-	self:GetWelfareAllRewardList(pkt.best)
+	local best
+	if pkt.best == 1 then
+		best = true
+	else 
+		best = false
+	end
+	self:GetWelfareAllRewardList(best)
 end
 --一键领取找回奖励
 function PlayerInfo:Handle_Welfare_All_Getback(pkt)
-	self:GetWelfareAllReward(pkt.best)
+	local best
+	if pkt.best == 1 then
+		best = true
+	else 
+		best = false
+	end
+	self:GetWelfareAllReward(best)
 end

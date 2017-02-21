@@ -1040,7 +1040,17 @@ kuafu_3v3_match_start,s2c,235,/*3v3跨服开始匹配*/,STATUS_NEVER,False
 #
 kuafu_3v3_buytimes,c2s,236,/*3v3购买次数*/,STATUS_NEVER,False
 	num,uint8,False,/*购买次数*/
+	
+#
+kuafu_3v3_dayreward,c2s,237,/*3v3每日活跃奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*购买次数*/
 
+#
+kuafu_3v3_getranlist,c2s,238,/*请求3v3排行榜*/,STATUS_NEVER,False
+	
+#
+kuafu_3v3_ranlist,s2c,239,/*3v3排行榜结果列表*/,STATUS_NEVER,False
+	list,String,False,/*列表*/
 
 #
 welfare_getalllist_getback,c2s,240,/*福利所有奖励列表*/,STATUS_NEVER,False
@@ -1054,7 +1064,14 @@ welfare_rewardlist_getback,s2c,241,/*奖励列表*/,STATUS_NEVER,False
 #
 welfare_getall_getback,c2s,242,/*一键领取所有福利*/,STATUS_NEVER,False
 	best,uint8,False,/*完美找回*/
+
+#
+kuafu_3v3_getmyrank,c2s,248,/*请求3v3排行榜自己的名次*/,STATUS_NEVER,False
 	
+#
+kuafu_3v3_myrank,s2c,249,/*3v3排行榜自己的名次结果*/,STATUS_NEVER,False
+	rank,uint8,False,/*名次*/
+
 #
 kuafu_3v3_kill_detail,s2c,250,/*击杀数据*/,STATUS_NEVER,False
 	indx1,uint32,False,/*击杀者下标*/

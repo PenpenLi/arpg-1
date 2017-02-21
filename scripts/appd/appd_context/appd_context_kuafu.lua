@@ -1,3 +1,5 @@
+local security = require("base/Security")
+		
 -- 定时器的检测跨服匹配情况
 function PlayerInfo:QueryKuafuMatchInfo()
 	self:OnCheckWorld3v3Match()
@@ -17,9 +19,17 @@ function PlayerInfo:OnCheckWorld3v3Match()
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug(response)
 		
-		local dict = json.decode(response)
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
+		
+		
 		if dict then
-			print(dict.ret, dict.msg)
+			print("OnCheckWorld3v3Match result", dict.ret, dict.msg)
 			-- 匹配到了
 			if dict.ret == 0 then
 				local login_fd = serverConnList:getLogindFD()
@@ -41,6 +51,7 @@ function PlayerInfo:OnCheckWorld3v3Match()
 				instMgr:add3v3EnterTimes()
 			-- timeout取消匹配
 			elseif dict.ret == 2 then
+				print("== player on cancel match", self:GetGuid())
 				self:OnCancelMatch()
 			-- 有人未准备好
 			elseif dict.ret == 3 then
@@ -124,9 +135,17 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 	app:SetMatchingKuafuType(self:GetGuid(), KUAFU_TYPE_FENGLIUZHEN)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug(response)
-		local dict = json.decode(response)
+		
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
+		
 		if dict then
-			print(dict.ret, dict.msg)
+			print("OnWorld3v3GroupMatch result", dict.ret, dict.msg, self:GetGuid())
 		end
 	end)
 	
@@ -154,7 +173,14 @@ function PlayerInfo:CheckWorld3v3Reward()
 	local askguid = self:GetGuid()
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug(response)
-		local dict = json.decode(response)
+		
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
 		if dict then
 			print(dict.ret, dict.msg, askguid)
 			
@@ -183,15 +209,23 @@ function PlayerInfo:World3v3Rank()
 	local url = globalGameConfig:GetExtWebInterface().."world_3v3/rank"
 	
 	local data = {}
+	data.player_guid = self:GetGuid()
 	data.player_name = self:GetName()
 	data.avatar = self:GetAvatar()
 	data.weapon = self:GetWeapon()
 	data.divine = self:GetDivine()
 	data.score = self:GetKuafu3v3Score()
+	data.force = self:GetForce()
 	
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug("response = ", response)
-		local dict = json.decode(response)
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
 		if dict then
 			print(dict.ret, dict.msg)
 		end
@@ -206,13 +240,23 @@ function UpdateKuafuRank()
 	local data = {}
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug(response)
-		local dict = json.decode(response)
+		
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
+		
 		if dict then
 			print(dict.ret, dict.msg)
-			if type(dict.details) == "string" then
+			if type(dict.details) == "string" and string.len(dict.details) > 0 then
 				dict.details = json.decode(dict.details)
 			end
-			app.kuafu_rank = dict.details
+			if type(dict.details) == "table" then
+				app.kuafu_rank = dict.details
+			end
 		end
 		
 	end)
@@ -228,8 +272,16 @@ function PlayerInfo:OnPrepareMatch(oper)
 	data.oper = oper
 	
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("response = ", response)
-		local dict = json.decode(response)
+		outFmtDebug("OnPrepareMatch = %s", response)
+		
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
+		
 		if dict then
 			print(dict.ret, dict.msg)
 		

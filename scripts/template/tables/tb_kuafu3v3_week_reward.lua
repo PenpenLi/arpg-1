@@ -6,10 +6,12 @@
 tb_kuafu3v3_week_reward = {
 	--  id:int	序号
 	--  rank:array	排名
-	--  reward:array	奖励
-	[1] = {id = 1,rank = {1,1},reward = {{6,1100}},},
-	[2] = {id = 2,rank = {2,2},reward = {{6,1050}},},
-	[3] = {id = 3,rank = {3,3},reward = {{6,1050}},},
-	[4] = {id = 4,rank = {4,10},reward = {{6,1000}},},
-	[5] = {id = 5,rank = {11,50},reward = {{6,800}},},
+	--  reward:string	奖励
+	--  mailname:string	邮件名称
+	--  maildesc:string	邮件描述
+	[1] = {id = 1,rank = {1,1},reward = "1,1100",mailname = "3v3排名第一",maildesc = "恭喜，3v3排名第一",},
+	[2] = {id = 2,rank = {2,2},reward = "1,1050",mailname = "3v3排名第2",maildesc = "恭喜，3v3排名第2",},
+	[3] = {id = 3,rank = {3,3},reward = "1,1050",mailname = "3v3排名第3",maildesc = "恭喜，3v3排名第3",},
+	[4] = {id = 4,rank = {4,10},reward = "1,1000",mailname = "3v3排名第4-10",maildesc = "恭喜，3v3排名第4-10",},
+	[5] = {id = 5,rank = {11,50},reward = "1,800",mailname = "3v3排名第11-50",maildesc = "恭喜，3v3排名第11-50",},
 }

@@ -123,6 +123,12 @@ hanlders[MSG_KUAFU_3V3_CANCEL_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Cancel_Match
 
 hanlders[CMSG_KUAFU_3V3_BUYTIMES]	= PlayerInfo.Handle_Kuafu_3v3_BuyTimes
 
+hanlders[CMSG_KUAFU_3V3_DAYREWARD]	= PlayerInfo.Handle_Kuafu_3v3Day_Reward
+
+hanlders[CMSG_KUAFU_3V3_GETRANLIST]	= PlayerInfo.Handle_Kuafu_3v3_RankList
+
+hanlders[CMSG_KUAFU_3V3_GETMYRANK]	= PlayerInfo.Handle_Kuafu_3v3_My_Rank
+
 hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 
 return hanlders

@@ -146,23 +146,6 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 	end
 end
 
--- 玩家加道具
-function PlayerInfo:PlayerAddItem(itemId, count, item_oper_type, deadline)
-
-	item_oper_type  = item_oper_type  or LOG_ITEM_OPER_TYPE_LOOT
-	deadline = deadline or 0
-	
-	if IsResource(itemId) or itemId == Item_Loot_Exp  then
-		return
-	else
-		if tb_item_template[itemId] then
-			-- 加道具
-			local bind = tb_item_template[itemId].bind_type
-			self:AddItemByEntry(itemId, count, nil, item_oper_type, bind, true, true, 0, deadline)
-		end
-	end
-end
-
 -- 骑乘状态
 function PlayerInfo:rideFlag()
 	return self:GetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 2)
@@ -1175,7 +1158,8 @@ end
 
 -- 获得3v3匹配值
 function PlayerInfo:GetWorld3v3MatchValue()
-	return 50
+	local value = self:GetForce() + self:GetKuafu3v3TrendInfo() * 50
+	return value
 end
 
 
@@ -1290,6 +1274,7 @@ require("appd/appd_context/appd_context_giftpacks")
 require("appd/appd_context/appd_context_achieve_title")
 require("appd/appd_context/appd_context_kuafu")
 require("appd/appd_context/appd_context_welfare")
+require("appd/appd_context/appd_context_rank_gift")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")

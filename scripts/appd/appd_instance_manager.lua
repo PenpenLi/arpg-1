@@ -258,14 +258,14 @@ function AppInstanceMgr:sweepResInstance(id)
 		local list = {}
 		
 		for _,v in ipairs(tab) do
-			
-			playerInfo:PlayerAddItem(v[1],v[2])
 			--奖励通知
 			local stru = item_reward_info_t .new()
 			stru.item_id	= v[1]
 			stru.num 		= v[2]
 			table.insert(list, stru)
 		end
+		
+		playerInfo:PlayerAddItems(tab,MONEY_CHANGE_VIP_INSTANCE_SWEEP,LOG_ITEM_OPER_TYPE_INSTANCE_SWEEP)
 		
 		--添加次数
 		self:AddByte(baseIdx, 0, 1)
@@ -383,6 +383,10 @@ function AppInstanceMgr:add3v3EnterTimes()
 	self:AddUInt16(INSTANCE_INT_FIELD_3V3_TIMES,0,1)
 end
 
+function AppInstanceMgr:set3v3EnterTimes(num)
+	self:SetUInt16(INSTANCE_INT_FIELD_3V3_TIMES,0,num)
+end
+
 --3v3已购买次数
 function AppInstanceMgr:get3v3BuyTimes()
 	return self:GetUInt16(INSTANCE_INT_FIELD_3V3_TIMES,1)
@@ -390,6 +394,16 @@ end
 
 function AppInstanceMgr:add3v3BuyTimes(num)
 	self:AddUInt16(INSTANCE_INT_FIELD_3V3_TIMES,1,num)
+end
+
+--获取3v3每日奖励状态
+function AppInstanceMgr:get3v3DayReward(id)
+	return self:GetByte(INSTANCE_INT_FIELD_3V3_DAY_REWARD,id-1)
+end
+
+--设置3v3每日奖励状态
+function AppInstanceMgr:set3v3DayReward(id)
+	return self:SetByte(INSTANCE_INT_FIELD_3V3_DAY_REWARD,id-1,1)
 end
 
 -------------------------------竞技end------------------------------

@@ -48,9 +48,6 @@ function PlayerInfo:Handle_Avtive_Reward(pkt)
 	end
 	
 	self:AppdAddItems(tab,MONEY_CHANGE_PRESTIGE,LOG_ITEM_OPER_TYPE_ACTIVITY)
-	--for _,v in ipairs(tab) do
-	--	self:PlayerAddItem(v[1],v[2],LOG_ITEM_OPER_TYPE_ACTIVITY)	
-	--end
 	
 	
 end

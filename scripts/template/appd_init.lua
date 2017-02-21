@@ -99,3 +99,6 @@ require("template.tables.tb_quest_chapter")
 
 --竞技
 require("template.tables.tb_kuafu3v3_base")
+require("template.tables.tb_kuafu3v3_week_reward")
+require("template.tables.tb_kuafu3v3_month_reward")
+require("template.tables.tb_kuafu3v3_day_reward")

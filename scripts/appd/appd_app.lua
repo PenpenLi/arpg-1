@@ -145,14 +145,14 @@ function AppdApp:InitCorn()
 	end)
 
 	--每隔3s查询匹配情况
-	self.cron:every("查询跨服匹配", 3, function()
+	self.cron:every("查询跨服匹配", 1, function()
 		self.objMgr:foreachAllPlayer(function(player)
 			player:QueryKuafuMatchInfo()
 		end)
 	end)
 	
 	--每隔3600s更新跨服排行榜
-	self.cron:every("更新跨服排行", 3600, function()
+	self.cron:every("更新跨服排行", 10, function()
 		UpdateKuafuRank()
 	end)
 end

@@ -244,13 +244,18 @@ CMSG_PICK_QUEST_CHAPTER_REWARD		= 233	-- /*领取任务章节奖励*/
 CMSG_KUAFU_3V3_MATCH		= 234	-- /*3v3跨服匹配*/	
 SMSG_KUAFU_3V3_MATCH_START		= 235	-- /*3v3跨服开始匹配*/	
 CMSG_KUAFU_3V3_BUYTIMES		= 236	-- /*3v3购买次数*/	
+CMSG_KUAFU_3V3_DAYREWARD		= 237	-- /*3v3每日活跃奖励*/	
+CMSG_KUAFU_3V3_GETRANLIST		= 238	-- /*请求3v3排行榜*/	
+SMSG_KUAFU_3V3_RANLIST		= 239	-- /*3v3排行榜结果列表*/	
 CMSG_WELFARE_GETALLLIST_GETBACK		= 240	-- /*福利所有奖励列表*/	
 SMSG_WELFARE_REWARDLIST_GETBACK		= 241	-- /*奖励列表*/	
 CMSG_WELFARE_GETALL_GETBACK		= 242	-- /*一键领取所有福利*/	
+CMSG_KUAFU_3V3_GETMYRANK		= 248	-- /*请求3v3排行榜自己的名次*/	
+SMSG_KUAFU_3V3_MYRANK		= 249	-- /*3v3排行榜自己的名次结果*/	
 SMSG_KUAFU_3V3_KILL_DETAIL		= 250	-- /*击杀数据*/	
 SMSG_KUAFU_3V3_WAIT_INFO		= 251	-- /*跨服匹配等待数据*/	
 MSG_KUAFU_3V3_CANCEL_MATCH		= 252	-- /*取消匹配*/	
-CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人(接受或者拒绝)*/	
+CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人&接受或者拒绝*/	
 SMSG_KUAFU_3V3_DECLINE_MATCH		= 254	-- /*拒绝比赛*/	
 
 
@@ -8595,6 +8600,89 @@ function Protocols.unpack_kuafu_3v3_buytimes (pkt)
 end
 
 
+-- /*3v3每日活跃奖励*/	
+function Protocols.pack_kuafu_3v3_dayreward ( id)
+	local output = Packet.new(CMSG_KUAFU_3V3_DAYREWARD)
+	output:writeByte(id)
+	return output
+end
+
+-- /*3v3每日活跃奖励*/	
+function Protocols.call_kuafu_3v3_dayreward ( playerInfo, id)
+	local output = Protocols.	pack_kuafu_3v3_dayreward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*3v3每日活跃奖励*/	
+function Protocols.unpack_kuafu_3v3_dayreward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*请求3v3排行榜*/	
+function Protocols.pack_kuafu_3v3_getranlist (  )
+	local output = Packet.new(CMSG_KUAFU_3V3_GETRANLIST)
+	return output
+end
+
+-- /*请求3v3排行榜*/	
+function Protocols.call_kuafu_3v3_getranlist ( playerInfo )
+	local output = Protocols.	pack_kuafu_3v3_getranlist (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求3v3排行榜*/	
+function Protocols.unpack_kuafu_3v3_getranlist (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*3v3排行榜结果列表*/	
+function Protocols.pack_kuafu_3v3_ranlist ( list)
+	local output = Packet.new(SMSG_KUAFU_3V3_RANLIST)
+	output:writeUTF(list)
+	return output
+end
+
+-- /*3v3排行榜结果列表*/	
+function Protocols.call_kuafu_3v3_ranlist ( playerInfo, list)
+	local output = Protocols.	pack_kuafu_3v3_ranlist ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*3v3排行榜结果列表*/	
+function Protocols.unpack_kuafu_3v3_ranlist (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.list = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 -- /*福利所有奖励列表*/	
 function Protocols.pack_welfare_getalllist_getback ( best)
 	local output = Packet.new(CMSG_WELFARE_GETALLLIST_GETBACK)
@@ -8678,6 +8766,60 @@ function Protocols.unpack_welfare_getall_getback (pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.best = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*请求3v3排行榜自己的名次*/	
+function Protocols.pack_kuafu_3v3_getmyrank (  )
+	local output = Packet.new(CMSG_KUAFU_3V3_GETMYRANK)
+	return output
+end
+
+-- /*请求3v3排行榜自己的名次*/	
+function Protocols.call_kuafu_3v3_getmyrank ( playerInfo )
+	local output = Protocols.	pack_kuafu_3v3_getmyrank (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求3v3排行榜自己的名次*/	
+function Protocols.unpack_kuafu_3v3_getmyrank (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*3v3排行榜自己的名次结果*/	
+function Protocols.pack_kuafu_3v3_myrank ( rank)
+	local output = Packet.new(SMSG_KUAFU_3V3_MYRANK)
+	output:writeByte(rank)
+	return output
+end
+
+-- /*3v3排行榜自己的名次结果*/	
+function Protocols.call_kuafu_3v3_myrank ( playerInfo, rank)
+	local output = Protocols.	pack_kuafu_3v3_myrank ( rank)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*3v3排行榜自己的名次结果*/	
+function Protocols.unpack_kuafu_3v3_myrank (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.rank = input:readByte()
 	if not ret then
 		return false
 	end
@@ -8792,21 +8934,21 @@ function Protocols.unpack_kuafu_3v3_cancel_match (pkt)
 end
 
 
--- /*匹配到人(接受或者拒绝)*/	
+-- /*匹配到人&接受或者拒绝*/	
 function Protocols.pack_kuafu_3v3_match_oper ( oper)
 	local output = Packet.new(CMSG_KUAFU_3V3_MATCH_OPER)
 	output:writeU32(oper)
 	return output
 end
 
--- /*匹配到人(接受或者拒绝)*/	
+-- /*匹配到人&接受或者拒绝*/	
 function Protocols.call_kuafu_3v3_match_oper ( playerInfo, oper)
 	local output = Protocols.	pack_kuafu_3v3_match_oper ( oper)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
--- /*匹配到人(接受或者拒绝)*/	
+-- /*匹配到人&接受或者拒绝*/	
 function Protocols.unpack_kuafu_3v3_match_oper (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
@@ -9086,9 +9228,14 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_kuafu_3v3_match = self.call_kuafu_3v3_match
 	playerInfo.call_kuafu_3v3_match_start = self.call_kuafu_3v3_match_start
 	playerInfo.call_kuafu_3v3_buytimes = self.call_kuafu_3v3_buytimes
+	playerInfo.call_kuafu_3v3_dayreward = self.call_kuafu_3v3_dayreward
+	playerInfo.call_kuafu_3v3_getranlist = self.call_kuafu_3v3_getranlist
+	playerInfo.call_kuafu_3v3_ranlist = self.call_kuafu_3v3_ranlist
 	playerInfo.call_welfare_getalllist_getback = self.call_welfare_getalllist_getback
 	playerInfo.call_welfare_rewardlist_getback = self.call_welfare_rewardlist_getback
 	playerInfo.call_welfare_getall_getback = self.call_welfare_getall_getback
+	playerInfo.call_kuafu_3v3_getmyrank = self.call_kuafu_3v3_getmyrank
+	playerInfo.call_kuafu_3v3_myrank = self.call_kuafu_3v3_myrank
 	playerInfo.call_kuafu_3v3_kill_detail = self.call_kuafu_3v3_kill_detail
 	playerInfo.call_kuafu_3v3_wait_info = self.call_kuafu_3v3_wait_info
 	playerInfo.call_kuafu_3v3_cancel_match = self.call_kuafu_3v3_cancel_match
@@ -9327,9 +9474,14 @@ local unpack_handler = {
 [CMSG_KUAFU_3V3_MATCH] =  Protocols.unpack_kuafu_3v3_match,
 [SMSG_KUAFU_3V3_MATCH_START] =  Protocols.unpack_kuafu_3v3_match_start,
 [CMSG_KUAFU_3V3_BUYTIMES] =  Protocols.unpack_kuafu_3v3_buytimes,
+[CMSG_KUAFU_3V3_DAYREWARD] =  Protocols.unpack_kuafu_3v3_dayreward,
+[CMSG_KUAFU_3V3_GETRANLIST] =  Protocols.unpack_kuafu_3v3_getranlist,
+[SMSG_KUAFU_3V3_RANLIST] =  Protocols.unpack_kuafu_3v3_ranlist,
 [CMSG_WELFARE_GETALLLIST_GETBACK] =  Protocols.unpack_welfare_getalllist_getback,
 [SMSG_WELFARE_REWARDLIST_GETBACK] =  Protocols.unpack_welfare_rewardlist_getback,
 [CMSG_WELFARE_GETALL_GETBACK] =  Protocols.unpack_welfare_getall_getback,
+[CMSG_KUAFU_3V3_GETMYRANK] =  Protocols.unpack_kuafu_3v3_getmyrank,
+[SMSG_KUAFU_3V3_MYRANK] =  Protocols.unpack_kuafu_3v3_myrank,
 [SMSG_KUAFU_3V3_KILL_DETAIL] =  Protocols.unpack_kuafu_3v3_kill_detail,
 [SMSG_KUAFU_3V3_WAIT_INFO] =  Protocols.unpack_kuafu_3v3_wait_info,
 [MSG_KUAFU_3V3_CANCEL_MATCH] =  Protocols.unpack_kuafu_3v3_cancel_match,

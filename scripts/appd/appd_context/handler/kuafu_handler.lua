@@ -61,6 +61,12 @@ function PlayerInfo:Handle_Kuafu_3v3_Match(pkt)
 	end
 	
 end
+
+function PlayerInfo:Gm3v3EnterTimes(num)
+	outFmtDebug("Gm3v3EnterTimes %d",num)
+	local instMgr = self:getInstanceMgr()	
+	instMgr:set3v3EnterTimes(num)
+end
 --3v3购买次数
 function PlayerInfo:Handle_Kuafu_3v3_BuyTimes(pkt)
 	outFmtDebug("Handle_Kuafu_3v3_BuyTimes")
@@ -86,6 +92,70 @@ function PlayerInfo:Handle_Kuafu_3v3_BuyTimes(pkt)
 	end
 	
 	instMgr:add3v3BuyTimes(num)
+	
+end
+-- 3v3 每日活跃奖励
+function PlayerInfo:Handle_Kuafu_3v3Day_Reward(pkt)
+	outFmtDebug("Handle_Kuafu_3v3Day_Reward")
+	local id = pkt.id
+	local config = tb_kuafu3v3_day_reward[id]
+	
+	if not config then
+		return
+	end
+	
+	outFmtDebug("Handle_Kuafu_3v3Day_Reward2222222222")
+	
+	local instMgr = self:getInstanceMgr()
+	if instMgr:get3v3DayReward(id) == 1 then
+		self:CallOptResult(OPRATE_TYPE_ATHLETICS, ATHLETICS_OPERATE_HAS_DAY_REWARD)
+		return
+	end
+	
+	local curNum = instMgr:get3v3EnterTimes()
+	if curNum < config.num then
+		self:CallOptResult(OPRATE_TYPE_ATHLETICS, ATHLETICS_OPERATE_NO_DAY_REWARD,config.num)
+		return
+	end
+	
+	instMgr:set3v3DayReward(id)
+	
+	self:AppdAddItems(config.reward,MONEY_CHANGE_3V3KUAFU,LOG_ITEM_OPER_TYPE_3V3_KUAFU)
+	
+end
+--3v3排行榜
+function PlayerInfo:Handle_Kuafu_3v3_RankList(pkt)
+	local ranklist = app.kuafu_rank
+	
+	local str = ""
+	for i=1,10  do
+		if ranklist[i] then
+			local itemStr = ""
+			for _,v in ipairs(ranklist[i]) do
+				itemStr = itemStr .. v .. ";"
+			end
+			str = str .. itemStr .. "\n"
+		end
+	end
+	
+	self:call_kuafu_3v3_ranlist(str)
+	
+end
+
+--3v3自己的名次
+function PlayerInfo:Handle_Kuafu_3v3_My_Rank(pkt)
+	local ranklist = app.kuafu_rank
+	
+	local name = self:GetName()
+	local rank = 0
+	for i,v in ipairs(ranklist) do
+		if v[1] == name then
+			rank = i
+			break
+		end
+	end
+	
+	self:call_kuafu_3v3_myrank(rank)
 	
 end
 

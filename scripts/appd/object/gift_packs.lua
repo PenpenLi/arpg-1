@@ -221,11 +221,14 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	self:SetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME, os.time() + 3 * 24 * 3600)
 	self:SetGiftPacksItem("", indx)
 	
+	local rewardDict = {}
 	for i = 1, #itemInfoTable, 2 do
 		local itemId = tonumber(itemInfoTable[ i ])
 		local count  = tonumber(itemInfoTable[i+1])
-		playerInfo:PlayerAddItem(itemId, count, LOG_ITEM_OPER_TYPE_GIFT_PACKS)
+		table.insert(rewardDict, {itemId, count})
 	end
+	
+	playerInfo:AppdAddItems(rewardDict, MONEY_CHANGE_GIFT_PACKET, LOG_ITEM_OPER_TYPE_GIFT_PACKS)
 end
 
 -- 删除礼包
