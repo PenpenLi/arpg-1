@@ -621,7 +621,13 @@ Instance_base = {
 		return 1
 	end,
 	--获得怪物的基础经验 			param2 怪物   param3 怪物的所有者
-	DoGetCreatureBaseExp = function(self, creature, owner) 
+	DoGetCreatureBaseExp = function(self, creature, owner)
+		-- 跨服的怪物没经验
+		local isPkServer = globalGameConfig:IsPKServer()
+		if isPkServer then
+			return 0
+		end
+		
 		local xp = 0
 		local creatureInfo = UnitInfo:new{ptr = creature}
 		local creatur_entry = creatureInfo:GetEntry()

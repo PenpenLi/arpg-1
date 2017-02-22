@@ -61,7 +61,10 @@ AI_Base = {
 			local creatureInfo = UnitInfo:new {ptr = owner}
 			local entry = creatureInfo:GetEntry()
 			if GetUnitTypeID(killer_ptr) == TYPEID_PLAYER then
-				playerLib.SendToAppdDoSomething(killer_ptr, SCENED_APPD_KILL_MONSTER, entry)
+				local isPkServer = globalGameConfig:IsPKServer()
+				if not isPkServer then
+					playerLib.SendToAppdDoSomething(killer_ptr, SCENED_APPD_KILL_MONSTER, entry)
+				end
 			end
 			return 0							--返回尸体的存活时间
 		end,

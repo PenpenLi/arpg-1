@@ -79,6 +79,10 @@ require("template.tables.tb_map_gameobject_detail")
 -- buff
 require("template.tables.tb_buff_template")
 require("template.tables.tb_buff_kuafu3v3")
+require("template.tables.tb_buff_xianfu")
 
 -- 跨服
 require("template.tables.tb_kuafu3v3_base")
+require("template.tables.tb_kuafu_xianfu_base")
+require("template.tables.tb_kuafu_xianfu_boss")
+require("template.tables.tb_kuafu_xianfu_killed_drop")

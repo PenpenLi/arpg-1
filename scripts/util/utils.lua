@@ -324,3 +324,34 @@ function GetPlayerSpeed(playerLevel, mountLevel, illusionId, isRidable)
 	
 	return speed
 end
+
+
+local weektimes = 604800
+-- 从当前时间开始算 下一个星期x开始的时间戳
+function GetNextWeekXStartTimeFromNow(x)
+	-- 确保在0-6之间
+	if x < 0 or x >= 7 then
+		x = ((x % 7) + 7) % 7
+	end
+	
+	return GetNextWeekXStartTimeFromTimestamp(x, os.time())
+end
+
+-- 从指定时间开始算 下一个星期x开始的时间戳
+function GetNextWeekXStartTimeFromTimestamp(x, timestamp)
+	local date = os.date('*t', timestamp)
+	local weekend = date.wday
+	date.hour = 0
+	date.sec = 0
+	date.min = 0
+	date.wday = x+1 -- 周日为1
+	local real_time = os.time(date)
+	if real_time < timestamp then
+		real_time = real_time + weektimes
+	end
+	
+	return real_time
+end
+
+-- print(GetNextWeekXStartTimeFromNow(1))
+-- print(GetNextWeekXStartTimeFromTimestamp(1, 1488211200-weektimes))

@@ -406,6 +406,16 @@ function AppInstanceMgr:set3v3DayReward(id)
 	return self:SetByte(INSTANCE_INT_FIELD_3V3_DAY_REWARD,id-1,1)
 end
 
+--获取3v3段位奖励时间戳
+function AppInstanceMgr:get3v3SegmentTime()
+	return self:GetUInt32(INSTANCE_INT_FIELD_3V3_SEGMENT_TIME)
+end
+
+--设置3v3段位奖励时间戳
+function AppInstanceMgr:set3v3SegmentTime(time)
+	return self:SetUInt32(INSTANCE_INT_FIELD_3V3_SEGMENT_TIME,time)
+end
+
 -------------------------------竞技end------------------------------
 
 -- 获得玩家guid

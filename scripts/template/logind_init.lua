@@ -10,3 +10,4 @@ require("template.tables.tb_map")
 
 -- 跨服
 require("template.tables.tb_kuafu3v3_base")
+require("template.tables.tb_kuafu_xianfu_base")

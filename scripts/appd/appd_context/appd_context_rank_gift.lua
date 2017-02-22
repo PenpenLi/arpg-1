@@ -17,7 +17,14 @@ function Rank3v3kuafuWeek()
 		--本服发奖
 		if serAry[1] == server[1] and serAry[2] == server[2] then
 			local config = Rank3v3GetWeekReward(i)
-			AddGiftPacksData(v[6],0,GIFT_PACKS_TYPE_3V3_WEEK,os.time(),os.time() + 86400*30, config.mailname, config.maildesc, config.reward, "系统")
+			local rewardStr = ""
+			for s,d in ipairs(config.reward) do
+				if s > 1 then
+					rewardStr = rewardStr .. ","
+				end
+				rewardStr = rewardStr..d[1]..","..d[2]
+			end
+			AddGiftPacksData(v[6],0,GIFT_PACKS_TYPE_3V3_WEEK,os.time(),os.time() + 86400*30, config.mailname, config.maildesc, rewardStr, "系统")
 		end
 		
 	end
@@ -35,6 +42,63 @@ end
 
 --3v3每月段位奖励
 function PlayerInfo:Rank3v3SegmentReward()
+	
+	local kftime = globalGameConfig:GetKaiFuShiJian()
+	local curtime = os.time()
+	local intervalTime = 28 * 24 * 60 * 60
+	
+	local ktime = curtime - ((curtime - kftime)%intervalTime) 
+	
+	local instMgr = self:getInstanceMgr()
+	local lastTime = instMgr:get3v3SegmentTime()
+	if lastTime == 0 then
+		lastTime = kftime
+	end
+	
+	--outFmtDebug("Rank3v3SegmentReward %d,%d,%d",lastTime,ktime,kftime)
+	
+	--发奖
+	if lastTime >= ktime then
+		return
+	end
+	
+	local curscore = self:GetKuafu3v3TotalScore()
+	local flag = 0
+	for i,v in ipairs(tb_kuafu3v3_month_reward) do
+		if curscore >= v.score then
+			flag = i
+		else
+			break
+		end
+	end
+	
+	
+	
+	local config = tb_kuafu3v3_month_reward[flag]
+	
+	if not config then
+		return
+	end
+	
+	if #config.reward == 0 then
+		instMgr:set3v3SegmentTime(ktime)
+		return
+	end
+	--outFmtDebug("curscore %d,%d",curscore,flag)
+	local rewardStr = ""
+	for s,d in ipairs(config.reward) do
+		if s > 1 then
+			rewardStr = rewardStr .. ","
+		end
+		rewardStr = rewardStr..d[1]..","..d[2]
+	end
+	
+	AddGiftPacksData(self:GetGuid(),0,GIFT_PACKS_TYPE_3V3_MONTH,os.time(),os.time() + 86400*30, config.mailname, config.maildesc, rewardStr, "系统")
+	
+	--重置时间 积分清空
+	instMgr:set3v3SegmentTime(ktime)
+	self:SetKuafu3v3TotalScore(0)
+	
 	
 end
 

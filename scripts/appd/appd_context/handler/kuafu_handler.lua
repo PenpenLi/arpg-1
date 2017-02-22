@@ -56,7 +56,7 @@ function PlayerInfo:Handle_Kuafu_3v3_Match(pkt)
 	local tf = self:OnWorld3v3Match()
 	
 	if tf then
-		self:call_kuafu_3v3_match_start()
+		self:call_kuafu_match_start(KUAFU_TYPE_FENGLIUZHEN)
 		--instMgr:add3v3EnterTimes()
 	end
 	
@@ -171,5 +171,19 @@ function PlayerInfo:Handle_Kuafu_3v3_Cancel_Match(pkt)
 	local type = pkt.type
 	if type == KUAFU_TYPE_FENGLIUZHEN then
 		self:OnCancelWorld3v3MatchBeforeOffline()
+	elseif type == KUAFU_TYPE_XIANFU then
+		self:OnCancelWorldXianfuMatchBeforeOffline()
+	end
+end
+
+
+
+function PlayerInfo:Handle_Kuafu_Xianfu_Match(pkt)
+	local indx = pkt.indx
+	
+	local rt = self:OnWorldXianfuMatch(indx)
+	if rt then
+		-- ¿ªÊ¼Æ¥Åä
+		self:call_kuafu_match_start(KUAFU_TYPE_XIANFU)
 	end
 end

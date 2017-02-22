@@ -254,6 +254,7 @@ function load_lua_scripts()
 		{'资源宝石精华副本脚本'	,'scened/instance/instance_res_gem'},
 		
 		{'跨服3v3'				,'scened/instance/instance_kuafu_3v3'},
+		{'跨服仙府夺宝'			,'scened/instance/instance_kuafu_xianfu'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -288,6 +289,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[2015] = InstanceResGem,
 
 	[3002] = InstanceKuafu3v3,
+	[3003] = InstanceKuafuXianfu,
 }
 
 -- 复活点坐标

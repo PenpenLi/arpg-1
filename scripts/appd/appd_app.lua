@@ -45,14 +45,24 @@ function AppdApp:SetMatchingKuafuType(player_guid, kuafu_type)
 	self.kuafu_dict[player_guid] = kuafu_type
 end
 
+-- 获得正在进行的跨服操作类型
+function AppdApp:GetMatchingKuafuType(player_guid)
+	return self.kuafu_dict[player_guid]
+end
+
 -- 是否正在进行指定跨服类型操作
 function AppdApp:IsKuafuTypeMatching(player_guid, kuafu_type)
-	return self.kuafu_dict[player_guid] == kuafu_type and kuafu_type
+	return self.kuafu_dict[player_guid] and self.kuafu_dict[player_guid] % 65536 == kuafu_type 
 end
 
 -- 是否在进行跨服操作
 function AppdApp:IsInKuafuTypeMatching(player_guid)
 	return self.kuafu_dict[player_guid]
+end
+
+-- 获得跨服对应的参数数据
+function AppdApp:GetKuafuTypeMatchingArg(player_guid)
+	return math.floor(self.kuafu_dict[player_guid] / 65536)
 end
 
 function AppdApp:update( diff )
@@ -87,7 +97,7 @@ function AppdApp:InitCorn()
 	
 	-- 每周重置
 	self.cron:addCron("每周重置",'0 0 * * 1',function() 
-		
+		Rank3v3kuafuWeek()
 	end)
 	
 	-- 野外boss马上刷新通知
@@ -152,7 +162,7 @@ function AppdApp:InitCorn()
 	end)
 	
 	--每隔3600s更新跨服排行榜
-	self.cron:every("更新跨服排行", 10, function()
+	self.cron:every("更新跨服排行", 3600, function()
 		UpdateKuafuRank()
 	end)
 end

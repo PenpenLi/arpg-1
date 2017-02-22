@@ -242,7 +242,7 @@ CMSG_TALK_WITH_NPC		= 231	-- /*和npc对话*/
 CMSG_USE_VIRTUAL_ITEM		= 232	-- /*使用虚拟物品*/	
 CMSG_PICK_QUEST_CHAPTER_REWARD		= 233	-- /*领取任务章节奖励*/	
 CMSG_KUAFU_3V3_MATCH		= 234	-- /*3v3跨服匹配*/	
-SMSG_KUAFU_3V3_MATCH_START		= 235	-- /*3v3跨服开始匹配*/	
+SMSG_KUAFU_MATCH_START		= 235	-- /*跨服开始匹配*/	
 CMSG_KUAFU_3V3_BUYTIMES		= 236	-- /*3v3购买次数*/	
 CMSG_KUAFU_3V3_DAYREWARD		= 237	-- /*3v3每日活跃奖励*/	
 CMSG_KUAFU_3V3_GETRANLIST		= 238	-- /*请求3v3排行榜*/	
@@ -257,6 +257,7 @@ SMSG_KUAFU_3V3_WAIT_INFO		= 251	-- /*跨服匹配等待数据*/
 MSG_KUAFU_3V3_CANCEL_MATCH		= 252	-- /*取消匹配*/	
 CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人&接受或者拒绝*/	
 SMSG_KUAFU_3V3_DECLINE_MATCH		= 254	-- /*拒绝比赛*/	
+CMSG_KUAFU_XIANFU_MATCH		= 255	-- /*仙府夺宝跨服匹配*/	
 
 
 ---------------------------------------------------------------------
@@ -8546,27 +8547,31 @@ function Protocols.unpack_kuafu_3v3_match (pkt)
 end
 
 
--- /*3v3跨服开始匹配*/	
-function Protocols.pack_kuafu_3v3_match_start (  )
-	local output = Packet.new(SMSG_KUAFU_3V3_MATCH_START)
+-- /*跨服开始匹配*/	
+function Protocols.pack_kuafu_match_start ( indx)
+	local output = Packet.new(SMSG_KUAFU_MATCH_START)
+	output:writeByte(indx)
 	return output
 end
 
--- /*3v3跨服开始匹配*/	
-function Protocols.call_kuafu_3v3_match_start ( playerInfo )
-	local output = Protocols.	pack_kuafu_3v3_match_start (  )
+-- /*跨服开始匹配*/	
+function Protocols.call_kuafu_match_start ( playerInfo, indx)
+	local output = Protocols.	pack_kuafu_match_start ( indx)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
--- /*3v3跨服开始匹配*/	
-function Protocols.unpack_kuafu_3v3_match_start (pkt)
+-- /*跨服开始匹配*/	
+function Protocols.unpack_kuafu_match_start (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
+	end
 
-	return true,{}
-	
+	return true,param_table	
 
 end
 
@@ -8992,6 +8997,35 @@ function Protocols.unpack_kuafu_3v3_decline_match (pkt)
 end
 
 
+-- /*仙府夺宝跨服匹配*/	
+function Protocols.pack_kuafu_xianfu_match ( indx)
+	local output = Packet.new(CMSG_KUAFU_XIANFU_MATCH)
+	output:writeByte(indx)
+	return output
+end
+
+-- /*仙府夺宝跨服匹配*/	
+function Protocols.call_kuafu_xianfu_match ( playerInfo, indx)
+	local output = Protocols.	pack_kuafu_xianfu_match ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*仙府夺宝跨服匹配*/	
+function Protocols.unpack_kuafu_xianfu_match (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9226,7 +9260,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_use_virtual_item = self.call_use_virtual_item
 	playerInfo.call_pick_quest_chapter_reward = self.call_pick_quest_chapter_reward
 	playerInfo.call_kuafu_3v3_match = self.call_kuafu_3v3_match
-	playerInfo.call_kuafu_3v3_match_start = self.call_kuafu_3v3_match_start
+	playerInfo.call_kuafu_match_start = self.call_kuafu_match_start
 	playerInfo.call_kuafu_3v3_buytimes = self.call_kuafu_3v3_buytimes
 	playerInfo.call_kuafu_3v3_dayreward = self.call_kuafu_3v3_dayreward
 	playerInfo.call_kuafu_3v3_getranlist = self.call_kuafu_3v3_getranlist
@@ -9241,6 +9275,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_kuafu_3v3_cancel_match = self.call_kuafu_3v3_cancel_match
 	playerInfo.call_kuafu_3v3_match_oper = self.call_kuafu_3v3_match_oper
 	playerInfo.call_kuafu_3v3_decline_match = self.call_kuafu_3v3_decline_match
+	playerInfo.call_kuafu_xianfu_match = self.call_kuafu_xianfu_match
 end
 
 local unpack_handler = {
@@ -9472,7 +9507,7 @@ local unpack_handler = {
 [CMSG_USE_VIRTUAL_ITEM] =  Protocols.unpack_use_virtual_item,
 [CMSG_PICK_QUEST_CHAPTER_REWARD] =  Protocols.unpack_pick_quest_chapter_reward,
 [CMSG_KUAFU_3V3_MATCH] =  Protocols.unpack_kuafu_3v3_match,
-[SMSG_KUAFU_3V3_MATCH_START] =  Protocols.unpack_kuafu_3v3_match_start,
+[SMSG_KUAFU_MATCH_START] =  Protocols.unpack_kuafu_match_start,
 [CMSG_KUAFU_3V3_BUYTIMES] =  Protocols.unpack_kuafu_3v3_buytimes,
 [CMSG_KUAFU_3V3_DAYREWARD] =  Protocols.unpack_kuafu_3v3_dayreward,
 [CMSG_KUAFU_3V3_GETRANLIST] =  Protocols.unpack_kuafu_3v3_getranlist,
@@ -9487,6 +9522,7 @@ local unpack_handler = {
 [MSG_KUAFU_3V3_CANCEL_MATCH] =  Protocols.unpack_kuafu_3v3_cancel_match,
 [CMSG_KUAFU_3V3_MATCH_OPER] =  Protocols.unpack_kuafu_3v3_match_oper,
 [SMSG_KUAFU_3V3_DECLINE_MATCH] =  Protocols.unpack_kuafu_3v3_decline_match,
+[CMSG_KUAFU_XIANFU_MATCH] =  Protocols.unpack_kuafu_xianfu_match,
 
 }
 

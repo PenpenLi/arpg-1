@@ -128,15 +128,7 @@ end
 
 --是否需要提供传送generalid,通过地图id判断
 function DoIsNeedGeneralid(mapid)
-	local tbl = {2003, 2004, 2005, 2011,2012,2013,2014,2015, 3002}
-	local flag = false
-	for _, val in ipairs(tbl) do
-		if mapid == val then
-			flag = true
-			break
-		end
-	end
-	return flag
+	return tb_map[mapid] and tb_map[mapid].is_need_general == 1
 end
 
 --地图管理器，查找或创建地图

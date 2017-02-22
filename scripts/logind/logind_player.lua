@@ -49,11 +49,14 @@ function LogindPlayer:SetTeleportInfo(mapid, posx, posy, general_id)
 end
 
 KUAFU_FENGLIUZHEN_MAPID = 3002
+KUAFU_XIANFU_MAPID = 3003
+
 --pk服，根据跨服类型选择要传送到的地图id
 function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, reverse_str)
+	print("####################### kuafu_type == ", kuafu_type)
+	
 	if(kuafu_type == KUAFU_TYPE_FENGLIUZHEN)then
 		local general_id = string.format("flz_%s", reverse_str)		--warid即房间id
-		outFmtDebug("######################SelectKuafuMapid general_id = %s, pos = %d", general_id, reverse)
 		local config = tb_kuafu3v3_base[ 1 ].bornPos
 		local pos = config[reverse]
 		
@@ -61,7 +64,21 @@ function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, rever
 		self:SetHealth(self:GetMaxhealth())
 		-- 设置玩家的虚拟阵营
 		self:SetUInt32(PLAYER_INT_FIELD_VIRTUAL_CAMP, reverse)
-		self:SetTeleportInfo(KUAFU_FENGLIUZHEN_MAPID, pos[ 1 ], pos[ 2 ], general_id)
+		local offsetX = randInt(-3, 3)
+		local offsetY = randInt(-3, 3)
+		self:SetTeleportInfo(KUAFU_FENGLIUZHEN_MAPID, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, general_id)
+		return true
+	elseif (kuafu_type == KUAFU_TYPE_XIANFU) then
+		local general_id = string.format("xianfu_%s", reverse_str)		--warid即房间id
+		local config = tb_kuafu_xianfu_base[ 1 ]
+		local pos = config.bornPos[1]
+		
+		--生命回满
+		self:SetHealth(self:GetMaxhealth())
+		local offset = config.offset
+		local offsetX = randInt(-offset, offset)
+		local offsetY = randInt(-offset, offset)
+		self:SetTeleportInfo(KUAFU_XIANFU_MAPID, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, general_id)
 		return true
 	end
 	

@@ -1236,6 +1236,13 @@ function  DoGMScripts(player_ptr, gm_commands)
 		player:Gm3v3EnterTimes(paras[2])
 	elseif tokens[1] == "@发奖3v3" then
 		Rank3v3kuafuWeek()
+	elseif tokens[1] == "@段位" then
+		if(#tokens < 2)then
+			return result
+		end
+		player:SetKuafu3v3TotalScore(paras[2])
+	elseif tokens[1] == "@段位奖励" then
+		player:Rank3v3SegmentReward()
 	elseif tokens[1] == "@成就" then
 		if(#tokens < 3)then
 			return result

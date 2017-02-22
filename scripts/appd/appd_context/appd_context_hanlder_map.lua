@@ -131,4 +131,7 @@ hanlders[CMSG_KUAFU_3V3_GETMYRANK]	= PlayerInfo.Handle_Kuafu_3v3_My_Rank
 
 hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 
+hanlders[CMSG_KUAFU_XIANFU_MATCH]	= PlayerInfo.Handle_Kuafu_Xianfu_Match
+
+
 return hanlders

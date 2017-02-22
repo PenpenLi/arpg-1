@@ -1272,9 +1272,12 @@ require("appd/appd_context/appd_context_social")
 require("appd/appd_context/appd_context_shop")
 require("appd/appd_context/appd_context_giftpacks")
 require("appd/appd_context/appd_context_achieve_title")
-require("appd/appd_context/appd_context_kuafu")
 require("appd/appd_context/appd_context_welfare")
 require("appd/appd_context/appd_context_rank_gift")
+
+require("appd/appd_context/appd_context_kuafu")
+require("appd/appd_context/appd_context_world3v3")
+require("appd/appd_context/appd_context_xianfu")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")

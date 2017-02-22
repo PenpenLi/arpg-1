@@ -63,6 +63,8 @@ function InstanceKuafu3v3:OnBuffRefresh()
 		mapLib.AddGameObject(self.ptr, entry, pos[ 1 ], pos[ 2 ], GO_GEAR_STATUS_END)
 	end
 	
+	app:CallOptResult(self.ptr, OPRATE_TYPE_ATHLETICS, ATHLETICS_OPERATE_BUFF_OCCUR)
+	
 	return self:GetMapReserveValue1() < tb_kuafu3v3_base[ 1 ].times
 end
 
@@ -76,6 +78,8 @@ end
 --当副本状态发生变化时间触发
 function InstanceKuafu3v3:OnSetState(fromstate,tostate)
 	if tostate == self.STATE_FINISH then
+		print( debug.traceback() )
+		
 		self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
 		
 		--10s后结束副本
@@ -99,12 +103,15 @@ function InstanceKuafu3v3:OnJoinPlayer(player)
 	local playerInfo = UnitInfo:new{ptr = player}
 	if not playerInfo:IsAlive() then
 		--死亡了还进来，直接弹出去
-		mapLib.ExitInstance(self.ptr, player)
+		local login_fd = serverConnList:getLogindFD()
+		call_scene_login_to_kuafu_back(login_fd, playerInfo:GetPlayerGuid())
 		return
 	end
 	
 	-- 不能重复进入
 	if self:findIndexByName(playerInfo:GetName()) > -1 then
+		local login_fd = serverConnList:getLogindFD()
+		call_scene_login_to_kuafu_back(login_fd, playerInfo:GetPlayerGuid())
 		return
 	end
 	

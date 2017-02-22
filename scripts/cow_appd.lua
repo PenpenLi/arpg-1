@@ -169,6 +169,7 @@ config = {
 		CMSG_KUAFU_3V3_GETRANLIST,
 		CMSG_KUAFU_3V3_GETMYRANK,
 		MSG_KUAFU_3V3_CANCEL_MATCH,
+		CMSG_KUAFU_XIANFU_MATCH,
 	},
 	--pk服命令表
 	pk_external_router_map = {

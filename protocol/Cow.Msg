@@ -1035,7 +1035,8 @@ pick_quest_chapter_reward,c2s,233,/*领取任务章节奖励*/,STATUS_NEVER,False
 kuafu_3v3_match,c2s,234,/*3v3跨服匹配*/,STATUS_NEVER,False
 
 #
-kuafu_3v3_match_start,s2c,235,/*3v3跨服开始匹配*/,STATUS_NEVER,False
+kuafu_match_start,s2c,235,/*跨服开始匹配*/,STATUS_NEVER,False
+	indx,uint8,False,/*跨服类型*/
 
 #
 kuafu_3v3_buytimes,c2s,236,/*3v3购买次数*/,STATUS_NEVER,False
@@ -1092,3 +1093,7 @@ kuafu_3v3_match_oper,c2s,253,/*匹配到人,接受或者拒绝*/,STATUS_NEVER,False
 #
 kuafu_3v3_decline_match,s2c,254,/*拒绝比赛*/,STATUS_NEVER,False
 	type,uint32,False,/*拒绝匹配跨服类型*/
+
+#
+kuafu_xianfu_match,c2s,255,/*仙府夺宝跨服匹配*/,STATUS_NEVER,False
+	indx,uint8,False,/*仙府类型*/

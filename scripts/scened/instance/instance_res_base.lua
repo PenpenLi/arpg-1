@@ -411,4 +411,20 @@ function AI_res:JustDied( map_ptr,owner,killer_ptr )
 	return 0
 end
 
+--生成战利品
+function AI_res:LootAllot(owner, player, killer, drop_rate_multiples, boss_type, fcm)
+	local playerInfo = UnitInfo:new{ptr = player}
+	local player_guid = playerInfo:GetPlayerGuid()
+	
+	local map_ptr = unitLib.GetMap(owner)
+	
+	for i = 1, 1 do
+		--模板,数量,绑定与否,存在时间,保护时间,强化等级
+		--local drop_item_config = {entry, 1, 0, config.loot_exist_timer, protectTime, 0}		
+		local count = 1
+		AddLootGameObject(map_ptr, owner, player_guid, 50006, 0, fcm, config.loot_exist_timer, 5, 0)
+	end
+			
+end
+
 return InstanceResBase
