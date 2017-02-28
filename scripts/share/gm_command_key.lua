@@ -41,7 +41,8 @@ function GetGmCommandKey(gm_str)
 		return GM_COMMAND_PAIHANGBANG					
     
 	elseif(gm_str == '@邮件'  or gm_str=='@Mail')then
-		return GM_COMMAND_YOUJIAN						
+		return GM_COMMAND_YOUJIAN
+					
     
 	elseif(gm_str == '@崩掉' or gm_str=='@Crash')then
 		return GM_COMMAND_BENGDIAO						

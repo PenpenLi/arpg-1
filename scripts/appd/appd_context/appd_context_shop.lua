@@ -183,6 +183,8 @@ function PlayerInfo:resetWeekShop() --FIXME 尚未调用
 		end
 	end
 end
+
+--[[
 -- 元宝复活
 function PlayerInfo:goldRespawn(useGold)
 	local resItemId = tb_hook_hp_item[ 2 ].items[ 1 ]
@@ -216,3 +218,5 @@ function PlayerInfo:goldRespawn(useGold)
 	-- 发送到场景服
 	self:CallScenedDoSomething(APPD_SCENED_RESPAWN, resItemId)
 end
+
+--]]

@@ -29,6 +29,9 @@ Instance_base = {
 		return object
 	end,
 	
+	-- 普通复活需要的元宝数
+	COST_GOLD = 10,
+	
 	-- 仇恨度
 	THREAT_V = 9999999,
 	
@@ -753,6 +756,93 @@ Instance_base = {
 	OnUseBroadCastGameObject =
 		function(self, playerInfo, gameObjectInfo)
 		end,
+		
+	
+	--镜像相关
+	--[[
+		name : 镜像名字
+		gender : 性别
+		level : 镜像等级
+		attrs : 镜像属性 {{属性id, 属性值}, ..., {}}
+		weapon	: 武器
+		avatar : 时装
+		divine : 神兵
+		spells: 技能数据 {{技能ID,释放概率（万分比）,这个技能动作时间,技能组}, ..., {}}
+	--]]
+	GetImageInfo = function(self, name, gender, level, attrs, weapon, avatar, divine, spells, force)
+		local image = {}
+				
+		-- 基础数据
+		image.name = name
+		image.gender = gender or randInt(1, 2)
+		image.level = level
+		image.id = 6000 + image.gender
+		
+		-- 战斗属性
+		image.attrs = {}
+		for _, attr in pairs(attrs) do
+			table.insert(image.attrs, {attr[ 1 ], attr[ 2 ]})
+		end
+		
+		--模型数据
+		image.weapon = weapon
+		image.avatar = avatar
+		image.divine = divine
+		
+		--技能数据
+		image.spells = {}
+		for _, spell in pairs(spells) do
+			table.insert(image.spells, {spell[ 1 ], spell[ 2 ], spell[ 3 ], spell[ 4 ]})
+		end
+		
+		-- 战力
+		image.force = force
+	
+		return image
+	end,
+
+	--[[
+		image : 镜像
+		x : 坐标x
+		y : 坐标y
+		ai_name : 脚本名称
+		faction : 帮派
+		reborn_time : 重生时间
+		plat_info : 平台信息
+	--]]
+	AddImageBody = function(self, image, x, y, ai_name, faction, reborn_time, plat_info)
+		if image == nil then
+			outFmtError('AddImageBody map_id = %u can not find image', self:GetMapID())
+			return nil
+		end
+		
+		if not faction  then
+			faction = 3
+		end
+
+		local creature = mapLib.AddCreature(self.ptr, {templateid = image.id, pos_x = x ,pos_y = y, faction = faction, move_type = WAYFINDING_ATTACK_MOTION_TYPE, active_grid = 1, ai_name = ai_name, alias_name = '', reborn_time = reborn_time, npc_flag = 3})
+		if creature == nil then
+			return creature
+		end	
+		
+		--显示相关
+		local lua_creature = UnitInfo:new{ptr = creature}
+		lua_creature:SetName(image.name)
+		lua_creature:SetLevel(image.level)
+		lua_creature:SetGender(image.gender)
+		lua_creature:SetWeapon(image.weapon)
+		lua_creature:SetAvatar(image.avatar)
+		lua_creature:SetDivine(image.divine)
+		lua_creature:SetForce(image.force)
+		
+		--属性相关
+		self:SetCreaturePro(creature, image.attrs, false)
+
+		-- 技能
+		self:SetSpells(creature, image.spells)
+
+		return creature, pet
+	end,
 
 	-- 打断
 	OnDisrupt =
@@ -797,20 +887,8 @@ Instance_base = {
 			creature:SetName(config.name)
 
 			--给怪物添加技能
-			local spells = config.spell
-			for i = 1, #spells do
-				local spellInfo = spells[ i ]
-				local skillConfig = tb_skill_base[spellInfo[ 1 ]]
-				if skillConfig then
-					local index = skillConfig.uplevel_id[ 1 ]
-					local upgradeConfig = tb_skill_uplevel[index]
-					local dist = upgradeConfig.distance
-					local groupCD = skillConfig.groupCD
-					local singleCD = skillConfig.singleCD
-					local targetType = skillConfig.type
-					creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], dist, groupCD, singleCD, targetType)
-				end
-			end
+			self:SetSpells(creature_ptr, config.spell)
+
 --			creature:SetBaseAttrs(config.pro, bRecal, mul)
 			self:SetCreaturePro(creature, config.pro, bRecal, mul)
 		else
@@ -821,5 +899,72 @@ Instance_base = {
 	-- 设置属性
 	SetCreaturePro = function(self, creature, pros, bRecal, mul)
 		creature:SetBaseAttrs(pros, bRecal, mul)
+	end,
+	
+	-- 设置技能
+	SetSpells = function (self, creature_ptr, spells)
+		for i = 1, #spells do
+			local spellInfo = spells[ i ]
+			local skillConfig = tb_skill_base[spellInfo[ 1 ]]
+			if skillConfig then
+				local index = skillConfig.uplevel_id[ 1 ]
+				local upgradeConfig = tb_skill_uplevel[index]
+				local dist = upgradeConfig.distance
+				local groupCD = skillConfig.groupCD
+				local singleCD = skillConfig.singleCD
+				local targetType = skillConfig.type
+				creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], dist, groupCD, singleCD, targetType)
+			end
+		end
+	end,
+	
+	-- 进行测试
+	OnTest = function(self, player, args)
+		local params = string.split(args, ' ')
+		local playerInfo = UnitInfo:new{ptr = player}
+		local count = 1
+		if params[ 2 ] then
+			count = tonumber(params[ 2 ])
+		end
+		for i = 1, count do
+			AddLootGameObject(self.ptr, player, playerInfo:GetPlayerGuid(), 50006, 1, 1, 40, 20, 0)
+		end
+	end,
+
+	-- 判断是否需要发送到场景服
+	OnCheckIfSendToAppdAfterLootSelect = function (self, player, entry, count)
+		return 1
+	end,
+	
+	-- 判断是否够钱花元宝复活
+	OnCheckIfCanCostRespawn = function (self, player)
+		if unitInfo:IsAlive() then
+			return
+		end
+		-- 非野外地图不能使用复活
+		local mapid = self:GetMapId()
+		if tb_map[mapid].type ~= MAP_TYPE_FIELD then
+			return
+		end
+		-- 通知是否可以复活
+		playerLib.SendToAppdDoSomething(player, SCENED_APPD_GOLD_RESPAWN, self.COST_GOLD)
+	end,
+	
+	-- 花元宝复活
+	OnCostRespawn = function (self, unitInfo)
+		if not unitInfo:IsAlive() then
+			-- 非野外地图不能使用复活
+			local mapid = self:GetMapId()
+			if tb_map[mapid].type ~= MAP_TYPE_FIELD then
+				return
+			end
+			
+			unitInfo:SetUseRespawnMapId(mapid)
+			unitLib.Respawn(player, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+		end
+	end,
+	
+	OnRandomRespawn = function (self, unitInfo)
+
 	end,
 }

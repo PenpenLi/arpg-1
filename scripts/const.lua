@@ -228,13 +228,15 @@ function lua_string_split(str, split_char)
 --检查协议路由表是否有空协议
 function CheckRouterMap(router_map)
 	local before = -1
+	local beforeIndx = -1
 	for i = 1, #router_map do
 		local v = router_map[i]
 		if(v == nil)then
-			outString("CheckRouterMap index " .. i .. " is nil, before value is " .. before)
+			outString("CheckRouterMap index " .. i .. " is nil, before value is " .. before .. " beforeIndx is ".. beforeIndx)
 			assert(false)
 		end
 		before = v
+		beforeIndx = i
 	end
 end
 

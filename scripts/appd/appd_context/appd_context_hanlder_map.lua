@@ -25,6 +25,8 @@ hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
 hanlders[CMSG_MALL_BUY] = PlayerInfo.Handle_Mall_Buy
 
 hanlders[CMSG_GOLD_RESPAWN] = PlayerInfo.Handle_Gold_Respawn
+hanlders[CMSG_XIANFU_RANDOM_RESPAWN] = PlayerInfo.Handle_random_Respawn
+
 
 hanlders[CMSG_STRENGTH] = PlayerInfo.Handle_Strength
 hanlders[CMSG_CREATE_FACTION] = PlayerInfo.Handle_Faction_Create
@@ -133,5 +135,6 @@ hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 
 hanlders[CMSG_KUAFU_XIANFU_MATCH]	= PlayerInfo.Handle_Kuafu_Xianfu_Match
 
+hanlders[CMSG_BUY_XIANFU_ITEM] = PlayerInfo.Handle_Buy_Xianfu_Item
 
 return hanlders

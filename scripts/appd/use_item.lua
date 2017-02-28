@@ -120,6 +120,9 @@ UseItemScripts = {
 		50003,191,171,201,202,203,204
 	},
 	
+	-- 仙府宝箱的id
+	xianfu_items = {50006},
+	
 	scened_use_items_set = {},
 	__init__= function(self)
 		table.foreach(self.scened_use_items_array, function(i,v)
@@ -167,20 +170,24 @@ UseItemScripts = {
 					outFmtError("item cant batch use item %d count %d", item_entry, count)
 					return
 				end
+				
+				--print("================in use count = ", count)
 
 				--宝箱类（使用获得道具类型）
 				local  box_config = tb_box[item_entry]
 				if not box_config then return end
 				--是否装得下物品
+				--[[
 				if (itemMgr:getEmptyCount() < (box_config.bag_num or 1) ) then	
 					player:CallOptResult(OPRATE_TYPE_BAG,BAG_RESULT_BAG_FULL)
 					return
 				end
+				--]]
 				local consum_config = box_config.cost
 				--先看下够不够消耗
-				for i = 1, #consum_config, 2 do
-					local consum_type = consum_config[i]
-					local consum_val = consum_config[i+1] * count
+				for _, consum_info in pairs(consum_config) do
+					local consum_type = consum_info[ 1 ]
+					local consum_val = consum_info[ 2 ] * count
 					if consum_type == Item_Loot_Silver then		--消耗铜钱
 						if player:GetMoney(MONEY_TYPE_SILVER) < consum_val then return end
 					elseif consum_type == Item_Loot_Bind_Gold then	--消耗绑定元宝
@@ -193,9 +200,9 @@ UseItemScripts = {
 					end					
 				end
 				--可以处理消耗了
-				for i = 1, #consum_config, 2 do
-					local consum_type = consum_config[i]
-					local consum_val = consum_config[i+1] * count
+				for _, consum_info in pairs(consum_config) do
+					local consum_type = consum_info[ 1 ]
+					local consum_val = consum_info[ 2 ] * count
 					if consum_type == Item_Loot_Silver then		--消耗铜钱
 						if(self:SubMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_USE_BOX, consum_val) == false)then return end
 					elseif consum_type == Item_Loot_Bind_Gold then	--消耗绑定元宝
@@ -213,27 +220,38 @@ UseItemScripts = {
 				end
 				
 				--可以开始给道具了
-				local reward_config = box_config.reward_fix_nan
-				if gender == CHAR_GENDER_FEMALE then
-					reward_config = box_config.reward_fix_nv
+				local dropId = box_config.dropid
+				local dict = {}
+				for i = 1, count do
+					DoRandomDrop(dropId, dict)
 				end
 				
-				for i = 1, count do				
-					--给固定奖励
-					for _,reward in ipairs(reward_config) do
-						local typed = reward[1]
-						if typed == Item_Loot_Silver then		--给铜钱
-							player:AddItemByEntry(typed, reward[2], MONEY_CHANGE_BOX_OPEN)
-						elseif typed == Item_Loot_Bind_Gold then	--给绑元
-							player:AddItemByEntry(typed, reward[2], MONEY_CHANGE_BOX_OPEN)
-						elseif typed == Item_Loot_Gold then	--给元宝
-							player:AddItemByEntry(typed, reward[2], MONEY_CHANGE_BOX_OPEN)
-						else
-							--给道具
-							player:AddItemByEntry(typed, reward[2], 0, LOG_ITEM_OPER_TYPE_OPEN_BOX, reward[3])						
-						end				
+				local rewardDict = {}
+				for itemId, value in pairs(dict) do
+					table.insert(rewardDict, {itemId, value})
+				end
+				
+				player:AppdAddItems(rewardDict, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
+				
+				-- 判断是否是仙府夺宝中的宝箱
+				if table.find(self.xianfu_items, item_entry) then
+					for _, rewardInfo in pairs(rewardDict) do
+						local entry = rewardInfo[ 1 ]
+						local count = rewardInfo[ 2 ]
+						
+						local config = tb_item_template[entry]
+						for _, record in pairs(config.records) do
+							-- 仙府宝箱
+							if record == ITEM_RECORD_XIANFU then
+								local str = string.format("%s|%d|%d|%d", player:GetName(), item_entry, entry, count)
+								globalValue:AddXianfuRecord(str)
+							end
+						end
 					end
 				end
+				
+				
+				--[[
 				if config.is_slather == 0 then
 					--给随机奖励
 					local result = ExtractRandomReward( gender, box_config.reward_random_id )
@@ -242,6 +260,7 @@ UseItemScripts = {
 						player:AddItemByEntry(config[1], config[2] , MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX, config[3])
 					end
 				end
+				]]
 			elseif item_type == ITEM_TYPE_MEDICINE or item_type == ITEM_TYPE_BUFF or item_type == ITEM_TYPE_PK_MEDICINE or item_type == ITEM_TYPE_PET_MEDICINE then
 				--药品、获得buff、pk药、宠物药发到场景服处理
 				self:Send2ScenedUseItem(player, item_entry, count)	

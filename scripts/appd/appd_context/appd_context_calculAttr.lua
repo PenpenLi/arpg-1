@@ -255,6 +255,8 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 		-- battleForce = battleForce + DoAnyOneCalcForceByAry(config.prop)
 	end
 	
+	printAttr("base ", attrs)
+	
 	-- 技能管理类
 	local spellMgr = self:getSpellMgr()
 	
@@ -268,15 +270,23 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 		end
 	end
 	
+	print("base skill force ", battleForce)
+	
 	-- 装备
 	local itemMgr = self:getItemMgr()
 	if itemMgr then 
 		itemMgr:itemCalculAttr(attrs) 
 	end
+	
+	printAttr("suit ", attrs)
 
 	-- 坐骑
 	local nonForce = spellMgr:calculMountAttr(attrs)
 	battleForce = battleForce + nonForce
+	
+	print("mount force ", battleForce)
+		
+	printAttr("mount ", attrs)
 	
 	-- 幻化
 	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
@@ -307,11 +317,19 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 		end
 	end
 	
+	
+	print("illusion force ", battleForce)	
+	printAttr("illusion ", attrs)
+
 	-- 神兵
 	spellMgr:calculDivineAttr(attrs)
 	
+	printAttr("divine ", attrs)
+	
 	--称号
 	self:calculTitleAttr(attrs)
+	
+	printAttr("title ", attrs)
 	
 	-- 获得玩家速度
 	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide())
@@ -331,7 +349,19 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 		end
 	end
 	
+	print("all force ", battleForce)	
+	
 	binLogLib.SetDouble(attr_binlog, 0, battleForce)
+end
+
+function printAttr(str, dict)
+	print("attr after ", str)
+	local list = {}
+	for k, v in pairs(dict) do
+		table.insert(list, k..":"..v)
+	end
+	print(string.join(" ", list))
+	print("----------------")
 end
 
 function PlayerInfo:GetSkillBattlePoint(spellId, lv)

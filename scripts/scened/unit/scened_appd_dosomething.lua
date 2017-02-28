@@ -15,7 +15,7 @@ end
 -- 应用服通知场景服干些什么
 function UnitInfo:DoGetAppdDoSomething( ntype, data, str)
 	if ntype == APPD_SCENED_RESPAWN then
-		self:sceneGoldRespawn(data)
+		self:sceneGoldRespawn()
 	elseif ntype == APPD_SCENED_NEAR_BY_CHAT then
 		self:chatNearBy(str)
 	elseif ntype == APPD_SCENED_ADD_EXP then
@@ -28,8 +28,12 @@ function UnitInfo:DoGetAppdDoSomething( ntype, data, str)
 end
 
 -- 场景服元宝复活
-function UnitInfo:sceneGoldRespawn(itemId)
-	ScenedUseItem[itemId](ScenedUseItem, self, itemId, 1)
+function UnitInfo:sceneGoldRespawn()
+	local mapid = unitLib.GetMapID(self.ptr)
+	local map_ptr = unitLib.GetMap(self.ptr)
+	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
+	
+	mapInfo:OnCostRespawn(self)
 end
 
 

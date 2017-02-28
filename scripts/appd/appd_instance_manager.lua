@@ -418,6 +418,33 @@ end
 
 -------------------------------竞技end------------------------------
 
+
+-----------------------------------仙府夺宝----------------------------
+--重置每天的挑战次数
+function AppInstanceMgr:ResetXianfuDayTimes()
+	self:SetXianfuDayTimes(0)
+end
+
+-- 限制挑战次数
+function AppInstanceMgr:SetXianfuDayTimes(val)
+	return self:SetUInt32(INSTANCE_INT_FIELD_XIANFU_DAY_TIMES, val)
+end
+
+-- 检测挑战次数是否足够
+function AppInstanceMgr:CheckXianfuDayTimes()
+	local target = tb_kuafu_xianfu_base[ 1 ].dailytimes
+	local used = self:GetUInt32(INSTANCE_INT_FIELD_XIANFU_DAY_TIMES)
+	return used < target
+end
+
+-- 增加完成的挑战次数
+function AppInstanceMgr:AddXianfuDayTimes()
+	self:AddUInt32(INSTANCE_INT_FIELD_XIANFU_DAY_TIMES, 1)
+end
+
+-----------------------------------------------------------------------
+
+
 -- 获得玩家guid
 function AppInstanceMgr:getPlayerGuid()
 	--物品管理器guid转玩家guid

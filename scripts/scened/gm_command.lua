@@ -111,7 +111,7 @@ function  DoGMScripts(player_ptr, gm_commands, runtime)
 			return result
 		end
 		if(#paras >= 2)then
-			local buff = paras[2]
+			local buff = tonumber(paras[2])
 			local level = 1
 			if(#paras >= 3)then
 				level = paras[3]

@@ -11,12 +11,14 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 	
 	local url = string.format("%s%s/check_match", globalGameConfig:GetExtWebInterface(), sub)
 	local data = {}
+	local indx = app:GetKuafuTypeMatchingArg(self:GetGuid())
 	-- 这里获得3v3队伍匹配的信息
 	data.player_guid = self:GetGuid()
-	data.indx = app:GetKuafuTypeMatchingArg(self:GetGuid())
+	data.indx = indx
+	print("$$$$$$$$$$$$$$$$$$$$$$", data.indx)
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		outFmtDebug("OnCheckWorldXianfuMatch", response)
 		
 		local dict = nil
 		security.call(
@@ -38,17 +40,27 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 				if type(enter_info) == "string" then
 					enter_info = json.decode(enter_info)
 				end
+				
+				
+				-- 往web存钱(当然有可能数据比较慢到达)
+				self:OnSaveMoney()
+				
 				local pos = enter_info.pos
 				local war_id = enter_info.war_id
 				local battle_server = enter_info.battle_server
-				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, 0, battle_server, '', KUAFU_TYPE_XIANFU)
+				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, indx, battle_server, '', KUAFU_TYPE_XIANFU)
 				-- 已经匹配到了
 				app:SetMatchingKuafuType(self:GetGuid(), nil)
 				
 				-- 增加进入次数
-				--local instMgr = self:getInstanceMgr()
-				-- instMgr:add3v3EnterTimes()
+				local instMgr = self:getInstanceMgr()
+				instMgr:AddXianfuDayTimes()
 			-- timeout取消匹配
+			elseif dict.ret == 1 then
+				local target = dict.target
+				local count = dict.count
+				print("taget = ", target, "count = ", count)
+				self:call_kuafu_xianfu_match_wait(target ,count)
 			elseif dict.ret == 2 then
 				print("== player on cancel match", self:GetGuid())
 				self:OnCancelMatch(KUAFU_TYPE_XIANFU)
@@ -69,10 +81,12 @@ function PlayerInfo:OnCancelWorldXianfuMatchBeforeOffline()
 	local data = {}
 	data.player_guid = self:GetGuid()
 	data.indx = app:GetKuafuTypeMatchingArg(self:GetGuid())
+	print("OnCancelWorldXianfuMatchBeforeOffline", data.indx)
 	data.open_time = 1
+	self:OnCancelMatch(KUAFU_TYPE_XIANFU)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug("cancel_match response = ", response)
-		self:OnCancelMatch(KUAFU_TYPE_XIANFU)
+		
 	end)
 end
 
@@ -91,7 +105,7 @@ function PlayerInfo:OnWorldXianfuMatch(indx)
 	
 	app:SetMatchingKuafuType(self:GetGuid(), KUAFU_TYPE_XIANFU + indx * 65536)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		outFmtDebug("OnWorldXianfuMatch", response)
 		
 		local dict = nil
 		security.call(
@@ -102,7 +116,7 @@ function PlayerInfo:OnWorldXianfuMatch(indx)
 		)
 		
 		if dict then
-			
+			print("OnWorldXianfuMatch", dict.ret, dict.msg)
 		end
 	end)
 	
@@ -117,9 +131,8 @@ function PlayerInfo:CheckWorldXianfuReward()
 	data.player_guid = self:GetGuid()
 	data.open_time = 1
 	
-	local askguid = self:GetGuid()
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		outFmtDebug("CheckWorldXianfuReward reponse = %s", response)
 		
 		local dict = nil
 		security.call(
@@ -129,18 +142,99 @@ function PlayerInfo:CheckWorldXianfuReward()
 			end
 		)
 		if dict then
-			print(dict.ret, dict.msg, askguid)
+			print(dict.ret, dict.msg, self:GetGuid())
 			
 			if dict.ret == 0 then
 				local data = dict.details
-				if type(data) == "string" then
-					data = json.decode(data)
-				end
+				local itemInfoTable = string.split(data, ",")
 				
+				if #itemInfoTable > 0 then
+					outFmtDebug("%s get reward %s", self:GetGuid(), data)
+					local rewardDict = {}
+					for i = 1, #itemInfoTable, 2 do
+						local itemId = tonumber(itemInfoTable[ i ])
+						local count  = tonumber(itemInfoTable[i+1])
+						table.insert(rewardDict, {itemId, count})
+					end
+					
+					self:AppdAddItems(rewardDict, MONEY_CHANGE_KUAFU_WORLD_XIANFU, LOG_ITEM_OPER_TYPE_XIANFU)
+				end
 			end
 		end
 		
 	end)
 end
 
+-- 传送钱
+function PlayerInfo:OnSaveMoney()
+	local url = string.format("%s%s/save_money", globalGameConfig:GetExtWebInterface(), sub)
+	local data = {}
+	data.player_guid = self:GetGuid()
+	data.gold = self:GetMoney(MONEY_TYPE_GOLD_INGOT)
+	
+	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
+		
+	end)
+end
 
+-- 同步钱
+function PlayerInfo:OnSyncMoney()
+	local url = string.format("%s%s/sync_money", globalGameConfig:GetExtWebInterface(), sub)
+	local data = {}
+	data.player_guid = self:GetGuid()
+	data.isPk = 0
+	
+	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
+		
+		outFmtDebug("OnSyncMoney", response)
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
+		
+		if dict then
+			if dict.ret == 0 then
+				local changed = dict.changed
+				if changed ~= 0 then
+					print("got changed ====================== ", changed)
+				end
+				local origin = MONEY_CHANGE_KUAFU_WORLD_XIANFU
+				if changed > 0 then
+					self:AddMoney(MONEY_TYPE_GOLD_INGOT, origin, changed)
+				elseif changed < 0 then
+					local cost = -changed
+					if not self:checkMoneyEnough(MONEY_TYPE_GOLD_INGOT, cost) then
+						cost = self:GetMoney(MONEY_TYPE_GOLD_INGOT)
+					end
+					self:costMoneys(origin, {{MONEY_TYPE_GOLD_INGOT, cost}})
+				end
+			end
+		end
+	end)
+end
+
+-- 购买进入券
+function PlayerInfo:OnBuyTicket(type, indx, count)
+	local config = tb_kuafu_xianfu_condition[type].price
+	
+	if not config[indx] then
+		return
+	end
+	
+	local ticketid = tb_kuafu_xianfu_condition[type].ticketid
+	local cost = {{config[indx][1], config[indx][2]}}
+	
+	local itemMgr = self:getItemMgr()
+	local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
+	if emptys < 1 then
+		playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
+		return
+	end
+	
+	if self:costMoneys(MONEY_CHANGE_BUY_XIANFU_TICKET, cost, count) then
+		self:AppdAddItems({{ticketid, count}}, nil, LOG_ITEM_OPER_TYPE_XIANFU_BUY)
+	end
+end

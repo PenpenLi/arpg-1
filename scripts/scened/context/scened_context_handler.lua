@@ -781,6 +781,23 @@ function ScenedContext:Handle_Talk_With_Npc(pkt)
 	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_TALK, entry, ""..questId)
 end
 
+
+function ScenedContext:Handle_Gold_Respawn(pkt)
+	local mapid = unitLib.GetMapID(self.ptr)
+	local map_ptr = unitLib.GetMap(self.ptr)
+	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
+	
+	mapInfo:OnCheckIfCanCostRespawn(self.ptr)
+end
+
+function ScenedContext:Handle_random_Respawn(pkt)
+	local mapid = unitLib.GetMapID(self.ptr)
+	local map_ptr = unitLib.GetMap(self.ptr)
+	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
+	
+	mapInfo:OnRandomRespawn(self)
+end
+
 --[[-- 换线
 function ScenedContext:Hanlde_Change_Line(pkt)
 	local lineNo = pkt.lineNo

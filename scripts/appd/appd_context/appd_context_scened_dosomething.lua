@@ -50,5 +50,11 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_TALK, {data, tonumber(str)})
 	elseif SCENED_APPD_RIDE == ntype then
 		self:SetRideState(data)
+		
+	elseif SCENED_APPD_GOLD_RESPAWN == ntype then
+		if self:costMoneys(MONEY_CHANGE_ATUO_GOLD_RESPAWN, {{MONEY_TYPE_GOLD_INGOT, data}}) then
+			-- 通知场景服复活
+			self:CallScenedDoSomething(APPD_SCENED_RESPAWN)
+		end
 	end
 end

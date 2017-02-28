@@ -28,6 +28,8 @@ OpcodeHandlerFuncTable[CMSG_TELEPORT_FIELD_BOSS] = ScenedContext.Hanlde_Teleport
 
 OpcodeHandlerFuncTable[CMSG_TALK_WITH_NPC]	= ScenedContext.Handle_Talk_With_Npc
 
+OpcodeHandlerFuncTable[CMSG_GOLD_RESPAWN]	= ScenedContext.Handle_Gold_Respawn
+
 
 --OpcodeHandlerFuncTable[CMSG_CHANGE_LINE] = ScenedContext.Hanlde_Change_Line
 

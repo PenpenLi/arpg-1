@@ -95,4 +95,5 @@ function PlayerInfo:onRealReset()
 	self:resetDailyShop()
 	self:SetWelfareBackAllNum()
 	self:Rank3v3SegmentReward()
+	self:OnResetXianfu()
 end

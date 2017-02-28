@@ -258,6 +258,10 @@ MSG_KUAFU_3V3_CANCEL_MATCH		= 252	-- /*取消匹配*/
 CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人&接受或者拒绝*/	
 SMSG_KUAFU_3V3_DECLINE_MATCH		= 254	-- /*拒绝比赛*/	
 CMSG_KUAFU_XIANFU_MATCH		= 255	-- /*仙府夺宝跨服匹配*/	
+SMSG_KUAFU_XIANFU_MATCH_WAIT		= 256	-- /*仙府夺宝跨服匹配等待*/	
+SMSG_KUAFU_XIANFU_MINIMAP_INFO		= 257	-- /*仙府夺宝小地图信息*/	
+CMSG_BUY_XIANFU_ITEM		= 258	-- /*购买仙府进入券*/	
+CMSG_XIANFU_RANDOM_RESPAWN		= 259	-- /*随机复活*/	
 
 
 ---------------------------------------------------------------------
@@ -9026,6 +9030,129 @@ function Protocols.unpack_kuafu_xianfu_match (pkt)
 end
 
 
+-- /*仙府夺宝跨服匹配等待*/	
+function Protocols.pack_kuafu_xianfu_match_wait ( target ,count)
+	local output = Packet.new(SMSG_KUAFU_XIANFU_MATCH_WAIT)
+	output:writeByte(target)
+	output:writeByte(count)
+	return output
+end
+
+-- /*仙府夺宝跨服匹配等待*/	
+function Protocols.call_kuafu_xianfu_match_wait ( playerInfo, target ,count)
+	local output = Protocols.	pack_kuafu_xianfu_match_wait ( target ,count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*仙府夺宝跨服匹配等待*/	
+function Protocols.unpack_kuafu_xianfu_match_wait (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.target = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.count = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*仙府夺宝小地图信息*/	
+function Protocols.pack_kuafu_xianfu_minimap_info (  )
+	local output = Packet.new(SMSG_KUAFU_XIANFU_MINIMAP_INFO)
+	return output
+end
+
+-- /*仙府夺宝小地图信息*/	
+function Protocols.call_kuafu_xianfu_minimap_info ( playerInfo )
+	local output = Protocols.	pack_kuafu_xianfu_minimap_info (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*仙府夺宝小地图信息*/	
+function Protocols.unpack_kuafu_xianfu_minimap_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*购买仙府进入券*/	
+function Protocols.pack_buy_xianfu_item ( type ,indx ,count)
+	local output = Packet.new(CMSG_BUY_XIANFU_ITEM)
+	output:writeByte(type)
+	output:writeByte(indx)
+	output:writeI16(count)
+	return output
+end
+
+-- /*购买仙府进入券*/	
+function Protocols.call_buy_xianfu_item ( playerInfo, type ,indx ,count)
+	local output = Protocols.	pack_buy_xianfu_item ( type ,indx ,count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*购买仙府进入券*/	
+function Protocols.unpack_buy_xianfu_item (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.count = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*随机复活*/	
+function Protocols.pack_xianfu_random_respawn (  )
+	local output = Packet.new(CMSG_XIANFU_RANDOM_RESPAWN)
+	return output
+end
+
+-- /*随机复活*/	
+function Protocols.call_xianfu_random_respawn ( playerInfo )
+	local output = Protocols.	pack_xianfu_random_respawn (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*随机复活*/	
+function Protocols.unpack_xianfu_random_respawn (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9276,6 +9403,10 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_kuafu_3v3_match_oper = self.call_kuafu_3v3_match_oper
 	playerInfo.call_kuafu_3v3_decline_match = self.call_kuafu_3v3_decline_match
 	playerInfo.call_kuafu_xianfu_match = self.call_kuafu_xianfu_match
+	playerInfo.call_kuafu_xianfu_match_wait = self.call_kuafu_xianfu_match_wait
+	playerInfo.call_kuafu_xianfu_minimap_info = self.call_kuafu_xianfu_minimap_info
+	playerInfo.call_buy_xianfu_item = self.call_buy_xianfu_item
+	playerInfo.call_xianfu_random_respawn = self.call_xianfu_random_respawn
 end
 
 local unpack_handler = {
@@ -9523,6 +9654,10 @@ local unpack_handler = {
 [CMSG_KUAFU_3V3_MATCH_OPER] =  Protocols.unpack_kuafu_3v3_match_oper,
 [SMSG_KUAFU_3V3_DECLINE_MATCH] =  Protocols.unpack_kuafu_3v3_decline_match,
 [CMSG_KUAFU_XIANFU_MATCH] =  Protocols.unpack_kuafu_xianfu_match,
+[SMSG_KUAFU_XIANFU_MATCH_WAIT] =  Protocols.unpack_kuafu_xianfu_match_wait,
+[SMSG_KUAFU_XIANFU_MINIMAP_INFO] =  Protocols.unpack_kuafu_xianfu_minimap_info,
+[CMSG_BUY_XIANFU_ITEM] =  Protocols.unpack_buy_xianfu_item,
+[CMSG_XIANFU_RANDOM_RESPAWN] =  Protocols.unpack_xianfu_random_respawn,
 
 }
 

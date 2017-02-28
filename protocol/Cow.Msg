@@ -1097,3 +1097,21 @@ kuafu_3v3_decline_match,s2c,254,/*拒绝比赛*/,STATUS_NEVER,False
 #
 kuafu_xianfu_match,c2s,255,/*仙府夺宝跨服匹配*/,STATUS_NEVER,False
 	indx,uint8,False,/*仙府类型*/
+
+#
+kuafu_xianfu_match_wait,s2c,256,/*仙府夺宝跨服匹配等待*/,STATUS_NEVER,False
+	target,uint8,False,/*需要匹配个数*/
+	count,uint8,False,/*当前匹配个数*/
+	
+#
+kuafu_xianfu_minimap_info,s2c,257,/*仙府夺宝小地图信息*/,STATUS_NEVER,False
+
+#
+buy_xianfu_item,c2s,258,/*购买仙府进入券*/,STATUS_NEVER,False
+	type,uint8,False,/*仙府券类型*/
+	indx,uint8,False,/*购买类型*/
+	count,uint16,False,/*购买数量*/
+
+#
+xianfu_random_respawn,c2s,259,/*随机复活*/,STATUS_NEVER,False
+

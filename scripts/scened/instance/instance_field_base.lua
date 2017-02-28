@@ -284,8 +284,11 @@ function InstanceFieldBase:OnTimer_PickingTreasure(player)
 	PlayerAddRewards(player, dict)
 	local rewards = {}
 	for entry, _ in pairs(dict) do
-		if tb_item_template[entry].show then
-			table.insert(rewards, tb_item_template[entry].name)
+		local itemConfig = tb_item_template[entry]
+		for _, record in pairs(itemConfig.records) do
+			if record == ITEM_RECORD_MAP then
+				table.insert(rewards, tb_item_template[entry].name)
+			end
 		end
 	end
 	

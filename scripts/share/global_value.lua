@@ -319,6 +319,25 @@ end
 
 
 
+------------------------------------仙府夺宝记录-----------------------------------
+-- GLOBALVALUE_STRING_FIELD_XIANFU_RECORD_START
+-- MAX_XIANFU_RECORD_COUNT
+-- GLOBALVALUE_INT_FIELD_XIANFU_RECORD_CURSOR
+
+function GlobalValue:AddXianfuRecord(record)
+	local cursor = self:GetUInt32(GLOBALVALUE_INT_FIELD_XIANFU_RECORD_CURSOR)
+	--print("GlobalValue:AddXianfuRecord", cursor, record)
+	self:SetStr(cursor + GLOBALVALUE_STRING_FIELD_XIANFU_RECORD_START, record)
+	cursor = cursor + 1
+	if cursor >= MAX_XIANFU_RECORD_COUNT then
+		cursor = 0
+	end
+	self:SetUInt32(GLOBALVALUE_INT_FIELD_XIANFU_RECORD_CURSOR, cursor)
+end
+
+
+
+
 
 
 

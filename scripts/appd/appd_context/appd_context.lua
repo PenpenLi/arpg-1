@@ -813,6 +813,22 @@ end
 function PlayerInfo:AddItemByEntry(entry, count, money_log, item_log, item_bind, isAppaisal, isSystem, strong_lv, fail_time, bag_type, pos)
 	local itemMgr = self:getItemMgr()						
 	itemMgr:addItem(entry, count, item_bind, isAppaisal, isSystem, strong_lv, fail_time, bag_type, pos)
+	-- 判断获得物品以后的提示逻辑
+	local config = tb_item_template[entry]
+	for _, record in pairs(config.records) do
+		-- 全服
+		if record == ITEM_RECORD_BROADCAST then
+			app:CallOptResult(OPRATE_TYPE_REWARD, item_log, {self:GetName(), config.name})
+		end
+		
+		--[[
+		-- 仙府宝箱
+		if record == ITEM_RECORD_XIANFU then
+			local str = string.format("%s|%d|%d", self:GetName(), entry, count)
+			globalValue:AddXianfuRecord(str)
+		end
+		--]]
+	end
 	WriteItemLog(self, item_log,entry,count, item_bind)
 end
 

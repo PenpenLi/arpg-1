@@ -143,8 +143,10 @@ config = {
 		CMSG_TELEPORT_MAP,
 		CMSG_TELEPORT_FIELD_BOSS,
 		CMSG_TALK_WITH_NPC,
+		CMSG_LOOT_SELECT,
+		CMSG_GOLD_RESPAWN,			--元宝复活
+		MSG_CLIENTSUBSCRIPTION,		--/*查询头像的buffer信息*/
 		--CMSG_CHANGE_LINE,
-		
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
 		CMSG_STOP_HUNG_UP,--停止挂机*/
@@ -153,8 +155,7 @@ config = {
 		
 		MSG_JUMP_END	,-- /*跳跃结束*/
 		CMSG_CLIENT_UPDATE_SCENED,	--/*客户端热更场景模块后获取uint*/
-		CMSG_LOOT_SELECT,
-		MSG_CLIENTSUBSCRIPTION,		--/*查询头像的buffer信息*/
+		
 		CMSG_ZHUAN_SHENG,	--转生
 		CMSG_FUBEN_HUNG_UP,-- 副本挂机操作
 		CMSG_ENTER_FEISHENGZHILU,	--进入飞升之路		
@@ -192,25 +193,29 @@ config = {
 		CMSG_USE_GAMEOBJECT,
 		--MSG_INSTANCE_READY,
 		CMSG_INSTANCE_NEXT_STATE,
-		MSG_SYNC_MSTIME,--同步时间
-		MSG_TEST_NETD_SCENED,
-		MSG_JUMP_START	,-- /*跳跃开始*/
-		MSG_JUMP_END	,-- /*跳跃结束*/
+		MSG_SYNC_MSTIME, --同步时间
+		--MSG_TEST_NETD_SCENED,
+		CMSG_JUMP_START	,-- /*跳跃开始*/
+		--MSG_JUMP_END	,-- /*跳跃结束*/
 		CMSG_CLIENT_UPDATE_SCENED,	--/*客户端热更场景模块后获取uint*/
 		CMSG_LOOT_SELECT,
 		MSG_CLIENTSUBSCRIPTION,		--/*查询头像的buffer信息*/
-        CMSG_USE_GAMEOBJECT_START,		-- 使用有效对象开始
-        CMSG_FLZ_ENTER_FENGLIUZHEN_PUB,	--进入风流镇酒馆
+        --CMSG_USE_GAMEOBJECT_START,		-- 使用有效对象开始
+        --CMSG_FLZ_ENTER_FENGLIUZHEN_PUB,	--进入风流镇酒馆
 		CMSG_INSTANCE_EXIT,			--退出副本
-		CMSG_MOUNT_RIDING,			--坐骑骑乘
-		CMSG_FLZ_SHWJ_KEJI_LEVELUP,	--生化危机升级科技
-		CMSG_FLZ_SHWJ_HUANZIDAN,	--生化危机换子弹
-		CMSG_FLZ_HDQS_OPT,			--荒岛求生玩家操作
+		--CMSG_MOUNT_RIDING,			--坐骑骑乘
+		--CMSG_FLZ_SHWJ_KEJI_LEVELUP,	--生化危机升级科技
+		--CMSG_FLZ_SHWJ_HUANZIDAN,	--生化危机换子弹
+		--CMSG_FLZ_HDQS_OPT,			--荒岛求生玩家操作
+		CMSG_GOLD_RESPAWN,			--元宝复活
+		CMSG_XIANFU_RANDOM_RESPAWN,	--随机复活
 	},
 }
 
 --校验协议注册是否有效
+print("check external_router_map")
 CheckRouterMap(config.external_router_map)
+print("check pk_external_router_map")
 CheckRouterMap(config.pk_external_router_map)
 
 app = require('scened.ScenedApp'):new()
@@ -253,6 +258,7 @@ function load_lua_scripts()
 		{'资源金币副本脚本'		,'scened/instance/instance_res_gold'},
 		{'资源宝石精华副本脚本'	,'scened/instance/instance_res_gem'},
 		
+		{'斗剑台'				,'scened/instance/instance_doujiantai'},
 		{'跨服3v3'				,'scened/instance/instance_kuafu_3v3'},
 		{'跨服仙府夺宝'			,'scened/instance/instance_kuafu_xianfu'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
@@ -288,6 +294,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[2014] = InstanceResGold,
 	[2015] = InstanceResGem,
 
+	[3001] = InstanceDoujiantai,
 	[3002] = InstanceKuafu3v3,
 	[3003] = InstanceKuafuXianfu,
 }

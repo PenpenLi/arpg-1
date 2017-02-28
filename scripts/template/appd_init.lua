@@ -105,3 +105,12 @@ require("template.tables.tb_kuafu3v3_day_reward")
 
 -- 仙府夺宝
 require("template.tables.tb_kuafu_xianfu_base")
+require("template.tables.tb_kuafu_xianfu_condition")
+
+require("template.tables.tb_box")
+
+-- 斗剑台
+require("template.tables.tb_doujiantai_base")
+require("template.tables.tb_doujiantai_dummy")
+require("template.tables.tb_doujiantai_combat_win")
+require("template.tables.tb_doujiantai_rank")

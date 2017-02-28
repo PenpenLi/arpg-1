@@ -15,7 +15,7 @@ tb_kuafu_xianfu_base = {
 	--  interval:int	符点刷新间隔
 	--  times:int	符点刷新次数
 	--  buffPos:array	符点刷新位置
-	--  joinReward:array	参与奖励
-	--  boxid:int	宝箱的道具id
-	[1] = {id = 1,bornPos = {{85,76}},respawnPos = {{114,76},{85,103},{57,74},{85,49}},offset = 10,seconds = {10,5},gold = 10,cd = 10,last = 600,interval = 30,times = 2,buffPos = {{86,92}},joinReward = {{50003,1}},boxid = 50006,},
+	--  joinTime:array	参与时间
+	--  dailytimes:int	每日次数
+	[1] = {id = 1,bornPos = {{85,76}},respawnPos = {{114,76},{85,103},{57,74},{85,49}},offset = 10,seconds = {10,5},gold = 10,cd = 10,last = 180,interval = 30,times = 2,buffPos = {{86,92}},joinTime = {{0,0,23,59}},dailytimes = 200,},
 }

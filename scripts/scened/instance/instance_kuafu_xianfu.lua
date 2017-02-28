@@ -1,9 +1,13 @@
+local security = require("base/Security")
+
 InstanceKuafuXianfu = class("InstanceKuafuXianfu", InstanceInstBase)
 
 InstanceKuafuXianfu.Name = "InstanceKuafuXianfu"
 InstanceKuafuXianfu.exit_time = 20
 InstanceKuafuXianfu.Time_Out_Fail_Callback = "timeoutCallback"
-InstanceKuafuXianfu.broadcast_nogrid = 1
+--InstanceKuafuXianfu.broadcast_nogrid = 1
+InstanceKuafuXianfu.RESPAWN_BASE_GOLD = 5
+InstanceKuafuXianfu.sub = "world_xianfu"
 
 function InstanceKuafuXianfu:ctor(  )
 	
@@ -17,7 +21,98 @@ function InstanceKuafuXianfu:OnInitScript()
 	self:AddCountDown()
 	
 	-- boss刷新定时器
+	mapLib.DelTimer(self.ptr, 'OnMonsterRefresh')
 	mapLib.AddTimer(self.ptr, 'OnMonsterRefresh', 1000)
+	
+	self:OnInitBossInfo()
+	
+	-- 解析generalid
+	self:parseGeneralId()
+end
+
+function InstanceKuafuXianfu:parseGeneralId()
+	local generalId	= self:GetMapGeneralId()
+	local params = string.split(generalId, '|')
+	local hard = tonumber(params[ 2 ])
+	self:SetHard(hard)
+end
+
+function InstanceKuafuXianfu:SetHard(hard)
+	self:SetUInt32(KUAFU_XIANFU_FIELDS_HARD, hard)
+end
+
+
+function InstanceKuafuXianfu:GetHard()
+	return self:GetUInt32(KUAFU_XIANFU_FIELDS_HARD)
+end
+
+function InstanceKuafuXianfu:GetBoxid()
+	local hard = self:GetHard()
+	return tb_kuafu_xianfu_condition[hard].boxid
+end
+
+-- 初始化boss数据
+function InstanceKuafuXianfu:OnInitBossInfo ()
+	local timestamp = os.time()	
+	local intstart = KUAFU_XIANFU_FIELDS_INT_BOSS_INFO_START
+	for indx, bossInfo in ipairs(tb_kuafu_xianfu_boss) do
+		local info = bossInfo.bossTime
+		local createBossTime = info[ 1 ] * 60 + info[ 2 ]
+		local bornTime = self:GetMapCreateTime() + createBossTime
+		local entry = bossInfo.bossEntry
+		
+		self:SetUInt16(intstart + KUAFU_XIANFU_BOSS_SHOW_INFO, 0, entry)
+		self:SetUInt32(intstart + KUAFU_XIANFU_BOSS_BORN_TIME, bornTime)
+		
+		intstart = intstart + MAX_KUAFU_XIANFU_BOSS_INT_COUNT
+	end
+end
+
+-- 
+function InstanceKuafuXianfu:GetBinlogIndxByEntry (entry)
+	
+	local intstart = KUAFU_XIANFU_FIELDS_INT_BOSS_INFO_START
+	for i = 1, MAX_KUAFU_XIANFU_BOSS_COUNT do
+		if entry == self:GetUInt16(intstart + KUAFU_XIANFU_BOSS_SHOW_INFO, 0) then
+			return i
+		end
+		intstart = intstart + MAX_KUAFU_XIANFU_BOSS_INT_COUNT
+	end
+	
+	return 0
+end
+
+-- 显示小地图信息
+function InstanceKuafuXianfu:SendMiniMapInfo()
+	
+	local playerPos = {}
+	local allPlayers = mapLib.GetAllPlayer(self.ptr)
+	for _, player in pairs(allPlayers) do
+		local x, y = unitLib.GetPos(player)
+		local guid = binLogLib.GetStr(player, BINLOG_STRING_FIELD_GUID)
+		table.insert(playerPos, {guid, x, y})
+	end
+	
+	local creaturePos = {}
+	local allCreatures = mapLib.GetAllCreature(self.ptr)
+	for _, creature in pairs(allCreatures) do
+		local x, y = unitLib.GetPos(creature)
+		local entry = binLogLib.GetUInt16(creature, UNIT_FIELD_UINT16_0, 0)
+		table.insert(creaturePos, {entry, x, y})
+	end
+	
+	local gameObjectPos = {}
+	local allGameobjects = mapLib.GetAllGameObject(self.ptr)
+	for _, gameObject in pairs(allGameobjects) do
+		local x, y = unitLib.GetPos(gameObject)
+		local entry = binLogLib.GetUInt16(gameObject, UNIT_FIELD_UINT16_0, 0)
+		table.insert(gameObjectPos, {entry, x, y})
+	end
+	
+	for _, player in pairs(allPlayers) do
+		local playerInfo = UnitInfo:new {ptr = player}
+		playerInfo:call_kuafu_xianfu_minimap_info_in_custom(playerPos, creaturePos, gameObjectPos)
+	end
 end
 
 function InstanceKuafuXianfu:AddCountDown()
@@ -51,22 +146,32 @@ function InstanceKuafuXianfu:OnMonsterRefresh()
 	for indx, bossInfo in pairs(tb_kuafu_xianfu_boss) do
 		local info = bossInfo.bossTime
 		local createBossTime = info[ 1 ] * 60 + info[ 2 ]
-		if self:GetMapCreateTime() + createBossTime == timestamp then
-			local pos = bossInfo.bossPos
-			local entry = bossInfo.bossEntry
-			local bossName = tb_creature_template[entry].name
-			local creature = mapLib.AddCreature(self.ptr, {
-					templateid = entry, x = pos[ 1 ], y = pos[ 2 ], 
-					active_grid = true, alias_name = bossName, ainame = "AI_XianfuBoss", npcflag = {}
-				}
-			)
-			local place = string.char(64+indx)
-			local boxid = tb_kuafu_xianfu_base[ 1 ].boxid
-			app:CallOptResult(self.ptr, OPRATE_TYPE_XIANFU, XIANFU_TYPE_BOSS_OCCUR, {bossName, place, tb_item_template[boxid].name})
-			self:SetUInt32(KUAFU_XIANFU_FIELDS_INT_BOSS_INDX, indx)
-			break
+		
+		if self:GetMapCreateTime() + createBossTime <= timestamp then
+			local bossintstart = KUAFU_XIANFU_FIELDS_INT_BOSS_INFO_START + MAX_KUAFU_XIANFU_BOSS_INT_COUNT * (indx - 1)
+			local activeInfo = self:GetUInt32(bossintstart + KUAFU_XIANFU_BOSS_BORN_INFO)
+			if activeInfo == 0 then
+				self:SetUInt32(bossintstart + KUAFU_XIANFU_BOSS_BORN_INFO, 1)
+				outFmtDebug("created indx = %d",  indx)
+				local pos = bossInfo.bossPos
+				local entry = bossInfo.bossEntry
+				local bossName = tb_creature_template[entry].name
+				local creature = mapLib.AddCreature(self.ptr, {
+						templateid = entry, x = pos[ 1 ], y = pos[ 2 ], 
+						active_grid = true, alias_name = bossName, ainame = "AI_XianfuBoss", npcflag = {}
+					}
+				)
+				local place = string.char(64+indx)
+				
+				self:SetUInt16(bossintstart + KUAFU_XIANFU_BOSS_SHOW_INFO, 1, 1)
+				local boxid = self:GetBoxid()
+				app:CallOptResult(self.ptr, OPRATE_TYPE_XIANFU, XIANFU_TYPE_BOSS_OCCUR, {bossName, place, tb_item_template[boxid].name})
+			end
 		end
 	end
+	
+	-- 刷新
+	self:SendMiniMapInfo()
 	
 	return true
 end
@@ -122,36 +227,6 @@ function InstanceKuafuXianfu:DoPlayerExitInstance(player)
 	return 1	--返回1的话为正常退出，返回0则不让退出
 end
 
-
-
-
---[[
-
-// 仙府夺宝 玩家信息
-enum KUAFU_XIANFU_PLAYER_INFO
-{
-	KUAFU_XIANFU_PLAYER_SHOW_INFO	= 0,									// 4个byte(byte0:宝箱数量, byte1:击杀人数, byte2:击杀BOSS数量)
-	KUAFU_XIANFU_PLAYER_SETTLEMENT	= KUAFU_XIANFU_PLAYER_SHOW_INFO + 1,	// 玩家战力
-	MAX_KUAFU_XIANFU_INT_COUNT,												// kuafu属性数量
-
-	KUAFU_XIANFU_PLAYER_NAME		= 0,									//玩家名称
-	KUAFU_XIANFU_PLAYER_GUID		= KUAFU_XIANFU_PLAYER_NAME + 1,			//玩家guid
-	MAX_KUAFU_XIANFU_STR_COUNT,
-};
-
-#define MAX_KUAFU_XIANFU_COUNT 10
-// 跨服仙府夺宝匹配
-enum KUAFU_XIANFU_FIELDS 
-{
-	KUAFU_XIANFU_FIELDS_INT_INFO_START	= MAP_INT_FIELD_INSTANCE_TYPE + 1,														// 跨服数据开始
-	KUAFU_XIANFU_FIELDS_INT_INFO_END	= KUAFU_XIANFU_FIELDS_INT_INFO_START + MAX_KUAFU_XIANFU_COUNT * MAX_KUAFU_XIANFU_INT_COUNT,		// 3v3总共6个人
-
-	KUAFU_XIANFU_FIELDS_STR_INFO_START	= MAP_STR_REWARD + 1,																// 字符串数据开始
-	KUAFU_XIANFU_FIELDS_STR_INFO_END	= KUAFU_XIANFU_FIELDS_STR_INFO_START + MAX_KUAFU_XIANFU_COUNT * MAX_KUAFU_XIANFU_STR_COUNT,	// 字符串数据结束
-};
-
---]]
-
 --玩家加入地图
 function InstanceKuafuXianfu:OnJoinPlayer(player)
 	
@@ -173,7 +248,7 @@ function InstanceKuafuXianfu:OnJoinPlayer(player)
 	end
 	
 	-- 设置名称
-	local emptyIndex = self:findIndexByName(playerInfo:GetName())
+	local emptyIndex = self:findIndexByName()
 	if emptyIndex > -1 then
 		local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + emptyIndex * MAX_KUAFU_XIANFU_INT_COUNT
 		local strstart = KUAFU_XIANFU_FIELDS_STR_INFO_START + emptyIndex * MAX_KUAFU_XIANFU_STR_COUNT
@@ -182,6 +257,9 @@ function InstanceKuafuXianfu:OnJoinPlayer(player)
 		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_GUID, playerInfo:GetPlayerGuid())
 
 		self:SetUInt32(intstart + KUAFU_XIANFU_PLAYER_SETTLEMENT,playerInfo:GetForce())
+		
+		-- 同步钱先
+		self:OnSyncMoney(playerInfo:GetPlayerGuid(), emptyIndex)
 	end
 end
 
@@ -225,14 +303,53 @@ function InstanceKuafuXianfu:OnPlayerDeath(player)
 	
 end
 
+
+--[[
+
+// 仙府夺宝 玩家信息
+enum KUAFU_XIANFU_PLAYER_INFO
+{
+	KUAFU_XIANFU_PLAYER_SHOW_INFO		= 0,										// 4个byte(byte0:宝箱数量, byte1:击杀人数, byte2:击杀BOSS数量)
+	KUAFU_XIANFU_PLAYER_MONEY			= KUAFU_XIANFU_PLAYER_SHOW_INFO + 1,		// 元宝数据
+	KUAFU_XIANFU_PLAYER_MONEY_CHANGED	= KUAFU_XIANFU_PLAYER_MONEY + 2,			// 元宝改变值
+	KUAFU_XIANFU_PLAYER_SETTLEMENT		= KUAFU_XIANFU_PLAYER_MONEY_CHANGED + 2,	// 玩家战力
+	MAX_KUAFU_XIANFU_INT_COUNT,														// kuafu属性数量
+
+	KUAFU_XIANFU_PLAYER_NAME		= 0,									//玩家名称
+	KUAFU_XIANFU_PLAYER_GUID		= KUAFU_XIANFU_PLAYER_NAME + 1,			//玩家guid
+	MAX_KUAFU_XIANFU_STR_COUNT,
+};
+
+
+--]]
+
 -- 同步数据到场景服
 function InstanceKuafuXianfu:SyncResultToWeb()
 	local sendInfo = {}
 
 	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START
 	local strstart = KUAFU_XIANFU_FIELDS_STR_INFO_START
+	local loot_entry = self:GetBoxid()
+	
 	for i = 0, MAX_KUAFU_XIANFU_COUNT-1 do
-
+		local player_guid = self:GetStr(strstart + KUAFU_XIANFU_PLAYER_GUID)
+		if string.len(player_guid) > 0 then
+			local reward = {}
+			local hard = self:GetHard()
+			for _, info in pairs(tb_kuafu_xianfu_condition[hard].joinReward) do
+				table.insert(reward, info[ 1 ]..","..info[ 2 ])
+			end
+			local count   = self:GetByte  (intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0)
+			if count > 0 then
+				table.insert(reward, loot_entry..","..count)
+				outFmtDebug(" player %s has %d", player_guid, count)
+			end
+			local changed = self:GetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED)
+			if changed > 0 then
+				changed = -changed
+			end
+			table.insert(sendInfo, {player_guid, changed, string.join(",", reward)})
+		end
 		
 		intstart = intstart + MAX_KUAFU_XIANFU_INT_COUNT
 		strstart = strstart + MAX_KUAFU_XIANFU_STR_COUNT
@@ -241,15 +358,14 @@ function InstanceKuafuXianfu:SyncResultToWeb()
 	local retInfo = {}
 	-- 然后同步到web
 	for _, info in pairs(sendInfo) do
-		table.insert(retInfo, string.join(",", info))
+		table.insert(retInfo, string.join("|", info))
 	end
 	
-	
-	local url = globalGameConfig:GetExtWebInterface().."world_3v3/match_result"
+	local url = string.format("%s%s/match_result", globalGameConfig:GetExtWebInterface(), InstanceKuafuXianfu.sub)
 	local data = {}
-	-- 这里获得3v3队伍匹配的信息
 	data.ret = string.join(";", retInfo)
 	data.open_time = 1
+	print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@result = ", data.ret)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug("response = %s", tostring(response))
 	end)
@@ -260,30 +376,25 @@ function InstanceKuafuXianfu:DoAfterRespawn(unit_ptr)
 	local unitInfo = UnitInfo:new{ptr = unit_ptr}
 	-- 加无敌buff
 	unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 1, 10)
-	-- unitLib.AddBuff(unit_ptr, BUFF_INVISIBLE, unit_ptr, 1, MAX_BUFF_DURATION)
-end
-
---[[
--- 玩家受到实际伤害(负数表示加血)
-function InstanceKuafuXianfu:OnPlayerHurt(killer, player, damage)
-	local killerInfo = UnitInfo:new{ptr = killer}
-	local targetInfo = UnitInfo:new{ptr = player}
 	
-	-- 计算玩家血量
-	local indx = self:findIndexByName(targetInfo:GetName())
-	local rate = math.floor((targetInfo:GetHealth() - damage) * 100 / targetInfo:GetMaxhealth())
-	local intStart = KUAFU_XIANFU_FIELDS_INT_INFO_START + indx * MAX_KUAFU_XIANFU_INT_COUNT
-	self:SetByte(intStart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 1, rate)
-	-- 计算玩家伤害
-	if damage > 0 then
-		indx = self:findIndexByName(killerInfo:GetName())
-		intStart = KUAFU_XIANFU_FIELDS_INT_INFO_START + indx * MAX_KUAFU_XIANFU_INT_COUNT
-		self:AddDouble(intStart + KUAFU_XIANFU_PLAYER_DAMAGE, damage)
+	local unitInfo = UnitInfo:new {ptr = unit_ptr}
+	if unitInfo:GetTypeID() == TYPEID_PLAYER then
+		-- 如果不对 退出跨服
+		if unitInfo:GetUseRespawnMapId() > 0 then
+			if unitInfo:GetUseRespawnMapId() ~= self:GetMapId() then
+				self:IsNeedTeleportWhileMapClear(unit_ptr)
+			end
+		else
+			-- 随机复活区域
+			local a = GetRandomIndexTable(#tb_kuafu_xianfu_base[ 1 ].respawnPos, 1)
+			local pos = tb_kuafu_xianfu_base[ 1 ].respawnPos[a[ 1 ]]
+			local offsetX = randInt(-3, 3)
+			local offsetY = randInt(-3, 3)
+			unitLib.SetPos(unit_ptr, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, true)
+		end
+		unitInfo:SetUseRespawnMapId(0)
 	end
-	
-	return 0
 end
---]]
 
 function InstanceKuafuXianfu:OnPlayerKilled(player, killer)
 	local killerInfo = UnitInfo:new{ptr = killer}
@@ -292,7 +403,7 @@ function InstanceKuafuXianfu:OnPlayerKilled(player, killer)
 	-- 击杀者加击杀数
 	local indx1 = self:findIndexByName(killerInfo:GetName())
 	local intStart = KUAFU_XIANFU_FIELDS_INT_INFO_START + indx1 * MAX_KUAFU_XIANFU_INT_COUNT
-	self:AddByte(intStart + KUAFU_XIANFU_PLAYER_SETTLEMENT, 0, 1)
+	self:AddByte(intStart + KUAFU_XIANFU_PLAYER_SETTLEMENT, 1, 1)
 	
 	-- 被杀者下标
 	local indx2 = self:findIndexByName(playerInfo:GetName())
@@ -310,6 +421,10 @@ function InstanceKuafuXianfu:OnPlayerKilled(player, killer)
 		strstart = strstart + MAX_KUAFU_XIANFU_STR_COUNT
 	end
 	
+	-- 增加死亡次数
+	playerInfo:AddXianfuDeathCount()
+	
+	-- 掉落箱子 如果身上有的话
 	self:OnDropTreasure(playerInfo, killerInfo:GetPlayerGuid())
 	
 	return 0
@@ -321,6 +436,36 @@ function InstanceKuafuXianfu:OnDropTreasure(playerInfo, belongGuid, is_offline)
 	is_offline = is_offline or false
 	local indx = self:findIndexByName(playerInfo:GetName())
 	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + indx * MAX_KUAFU_XIANFU_INT_COUNT
+	
+	local protectTime = 5
+	local has = self:GetByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0)
+	local count = has
+	if not is_offline then
+		-- 判断如果有箱子 会掉多少
+		for k, v in pairs(tb_kuafu_xianfu_killed_drop) do
+			if v.ownRange[ 1 ] <= has and has <= v.ownRange[ 2 ] then
+				local rand = randInt(1, 10000)
+				if rand <= v.rate then
+					count = math.min(v.drop, has)
+					protectTime = v.protect
+				end
+				break
+			end
+		end
+	end
+	
+	if count > 0 then
+		local loot_entry = self:GetBoxid()
+		for i = 1, count do
+			--模板,数量,绑定与否,存在时间,保护时间,强化等级
+			--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
+			AddLootGameObject(self.ptr, playerInfo.ptr, belongGuid, loot_entry, 1, 0, 1800, protectTime, 0)
+		end
+		
+		self:SubByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, count)
+		-- 同步到u对象
+		playerInfo:SubXianfuBoxCount(count)
+	end
 end
 
 --当玩家离开时触发
@@ -330,7 +475,14 @@ function InstanceKuafuXianfu:OnLeavePlayer( player, is_offline)
 		return
 	end
 	
-	self:OnDropTreasure(UnitInfo:new{ptr = player})
+	self:OnDropTreasure(UnitInfo:new{ptr = player}, '', true)
+	
+	-- 如果没人了 那就结束
+	local persons = mapLib.GetPlayersCounts(self.ptr)
+	if persons == 0 then
+		self:SyncResultToWeb()
+		self:SetMapState(self.STATE_FINISH)
+	end
 end
 
 --使用游戏对象之前
@@ -384,6 +536,91 @@ function InstanceKuafuXianfu:IsNeedTeleportWhileMapClear(player)
 end
 
 
+-- 判断战利品是否需要发送到场景服
+function InstanceKuafuXianfu:OnCheckIfSendToAppdAfterLootSelect(player, entry, count)
+	local playerInfo = UnitInfo:new {ptr = player}
+	local binindx = self:findIndexByName(playerInfo:GetName())
+	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
+	
+	self:AddByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, 1)
+	
+	outFmtDebug("======== guid = %s,  binindx = %d, picked one , now = %d", playerInfo:GetPlayerGuid(), binindx, self:GetByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0))
+	
+	-- 同步到u对象
+	playerInfo:AddXianfuBoxCount(count)
+	
+	return 0
+end
+
+-- 判断是否够钱花元宝复活
+function InstanceKuafuXianfu:OnCheckIfCanCostRespawn(player)
+	
+	local unitInfo = UnitInfo:new {ptr = player}
+	if unitInfo:IsAlive() then
+		return
+	end
+	
+	-- 死亡次数
+	local times = unitInfo:GetXianfuDeathCount()
+	local cost = self.RESPAWN_BASE_GOLD * times
+	
+	local binindx = self:findIndexByName(unitInfo:GetName())
+	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
+	local total = self:GetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY)
+	local used = self:GetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED)
+	
+	-- 钱不足
+	if used + cost > total then
+		return
+	end
+	self:AddDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED, cost)
+	
+	-- 如果钱够了 就去
+	self:OnCostRespawn(unitInfo)
+end
+	
+-- 花元宝复活
+function InstanceKuafuXianfu:OnCostRespawn(unitInfo)
+	if not unitInfo:IsAlive() then
+		unitInfo:SetUseRespawnMapId(mapid)
+		unitLib.Respawn(player, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+	end
+end
+
+function InstanceKuafuXianfu:OnRandomRespawn(unitInfo)
+	if not unitInfo:IsAlive() then
+		unitLib.Respawn(player, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+	end
+end
+
+
+-- 同步钱
+function InstanceKuafuXianfu:OnSyncMoney(player_guid, binindx)
+	local url = string.format("%s%s/sync_money", globalGameConfig:GetExtWebInterface(), InstanceKuafuXianfu.sub)
+	local data = {}
+	data.player_guid = player_guid
+	data.isPk = 1
+	
+	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
+		
+		outFmtDebug(response)
+		local dict = nil
+		security.call(
+			--try block
+			function()
+				dict = json.decode(response)
+			end
+		)
+		
+		if dict then
+			if dict.ret == 0 then
+				local gold = dict.gold
+				local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
+				self:SetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY, gold)
+			end
+		end
+	end)
+end
 
 
 
@@ -400,33 +637,20 @@ function AI_XianfuBoss:JustDied( map_ptr,owner,killer_ptr )
 	local instanceInfo = InstanceKuafuXianfu:new{ptr = map_ptr}
 	
 	-- 提示击杀奖励
-	local indx = instanceInfo:GetUInt32(KUAFU_XIANFU_FIELDS_INT_BOSS_INDX)
+	local entry = bossInfo:GetEntry()
+	local indx = instanceInfo:GetBinlogIndxByEntry (entry)
 	local boxes = tb_kuafu_xianfu_boss[indx].bossDrop[ 1 ]
 	app:CallOptResult(map_ptr, OPRATE_TYPE_XIANFU, XIANFU_TYPE_BOSS_KILL, {bossInfo:GetName(), playerInfo:GetName(), boxes})
 	
 	
-	--[[
-
+	-- 加杀boss数量
+	local binindx = instanceInfo:findIndexByName(playerInfo:GetName())
+	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
+	instanceInfo:AddByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 2, 1)
 	
-	local instanceInfo = InstanceFieldBase:new{ptr = map_ptr}
-	local mapid  = instanceInfo:GetMapId()
-	local lineNo = instanceInfo:GetMapLineNo()
-	local entry = bossInfo:GetEntry()
-	
-	globalValue:FieldBossDamageDeal(mapid, lineNo, 0)
-	-- 获得伤害最高的guid
-	local guid = mapLib.GetMaxinumFieldBossDamage(map_ptr)
-	-- 清空BOSS伤害
-	mapLib.ClearFieldBossDamage(map_ptr)
-	-- BOSS死亡
-	globalValue:FieldBossKilled(mapid, lineNo, guid, playerInfo:GetName())
-	local playerName = ToShowName(playerInfo:GetName())
-	app:CallOptResult(instanceInfo.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_BOSS_KILL, {tb_creature_template[entry].name, playerName, tb_gameobject_template[InstanceFieldBase.Treasure_Entry].name})
-	
-	-- 加宝箱
-	local posx, posy = unitLib.GetPos(owner)
-	instanceInfo:AddTreasure(posx, posy, 500)
-	]]
+	-- 设置boss信息
+	local bossintstart = KUAFU_XIANFU_FIELDS_INT_BOSS_INFO_START + MAX_KUAFU_XIANFU_BOSS_INT_COUNT * (indx - 1)
+	instanceInfo:SetUInt16(bossintstart + KUAFU_XIANFU_BOSS_SHOW_INFO, 1, 2)
 	
 	return 0
 end
@@ -441,17 +665,19 @@ function AI_XianfuBoss:LootAllot(owner, player, killer, drop_rate_multiples, bos
 	local instanceInfo = InstanceKuafuXianfu:new{ptr = map_ptr}
 	
 	-- 生成奖励
-	local indx = instanceInfo:GetUInt32(KUAFU_XIANFU_FIELDS_INT_BOSS_INDX)
+	local bossInfo = UnitInfo:new{ptr = owner}
+	local entry = bossInfo:GetEntry()
+	local indx = instanceInfo:GetBinlogIndxByEntry (entry)
+	
 	local dropConfig = tb_kuafu_xianfu_boss[indx].bossDrop
 	local boxes			= dropConfig[ 1 ]
 	local protectTime	= dropConfig[ 2 ]
-	local loot_entry 	= tb_kuafu_xianfu_base[ 1 ].boxid
+	local loot_entry 	= instanceInfo:GetBoxid()
 	
 	for i = 1, boxes do
 		--模板,数量,绑定与否,存在时间,保护时间,强化等级
-		--local drop_item_config = {entry, 1, 0, config.loot_exist_timer, protectTime, 0}		
-		local count = 1
-		AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 0, fcm, config.loot_exist_timer, protectTime, 0)
+		--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
+		AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 1, fcm, 1800, protectTime, 0)
 	end
 			
 end

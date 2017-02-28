@@ -39,9 +39,10 @@ function PlayerInfo:Handle_Mall_Buy(pkt)
 end
 
 
-
+--[[
 -- Ôª±¦¸´»î
 function PlayerInfo:Handle_Gold_Respawn(pkt)
 	local useGold = pkt.useGold
 	self:goldRespawn(useGold)
 end
+--]]

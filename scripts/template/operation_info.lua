@@ -1118,5 +1118,14 @@ function OperationFailedToString(type, reason, data)
 		end
 		return "未知错误1  OPRATE_TYPE_XIANFU " .. reason .. "    "  .. data
 	end
+	if(type == OPRATE_TYPE_REWARD)then
+		if (reason ==XIANFU_TYPE_BOSS_OCCUR)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - XIANFU_TYPE_BOSS_OCCUR{1}已在{2}点出现, 击杀可掉落{3} - " .. data 
+		end
+		if (reason ==XIANFU_TYPE_BOSS_KILL)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - XIANFU_TYPE_BOSS_KILL{1}被{2}击杀, 掉落{3}个宝箱 - " .. data 
+		end
+		return "未知错误1  OPRATE_TYPE_REWARD " .. reason .. "    "  .. data
+	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

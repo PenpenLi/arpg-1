@@ -180,10 +180,47 @@ end
 
 function PlayerInfo:Handle_Kuafu_Xianfu_Match(pkt)
 	local indx = pkt.indx
+	-- index是否正确
+	if indx < 1 or indx > #tb_kuafu_xianfu_condition then
+		return
+	end
+	
+	-- 等级是否满足
+	local config = tb_kuafu_xianfu_condition[indx]
+	local levelRange = config.levelrange
+	local level = self:GetLevel()
+	if not (levelRange[ 1 ] <= level and level <= levelRange[ 2 ]) then
+		return
+	end
+	
+	-- 判断进入次数
+	local instMgr = self:getInstanceMgr()
+	if not instMgr:CheckXianfuDayTimes() then
+		return
+	end
+	
+	-- 判断仙府进入券是否足够
+	if not self:useMulItem(config.ticket) then
+		outFmtDebug("SDFDSFDSFDSF")
+		return
+	end
 	
 	local rt = self:OnWorldXianfuMatch(indx)
 	if rt then
 		-- 开始匹配
 		self:call_kuafu_match_start(KUAFU_TYPE_XIANFU)
 	end
+end
+
+function PlayerInfo:Handle_Buy_Xianfu_Item(pkt)
+	local type = pkt.type
+	local indx = pkt.indx
+	local count = pkt.count
+	
+	-- type是否正确
+	if type < 1 or type > #tb_kuafu_xianfu_condition then
+		return
+	end
+	
+	self:OnBuyTicket(type, indx, count)
 end

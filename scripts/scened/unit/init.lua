@@ -584,6 +584,11 @@ function UnitInfo:GetGender()
 	return self:GetByte(UNIT_FIELD_BYTE_1, 0)
 end
 
+--设置角色id
+function UnitInfo:SetGender(val)
+	self:SetByte(UNIT_FIELD_BYTE_1, 0, val)
+end
+
 --获取头像
 function UnitInfo:GetHead()
 	return self:GetByte(UNIT_FIELD_BYTE_3, 0)
@@ -1875,6 +1880,22 @@ function UnitInfo:SetUseRespawnMapId(mapid)
 end
 
 
+-- 设置avatar
+function UnitInfo:SetAvatar(avatar)
+	self:SetPlayerUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_COAT, avatar)
+end
+
+-- 设置武器
+function UnitInfo:SetWeapon(weapon)
+	self:SetPlayerUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_MAIN_WEAPON, weapon)
+end
+
+-- 设置神兵
+function UnitInfo:SetDivine(divine)
+	self:SetPlayerUInt32(PLAYER_INT_FIELD_DIVINE_ID, divine)
+end
+
+
 -- 获得最后一次参加世界BOSS的id
 function UnitInfo:GetLastJoinID()
 	return self:GetPlayerUInt32(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_ID)
@@ -1926,6 +1947,66 @@ function UnitInfo:SetLastDeath(count)
 	end
 	self:AddPlayerByte(PLAYER_INT_FIELD_WORLD_BOSS_JOIN_STATE, 2, count)
 end
+
+
+
+--- 设置仙府夺宝宝箱数量
+function UnitInfo:SetXianfuBoxCount(val)
+	self:SetByte(UINT_FIELD_XIANFU_INFO, 0, val)
+end
+
+--- 增加仙府夺宝宝箱数量
+function UnitInfo:AddXianfuBoxCount(val)
+	self:AddByte(UINT_FIELD_XIANFU_INFO, 0, val)
+end
+
+--- 减少仙府夺宝宝箱数量
+function UnitInfo:SubXianfuBoxCount(val)
+	self:SubByte(UINT_FIELD_XIANFU_INFO, 0, val)
+end
+
+--- 增加仙府夺宝死亡次数
+function UnitInfo:AddXianfuDeathCount()
+	self:AddByte(UINT_FIELD_XIANFU_INFO, 1, 1)
+end
+
+--- 获得仙府夺宝死亡次数
+function UnitInfo:GetXianfuDeathCount()
+	return self:GetByte(UINT_FIELD_XIANFU_INFO, 1)
+end
+
+-- /*仙府夺宝小地图信息*/	
+function UnitInfo:call_kuafu_xianfu_minimap_info_in_custom(playerDict, creatureDict, gameobjectDict)
+	local output = Protocols.pack_kuafu_xianfu_minimap_info()
+	
+	-- 玩家
+	output:writeU16(#playerDict)
+	for _, info in pairs(playerDict) do
+		output:writeUTF(info[ 1 ])
+		output:writeU16(info[ 2 ])
+		output:writeU16(info[ 3 ])
+	end
+	
+	-- 生物
+	output:writeU16(#creatureDict)
+	for _, info in pairs(creatureDict) do
+		output:writeU16(info[ 1 ])
+		output:writeU16(info[ 2 ])
+		output:writeU16(info[ 3 ])
+	end
+	
+	-- 采集物
+	output:writeU16(#gameobjectDict)
+	for _, info in pairs(gameobjectDict) do
+		output:writeU16(info[ 1 ])
+		output:writeU16(info[ 2 ])
+		output:writeU16(info[ 3 ])
+	end
+	
+	self:SendPacket(output)
+	output:delete()
+end
+
 
 
 require 'scened.unit.unit_spell'

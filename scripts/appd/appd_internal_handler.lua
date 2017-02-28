@@ -28,8 +28,8 @@ local function on_scened_loot_select( pkt )
 		outFmtDebug("loot_select:player %s not online item_entry %d count %d", player_guid, item_entry, count)
 		return
 	end
-	local bind = tb_item_template[itemId].bind_type
-	player:AddItemByEntry(item_entry, count, nil, LOG_ITEM_OPER_TYPE_LOOT, bind, true, true, 0, failtime)
+	
+	player:AppdAddItems({{item_entry, count}}, nil, LOG_ITEM_OPER_TYPE_LOOT)
 end
 
 --场景服做任务给物品

@@ -69,7 +69,7 @@ function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, rever
 		self:SetTeleportInfo(KUAFU_FENGLIUZHEN_MAPID, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, general_id)
 		return true
 	elseif (kuafu_type == KUAFU_TYPE_XIANFU) then
-		local general_id = string.format("xianfu_%s", reverse_str)		--warid即房间id
+		local general_id = string.format("xianfu_%s|%d", reverse_str, reverse)		--warid即房间id
 		local config = tb_kuafu_xianfu_base[ 1 ]
 		local pos = config.bornPos[1]
 		

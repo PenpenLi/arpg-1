@@ -78,9 +78,9 @@ function PlayerInfo:OnCancelWorld3v3MatchBeforeOffline()
 	local data = {}
 	data.player_guid = self:GetPlayerMatchKey()
 	data.open_time = 1
+	self:OnCancelMatch(KUAFU_TYPE_FENGLIUZHEN)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug("cancel_match response = ", response)
-		self:OnCancelMatch(KUAFU_TYPE_FENGLIUZHEN)
 	end)
 end
 

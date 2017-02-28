@@ -22,11 +22,12 @@ function PlayerInfo:CheckMatchReward()
 	
 	self:CheckWorld3v3Reward()
 	self:CheckWorldXianfuReward()
+	self:OnSyncMoney()
 end
 
 -- ∆•≈‰»°œ˚
 function PlayerInfo:OnCancelMatch(kuafu_type)
-	if app:GetMatchingKuafuType(self:GetGuid()) == kuafu_type then
+	if app:IsKuafuTypeMatching(self:GetGuid(), kuafu_type) then
 		app:SetMatchingKuafuType(self:GetGuid(), nil)
 		self:call_kuafu_3v3_cancel_match(kuafu_type)
 	end

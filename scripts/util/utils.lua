@@ -111,10 +111,12 @@ end
 
 -- 获得资源类型
 function GetMoneyType(itemId)
+	if not tb_item_template[itemId] then
+		print("item = ", itemId)
+		print(debug.traceback())
+		return -1
+	end
 	local money_type = tb_item_template[itemId].money_type - 1
-	local ret = false
-	money_type = money_type or -1
-	ret = ret or money_type ~= -1
 	return money_type
 end
 
