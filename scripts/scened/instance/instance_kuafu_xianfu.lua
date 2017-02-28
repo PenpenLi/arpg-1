@@ -256,7 +256,7 @@ function InstanceKuafuXianfu:OnJoinPlayer(player)
 		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_NAME, playerInfo:GetName())
 		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_GUID, playerInfo:GetPlayerGuid())
 
-		self:SetUInt32(intstart + KUAFU_XIANFU_PLAYER_SETTLEMENT,playerInfo:GetForce())
+		self:SetDouble(intstart + KUAFU_XIANFU_PLAYER_SETTLEMENT,playerInfo:GetForce())
 		
 		-- 同步钱先
 		self:OnSyncMoney(playerInfo:GetPlayerGuid(), emptyIndex)
@@ -345,9 +345,6 @@ function InstanceKuafuXianfu:SyncResultToWeb()
 				outFmtDebug(" player %s has %d", player_guid, count)
 			end
 			local changed = self:GetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED)
-			if changed > 0 then
-				changed = -changed
-			end
 			table.insert(sendInfo, {player_guid, changed, string.join(",", reward)})
 		end
 		
@@ -388,9 +385,15 @@ function InstanceKuafuXianfu:DoAfterRespawn(unit_ptr)
 			-- 随机复活区域
 			local a = GetRandomIndexTable(#tb_kuafu_xianfu_base[ 1 ].respawnPos, 1)
 			local pos = tb_kuafu_xianfu_base[ 1 ].respawnPos[a[ 1 ]]
-			local offsetX = randInt(-3, 3)
-			local offsetY = randInt(-3, 3)
-			unitLib.SetPos(unit_ptr, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, true)
+			local offsetX = randInt(-1, 1)
+			local offsetY = randInt(-1, 1)
+			
+			local toMapId = self:GetMapId()
+			local toX = pos[ 1 ] + offsetX
+			local toY = pos[ 2 ] + offsetY
+			local lineNo = self:GetMapLineNo()
+			local generalId	= self:GetMapGeneralId()
+			playerLib.Teleport(unit_ptr, toMapId, toX, toY, lineNo, generalId)
 		end
 		unitInfo:SetUseRespawnMapId(0)
 	end
@@ -403,7 +406,7 @@ function InstanceKuafuXianfu:OnPlayerKilled(player, killer)
 	-- 击杀者加击杀数
 	local indx1 = self:findIndexByName(killerInfo:GetName())
 	local intStart = KUAFU_XIANFU_FIELDS_INT_INFO_START + indx1 * MAX_KUAFU_XIANFU_INT_COUNT
-	self:AddByte(intStart + KUAFU_XIANFU_PLAYER_SETTLEMENT, 1, 1)
+	self:AddByte(intStart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 1, 1)
 	
 	-- 被杀者下标
 	local indx2 = self:findIndexByName(playerInfo:GetName())
@@ -425,14 +428,36 @@ function InstanceKuafuXianfu:OnPlayerKilled(player, killer)
 	playerInfo:AddXianfuDeathCount()
 	
 	-- 掉落箱子 如果身上有的话
-	self:OnDropTreasure(playerInfo, killerInfo:GetPlayerGuid())
+	self:OnDropTreasure(playerInfo, killerInfo)
 	
 	return 0
 end
 
+-- 当玩家被怪物杀死
+function InstanceKuafuXianfu:OnPlayerKilledByMonster(player, killer)
+	local killerInfo = UnitInfo:new{ptr = killer}
+	local playerInfo = UnitInfo:new{ptr = player}
+	
+	-- 增加死亡次数
+	playerInfo:AddXianfuDeathCount()
+	
+	-- 掉落箱子 如果身上有的话
+	self:OnDropTreasure(playerInfo, killerInfo)
+	
+	return 0
+end
 
-function InstanceKuafuXianfu:OnDropTreasure(playerInfo, belongGuid, is_offline)
-	belongGuid = belongGuid or ''
+function InstanceKuafuXianfu:OnSendDeathInfo(playerInfo, deathname ,killername ,params)
+	-- 发送野外死亡回城倒计时
+	playerInfo:call_field_death_cooldown(DEAD_PLACE_TYPE_XIANFU, deathname, killername, params, tb_kuafu_xianfu_base[ 1 ].seconds[ 1 ])
+end
+
+
+function InstanceKuafuXianfu:OnDropTreasure(playerInfo, killerInfo, is_offline)
+	local belongGuid = ''
+	if killerInfo and killerInfo:GetTypeID() == TYPEID_PLAYER then
+		belongGuid = killerInfo:GetPlayerGuid()
+	end
 	is_offline = is_offline or false
 	local indx = self:findIndexByName(playerInfo:GetName())
 	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + indx * MAX_KUAFU_XIANFU_INT_COUNT
@@ -451,6 +476,11 @@ function InstanceKuafuXianfu:OnDropTreasure(playerInfo, belongGuid, is_offline)
 				end
 				break
 			end
+		end
+		
+		self:OnSendDeathInfo(playerInfo, playerInfo:GetName() ,killerInfo:GetName(), string.format("%d", count))			
+		if count > 0 then				
+			app:CallOptResult(self.ptr, OPRATE_TYPE_XIANFU, XIANFU_TYPE_BOSS_KILL, {playerInfo:GetName(), killerInfo:GetName(), count})
 		end
 	end
 	
@@ -475,7 +505,7 @@ function InstanceKuafuXianfu:OnLeavePlayer( player, is_offline)
 		return
 	end
 	
-	self:OnDropTreasure(UnitInfo:new{ptr = player}, '', true)
+	self:OnDropTreasure(UnitInfo:new{ptr = player}, nil, true)
 	
 	-- 如果没人了 那就结束
 	local persons = mapLib.GetPlayersCounts(self.ptr)
@@ -573,7 +603,7 @@ function InstanceKuafuXianfu:OnCheckIfCanCostRespawn(player)
 	if used + cost > total then
 		return
 	end
-	self:AddDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED, cost)
+	self:SubDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED, cost)
 	
 	-- 如果钱够了 就去
 	self:OnCostRespawn(unitInfo)
@@ -582,14 +612,16 @@ end
 -- 花元宝复活
 function InstanceKuafuXianfu:OnCostRespawn(unitInfo)
 	if not unitInfo:IsAlive() then
+		local mapid = self:GetMapId()
 		unitInfo:SetUseRespawnMapId(mapid)
-		unitLib.Respawn(player, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+		unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
 	end
 end
 
 function InstanceKuafuXianfu:OnRandomRespawn(unitInfo)
 	if not unitInfo:IsAlive() then
-		unitLib.Respawn(player, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+		unitInfo:SetUseRespawnMapId(0)
+		unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
 	end
 end
 

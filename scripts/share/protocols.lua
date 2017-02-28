@@ -5662,15 +5662,19 @@ end
 
 
 -- /*野外死亡倒计时*/	
-function Protocols.pack_field_death_cooldown ( cooldown)
+function Protocols.pack_field_death_cooldown ( type ,deathname ,killername ,params ,cooldown)
 	local output = Packet.new(SMSG_FIELD_DEATH_COOLDOWN)
+	output:writeI16(type)
+	output:writeUTF(deathname)
+	output:writeUTF(killername)
+	output:writeUTF(params)
 	output:writeI16(cooldown)
 	return output
 end
 
 -- /*野外死亡倒计时*/	
-function Protocols.call_field_death_cooldown ( playerInfo, cooldown)
-	local output = Protocols.	pack_field_death_cooldown ( cooldown)
+function Protocols.call_field_death_cooldown ( playerInfo, type ,deathname ,killername ,params ,cooldown)
+	local output = Protocols.	pack_field_death_cooldown ( type ,deathname ,killername ,params ,cooldown)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -5680,6 +5684,22 @@ function Protocols.unpack_field_death_cooldown (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.type = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.deathname = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.killername = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.params = input:readUTF()
+	if not ret then
+		return false
+	end	
 	ret,param_table.cooldown = input:readU16()
 	if not ret then
 		return false

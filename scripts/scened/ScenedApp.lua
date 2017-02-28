@@ -39,7 +39,7 @@ function ScenedApp:CallOptResult(map_ptr, typ, reason, data)
 	else
 		data = tostring(data) or ''
 	end
-	print("data = ", data)
+	--print("data = ", data)
 	local pkt = protocols.pack_operation_failed(typ, reason, data)
 	self:BroadcastMap(map_ptr, pkt)
 	pkt:delete()

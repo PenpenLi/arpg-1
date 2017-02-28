@@ -30,6 +30,8 @@ OpcodeHandlerFuncTable[CMSG_TALK_WITH_NPC]	= ScenedContext.Handle_Talk_With_Npc
 
 OpcodeHandlerFuncTable[CMSG_GOLD_RESPAWN]	= ScenedContext.Handle_Gold_Respawn
 
+OpcodeHandlerFuncTable[CMSG_XIANFU_RANDOM_RESPAWN] = ScenedContext.Handle_random_Respawn
+
 
 --OpcodeHandlerFuncTable[CMSG_CHANGE_LINE] = ScenedContext.Hanlde_Change_Line
 

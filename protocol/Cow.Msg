@@ -645,6 +645,10 @@ gold_respawn,c2s,135,/*元宝复活*/,STATUS_NEVER,False
 
 #
 field_death_cooldown,s2c,136,/*野外死亡倒计时*/,STATUS_NEVER,False
+	type,uint16,False,/*死亡地类型*/
+	deathname,String,False,/*死亡者名字*/
+	killername,String,False,/*杀人者名字*/
+	params,String,False,/*参数*/
 	cooldown,uint16,False,/*倒计时*/
 
 #

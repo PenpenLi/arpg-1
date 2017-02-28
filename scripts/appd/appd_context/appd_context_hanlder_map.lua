@@ -24,8 +24,7 @@ hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
 
 hanlders[CMSG_MALL_BUY] = PlayerInfo.Handle_Mall_Buy
 
-hanlders[CMSG_GOLD_RESPAWN] = PlayerInfo.Handle_Gold_Respawn
-hanlders[CMSG_XIANFU_RANDOM_RESPAWN] = PlayerInfo.Handle_random_Respawn
+-- hanlders[CMSG_GOLD_RESPAWN] = PlayerInfo.Handle_Gold_Respawn
 
 
 hanlders[CMSG_STRENGTH] = PlayerInfo.Handle_Strength

@@ -710,6 +710,11 @@ Instance_base = {
 		return 0
 	end,
 	
+	-- 当玩家被怪物杀死
+	OnPlayerKilledByMonster = function(self, player, killer)
+		return 0
+	end,
+	
 	-- 玩家受到实际伤害(负数表示加血)
 	OnPlayerHurt = function(self, killer, player, damage)
 		return 0
