@@ -56,5 +56,8 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 			-- 通知场景服复活
 			self:CallScenedDoSomething(APPD_SCENED_RESPAWN)
 		end
+	elseif SCENED_APPD_DOUJIANTAI == ntype then
+		-- 斗剑台结果
+		globalCounter:BattleFinish(self, data, tonumber(str))
 	end
 end

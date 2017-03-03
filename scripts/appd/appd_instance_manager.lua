@@ -419,6 +419,116 @@ end
 -------------------------------竞技end------------------------------
 
 
+-------------------------------斗剑台------------------------------
+--斗剑台已参加次数
+function AppInstanceMgr:getDoujianEnterTimes()
+	return self:GetUInt16(INSTANCE_INT_FIELD_DOUJIAN_TIMES,0)
+end
+
+--增加斗剑台参加次数
+function AppInstanceMgr:addDoujianEnterTimes()
+	self:AddUInt16(INSTANCE_INT_FIELD_DOUJIAN_TIMES,0,1)
+end
+--设置斗剑台参加次数
+function AppInstanceMgr:setDoujianEnterTimes(num)
+	self:SetUInt16(INSTANCE_INT_FIELD_DOUJIAN_TIMES,0,num)
+end
+
+--斗剑台已购买次数
+function AppInstanceMgr:getDoujianBuyTimes()
+	return self:GetUInt16(INSTANCE_INT_FIELD_DOUJIAN_TIMES,1)
+end
+--增加斗剑台已购买次数
+function AppInstanceMgr:addDoujianBuyTimes(num)
+	self:AddUInt16(INSTANCE_INT_FIELD_DOUJIAN_TIMES,1,num)
+end
+
+--斗剑台CD时间戳
+function AppInstanceMgr:getDoujianCD()
+	return self:GetUInt32(INSTANCE_INT_FIELD_DOUJIAN_FIGHT_CD)
+end
+
+--设置斗剑台CD时间戳
+function AppInstanceMgr:setDoujianCD(time)
+	self:SetUInt32(INSTANCE_INT_FIELD_DOUJIAN_FIGHT_CD,time)
+end
+
+
+--设置斗剑台首胜状态
+function AppInstanceMgr:setDoujianFirstRank(rank)
+	
+	for i,v in ipairs(tb_doujiantai_first) do
+		if rank <= v.rank then
+			if not self:GetBit(INSTANCE_INT_FIELD_DOUJIAN_FIRST_GET,i) then
+				self:SetBit(INSTANCE_INT_FIELD_DOUJIAN_FIRST_GET,i)
+			end
+			
+		end
+	end
+	
+end
+
+function AppInstanceMgr:getDoujianFirstRank(id)
+	return self:GetBit(INSTANCE_INT_FIELD_DOUJIAN_FIRST_GET,id)
+end
+
+--斗剑台历史最高名次
+function AppInstanceMgr:setDoujianMaxRank(rank)
+	local cur = self:GetUInt32(INSTANCE_INT_FIELD_DOUJIAN_MAX_RANK)
+	if cur ~= 0 and cur > rank then
+		self:SetUInt32(INSTANCE_INT_FIELD_DOUJIAN_MAX_RANK,rank)
+	end
+	
+end
+--斗剑台首胜奖励领取状态
+function AppInstanceMgr:getDoujianFirstReward(id)
+	return self:GetBit(INSTANCE_INT_FIELD_DOUJIAN_FIRST_REWARD,id)
+end
+--获取斗剑台首胜奖励领取状态
+function AppInstanceMgr:setDoujianFirstReward(id)
+	self:SetBit(INSTANCE_INT_FIELD_DOUJIAN_FIRST_REWARD,id)
+end
+
+--设置斗剑台连胜
+function AppInstanceMgr:setDoujianCombatWin(tf)
+	if tf then
+		self:AddUInt16(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,1,1)
+		local cur = self:GetUInt16(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,1)
+		if self:GetUInt16(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,0) < cur then
+			self:SetUInt16(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,0,cur)
+		end
+	else
+		self:SetUInt16(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,1,0)
+	end
+end
+--获取斗剑台连胜
+function AppInstanceMgr:getDoujianCombatWin()
+	return self:GetUInt16(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,0)
+end
+
+-- 获取当前连胜
+function AppInstanceMgr:getDoujianCurrCombatWin()
+	return self:GetUInt16(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,1)
+end
+
+--斗剑台首胜奖励领取状态
+function AppInstanceMgr:getDoujianCombatWinReward(id)
+	return self:GetBit(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN_REWARD,id)
+end
+--获取斗剑台首胜奖励领取状态
+function AppInstanceMgr:setDoujianCombatWinReward(id)
+	self:SetBit(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN_REWARD,id)
+end
+--斗剑台每日重置
+function AppInstanceMgr:dayDoujianReset()
+	self:SetUInt32(INSTANCE_INT_FIELD_DOUJIAN_TIMES,0)
+	self:SetUInt32(INSTANCE_INT_FIELD_DOUJIAN_FIGHT_CD,0)
+	self:SetUInt32(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN,0)
+	self:SetUInt32(INSTANCE_INT_FIELD_DOUJIAN_COMBATWIN_REWARD,0)
+end
+-------------------------------斗剑台end------------------------------
+
+
 -----------------------------------仙府夺宝----------------------------
 --重置每天的挑战次数
 function AppInstanceMgr:ResetXianfuDayTimes()
@@ -443,6 +553,164 @@ function AppInstanceMgr:AddXianfuDayTimes()
 end
 
 -----------------------------------------------------------------------
+
+
+---------------------------------斗剑台--------------------------------
+
+--- 斗剑台挑战记录
+function AppInstanceMgr:AddDoujiantaiRecord(record)
+	local cursor = self:GetUInt32(INSTANCE_INT_FIELD_DOUJIANTAI_CURSOR)
+	self:SetStr(cursor + INSTANCE_STR_FIELD_DOUJIANTAI_RECORD_START, record)
+	cursor = cursor + 1
+	if cursor >= MAX_DOUJIANTAI_RECORD_COUNT then
+		cursor = 0
+	end
+	self:SetUInt32(INSTANCE_INT_FIELD_DOUJIANTAI_CURSOR, cursor)
+end
+
+-- 名次掉了以后重新随机对手
+function AppInstanceMgr:RefreshEnemysAfterRankChanged()
+	local playerInfo = self:getOwner()
+	local ranges = self:GetCurrRanges()
+	local myrank = playerInfo:GetDoujiantaiRank()
+	
+	if myrank == 0 then
+		myrank = MAX_DOUJIANTAI_RANK_COUNT + 1
+	end
+	
+	local exists = {}
+	for i = INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_S, INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_E-1 do
+		local rank = self:GetUInt32(i)
+		--print("RefreshEnemysAfterRankChanged", i, rank)
+		if rank > 0 then
+			local vist = false
+			-- 判断是否在随机区间内
+			for j = 1, #ranges do
+				local range = ranges[ j ]
+				local l = myrank - range[ 2 ]
+				local r = myrank - range[ 1 ]
+				if l <= rank and rank <= r then
+					exists[ j ] = 1
+					vist = true
+					break
+				end
+			end
+			
+			if not vist then
+				self:SetUInt32(i, 0)
+			end
+		end
+	end
+
+	--print("RefreshEnemysAfterRankChanged*************************")
+	-- 给空的随机
+	for j = 1, #ranges do
+		if not exists[ j ] then
+			local range = ranges[ j ]
+			local l = myrank - range[ 2 ]
+			local r = myrank - range[ 1 ]
+			local rank = randInt(l, r)
+			
+			local emptyIndx = self:GetEmptyIndx()
+			if rank > 0 and emptyIndx >= 0 then
+				self:SetUInt32(emptyIndx, rank)
+			end
+		end
+	end
+end
+
+function AppInstanceMgr:GetEmptyIndx()
+	for i = INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_S, INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_E-1 do
+		local rank = self:GetUInt32(i)
+		if rank == 0 then
+			return i
+		end
+	end
+	
+	return -1
+end
+
+function AppInstanceMgr:GetEnemyRank(indx)
+	return self:GetUInt32(INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_S + indx)
+end
+
+function AppInstanceMgr:GetEnemyRankList()
+	local dict = {}
+	for i = INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_S, INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_E-1 do
+		local rank = self:GetUInt32(i)
+		if rank > 0 then
+			table.insert(dict, rank)
+		end
+	end
+	
+	return dict
+end
+
+function AppInstanceMgr:GetCurrRanges()
+	local playerInfo = self:getOwner()
+	local rank = playerInfo:GetDoujiantaiRank()
+	local indx = #tb_doujiantai_fight_range
+	
+	for i = 1, #tb_doujiantai_fight_range do
+		local config = tb_doujiantai_fight_range[i]
+		if config.ra <= rank and rank <= config.rb then
+			indx = i
+			break
+		end
+	end
+	
+	return tb_doujiantai_fight_range[indx].chooseRange
+end
+
+
+-- 击败了排名rank的, 以后在需要随机
+function AppInstanceMgr:OnbeatRank(rank)
+	for i = INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_S, INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_E-1 do
+		--print("OnbeatRank ", i, self:GetUInt32(i), rank)
+		if self:GetUInt32(i) == rank then
+			self:SetUInt32(i, 0)
+		end
+	end
+	--print("RefreshEnemysAfterRankChanged")
+	self:RefreshEnemysAfterRankChanged()
+end
+
+-- 每天选择对手
+function AppInstanceMgr:RefreshEnemy()
+	local ranges = self:GetCurrRanges()
+	local dict = {}
+	-- INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY1
+	for _, range in pairs(ranges) do
+		local rank = self:RandomEnemy(range)
+		if rank > 0 then
+			table.insert(dict, rank)
+		end
+	end
+	
+	
+	for i = INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_S, INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_E-1 do
+		self:SetUInt32(i, 0)
+	end
+	
+	for i = 1, #dict do
+		self:SetUInt32(INSTANCE_INT_FIELD_DOUJIANTAI_ENEMY_S+i-1, dict[ i ])
+	end
+end
+
+-- 区间内选择对手
+-- 0: 表示找不到人
+function AppInstanceMgr:RandomEnemy(range)
+	local playerInfo = self:getOwner()
+	local rank = playerInfo:GetDoujiantaiRank()
+	if rank == 0 then
+		rank = MAX_DOUJIANTAI_RANK_COUNT + 1
+	end
+	
+	local l = rank - range[ 2 ]
+	local r = rank - range[ 1 ]
+		
+	return randInt(l, r)
+end
 
 
 -- 获得玩家guid

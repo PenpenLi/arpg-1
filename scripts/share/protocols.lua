@@ -262,6 +262,14 @@ SMSG_KUAFU_XIANFU_MATCH_WAIT		= 256	-- /*仙府夺宝跨服匹配等待*/
 SMSG_KUAFU_XIANFU_MINIMAP_INFO		= 257	-- /*仙府夺宝小地图信息*/	
 CMSG_BUY_XIANFU_ITEM		= 258	-- /*购买仙府进入券*/	
 CMSG_XIANFU_RANDOM_RESPAWN		= 259	-- /*随机复活*/	
+CMSG_DOUJIANTAI_FIGHT		= 260	-- /*斗剑台挑战*/	
+CMSG_DOUJIANTAI_BUYTIME		= 261	-- /*斗剑台购买次数*/	
+CMSG_DOUJIANTAI_CLEARCD		= 262	-- /*斗剑台清理CD*/	
+CMSG_DOUJIANTAI_FIRST_REWARD		= 263	-- /*斗剑台首胜奖励*/	
+MSG_DOUJIANTAI_GET_ENEMYS_INFO		= 265	-- /*斗剑台挑战对手信息*/	
+CMSG_DOUJIANTAI_GET_RANK		= 266	-- /*斗剑台排行榜*/	
+CMSG_DOUJIANTAI_REFRESH_ENEMYS		= 270	-- /*斗剑台刷新对手*/	
+MSG_DOUJIANTAI_TOP3		= 271	-- /*斗剑台三甲*/	
 
 
 ---------------------------------------------------------------------
@@ -9173,6 +9181,227 @@ function Protocols.unpack_xianfu_random_respawn (pkt)
 end
 
 
+-- /*斗剑台挑战*/	
+function Protocols.pack_doujiantai_fight ( rank)
+	local output = Packet.new(CMSG_DOUJIANTAI_FIGHT)
+	output:writeI16(rank)
+	return output
+end
+
+-- /*斗剑台挑战*/	
+function Protocols.call_doujiantai_fight ( playerInfo, rank)
+	local output = Protocols.	pack_doujiantai_fight ( rank)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台挑战*/	
+function Protocols.unpack_doujiantai_fight (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.rank = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*斗剑台购买次数*/	
+function Protocols.pack_doujiantai_buytime ( num)
+	local output = Packet.new(CMSG_DOUJIANTAI_BUYTIME)
+	output:writeByte(num)
+	return output
+end
+
+-- /*斗剑台购买次数*/	
+function Protocols.call_doujiantai_buytime ( playerInfo, num)
+	local output = Protocols.	pack_doujiantai_buytime ( num)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台购买次数*/	
+function Protocols.unpack_doujiantai_buytime (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.num = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*斗剑台清理CD*/	
+function Protocols.pack_doujiantai_clearcd (  )
+	local output = Packet.new(CMSG_DOUJIANTAI_CLEARCD)
+	return output
+end
+
+-- /*斗剑台清理CD*/	
+function Protocols.call_doujiantai_clearcd ( playerInfo )
+	local output = Protocols.	pack_doujiantai_clearcd (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台清理CD*/	
+function Protocols.unpack_doujiantai_clearcd (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*斗剑台首胜奖励*/	
+function Protocols.pack_doujiantai_first_reward ( id)
+	local output = Packet.new(CMSG_DOUJIANTAI_FIRST_REWARD)
+	output:writeByte(id)
+	return output
+end
+
+-- /*斗剑台首胜奖励*/	
+function Protocols.call_doujiantai_first_reward ( playerInfo, id)
+	local output = Protocols.	pack_doujiantai_first_reward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台首胜奖励*/	
+function Protocols.unpack_doujiantai_first_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*斗剑台挑战对手信息*/	
+function Protocols.pack_doujiantai_get_enemys_info (  )
+	local output = Packet.new(MSG_DOUJIANTAI_GET_ENEMYS_INFO)
+	return output
+end
+
+-- /*斗剑台挑战对手信息*/	
+function Protocols.call_doujiantai_get_enemys_info ( playerInfo )
+	local output = Protocols.	pack_doujiantai_get_enemys_info (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台挑战对手信息*/	
+function Protocols.unpack_doujiantai_get_enemys_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*斗剑台排行榜*/	
+function Protocols.pack_doujiantai_get_rank ( startIdx ,endIdx)
+	local output = Packet.new(CMSG_DOUJIANTAI_GET_RANK)
+	output:writeI16(startIdx)
+	output:writeI16(endIdx)
+	return output
+end
+
+-- /*斗剑台排行榜*/	
+function Protocols.call_doujiantai_get_rank ( playerInfo, startIdx ,endIdx)
+	local output = Protocols.	pack_doujiantai_get_rank ( startIdx ,endIdx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台排行榜*/	
+function Protocols.unpack_doujiantai_get_rank (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.startIdx = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.endIdx = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*斗剑台刷新对手*/	
+function Protocols.pack_doujiantai_refresh_enemys (  )
+	local output = Packet.new(CMSG_DOUJIANTAI_REFRESH_ENEMYS)
+	return output
+end
+
+-- /*斗剑台刷新对手*/	
+function Protocols.call_doujiantai_refresh_enemys ( playerInfo )
+	local output = Protocols.	pack_doujiantai_refresh_enemys (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台刷新对手*/	
+function Protocols.unpack_doujiantai_refresh_enemys (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*斗剑台三甲*/	
+function Protocols.pack_doujiantai_top3 (  )
+	local output = Packet.new(MSG_DOUJIANTAI_TOP3)
+	return output
+end
+
+-- /*斗剑台三甲*/	
+function Protocols.call_doujiantai_top3 ( playerInfo )
+	local output = Protocols.	pack_doujiantai_top3 (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*斗剑台三甲*/	
+function Protocols.unpack_doujiantai_top3 (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9427,6 +9656,14 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_kuafu_xianfu_minimap_info = self.call_kuafu_xianfu_minimap_info
 	playerInfo.call_buy_xianfu_item = self.call_buy_xianfu_item
 	playerInfo.call_xianfu_random_respawn = self.call_xianfu_random_respawn
+	playerInfo.call_doujiantai_fight = self.call_doujiantai_fight
+	playerInfo.call_doujiantai_buytime = self.call_doujiantai_buytime
+	playerInfo.call_doujiantai_clearcd = self.call_doujiantai_clearcd
+	playerInfo.call_doujiantai_first_reward = self.call_doujiantai_first_reward
+	playerInfo.call_doujiantai_get_enemys_info = self.call_doujiantai_get_enemys_info
+	playerInfo.call_doujiantai_get_rank = self.call_doujiantai_get_rank
+	playerInfo.call_doujiantai_refresh_enemys = self.call_doujiantai_refresh_enemys
+	playerInfo.call_doujiantai_top3 = self.call_doujiantai_top3
 end
 
 local unpack_handler = {
@@ -9678,6 +9915,14 @@ local unpack_handler = {
 [SMSG_KUAFU_XIANFU_MINIMAP_INFO] =  Protocols.unpack_kuafu_xianfu_minimap_info,
 [CMSG_BUY_XIANFU_ITEM] =  Protocols.unpack_buy_xianfu_item,
 [CMSG_XIANFU_RANDOM_RESPAWN] =  Protocols.unpack_xianfu_random_respawn,
+[CMSG_DOUJIANTAI_FIGHT] =  Protocols.unpack_doujiantai_fight,
+[CMSG_DOUJIANTAI_BUYTIME] =  Protocols.unpack_doujiantai_buytime,
+[CMSG_DOUJIANTAI_CLEARCD] =  Protocols.unpack_doujiantai_clearcd,
+[CMSG_DOUJIANTAI_FIRST_REWARD] =  Protocols.unpack_doujiantai_first_reward,
+[MSG_DOUJIANTAI_GET_ENEMYS_INFO] =  Protocols.unpack_doujiantai_get_enemys_info,
+[CMSG_DOUJIANTAI_GET_RANK] =  Protocols.unpack_doujiantai_get_rank,
+[CMSG_DOUJIANTAI_REFRESH_ENEMYS] =  Protocols.unpack_doujiantai_refresh_enemys,
+[MSG_DOUJIANTAI_TOP3] =  Protocols.unpack_doujiantai_top3,
 
 }
 

@@ -649,6 +649,9 @@ function PlayerInfo:Login()
 	
 	-- 检查奖励
 	self:CheckMatchReward()	
+	
+	-- 同步斗剑台信息
+	globalCounter:Login(self)
 end
 
 --pk服玩家登陆做点啥
@@ -667,6 +670,8 @@ function PlayerInfo:Logout ()
 	self:factionLogOut()
 	-- 取消跨服匹配
 	self:OnCancelKuafuMatch()
+	-- 同步斗剑台最新玩家数据
+	globalCounter:SyncPlayerInfo(self)
 end
 
 --有多少个物品
@@ -1244,6 +1249,122 @@ function PlayerInfo:Kuafu3v3Lose()
 	self:SetKuafu3v3TrendInfo(value)
 end
 
+-- 获得斗剑台排名
+function PlayerInfo:GetDoujiantaiRank()
+	return self:GetUInt32(PLAYER_INT_FIELD_DOUJIANTAI_RANK)
+end
+
+-- 设置斗剑台排名
+function PlayerInfo:SetDoujiantaiRank(rank)
+	self:SetUInt32(PLAYER_INT_FIELD_DOUJIANTAI_RANK, rank)
+end
+
+-- 获得斗剑台最新一次刷新时间戳
+function PlayerInfo:GetDoujiantaiLastRefreshTime()
+	return self:GetUInt32(PLAYER_INT_FIELD_DOUJIANTAI_REFRESH_TIME)
+end
+
+-- 设置斗剑台最新一次刷新时间戳
+function PlayerInfo:SetDoujiantaiLastRefreshTime(val)
+	self:SetUInt32(PLAYER_INT_FIELD_DOUJIANTAI_REFRESH_TIME, val)
+end
+
+local attrKeys = {
+	[EQUIP_ATTR_MAXHEALTH] = PLAYER_FIELD_MAXHEALTH,
+	[EQUIP_ATTR_DAMAGE] = PLAYER_FIELD_DAMAGE,
+	[EQUIP_ATTR_ARMOR] = PLAYER_FIELD_ARMOR,
+	[EQUIP_ATTR_HIT] = PLAYER_FIELD_HIT,
+	[EQUIP_ATTR_DODGE] = PLAYER_FIELD_DODGE,
+	[EQUIP_ATTR_CRIT] = PLAYER_FIELD_CRIT,
+	[EQUIP_ATTR_TOUGH] = PLAYER_FIELD_TOUGH,
+	[EQUIP_ATTR_ATTACK_SPEED] = PLAYER_FIELD_ATTACK_SPEED,
+	[EQUIP_ATTR_MOVE_SPEED] = PLAYER_FIELD_MOVE_SPEED,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = PLAYER_FIELD_AMPLIFY_DAMAGE,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = PLAYER_FIELD_IGNORE_DEFENSE,
+	[EQUIP_ATTR_DAMAGE_RESIST] = PLAYER_FIELD_DAMAGE_RESIST,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = PLAYER_FIELD_DAMAGE_RETURNED,
+	[EQUIP_ATTR_HIT_RATE] = PLAYER_FIELD_HIT_RATE,
+	[EQUIP_ATTR_DODGE_RATE] = PLAYER_FIELD_DODGE_RATE,
+	[EQUIP_ATTR_CRIT_RATE] = PLAYER_FIELD_CRIT_RATE,
+	
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = PLAYER_FIELD_CRITICAL_RESIST_RATE,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = PLAYER_FIELD_DAMAGE_CRIT_MULTIPLE,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PLAYER_FIELD_RESIST_CRIT_MULTIPLE,
+}
+
+-- 获得玩家属性列表
+function PlayerInfo:GetAttrs()
+	local attrs = {}
+	
+	for attr_id, playerField in pairs(attrKeys) do
+		local value = self:GetDouble(playerField)
+		table.insert(attrs, {attr_id, value})
+	end
+	
+	return attrs
+end
+
+function PlayerInfo:GetSpells()
+	local spells = {}
+	
+	--local total_slot_1_cd = 0
+	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
+		local id = self:GetUInt16(i, 0)
+		if id > 0 then
+			local config = tb_skill_base[id]
+			if 1 <= config.skill_slot and config.skill_slot <= 5 then
+				local level = self:GetByte(i, 2)
+				local slot  = self:GetByte(i, 3)
+				local self_cd = config.self_cd
+				local rate = 0
+				table.insert(spells, {id, rate, self_cd, level, slot})
+			end
+			--if slot == 1 then
+			--	total_slot_1_cd = total_slot_1_cd + self_cd
+			--end
+		end
+	end
+	
+	rates = {4000, 3000, 3000}
+	local rlen = #spells - 3	
+
+	for i = 1, rlen do
+		table.insert(rates, 10000)
+	end
+	
+	for i = 1, #spells do
+		spells[ i ][ 2 ] = rates[ i ]
+	end
+	
+	return spells
+end
+
+function PlayerInfo:GetPassivespells()
+	return {}
+end
+
+function PlayerInfo:GetDummyInfo()
+	local config = {}
+	config.name   = self:GetName()
+	config.gender = self:GetGender()
+	config.level  = self:GetLevel()
+	config.attrs  = self:GetAttrs()
+	config.weapon = self:GetWeapon()
+	config.avatar = self:GetAvatar()
+	config.divine = self:GetDivine()
+	config.spells = self:GetSpells()
+	config.passivespells = self:GetPassivespells()
+	config.force  = self:GetForce()
+	config.vip    = self:GetVIP()
+	config.reverse1 = 0
+	config.reverse2 = 0
+	config.reverse3 = 0
+	config.reverse4 = 0
+	config.reverse5 = 0
+	
+	return config
+end
+
 -- 获得avatar
 function PlayerInfo:GetAvatar()
 	return self:GetUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_COAT)
@@ -1257,6 +1378,21 @@ end
 -- 获得神兵
 function PlayerInfo:GetDivine()
 	return self:GetUInt32(PLAYER_INT_FIELD_DIVINE_ID)
+end
+
+-- 获得欠款
+function PlayerInfo:GetArrears()
+	return self:GetDouble(PLAYER_INT_FIELD_ARREARS)
+end
+
+-- 增加欠款
+function PlayerInfo:AddArrears(val)
+	self:AddDouble(PLAYER_INT_FIELD_ARREARS, val)
+end
+
+-- 清空欠款
+function PlayerInfo:ClearArrears()
+	self:SetDouble(PLAYER_INT_FIELD_ARREARS, 0)
 end
 
 -- 关闭连接
@@ -1294,6 +1430,7 @@ require("appd/appd_context/appd_context_rank_gift")
 require("appd/appd_context/appd_context_kuafu")
 require("appd/appd_context/appd_context_world3v3")
 require("appd/appd_context/appd_context_xianfu")
+require("appd/appd_context/appd_context_doujiantai")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")

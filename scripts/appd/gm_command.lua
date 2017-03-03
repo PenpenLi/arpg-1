@@ -1243,6 +1243,20 @@ function  DoGMScripts(player_ptr, gm_commands)
 		player:SetKuafu3v3TotalScore(paras[2])
 	elseif tokens[1] == "@段位奖励" then
 		player:Rank3v3SegmentReward()
+	elseif tokens[1] == "@斗剑台" then
+		player:OnDoujiantaiFight(1)
+	elseif tokens[1] == "@斗剑台连胜" then
+		if(#tokens < 2)then
+			return result
+		end
+		player:DoujianCombatWin(paras[2]==1)
+	elseif tokens[1] == "@斗剑台首胜" then
+		if(#tokens < 2)then
+			return result
+		end
+		player:DoujianFirstReward(paras[2])
+	elseif tokens[1] == "@斗剑台每日" then
+		player:DoDoujiantaiDayReward()
 	elseif tokens[1] == "@成就" then
 		if(#tokens < 3)then
 			return result

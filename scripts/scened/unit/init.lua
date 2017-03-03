@@ -384,31 +384,130 @@ function UnitInfo:SetPickedName(name)
 	self:SetStr(UNIT_STRING_FIELD_PICK_NAME, name)
 end	
 
+function UnitInfo:GetPassivespells()
+	return {}
+end
+
+function UnitInfo:GetSpells()
+	local spells = {}
+	
+	--local total_slot_1_cd = 0
+	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
+		local id = self:GetPlayerUInt16(i, 0)
+		if id > 0 then
+			local config = tb_skill_base[id]
+			if 1 <= config.skill_slot and config.skill_slot <= 5 then
+				local level = self:GetPlayerByte(i, 2)
+				local slot  = self:GetPlayerByte(i, 3)
+				local self_cd = config.self_cd
+				local rate = 0
+				table.insert(spells, {id, rate, self_cd, level, slot})
+			end
+			--if slot == 1 then
+			--	total_slot_1_cd = total_slot_1_cd + self_cd
+			--end
+		end
+	end
+	
+	rates = {4000, 3000, 3000}
+	local rlen = #spells - 3	
+
+	for i = 1, rlen do
+		table.insert(rates, 10000)
+	end
+	
+	for i = 1, #spells do
+		spells[ i ][ 2 ] = rates[ i ]
+	end
+	
+	return spells
+end
+
+local tBaseKey = {
+	[EQUIP_ATTR_MAXHEALTH] = {UNIT_FIELD_MAXHEALTH},
+	[EQUIP_ATTR_DAMAGE] = {UNIT_FIELD_DAMAGE},
+	[EQUIP_ATTR_ARMOR] = {UNIT_FIELD_ARMOR},
+	[EQUIP_ATTR_HIT] = {UNIT_FIELD_HIT},
+	[EQUIP_ATTR_DODGE] = {UNIT_FIELD_DODGE},
+	[EQUIP_ATTR_CRIT] = {UNIT_FIELD_CRIT},
+	[EQUIP_ATTR_TOUGH] = {UNIT_FIELD_TOUGH},
+	[EQUIP_ATTR_ATTACK_SPEED] = {UNIT_FIELD_ATTACK_SPEED},
+	[EQUIP_ATTR_MOVE_SPEED] = {UNIT_FIELD_MOVE_SPEED},
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = {UNIT_FIELD_AMPLIFY_DAMAGE},
+	[EQUIP_ATTR_IGNORE_DEFENSE] = {UNIT_FIELD_IGNORE_DEFENSE},
+	[EQUIP_ATTR_DAMAGE_RESIST] = {UNIT_FIELD_DAMAGE_RESIST},
+	[EQUIP_ATTR_DAMAGE_RETURNED] = {UNIT_FIELD_DAMAGE_RETURNED},
+	[EQUIP_ATTR_HIT_RATE] = {UNIT_FIELD_HIT_RATE},
+	[EQUIP_ATTR_DODGE_RATE] = {UNIT_FIELD_DODGE_RATE},
+	[EQUIP_ATTR_CRIT_RATE] = {UNIT_FIELD_CRIT_RATE},
+	
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = {UNIT_FIELD_CRITICAL_RESIST_RATE},
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = {UNIT_FIELD_DAMAGE_CRIT_MULTIPLE},
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = {UNIT_FIELD_RESIST_CRIT_MULTIPLE},
+}
+
+
+
+local attrKeys = {
+	[EQUIP_ATTR_MAXHEALTH] = PLAYER_FIELD_MAXHEALTH,
+	[EQUIP_ATTR_DAMAGE] = PLAYER_FIELD_DAMAGE,
+	[EQUIP_ATTR_ARMOR] = PLAYER_FIELD_ARMOR,
+	[EQUIP_ATTR_HIT] = PLAYER_FIELD_HIT,
+	[EQUIP_ATTR_DODGE] = PLAYER_FIELD_DODGE,
+	[EQUIP_ATTR_CRIT] = PLAYER_FIELD_CRIT,
+	[EQUIP_ATTR_TOUGH] = PLAYER_FIELD_TOUGH,
+	[EQUIP_ATTR_ATTACK_SPEED] = PLAYER_FIELD_ATTACK_SPEED,
+	[EQUIP_ATTR_MOVE_SPEED] = PLAYER_FIELD_MOVE_SPEED,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = PLAYER_FIELD_AMPLIFY_DAMAGE,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = PLAYER_FIELD_IGNORE_DEFENSE,
+	[EQUIP_ATTR_DAMAGE_RESIST] = PLAYER_FIELD_DAMAGE_RESIST,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = PLAYER_FIELD_DAMAGE_RETURNED,
+	[EQUIP_ATTR_HIT_RATE] = PLAYER_FIELD_HIT_RATE,
+	[EQUIP_ATTR_DODGE_RATE] = PLAYER_FIELD_DODGE_RATE,
+	[EQUIP_ATTR_CRIT_RATE] = PLAYER_FIELD_CRIT_RATE,
+	
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = PLAYER_FIELD_CRITICAL_RESIST_RATE,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = PLAYER_FIELD_DAMAGE_CRIT_MULTIPLE,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PLAYER_FIELD_RESIST_CRIT_MULTIPLE,
+}
+
+-- 获得玩家属性列表
+function UnitInfo:GetAttrs()
+	local attrs = {}
+	
+	for attr_id, playerField in pairs(attrKeys) do
+		local value = self:GetPlayerDouble(playerField)
+		table.insert(attrs, {attr_id, value})
+	end
+	
+	return attrs
+end
+
+function UnitInfo:GetDummyInfo()
+	local config = {}
+	config.name   = self:GetName()
+	config.gender = self:GetGender()
+	config.level  = self:GetLevel()
+	config.attrs  = self:GetAttrs()
+	config.weapon = self:GetWeapon()
+	config.avatar = self:GetAvatar()
+	config.divine = self:GetDivine()
+	config.spells = self:GetSpells()
+	config.passivespells = self:GetPassivespells()
+	config.force  = self:GetForce()
+	config.vip    = self:GetVIP()
+	config.reverse1 = 0
+	config.reverse2 = 0
+	config.reverse3 = 0
+	config.reverse4 = 0
+	config.reverse5 = 0
+	
+	return config
+end
 
 
 --生物部分
 function UnitInfo:SetBaseAttrs(info, bRecal, mul)
-	local tBaseKey = {
-		[EQUIP_ATTR_MAXHEALTH] = {UNIT_FIELD_MAXHEALTH},
-		[EQUIP_ATTR_DAMAGE] = {UNIT_FIELD_DAMAGE},
-		[EQUIP_ATTR_ARMOR] = {UNIT_FIELD_ARMOR},
-		[EQUIP_ATTR_HIT] = {UNIT_FIELD_HIT},
-		[EQUIP_ATTR_DODGE] = {UNIT_FIELD_DODGE},
-		[EQUIP_ATTR_CRIT] = {UNIT_FIELD_CRIT},
-		[EQUIP_ATTR_TOUGH] = {UNIT_FIELD_TOUGH},
-		[EQUIP_ATTR_ATTACK_SPEED] = {UNIT_FIELD_ATTACK_SPEED},
-		[EQUIP_ATTR_MOVE_SPEED] = {UNIT_FIELD_MOVE_SPEED},
-		[EQUIP_ATTR_AMPLIFY_DAMAGE] = {UNIT_FIELD_AMPLIFY_DAMAGE},
-		[EQUIP_ATTR_IGNORE_DEFENSE] = {UNIT_FIELD_IGNORE_DEFENSE},
-		[EQUIP_ATTR_DAMAGE_RESIST] = {UNIT_FIELD_DAMAGE_RESIST},
-		[EQUIP_ATTR_DAMAGE_RETURNED] = {UNIT_FIELD_DAMAGE_RETURNED},
-		[EQUIP_ATTR_HIT_RATE] = {UNIT_FIELD_HIT_RATE},
-		[EQUIP_ATTR_DODGE_RATE] = {UNIT_FIELD_DODGE_RATE},
-		[EQUIP_ATTR_CRIT_RATE] = {UNIT_FIELD_CRIT_RATE},
-		[EQUIP_ATTR_CRITICAL_RESIST_RATE] = {UNIT_FIELD_CRITICAL_RESIST_RATE},
-		[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = {UNIT_FIELD_DAMAGE_CRIT_MULTIPLE},
-		[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = {UNIT_FIELD_RESIST_CRIT_MULTIPLE},
-	}
 	--[[
 	-- 只改变上线 不改变当前血量
 	if bRecal then
@@ -992,6 +1091,10 @@ end
 
 -- 增加怒气
 function UnitInfo:AddSP(value)
+	-- 人形怪不加愤怒
+	if self:GetTypeID() == TYPEID_UNIT then
+		return
+	end
 	local cas = playerLib.GetAngerSpell(self.ptr)
 	if cas > 0 then
 		local angerLimit = tb_anger_limit[cas].limit
@@ -1209,6 +1312,11 @@ function UnitInfo:GetVIP()
 		vipLevel = 0
 	end
 	return vipLevel
+end
+
+-- 设置unit VIP等级
+function UnitInfo:SetUnitVIP(vipLevel)
+	self:SetUInt32(UINT_FIELD_VIP_LEVEL, vipLevel)
 end
 
 --获取VIP时间
@@ -1879,20 +1987,35 @@ function UnitInfo:SetUseRespawnMapId(mapid)
 	self:SetUInt32(UNIT_FIELD_USE_RESPAWN_MAPID, mapid)
 end
 
+-- 获得avatar
+function UnitInfo:GetAvatar()
+	return self:GetUInt32(UNIT_FIELD_EQUIPMENT_COAT)
+end
+
+-- 获得武器
+function UnitInfo:GetWeapon()
+	return self:GetUInt32(UNIT_FIELD_EQUIPMENT_MAIN_WEAPON)
+end
+
+-- 获得神兵
+function UnitInfo:GetDivine()
+	return self:GetUInt32(UNIT_FIELD_DIVINE_ID)
+end
+
 
 -- 设置avatar
 function UnitInfo:SetAvatar(avatar)
-	self:SetPlayerUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_COAT, avatar)
+	self:SetUInt32(UNIT_FIELD_EQUIPMENT_COAT, avatar)
 end
 
 -- 设置武器
 function UnitInfo:SetWeapon(weapon)
-	self:SetPlayerUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_MAIN_WEAPON, weapon)
+	self:SetUInt32(UNIT_FIELD_EQUIPMENT_MAIN_WEAPON, weapon)
 end
 
 -- 设置神兵
 function UnitInfo:SetDivine(divine)
-	self:SetPlayerUInt32(PLAYER_INT_FIELD_DIVINE_ID, divine)
+	self:SetUInt32(UNIT_FIELD_DIVINE_ID, divine)
 end
 
 

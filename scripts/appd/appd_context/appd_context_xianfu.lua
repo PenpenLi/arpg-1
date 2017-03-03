@@ -41,6 +41,18 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 					enter_info = json.decode(enter_info)
 				end
 				
+				-- 已经匹配到了
+				app:SetMatchingKuafuType(self:GetGuid(), nil)
+				
+				-- 这时不能扣进入券就不让进
+				local config = tb_kuafu_xianfu_condition[indx]
+				if not self:useMulItem(config.ticket) then
+					return
+				end
+				
+				-- 增加进入次数
+				local instMgr = self:getInstanceMgr()
+				instMgr:AddXianfuDayTimes()
 				
 				-- 往web存钱(当然有可能数据比较慢到达)
 				self:OnSaveMoney()
@@ -49,12 +61,7 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 				local war_id = enter_info.war_id
 				local battle_server = enter_info.battle_server
 				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, indx, battle_server, '', KUAFU_TYPE_XIANFU)
-				-- 已经匹配到了
-				app:SetMatchingKuafuType(self:GetGuid(), nil)
 				
-				-- 增加进入次数
-				local instMgr = self:getInstanceMgr()
-				instMgr:AddXianfuDayTimes()
 			-- timeout取消匹配
 			elseif dict.ret == 1 then
 				local target = dict.target
@@ -205,11 +212,19 @@ function PlayerInfo:OnSyncMoney()
 				if changed > 0 then
 					self:AddMoney(MONEY_TYPE_GOLD_INGOT, origin, changed)
 				elseif changed < 0 then
+					local arrears = 0
 					local cost = -changed
+					--self:SubMoney(MONEY_TYPE_GOLD_INGOT, origin, cost)
 					if not self:checkMoneyEnough(MONEY_TYPE_GOLD_INGOT, cost) then
-						cost = self:GetMoney(MONEY_TYPE_GOLD_INGOT)
+						local realcost = self:GetMoney(MONEY_TYPE_GOLD_INGOT)
+						arrears = cost - realcost
+						cost = realcost
 					end
 					self:costMoneys(origin, {{MONEY_TYPE_GOLD_INGOT, cost}})
+					if arrears > 0 then
+						-- TODO:记录下欠费记录
+						self:AddArrears(arrears)
+					end
 				end
 			end
 		end
@@ -237,4 +252,10 @@ function PlayerInfo:OnBuyTicket(type, indx, count)
 	if self:costMoneys(MONEY_CHANGE_BUY_XIANFU_TICKET, cost, count) then
 		self:AppdAddItems({{ticketid, count}}, nil, LOG_ITEM_OPER_TYPE_XIANFU_BUY)
 	end
+end
+
+-- 重置仙府
+function PlayerInfo:OnResetXianfu()
+	local instMgr = self:getInstanceMgr()
+	instMgr:ResetXianfuDayTimes()
 end

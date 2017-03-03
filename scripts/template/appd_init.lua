@@ -114,3 +114,8 @@ require("template.tables.tb_doujiantai_base")
 require("template.tables.tb_doujiantai_dummy")
 require("template.tables.tb_doujiantai_combat_win")
 require("template.tables.tb_doujiantai_rank")
+require("template.tables.tb_doujiantai_first")
+require("template.tables.tb_doujiantai_day")
+
+---------------------------------------------------
+require("template.tables.tb_doujiantai_fight_range")

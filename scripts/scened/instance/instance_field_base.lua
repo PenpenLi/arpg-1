@@ -201,30 +201,31 @@ end
 
 --当玩家被玩家杀掉时触发
 function InstanceFieldBase:OnPlayerKilled(player, killer)
+	local playerInfo = UnitInfo:new {ptr = player}
 	local deathname  = binLogLib.GetStr(player, BINLOG_STRING_FIELD_NAME)
 	local killername = binLogLib.GetStr(killer, BINLOG_STRING_FIELD_NAME)
-	self:OnSendDeathInfo(deathname, killername, '')
+	self:OnSendDeathInfo(playerInfo, deathname, killername, '')
 	
 	return 0
 end
 	
 -- 当玩家被怪物杀死
-function InstanceFieldBase:OnPlayerKilled(player, killer)
+function InstanceFieldBase:OnPlayerKilledByMonster(player, killer)
+	local playerInfo = UnitInfo:new {ptr = player}
 	local deathname  = binLogLib.GetStr(player, BINLOG_STRING_FIELD_NAME)
 	local killername = binLogLib.GetStr(killer, BINLOG_STRING_FIELD_NAME)
-	self:OnSendDeathInfo(deathname, killername, '')
+	self:OnSendDeathInfo(playerInfo, deathname, killername, '')
 	
 	return 0
 end
 
-function InstanceFieldBase:OnSendDeathInfo(deathname ,killername ,params)
+function InstanceFieldBase:OnSendDeathInfo(playerInfo, deathname ,killername ,params)
 	-- 发送野外死亡回城倒计时
 	playerInfo:call_field_death_cooldown(DEAD_PLACE_TYPE_FIELD, deathname, killername, params, self.player_auto_respan)
 end
 
 --当玩家死亡后触发()
 function InstanceFieldBase:OnPlayerDeath(player)
-	local playerInfo = UnitInfo:new{ptr = player}
 	
 end
 

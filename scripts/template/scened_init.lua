@@ -87,3 +87,5 @@ require("template.tables.tb_kuafu_xianfu_base")
 require("template.tables.tb_kuafu_xianfu_boss")
 require("template.tables.tb_kuafu_xianfu_killed_drop")
 require("template.tables.tb_kuafu_xianfu_condition")
+
+require("template.tables.tb_doujiantai_base")

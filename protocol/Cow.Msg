@@ -1119,3 +1119,33 @@ buy_xianfu_item,c2s,258,/*购买仙府进入券*/,STATUS_NEVER,False
 #
 xianfu_random_respawn,c2s,259,/*随机复活*/,STATUS_NEVER,False
 
+#
+doujiantai_fight,c2s,260,/*斗剑台挑战*/,STATUS_NEVER,False
+	rank,uint16,False,/*排名*/
+
+#
+doujiantai_buytime,c2s,261,/*斗剑台购买次数*/,STATUS_NEVER,False
+	num,uint8,False,/*排名*/
+
+#
+doujiantai_clearcd,c2s,262,/*斗剑台清理CD*/,STATUS_NEVER,False
+
+#
+doujiantai_first_reward,c2s,263,/*斗剑台首胜奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*序号*/
+
+#
+doujiantai_get_enemys_info,both,265,/*斗剑台挑战对手信息*/,STATUS_NEVER,False
+
+#
+doujiantai_get_rank,c2s,266,/*斗剑台排行榜*/,STATUS_NEVER,False
+	startIdx,uint16,False,/*类型*/
+	endIdx,uint16,False,/*类型*/
+	
+#
+doujiantai_refresh_enemys,c2s,270,/*斗剑台刷新对手*/,STATUS_NEVER,False
+	
+
+#
+doujiantai_top3,both,271,/*斗剑台三甲*/,STATUS_NEVER,False
+	

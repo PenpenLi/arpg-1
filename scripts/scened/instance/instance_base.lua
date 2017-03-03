@@ -772,39 +772,53 @@ Instance_base = {
 		weapon	: 武器
 		avatar : 时装
 		divine : 神兵
-		spells: 技能数据 {{技能ID,释放概率（万分比）,这个技能动作时间,技能组}, ..., {}}
-	--]]
-	GetImageInfo = function(self, name, gender, level, attrs, weapon, avatar, divine, spells, force)
+		spells: 技能数据 {{技能ID,释放概率（万分比）,这个技能动作时间,技能等级, 技能组}, ..., {}}
+		--]]
+	GetImageInfo = function(self, config)
+		config.id = 6000 + config.gender
+		--[[
 		local image = {}
 				
 		-- 基础数据
-		image.name = name
-		image.gender = gender or randInt(1, 2)
-		image.level = level
+		image.name = config.name
+		image.gender = config.gender or randInt(1, 2)
+		image.level = config.level
 		image.id = 6000 + image.gender
 		
 		-- 战斗属性
 		image.attrs = {}
-		for _, attr in pairs(attrs) do
+		for _, attr in pairs(config.attrs) do
 			table.insert(image.attrs, {attr[ 1 ], attr[ 2 ]})
 		end
 		
 		--模型数据
-		image.weapon = weapon
-		image.avatar = avatar
-		image.divine = divine
+		image.weapon = config.weapon
+		image.avatar = config.avatar
+		image.divine = config.divine
 		
 		--技能数据
 		image.spells = {}
-		for _, spell in pairs(spells) do
-			table.insert(image.spells, {spell[ 1 ], spell[ 2 ], spell[ 3 ], spell[ 4 ]})
+		for _, spell in pairs(config.spells) do
+			table.insert(image.spells, {spell[ 1 ], spell[ 2 ], spell[ 3 ], spell[ 4 ], spell[ 4 ]})
 		end
 		
+		image.passivespells = config.passivespells
+		
 		-- 战力
-		image.force = force
-	
-		return image
+		image.force = config.force
+		
+		image.vip = config.vip
+		
+		image.reverse1 = config.reverse1
+		image.reverse2 = config.reverse2
+		image.reverse3 = config.reverse3
+		image.reverse4 = config.reverse4
+		image.reverse5 = config.reverse5
+		]]
+		
+		return config
 	end,
+
 
 	--[[
 		image : 镜像
@@ -824,8 +838,12 @@ Instance_base = {
 		if not faction  then
 			faction = 3
 		end
+		
+		if not reborn_time then
+			reborn_time = ''
+		end
 
-		local creature = mapLib.AddCreature(self.ptr, {templateid = image.id, pos_x = x ,pos_y = y, faction = faction, move_type = WAYFINDING_ATTACK_MOTION_TYPE, active_grid = 1, ai_name = ai_name, alias_name = '', reborn_time = reborn_time, npc_flag = 3})
+		local creature = mapLib.AddCreature(self.ptr, {templateid = image.id, x = x ,y = y, faction = faction, movetype = WAYFINDING_ATTACK_MOTION_TYPE, active_grid = true, ainame = ai_name, alias_name = '', npcflag={}})
 		if creature == nil then
 			return creature
 		end	
@@ -839,9 +857,17 @@ Instance_base = {
 		lua_creature:SetAvatar(image.avatar)
 		lua_creature:SetDivine(image.divine)
 		lua_creature:SetForce(image.force)
+		lua_creature:SetUnitVIP(image.vip)
+		--[[
+			image.reverse1
+			image.reverse2
+			image.reverse3
+			image.reverse4
+			image.reverse5
+		]]
 		
 		--属性相关
-		self:SetCreaturePro(creature, image.attrs, false)
+		self:SetCreaturePro(lua_creature, image.attrs, false)
 
 		-- 技能
 		self:SetSpells(creature, image.spells)
@@ -903,6 +929,7 @@ Instance_base = {
 	
 	-- 设置属性
 	SetCreaturePro = function(self, creature, pros, bRecal, mul)
+		mul = mul or 1
 		creature:SetBaseAttrs(pros, bRecal, mul)
 	end,
 	
@@ -912,13 +939,13 @@ Instance_base = {
 			local spellInfo = spells[ i ]
 			local skillConfig = tb_skill_base[spellInfo[ 1 ]]
 			if skillConfig then
-				local index = skillConfig.uplevel_id[ 1 ]
+				local index = skillConfig.uplevel_id[ 1 ] + spellInfo[ 4 ] - 1
 				local upgradeConfig = tb_skill_uplevel[index]
 				local dist = upgradeConfig.distance
 				local groupCD = skillConfig.groupCD
 				local singleCD = skillConfig.singleCD
 				local targetType = skillConfig.type
-				creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], dist, groupCD, singleCD, targetType)
+				creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], spellInfo[ 5 ], dist, groupCD, singleCD, targetType)
 			end
 		end
 	end,
@@ -943,6 +970,7 @@ Instance_base = {
 	
 	-- 判断是否够钱花元宝复活
 	OnCheckIfCanCostRespawn = function (self, player)
+		local unitInfo = UnitInfo:new {ptr = player}
 		if unitInfo:IsAlive() then
 			return
 		end
@@ -965,7 +993,7 @@ Instance_base = {
 			end
 			
 			unitInfo:SetUseRespawnMapId(mapid)
-			unitLib.Respawn(player, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+			unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
 		end
 	end,
 	

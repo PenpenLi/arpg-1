@@ -200,8 +200,7 @@ function PlayerInfo:Handle_Kuafu_Xianfu_Match(pkt)
 	end
 	
 	-- 判断仙府进入券是否足够
-	if not self:useMulItem(config.ticket) then
-		outFmtDebug("SDFDSFDSFDSF")
+	if not self:hasMulItem(config.ticket) then
 		return
 	end
 	
@@ -223,4 +222,55 @@ function PlayerInfo:Handle_Buy_Xianfu_Item(pkt)
 	end
 	
 	self:OnBuyTicket(type, indx, count)
+end
+
+function PlayerInfo:Handle_Doujiantai_Fight(pkt)
+	local rank = pkt.rank
+	-- 不再挑战名次内
+	if rank < 0 or rank >= 3 then
+		return
+	end
+	
+	self:OnDoujiantaiFight(rank)
+end
+
+function PlayerInfo:Handle_Doujiantai_Enemys_Info(pkt)
+	self:GetEnemyInfo()
+end
+
+function PlayerInfo:Handle_Doujiantai_Refresh_Enemys(pkt)
+	----[[
+	local last = self:GetDoujiantaiLastRefreshTime()
+	if last + tb_doujiantai_base[ 1 ].refreshCountdown > os.time() then
+		self:CallOptResult(OPRATE_TYPE_DOUJIAN, DOUJIAN_OPERATE_COUNTDOWN)
+		return
+	end
+	--]]
+	self:SetDoujiantaiLastRefreshTime(os.time())
+	self:RefreshDoujiantaiEnemy()
+	self:GetEnemyInfo()
+end
+
+function PlayerInfo:Handle_Doujian_BuyTimes(pkt)
+	local num = pkt.num
+	self:BuyDoujiantaiTime(num)
+end
+
+function PlayerInfo:Handle_Doujian_ClearCd(pkt)
+	self:ClearDoujianCD()
+end
+
+function PlayerInfo:Handle_Doujian_FirstReward(pkt)
+	local id = pkt.id
+	self:GetDoujianFirstReward(id)
+end
+
+function PlayerInfo:Handle_Doujian_Get_Rank(pkt)
+	local startIdx = pkt.startIdx
+	local endIdx = pkt.endIdx
+	self:GetDoujiantaiRankList(startIdx,endIdx)
+end
+
+function PlayerInfo:Handle_Doujiantai_Top3(pkt)
+	self:GetTop3()
 end

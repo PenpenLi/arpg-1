@@ -101,9 +101,3 @@ function PlayerInfo:Rank3v3SegmentReward()
 	
 	
 end
-
--- ÷ÿ÷√œ…∏Æ
-function PlayerInfo:OnResetXianfu()
-	local instMgr = self:getInstanceMgr()
-	instMgr:ResetXianfuDayTimes()
-end

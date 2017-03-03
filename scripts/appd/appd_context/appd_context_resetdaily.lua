@@ -96,4 +96,7 @@ function PlayerInfo:onRealReset()
 	self:SetWelfareBackAllNum()
 	self:Rank3v3SegmentReward()
 	self:OnResetXianfu()
+	self:DoDoujiantaiDayReward()
+	
+	self:RefreshDoujiantaiEnemy()
 end

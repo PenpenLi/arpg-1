@@ -16,6 +16,8 @@ require("util.json")
 outString('load share.tick_name script')
 require("share/tick_name")
 
+
+globalCounter:InitDoujiantaiRank()
 -------------------------------------------------------------------------------
 --配置文件信息
 config = {
@@ -170,6 +172,16 @@ config = {
 		MSG_KUAFU_3V3_CANCEL_MATCH,
 		CMSG_KUAFU_XIANFU_MATCH,
 		CMSG_BUY_XIANFU_ITEM,
+		CMSG_DOUJIANTAI_FIGHT,
+		CMSG_DOUJIANTAI_BUYTIME,
+		CMSG_DOUJIANTAI_CLEARCD,
+		CMSG_DOUJIANTAI_FIRST_REWARD,
+		
+		MSG_DOUJIANTAI_GET_ENEMYS_INFO,
+		CMSG_DOUJIANTAI_GET_RANK,
+		CMSG_DOUJIANTAI_REFRESH_ENEMYS,
+		
+		MSG_DOUJIANTAI_TOP3,
 	},
 	--pk服命令表
 	pk_external_router_map = {

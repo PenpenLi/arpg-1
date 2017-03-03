@@ -657,8 +657,15 @@ function isAngerSpellHitPlayer(spellId, target)
 end
 
 function isInProtected(killer, target)
-		
+	local map_ptr = unitLib.GetMap(killer)
+	local mapid = unitLib.GetMapID(killer)
+			
 	if GetUnitTypeID(killer) ~= TYPEID_PLAYER or GetUnitTypeID(target) ~= TYPEID_PLAYER then
+		if GetUnitTypeID(killer) ~= TYPEID_PLAYER then
+			-- 当前地图还在倒计时中 或者 不是开始状态
+			local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
+			return mapInfo:GetMapStartTime() > os.time() or mapInfo:GetMapState() ~= mapInfo.STATE_START
+		end
 		return false
 	end
 	
@@ -690,11 +697,9 @@ function isInProtected(killer, target)
 		return true
 	end
 	
-	-- 当前地图还在倒计时中
-	local map_ptr = unitLib.GetMap(killer)
-	local mapid = unitLib.GetMapID(killer)
+	-- 当前地图还在倒计时中 或者 不是开始状态
 	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	if mapInfo:GetMapStartTime() > os.time() then
+	if mapInfo:GetMapStartTime() > os.time() or mapInfo:GetMapState() ~= mapInfo.STATE_START then
 		return true
 	end
 	

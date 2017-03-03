@@ -9,6 +9,8 @@ InstanceKuafuXianfu.Time_Out_Fail_Callback = "timeoutCallback"
 InstanceKuafuXianfu.RESPAWN_BASE_GOLD = 5
 InstanceKuafuXianfu.sub = "world_xianfu"
 
+InstanceKuafuXianfu.BOX_EXIST_TIME = 1800
+
 function InstanceKuafuXianfu:ctor(  )
 	
 end
@@ -161,6 +163,10 @@ function InstanceKuafuXianfu:OnMonsterRefresh()
 						active_grid = true, alias_name = bossName, ainame = "AI_XianfuBoss", npcflag = {}
 					}
 				)
+				-- 标识为boss怪
+				local creatureInfo = UnitInfo:new{ptr = creature}
+				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
+				
 				local place = string.char(64+indx)
 				
 				self:SetUInt16(bossintstart + KUAFU_XIANFU_BOSS_SHOW_INFO, 1, 1)
@@ -344,8 +350,7 @@ function InstanceKuafuXianfu:SyncResultToWeb()
 				table.insert(reward, loot_entry..","..count)
 				outFmtDebug(" player %s has %d", player_guid, count)
 			end
-			local changed = self:GetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED)
-			table.insert(sendInfo, {player_guid, changed, string.join(",", reward)})
+			table.insert(sendInfo, {player_guid, string.join(",", reward)})
 		end
 		
 		intstart = intstart + MAX_KUAFU_XIANFU_INT_COUNT
@@ -372,7 +377,7 @@ end
 function InstanceKuafuXianfu:DoAfterRespawn(unit_ptr)
 	local unitInfo = UnitInfo:new{ptr = unit_ptr}
 	-- 加无敌buff
-	unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 1, 10)
+	unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 1, 3)
 	
 	local unitInfo = UnitInfo:new {ptr = unit_ptr}
 	if unitInfo:GetTypeID() == TYPEID_PLAYER then
@@ -456,7 +461,7 @@ end
 function InstanceKuafuXianfu:OnDropTreasure(playerInfo, killerInfo, is_offline)
 	local belongGuid = ''
 	if killerInfo and killerInfo:GetTypeID() == TYPEID_PLAYER then
-		belongGuid = killerInfo:GetPlayerGuid()
+		belongGuid = playerInfo:GetPlayerGuid()
 	end
 	is_offline = is_offline or false
 	local indx = self:findIndexByName(playerInfo:GetName())
@@ -489,7 +494,7 @@ function InstanceKuafuXianfu:OnDropTreasure(playerInfo, killerInfo, is_offline)
 		for i = 1, count do
 			--模板,数量,绑定与否,存在时间,保护时间,强化等级
 			--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
-			AddLootGameObject(self.ptr, playerInfo.ptr, belongGuid, loot_entry, 1, 0, 1800, protectTime, 0)
+			AddLootGameObject(self.ptr, playerInfo.ptr, belongGuid, loot_entry, 1, 0, InstanceKuafuXianfu.BOX_EXIST_TIME, protectTime, 0)
 		end
 		
 		self:SubByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, count)
@@ -500,19 +505,34 @@ end
 
 --当玩家离开时触发
 function InstanceKuafuXianfu:OnLeavePlayer( player, is_offline)
+	local unitInfo = UnitInfo:new{ptr = player}
+	-- 回存元宝信息
+	self:OnRestoreGold(unitInfo)
+	
 	-- 活动副本结束了就不进行处理
 	if self:GetMapState() == self.STATE_FINISH then
 		return
 	end
 	
-	self:OnDropTreasure(UnitInfo:new{ptr = player}, nil, true)
-	
+	self:OnDropTreasure(unitInfo, nil, true)
 	-- 如果没人了 那就结束
 	local persons = mapLib.GetPlayersCounts(self.ptr)
 	if persons == 0 then
 		self:SyncResultToWeb()
 		self:SetMapState(self.STATE_FINISH)
 	end
+end
+
+-- 回存元宝信息
+function InstanceKuafuXianfu:OnRestoreGold(unitInfo)
+	local url = string.format("%s%s/kuafu_restore", globalGameConfig:GetExtWebInterface(), InstanceKuafuXianfu.sub)
+	local binindx = self:findIndexByName(unitInfo:GetName())
+	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
+	local data = {}
+	data.player_guid = unitInfo:GetPlayerGuid()
+	data.changed = self:GetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED)
+	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
+	end)
 end
 
 --使用游戏对象之前
@@ -647,8 +667,10 @@ function InstanceKuafuXianfu:OnSyncMoney(player_guid, binindx)
 		if dict then
 			if dict.ret == 0 then
 				local gold = dict.gold
+				local changed = dict.changed
 				local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
 				self:SetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY, gold)
+				self:SetDouble(intstart + KUAFU_XIANFU_PLAYER_MONEY_CHANGED, changed)
 			end
 		end
 	end)
@@ -709,7 +731,7 @@ function AI_XianfuBoss:LootAllot(owner, player, killer, drop_rate_multiples, bos
 	for i = 1, boxes do
 		--模板,数量,绑定与否,存在时间,保护时间,强化等级
 		--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
-		AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 1, fcm, 1800, protectTime, 0)
+		AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 1, fcm, InstanceKuafuXianfu.BOX_EXIST_TIME, protectTime, 0)
 	end
 			
 end

@@ -24,9 +24,6 @@ hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
 
 hanlders[CMSG_MALL_BUY] = PlayerInfo.Handle_Mall_Buy
 
--- hanlders[CMSG_GOLD_RESPAWN] = PlayerInfo.Handle_Gold_Respawn
-
-
 hanlders[CMSG_STRENGTH] = PlayerInfo.Handle_Strength
 hanlders[CMSG_CREATE_FACTION] = PlayerInfo.Handle_Faction_Create
 hanlders[CMSG_FACTION_UPGRADE] = PlayerInfo.Handle_Faction_Upgrade
@@ -135,5 +132,22 @@ hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 hanlders[CMSG_KUAFU_XIANFU_MATCH]	= PlayerInfo.Handle_Kuafu_Xianfu_Match
 
 hanlders[CMSG_BUY_XIANFU_ITEM] = PlayerInfo.Handle_Buy_Xianfu_Item
+
+hanlders[CMSG_DOUJIANTAI_FIGHT] = PlayerInfo.Handle_Doujiantai_Fight
+
+hanlders[CMSG_DOUJIANTAI_BUYTIME] = PlayerInfo.Handle_Doujian_BuyTimes
+
+hanlders[CMSG_DOUJIANTAI_CLEARCD] = PlayerInfo.Handle_Doujian_ClearCd
+
+hanlders[CMSG_DOUJIANTAI_FIRST_REWARD] = PlayerInfo.Handle_Doujian_FirstReward
+
+
+hanlders[MSG_DOUJIANTAI_GET_ENEMYS_INFO] = PlayerInfo.Handle_Doujiantai_Enemys_Info
+
+hanlders[CMSG_DOUJIANTAI_GET_RANK] = PlayerInfo.Handle_Doujian_Get_Rank
+
+hanlders[CMSG_DOUJIANTAI_REFRESH_ENEMYS] = PlayerInfo.Handle_Doujiantai_Refresh_Enemys
+
+hanlders[MSG_DOUJIANTAI_TOP3] = PlayerInfo.Handle_Doujiantai_Top3
 
 return hanlders
