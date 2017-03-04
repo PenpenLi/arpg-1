@@ -7,9 +7,9 @@ tb_doujiantai_combat_win = {
 	--  id:int	连胜次数
 	--  reward:array	连胜奖励
 	--  pos:int	序号
-	[2] = {id = 2,reward = {{16,80}},pos = 1,},
-	[4] = {id = 4,reward = {{16,120}},pos = 2,},
-	[6] = {id = 6,reward = {{16,200}},pos = 3,},
-	[8] = {id = 8,reward = {{16,320}},pos = 4,},
-	[10] = {id = 10,reward = {{16,500}},pos = 5,},
+	[2] = {id = 2,reward = {{12,80}},pos = 1,},
+	[4] = {id = 4,reward = {{12,120}},pos = 2,},
+	[6] = {id = 6,reward = {{12,200}},pos = 3,},
+	[8] = {id = 8,reward = {{12,320}},pos = 4,},
+	[10] = {id = 10,reward = {{12,500}},pos = 5,},
 }

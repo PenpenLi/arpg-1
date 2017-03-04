@@ -27,4 +27,9 @@ tb_gameobject_template = {
 	[11] = {id = 11,name = "攻击增强",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 3,go_flag = 4096,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
 	[12] = {id = 12,name = "防御增强",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 3,go_flag = 4096,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
 	[13] = {id = 13,name = "暴击增强",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 3,go_flag = 4096,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
+	[20] = {id = 20,name = "荷花",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
+	[21] = {id = 21,name = "探索木桩",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
+	[22] = {id = 22,name = "探索石碑",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
+	[23] = {id = 23,name = "采集石剑1",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
+	[24] = {id = 24,name = "采集石剑2",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
 }

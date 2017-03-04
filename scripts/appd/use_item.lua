@@ -149,7 +149,9 @@ UseItemScripts = {
 		local item_type = config.type	
 		local func = DoUseItem[item_entry]
 		if(func ~= nil)then
-			func(DoUseItem,player,item,count)
+			if not func(DoUseItem,player,item,count) then
+				return
+			end
 		else
 			---发送到场景服使用
 			--装备类型的物品不可以使用
@@ -220,7 +222,10 @@ UseItemScripts = {
 				end
 				
 				--可以开始给道具了
-				local dropId = box_config.dropid
+				local drops = box_config.dropids
+				-- 默认先选第一个
+				-- 如果需要区分男女的再区分
+				local dropId = drops[gender] or drops[ 1 ]
 				local dict = {}
 				for i = 1, count do
 					DoRandomDrop(dropId, dict)
@@ -250,7 +255,6 @@ UseItemScripts = {
 					end
 				end
 				
-				
 				--[[
 				if config.is_slather == 0 then
 					--给随机奖励
@@ -265,7 +269,7 @@ UseItemScripts = {
 				--药品、获得buff、pk药、宠物药发到场景服处理
 				self:Send2ScenedUseItem(player, item_entry, count)	
 				return
-			end			
+			end		
 		end
 		
 		local questMgr = player:getQuestMgr()
@@ -288,7 +292,9 @@ DoUseItem = {
 			local itemMgr = player:getItemMgr()
 			if (itemMgr:delItemObj(item, count)) then
 				player:DoTitleOpt(TITLE_OPT_TYPE_JIHUO,TITLE_TYPE_BAXIANGUOHAI,os.time()+2592000)
+				return true
 			end
+			return false
 		end,
 	[193] = --初级潜力丹
 		function(self,player,item,count)
@@ -296,7 +302,9 @@ DoUseItem = {
 			if (itemMgr:delItemObj(item, count)) then
 				player:AddQianLiValue(count)
 				player:AddAddQianLiValue(count)
+				return true
 			end
+			return false
 		end,		
 	[194] = --中级潜力丹
 		function(self,player,item,count)			
@@ -304,7 +312,9 @@ DoUseItem = {
 			if (itemMgr:delItemObj(item, count)) then
 				player:AddQianLiValue(3*count)
 				player:AddAddQianLiValue(3*count)
+				return true
 			end
+			return false
 		end,		
 	[195] = --高级潜力丹
 		function(self,player,item,count)
@@ -312,7 +322,9 @@ DoUseItem = {
 			if (itemMgr:delItemObj(item, count)) then
 				player:AddQianLiValue(10*count)
 				player:AddAddQianLiValue(10*count)
+				return true
 			end
+			return false
 		end,
 }
 

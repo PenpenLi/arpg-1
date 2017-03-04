@@ -193,6 +193,7 @@ INVALIDREASON_DAILY_QUESTS_REMAINING = 10	--  你已经完成了每天的25个�
 INVALIDREASON_QUEST_FAILED_CAIS = 11	--  有疲劳时间无法完成任务 You cannot complete quests once you have reached tired time.
 INVALIDREASON_DAILY_QUEST_COMPLETED_TODAY = 12	--  已经完成当天的任务 You have completed that daily quest today.
 INVALIDREASON_QUEST_FINISH_ALL_RIHUAN = 13	-- 完成所有日环任务了
+QUEST_TYPE_PROCESS = 14	-- 任务进度, 名字:1/1
 -- 购买商品
 NPC_BUY_ITEM_NO_EXIST = 0	-- 物品不存在
 NPC_BUY_ITEM_UNDER = 1	-- 下架的物品

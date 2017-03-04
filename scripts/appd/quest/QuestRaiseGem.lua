@@ -16,8 +16,8 @@ function QuestRaiseGem:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestRaiseGem:OnUpdate(quest_ptr, start, offset, params)
-	return self:OnUpdateModeObjectTimes(quest_ptr, start, offset, params)
+function QuestRaiseGem:OnUpdate(playerInfo, start, offset, params)
+	return self:OnUpdateModeObjectTimes(playerInfo, start, offset, params)
 end
 
 return QuestRaiseGem

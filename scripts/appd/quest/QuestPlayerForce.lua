@@ -9,7 +9,7 @@ end
 function QuestPlayerForce:OnInit(playerInfo, start, offset)
 	local quest_ptr = playerInfo:getQuestMgr().ptr
 	local force = playerInfo:GetForce()
-	self:OnUpdate(quest_ptr, start, offset, {force})
+	self:OnUpdate(playerInfo, start, offset, {force})
 end
 
 -- 获得目标值
@@ -18,8 +18,8 @@ function QuestPlayerForce:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestPlayerForce:OnUpdate(quest_ptr, start, offset, params)
-	return self:OnUpdateModeValue(quest_ptr, start, offset, params)
+function QuestPlayerForce:OnUpdate(playerInfo, start, offset, params)
+	return self:OnUpdateModeValue(playerInfo, start, offset, params)
 end
 
 return QuestPlayerForce

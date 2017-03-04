@@ -119,3 +119,6 @@ require("template.tables.tb_doujiantai_day")
 
 ---------------------------------------------------
 require("template.tables.tb_doujiantai_fight_range")
+
+require("template.tables.tb_creature_template")
+require("template.tables.tb_gameobject_template")

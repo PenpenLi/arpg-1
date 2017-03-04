@@ -7,5 +7,5 @@ tb_map_gameobject = {
 	--  id:int	地图编号
 	--  gameobjects:array	采集物列表
 	[1] = {id = 1,gameobjects = {},},
-	[1001] = {id = 1001,gameobjects = {1,2},},
+	[1001] = {id = 1001,gameobjects = {3,4,5,6,7},},
 }

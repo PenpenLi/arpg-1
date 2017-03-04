@@ -475,7 +475,7 @@ end
 --斗剑台历史最高名次
 function AppInstanceMgr:setDoujianMaxRank(rank)
 	local cur = self:GetUInt32(INSTANCE_INT_FIELD_DOUJIAN_MAX_RANK)
-	if cur ~= 0 and cur > rank then
+	if cur == 0 or cur > rank then
 		self:SetUInt32(INSTANCE_INT_FIELD_DOUJIAN_MAX_RANK,rank)
 	end
 	

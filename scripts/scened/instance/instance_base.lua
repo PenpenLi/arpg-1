@@ -497,7 +497,6 @@ Instance_base = {
 				-- 默认开始时间和创建时间一致, 有倒计时显示的除外
 				self:SetMapStartTime(os.time())
 			end
-			self:OnInitGameObject()
 		end,
 	
 	--开始移动前需要处理的逻辑
@@ -881,15 +880,9 @@ Instance_base = {
 			
 		end,
 	
-	-- 初始化采集物
-	OnInitGameObject = 
+	-- 初始化地图对象
+	OnInitWorldObject = 
 		function(self)
-			local time = os.time()
-			local startTime = self:GetMapCreateTime()
-			if time - startTime > 2 then
-				return
-			end
-			
 			local mapid = self:GetMapId()
 			if tb_map_gameobject[mapid] then
 				local objects = tb_map_gameobject[mapid].gameobjects
@@ -897,7 +890,8 @@ Instance_base = {
 					local config = tb_map_gameobject_detail[id]
 					if config then
 						local gameObject = mapLib.AddGameObject(self.ptr, config.entry, config.position[ 1 ], config.position[ 2 ], GO_GEAR_STATUS_END)
-						unitLib.SetOrientation(gameObject, config.orient / 100)
+						local orient = config.angle * math.pi / 180
+						unitLib.SetOrientation(gameObject, orient)
 					end
 				end
 			end

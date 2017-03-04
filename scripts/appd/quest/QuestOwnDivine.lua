@@ -13,7 +13,7 @@ function QuestOwnDivine:OnInit(playerInfo, start, offset)
 	
 	local spellMgr = playerInfo:getSpellMgr()
 	if spellMgr:hasDivineQuest(divineId) then
-		self:OnUpdate(quest_ptr, start, offset, {divineId})
+		self:OnUpdate(playerInfo, start, offset, {divineId})
 	end
 end
 
@@ -23,8 +23,8 @@ function QuestOwnDivine:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestOwnDivine:OnUpdate(quest_ptr, start, offset, params)
-	return self:OnUpdateModeObjectTimes(quest_ptr, start, offset, params)
+function QuestOwnDivine:OnUpdate(playerInfo, start, offset, params)
+	return self:OnUpdateModeObjectTimes(playerInfo, start, offset, params)
 end
 
 return QuestOwnDivine

@@ -9,6 +9,5 @@ tb_map_field_boss = {
 	--  bossPosi:array	boss出生坐标
 	--  entry:int	bossid
 	--  dropTable:array	实际获得掉落包
-	[1001] = {id = 1001,indx = 0,bossPosi = {137,101},entry = 3201,dropTable = {1},},
-	[1002] = {id = 1002,indx = 1,bossPosi = {123,38},entry = 3202,dropTable = {1},},
+	[1002] = {id = 1002,indx = 0,bossPosi = {123,38},entry = 3202,dropTable = {1},},
 }

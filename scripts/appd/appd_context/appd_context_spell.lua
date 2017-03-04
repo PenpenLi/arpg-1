@@ -629,6 +629,9 @@ function PlayerInfo:upgraded()
 	
 	spellMgr:setMountStar(0)
 	self:DoAfterUpgrade(level+1)
+	
+	-- 成就
+	self:AddAchieve(2, 1)
 end
 
 -- 进阶后做某些事

@@ -16,8 +16,8 @@ function QuestJoinTrialInstance:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestJoinTrialInstance:OnUpdate(quest_ptr, start, offset, params)
-	return self:OnUpdateModeTimes(quest_ptr, start, offset, params)
+function QuestJoinTrialInstance:OnUpdate(playerInfo, start, offset, params)
+	return self:OnUpdateModeTimes(playerInfo, start, offset, params)
 end
 
 return QuestJoinTrialInstance

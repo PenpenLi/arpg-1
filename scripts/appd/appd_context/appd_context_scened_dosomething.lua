@@ -33,6 +33,8 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		local giftType = tb_mail[data].source
 		AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, str, "系统")
 	elseif SCENED_APPD_KILL_MONSTER == ntype then
+		-- 成就
+		self:AddAchieve(3, 1)
 		local questMgr = self:getQuestMgr()
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_KILL_MONSTER, {data})
 	elseif SCENED_APPD_JOIN_FIELD_BOSS == ntype then

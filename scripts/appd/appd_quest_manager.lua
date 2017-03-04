@@ -505,6 +505,7 @@ function AppQuestMgr:CheckQuestUpdate(questTargetType, start, params)
 	local config = tb_quest[questId]
 	local targets = config.targets
 	local size = math.min(#targets, MAX_QUEST_TARGET_COUNT)
+	local playerInfo = self:getOwner()
 	
 	local updated = false
 	for i = 1, size do
@@ -514,7 +515,7 @@ function AppQuestMgr:CheckQuestUpdate(questTargetType, start, params)
 		-- 未完成的才需要更新
 		if targetType == questTargetType and self:GetUInt16(qtIndx + QUEST_TARGET_INFO_SHORT0, 0) == 0 then
 			if QUEST_UPDATE_CALLBACK[targetType] then
-				if QUEST_UPDATE_CALLBACK[targetType]:OnUpdate(self.ptr, start, i-1, params) then
+				if QUEST_UPDATE_CALLBACK[targetType]:OnUpdate(playerInfo, start, i-1, params) then
 					updated = true
 				end
 			end

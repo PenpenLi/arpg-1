@@ -209,6 +209,9 @@ function GlobalCounter:BattleFinish(playerInfo, fightRank, battleResult)
 	if battleResult == GlobalCounter.WIN then		
 		-- 加首胜信息
 		playerInfo:DoujianFirstReward(fightRank)
+		
+		-- 成就
+		self:AddAchieve(7, 1)
 
 		-- 没排名情况下挑战
 		if prevRank == 0 then

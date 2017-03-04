@@ -16,8 +16,12 @@ function QuestKillMonster:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestKillMonster:OnUpdate(quest_ptr, start, offset, params)
-	return self:OnUpdateModeObjectTimes(quest_ptr, start, offset, params)
+function QuestKillMonster:OnUpdate(playerInfo, start, offset, params)
+	local showname = nil
+	if tb_creature_template[params[ 1 ]] then
+		showname = tb_creature_template[params[ 1 ]].name
+	end
+	return self:OnUpdateModeObjectTimes(playerInfo, start, offset, params, showname)
 end
 
 return QuestKillMonster

@@ -149,7 +149,7 @@ end
 -- 随机奖励 并合并到dict中
 function DoRandomDrop(dropId, dict)
 	local config = tb_drop_reward[dropId]
-	
+	if not config then return end
 	for _, packetInfo in pairs(config.reward) do
 		local packetId = packetInfo[ 1 ]
 		local rate = packetInfo[ 2 ]

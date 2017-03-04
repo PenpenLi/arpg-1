@@ -12,7 +12,7 @@ function QuestEquipDivine:OnInit(playerInfo, start, offset)
 	local divineId = tb_quest[questId].targets[offset+1][ 2 ]
 	
 	if playerInfo:hasEquDivine(divineId) then
-		self:OnUpdate(quest_ptr, start, offset, {divineId})
+		self:OnUpdate(playerInfo, start, offset, {divineId})
 	end
 end
 
@@ -22,8 +22,8 @@ function QuestEquipDivine:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestEquipDivine:OnUpdate(quest_ptr, start, offset, params)
-	return self:OnUpdateModeObjectTimes(quest_ptr, start, offset, params)
+function QuestEquipDivine:OnUpdate(playerInfo, start, offset, params)
+	return self:OnUpdateModeObjectTimes(playerInfo, start, offset, params)
 end
 
 return QuestEquipDivine

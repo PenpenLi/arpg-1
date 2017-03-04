@@ -10,7 +10,7 @@ function QuestJoinFaction:OnInit(playerInfo, start, offset)
 	local fguid = playerInfo:GetFactionId()
 	if fguid ~= "" then
 		local quest_ptr = playerInfo:getQuestMgr().ptr
-		self:OnUpdate(quest_ptr, start, offset, {})
+		self:OnUpdate(playerInfo, start, offset, {})
 	end
 end
 
@@ -20,7 +20,9 @@ function QuestJoinFaction:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestJoinFaction:OnUpdate(quest_ptr, start, offset, params)
+function QuestJoinFaction:OnUpdate(playerInfo, start, offset, params)
+	local questMgr = playerInfo:getQuestMgr()
+	local quest_ptr = questMgr.ptr
 	
 	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
 	local qtIndx = GetOneQuestTargetStartIndx(start, offset)

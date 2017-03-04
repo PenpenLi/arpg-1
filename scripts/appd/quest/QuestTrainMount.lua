@@ -16,8 +16,8 @@ function QuestTrainMount:GetTargetValue(targetInfo)
 end
 
 -- 更新进度, 如果目标完成返回true
-function QuestTrainMount:OnUpdate(quest_ptr, start, offset, params)
-	return self:OnUpdateModeTimes(quest_ptr, start, offset, params)
+function QuestTrainMount:OnUpdate(playerInfo, start, offset, params)
+	return self:OnUpdateModeTimes(playerInfo, start, offset, params)
 end
 
 return QuestTrainMount

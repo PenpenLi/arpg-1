@@ -16,14 +16,17 @@ end
 
 -- 更新进度, 如果目标完成返回true
 -- 子类需要重写 默认return false
-function AbstractQuest:OnUpdate(quest_ptr, start, offset, params)
+function AbstractQuest:OnUpdate(playerInfo, start, offset, params)
 	return false
 end
 
 -- (对象, 次数)类的更新
-function AbstractQuest:OnUpdateModeObjectTimes(quest_ptr, start, offset, params)
+function AbstractQuest:OnUpdateModeObjectTimes(playerInfo, start, offset, params, showname)
 	local finishMode = params[ 1 ]
 	local cnt = params[ 2 ] or 1
+	
+	local questMgr = playerInfo:getQuestMgr()
+	local quest_ptr = questMgr.ptr
 	
 	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
 	local qtIndx = GetOneQuestTargetStartIndx(start, offset)
@@ -36,6 +39,9 @@ function AbstractQuest:OnUpdateModeObjectTimes(quest_ptr, start, offset, params)
 	end
 	
 	process = math.min(process + cnt, dest)
+	if showname then
+		playerInfo:CallOptResult(OPERTE_TYPE_QUEST, QUEST_TYPE_PROCESS,{showname, process, dest})
+	end
 	binLogLib.SetUInt32(quest_ptr, qtIndx + QUEST_TARGET_INFO_PROCESS, process)
 	if process >= dest then
 		binLogLib.SetUInt16(quest_ptr, qtIndx + QUEST_TARGET_INFO_SHORT0, 0, 1)
@@ -46,7 +52,10 @@ function AbstractQuest:OnUpdateModeObjectTimes(quest_ptr, start, offset, params)
 end
 
 -- (次数)类的更新
-function AbstractQuest:OnUpdateModeTimes(quest_ptr, start, offset, params)
+function AbstractQuest:OnUpdateModeTimes(playerInfo, start, offset, params)
+	local questMgr = playerInfo:getQuestMgr()
+	local quest_ptr = questMgr.ptr
+	
 	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
 	local qtIndx = GetOneQuestTargetStartIndx(start, offset)
 	local dest = binLogLib.GetUInt16(quest_ptr, qtIndx + QUEST_TARGET_INFO_SHORT0, 1)
@@ -63,8 +72,11 @@ function AbstractQuest:OnUpdateModeTimes(quest_ptr, start, offset, params)
 end
 
 -- (数值)类的更新
-function AbstractQuest:OnUpdateModeValue(quest_ptr, start, offset, params)
+function AbstractQuest:OnUpdateModeValue(playerInfo, start, offset, params)
 	local value = params[ 1 ]
+	
+	local questMgr = playerInfo:getQuestMgr()
+	local quest_ptr = questMgr.ptr
 	
 	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
 	local qtIndx = GetOneQuestTargetStartIndx(start, offset)
@@ -80,9 +92,12 @@ function AbstractQuest:OnUpdateModeValue(quest_ptr, start, offset, params)
 end
 
 -- (对象, 数值)类的更新
-function AbstractQuest:OnUpdateModeObjectValue(quest_ptr, start, offset, params)
+function AbstractQuest:OnUpdateModeObjectValue(playerInfo, start, offset, params)
 	local finishMode = params[ 1 ]
 	local value = params[ 2 ]
+	
+	local questMgr = playerInfo:getQuestMgr()
+	local quest_ptr = questMgr.ptr
 	
 	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
 	local qtIndx = GetOneQuestTargetStartIndx(start, offset)

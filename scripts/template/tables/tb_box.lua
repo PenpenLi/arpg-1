@@ -5,7 +5,8 @@
 
 tb_box = {
 	--  id:int	宝箱道具id
-	--  dropid:int	掉落id
+	--  dropids:array	掉落id
 	--  cost:array	消耗
-	[50006] = {id = 50006,dropid = 5,cost = {},},
+	[50006] = {id = 50006,dropids = {5},cost = {},},
+	[50010] = {id = 50010,dropids = {6,7},cost = {},},
 }
