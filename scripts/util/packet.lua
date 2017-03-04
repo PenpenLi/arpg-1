@@ -34,6 +34,9 @@ function Packet:delete( )
 end
 
 function Packet:writeUTF( s )
+	if (type(s) ~= 'string') then
+		outFmtError(debug.traceback())
+	end
 	assert(type(s) == 'string')
 	packet.write_str(self.ptr, s)
 end
