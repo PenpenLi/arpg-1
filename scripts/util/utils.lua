@@ -106,7 +106,10 @@ end
 
 -- 是否是资源
 function IsResource(itemId)
-	return tb_item_template[itemId].money_type > 0
+	if (not tb_item_template[itemId]) then
+		print(debug.traceback())
+	end
+	return tb_item_template[itemId] and tb_item_template[itemId].money_type > 0
 end
 
 -- 获得资源类型
