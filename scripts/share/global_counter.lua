@@ -211,7 +211,7 @@ function GlobalCounter:BattleFinish(playerInfo, fightRank, battleResult)
 		playerInfo:DoujianFirstReward(fightRank)
 		
 		-- 成就
-		self:AddAchieve(7, 1)
+		self:AddAchieve(ACHIEVE_TYPE_DOUJIANTAI, 1)
 
 		-- 没排名情况下挑战
 		if prevRank == 0 then

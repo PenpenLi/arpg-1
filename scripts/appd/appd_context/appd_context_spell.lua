@@ -631,7 +631,7 @@ function PlayerInfo:upgraded()
 	self:DoAfterUpgrade(level+1)
 	
 	-- 成就
-	self:AddAchieve(2, 1)
+	self:AddAchieve(ACHIEVE_TYPE_MOUNT, 1)
 end
 
 -- 进阶后做某些事
@@ -897,6 +897,8 @@ function PlayerInfo:ApplyDivineActive(id,t)
 		-- 重算战斗力(当前和属性绑定在一起)
 		self:RecalcAttrAndBattlePoint()
 		
+		self:AddAchieve(ACHIEVE_TYPE_DIVINE_NUM,1)
+		
 		return true
 	end
 	return false
@@ -944,6 +946,8 @@ function PlayerInfo:DivineUpLev(divineId)
 	 		end
 			-- 重算战斗力(当前和属性绑定在一起)
 			self:RecalcAttrAndBattlePoint()
+			
+			self:AddAchieve(ACHIEVE_TYPE_DIVINE_LEV,1)
 	 	else
 	 		spellMgr:setDivinLevBless(idx,curlev,now)
 	 	end

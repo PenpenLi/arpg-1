@@ -1149,3 +1149,6 @@ doujiantai_refresh_enemys,c2s,270,/*斗剑台刷新对手*/,STATUS_NEVER,False
 #
 doujiantai_top3,both,271,/*斗剑台三甲*/,STATUS_NEVER,False
 	
+#
+use_jump_point,both,272,/*使用跳点*/,STATUS_NEVER,False
+	id,uint32,False,/*跳点id*/

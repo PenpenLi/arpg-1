@@ -274,6 +274,36 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 	end
 end
 
+function ScenedContext:Hanlde_Use_Jump_Point(pkt)
+	local id = pkt.id
+
+	-- 判断跳点是否存在
+	local config = tb_map_jump_point_detail[id]
+	if not config then
+		outFmtDebug("Hanlde_Use_Jump_Point not id for %d", id)
+		return
+	end
+	
+	-- 判断玩家是否在跳点触发范围内
+	if not Script_Gameobject_Pick_Check(self.ptr, config.entry, config.point[ 1 ], config.point[ 2 ]) then
+		outFmtDebug("Hanlde_Use_Jump_Point out of pos")
+		return
+	end
+	
+	-- 设置目标点
+	local destPoint = config.show[#config.show]
+	unitLib.SetPos(self.ptr, destPoint[ 1 ], destPoint[ 2 ])
+	outFmtDebug("lua set position to (%d, %d)", destPoint[ 1 ], destPoint[ 2 ])
+	-- 发送广播
+	local pkt = protocols.pack_use_jump_point (id)
+	pkt:writeU32(self:GetIntGuid())
+	app:Broadcast(self, pkt)
+	pkt:delete()
+	
+	--增加BUFF, 通过BUFF来控制跳跃时间
+	SpelladdBuff(self.ptr, BUFF_JUMP_JUMP, self.ptr, 1, config.last)
+end
+
 -- /*跳跃结束*/
 function ScenedContext:Hanlde_Jump_End(packet)
 	local player_ptr = self.ptr

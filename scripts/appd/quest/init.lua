@@ -22,6 +22,7 @@ require("appd.quest.QuestPick")
 require("appd.quest.QuestInspect")
 require("appd.quest.QuestKillMonster")
 require("appd.quest.QuestUseItem")
+require("appd.quest.QuestSuit")
 
 -- 这个一定要放到最后
 require("appd.quest.QuestManager")

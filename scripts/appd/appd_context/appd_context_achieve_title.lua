@@ -1,5 +1,22 @@
+-- 设置某种类型的成就
+function PlayerInfo:SetAchieve(type,num)
+	local list = tb_achieve_type_list[type]
+	
+	for _,v in ipairs(list) do
+		self:SetAchieveID(v,num)
+	end
+	
+end
+-- 增加某种类型的成就
+function PlayerInfo:AddAchieve(type,num)
+	local list = tb_achieve_type_list[type]
+	
+	for _,v in ipairs(list) do
+		self:AddAchieveID(v,num)
+	end
+end
 -- 设置某个成就
-function PlayerInfo:SetAchieve(id,num)
+function PlayerInfo:SetAchieveID(id,num)
 	local questMgr = self:getQuestMgr()
 	
 	local config = tb_achieve_base[id]
@@ -24,11 +41,11 @@ function PlayerInfo:SetAchieve(id,num)
 end
 
 -- 添加某个成就
-function PlayerInfo:AddAchieve(id,num)
+function PlayerInfo:AddAchieveID(id,num)
 	local questMgr = self:getQuestMgr()
 	local cur = questMgr:getAchieve(id)
 	cur = cur + num
-	self:SetAchieve(id,cur)
+	self:SetAchieveID(id,cur)
 end
 
 --获取成就值

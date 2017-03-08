@@ -69,6 +69,10 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 		return false
 	end
 	
+	if src_bag > MAX_BAG or dst_bag > MAX_BAG then
+		return false
+	end
+	
 	--校验下相互交换的包裹是否合法
 	if src_bag == BAG_TYPE_MAIN_BAG then
 		if dst_bag ~= BAG_TYPE_MAIN_BAG and dst_bag ~= BAG_TYPE_STORAGE and dst_bag ~= BAG_TYPE_STALL 
@@ -250,6 +254,10 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 		playerLib.SendAttr(owner.ptr)
 		--通知客户端交换位置成功
 		owner:CallOptResult(OPRATE_TYPE_BAG,BAG_RESULT_EXCHANGE_SUCCESS,dst_pos)
+		
+		-- 任务
+		local questMgr = owner:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_SUIT, {update_pos, src_item:getEntry()})
 	end
 	return true
 end

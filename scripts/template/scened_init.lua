@@ -89,3 +89,6 @@ require("template.tables.tb_kuafu_xianfu_killed_drop")
 require("template.tables.tb_kuafu_xianfu_condition")
 
 require("template.tables.tb_doujiantai_base")
+
+require("template.tables.tb_map_jump_point")
+require("template.tables.tb_map_jump_point_detail")

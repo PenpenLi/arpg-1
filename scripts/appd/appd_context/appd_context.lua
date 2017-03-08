@@ -1124,7 +1124,7 @@ function PlayerInfo:OnLevelChanged()
 	self:factionUpLevel()
 	
 	-- 成就
-	self:SetAchieve(1, self:GetLevel())
+	self:SetAchieve(ACHIEVE_TYPE_LEVEL, self:GetLevel())
 	-- 加任务
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_PLAYER_LEVEL, {self:GetLevel()})

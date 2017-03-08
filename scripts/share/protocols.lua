@@ -270,6 +270,7 @@ MSG_DOUJIANTAI_GET_ENEMYS_INFO		= 265	-- /*斗剑台挑战对手信息*/
 CMSG_DOUJIANTAI_GET_RANK		= 266	-- /*斗剑台排行榜*/	
 CMSG_DOUJIANTAI_REFRESH_ENEMYS		= 270	-- /*斗剑台刷新对手*/	
 MSG_DOUJIANTAI_TOP3		= 271	-- /*斗剑台三甲*/	
+MSG_USE_JUMP_POINT		= 272	-- /*使用跳点*/	
 
 
 ---------------------------------------------------------------------
@@ -9402,6 +9403,35 @@ function Protocols.unpack_doujiantai_top3 (pkt)
 end
 
 
+-- /*使用跳点*/	
+function Protocols.pack_use_jump_point ( id)
+	local output = Packet.new(MSG_USE_JUMP_POINT)
+	output:writeU32(id)
+	return output
+end
+
+-- /*使用跳点*/	
+function Protocols.call_use_jump_point ( playerInfo, id)
+	local output = Protocols.	pack_use_jump_point ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*使用跳点*/	
+function Protocols.unpack_use_jump_point (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9664,6 +9694,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_doujiantai_get_rank = self.call_doujiantai_get_rank
 	playerInfo.call_doujiantai_refresh_enemys = self.call_doujiantai_refresh_enemys
 	playerInfo.call_doujiantai_top3 = self.call_doujiantai_top3
+	playerInfo.call_use_jump_point = self.call_use_jump_point
 end
 
 local unpack_handler = {
@@ -9923,6 +9954,7 @@ local unpack_handler = {
 [CMSG_DOUJIANTAI_GET_RANK] =  Protocols.unpack_doujiantai_get_rank,
 [CMSG_DOUJIANTAI_REFRESH_ENEMYS] =  Protocols.unpack_doujiantai_refresh_enemys,
 [MSG_DOUJIANTAI_TOP3] =  Protocols.unpack_doujiantai_top3,
+[MSG_USE_JUMP_POINT] =  Protocols.unpack_use_jump_point,
 
 }
 

@@ -35,5 +35,7 @@ OpcodeHandlerFuncTable[CMSG_XIANFU_RANDOM_RESPAWN] = ScenedContext.Handle_random
 
 --OpcodeHandlerFuncTable[CMSG_CHANGE_LINE] = ScenedContext.Hanlde_Change_Line
 
+OpcodeHandlerFuncTable[MSG_USE_JUMP_POINT] = ScenedContext.Hanlde_Use_Jump_Point
+
 
 return OpcodeHandlerFuncTable

@@ -146,6 +146,7 @@ config = {
 		CMSG_LOOT_SELECT,
 		CMSG_GOLD_RESPAWN,			--元宝复活
 		MSG_CLIENTSUBSCRIPTION,		--/*查询头像的buffer信息*/
+		MSG_USE_JUMP_POINT,		-- 使用跳点
 		--CMSG_CHANGE_LINE,
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/

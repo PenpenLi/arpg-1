@@ -884,6 +884,8 @@ Instance_base = {
 	OnInitWorldObject = 
 		function(self)
 			local mapid = self:GetMapId()
+			
+			-- 采集物
 			if tb_map_gameobject[mapid] then
 				local objects = tb_map_gameobject[mapid].gameobjects
 				for _, id in pairs(objects) do
@@ -892,6 +894,17 @@ Instance_base = {
 						local gameObject = mapLib.AddGameObject(self.ptr, config.entry, config.position[ 1 ], config.position[ 2 ], GO_GEAR_STATUS_END)
 						local orient = config.angle * math.pi / 180
 						unitLib.SetOrientation(gameObject, orient)
+					end
+				end
+			end
+			
+			-- 跳点
+			if tb_map_jump_point[mapid] then
+				local objects = tb_map_jump_point[mapid].jumps
+				for _, id in pairs(objects) do
+					local config = tb_map_jump_point_detail[id]
+					if config then
+						mapLib.AddGameObject(self.ptr, config.entry, config.point[ 1 ], config.point[ 2 ], GO_GEAR_STATUS_END, config.id)
 					end
 				end
 			end

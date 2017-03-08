@@ -118,6 +118,34 @@ function AbstractQuest:OnUpdateModeObjectValue(playerInfo, start, offset, params
 	return false
 end
 
+-- (对象, 对象)类的更新
+function AbstractQuest:OnUpdateDoubleModeObject(playerInfo, start, offset, params)
+	local finishMode  = params[ 1 ]
+	local finishMode2 = params[ 2 ]
+	
+	local questMgr = playerInfo:getQuestMgr()
+	local quest_ptr = questMgr.ptr
+	
+	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
+	local qtIndx = GetOneQuestTargetStartIndx(start, offset)
+	local dest = binLogLib.GetUInt16(quest_ptr, qtIndx + QUEST_TARGET_INFO_SHORT0, 1)
+	local process = binLogLib.GetUInt32(quest_ptr, qtIndx + QUEST_TARGET_INFO_PROCESS)
+	
+	local mode = tb_quest[questId].targets[offset+1][ 2 ]
+	if mode ~= 0 and finishMode ~= mode then
+		return false
+	end
+	
+	local mode2 = tb_quest[questId].targets[offset+1][ 3 ]
+	if mode2 ~= 0 and finishMode2 ~= mode2 then
+		return false
+	end
+	
+	binLogLib.SetUInt32(quest_ptr, qtIndx + QUEST_TARGET_INFO_PROCESS, 1)
+	binLogLib.SetUInt16(quest_ptr, qtIndx + QUEST_TARGET_INFO_SHORT0, 0, 1)
+	return true
+end
+
 -- 获得一个目标binlog的初始位置
 function GetOneQuestTargetStartIndx(start, offset)
 	return start + QUEST_INFO_STEP_START + offset * MAX_QUEST_TARGET_INFO_COUNT

@@ -332,41 +332,48 @@ end
 -- 领取奖励
 function AppQuestMgr:OnPickQuest(indx)
 	local start = QUEST_FIELD_QUEST_START + indx * MAX_QUEST_INFO_COUNT
-	local playerInfo = self:getOwner()
 	
 	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 	local state   = self:GetUInt16(start + QUEST_INFO_ID, 1)
-	if state == QUEST_STATUS_COMPLETE then
-		self:OnRemoveQuest(start)
-		-- 领取奖励
-		if #tb_quest[questId].rewards > 0 then
-			local gender = playerInfo:GetGender()
-			if #tb_quest[questId].rewards == 1 then
-				gender = 1
-			end
-			local rewards = tb_quest[questId].rewards[gender]
-			-- 判断背包格子是否足够
-			local itemMgr = playerInfo:getItemMgr()
-			local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
-			if emptys < #rewards then
-				playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
-				return
-			end
-			playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
-		end
-		
-		-- 如果是主线任务 当前主线任务id + 1000000 表示完成
-		if tb_quest[questId].type == QUEST_TYPE_MAIN then
-			playerInfo:SetMainQuestID(1000000 + questId)
-		end
-		
-		-- 如果是章节最后一个任务 自动领取章节奖励
-		if tb_quest[questId].chapterLast == 1 then
-			local chapterIndex = tb_quest[questId].chapter
-			self:OnPickQuestChapterReward(chapterIndex)
-		end
-		self:ActiveFlowingQuests(questId)
+	if questId > 0 and state == QUEST_STATUS_COMPLETE then
+		self:OnInnerPickQuest(start)
 	end
+end
+
+-- 内部领取奖励
+function AppQuestMgr:OnInnerPickQuest(start)
+	local playerInfo = self:getOwner()
+	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+	
+	self:OnRemoveQuest(start)
+	-- 领取奖励
+	if #tb_quest[questId].rewards > 0 then
+		local gender = playerInfo:GetGender()
+		if #tb_quest[questId].rewards == 1 then
+			gender = 1
+		end
+		local rewards = tb_quest[questId].rewards[gender]
+		-- 判断背包格子是否足够
+		local itemMgr = playerInfo:getItemMgr()
+		local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
+		if emptys < #rewards then
+			playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
+			return
+		end
+		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
+	end
+	
+	-- 如果是主线任务 当前主线任务id + 1000000 表示完成
+	if tb_quest[questId].type == QUEST_TYPE_MAIN then
+		playerInfo:SetMainQuestID(1000000 + questId)
+	end
+	
+	-- 如果是章节最后一个任务 自动领取章节奖励
+	if tb_quest[questId].chapterLast == 1 then
+		local chapterIndex = tb_quest[questId].chapter
+		self:OnPickQuestChapterReward(chapterIndex)
+	end
+	self:ActiveFlowingQuests(questId)
 end
 
 -- 如果需要初始化进度的
@@ -539,7 +546,14 @@ function AppQuestMgr:CheckQuestFinish(start)
 		end
 	end
 	
-	self:SetUInt16(start + QUEST_INFO_ID, 1, QUEST_STATUS_COMPLETE)
+	-- 不是自动跳过的对话的需要这样
+	if targets[ 1 ][ 1 ] ~= QUEST_TARGET_TYPE_TALK or config.popup ~= 0 then
+		self:SetUInt16(start + QUEST_INFO_ID, 1, QUEST_STATUS_COMPLETE)
+		return
+	end
+	
+	-- 是对话的直接跳到下一步
+	self:OnInnerPickQuest(start)
 end
 
 -------------------------------上面是任务-------------------------------
