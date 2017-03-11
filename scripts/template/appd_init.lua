@@ -93,6 +93,9 @@ require("template.tables.tb_welfare_back")
 -- 任务
 require("template.tables.tb_quest")
 require("template.tables.tb_quest_chapter")
+require("template.tables.tb_quest_daily_base")
+require("template.tables.tb_quest_daily")
+
 
 --竞技
 require("template.tables.tb_kuafu3v3_base")

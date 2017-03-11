@@ -300,9 +300,76 @@ QUEST_FIELD_QUEST_END			//任务结束
 	QUEST_STATUS_FAILED         = 5,		//失败
 --]]
 
+-- 每完成一个每日任务判断是否需要领奖
+function AppQuestMgr:OnGetDailyQuestRewards()
+	local playerInfo = self:getOwner()
+	local finished = playerInfo:GetDailyQuestFinished()
+	local config = tb_quest_daily[finished]
+	if config then
+		local rewards = config.rewards
+		-- 判断背包格子是否足够
+		local itemMgr = playerInfo:getItemMgr()
+		local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
+		if emptys < #rewards then
+			playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
+			return
+		end
+		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
+	end
+end
+
+-- 随机生成每日任务
+function AppQuestMgr:RandomGenerateDailyQuest()
+	local playerInfo = self:getOwner()
+	-- 如果已经做完了就不接了
+	local finished = playerInfo:GetDailyQuestFinished()
+	if finished >= tb_quest_daily_base[ 1 ].dailyLimit then
+		return
+	end
+	
+	-- 接下一个任务
+	local level = playerInfo:GetLevel()
+	local questList = tb_quest_daily_list[level]
+	if questList then
+		local indx = randInt(1, #questList)
+		local questId = questList[indx]
+		self:OnAddQuest(questId)
+	else
+		outFmtError("designer not set daily quest in tb_char_level or programer not init")
+	end
+end
+
+function AppQuestMgr:OnDailyQuestReset()
+	local playerInfo = self:getOwner()
+	playerInfo:ClearDailyQuestFinished()
+	
+	-- 给每日任务的第一个任务
+	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+
+		if questId > 0 and tb_quest[questId].type == QUEST_TYPE_DAILY then
+			self:OnRemoveQuest(start)
+			break
+		end
+	end
+	self:OnAddQuest(tb_quest_daily_base[ 1 ].npcQuest)
+end
+
 -- 激活下一个关联的任务
 function AppQuestMgr:ActiveFlowingQuests(questId)
 	local config = tb_quest[questId]
+	local playerInfo = self:getOwner()
+	
+	-- 每日任务
+	if config.type == QUEST_TYPE_DAILY then
+		if config.start == 0 then
+			-- 完成数+1
+			playerInfo:AddDailyQuestFinished()
+		end
+		self:OnGetDailyQuestRewards()
+		self:RandomGenerateDailyQuest()
+		return
+	end
 	
 	-- 是否有下一个主线
 	if config.nextid > 0 then
@@ -547,7 +614,7 @@ function AppQuestMgr:CheckQuestFinish(start)
 	end
 	
 	-- 不是自动跳过的对话的需要这样
-	if targets[ 1 ][ 1 ] ~= QUEST_TARGET_TYPE_TALK or config.popup ~= 0 then
+	if targets[ 1 ][ 1 ] ~= QUEST_TARGET_TYPE_TALK and config.popup ~= 0 then
 		self:SetUInt16(start + QUEST_INFO_ID, 1, QUEST_STATUS_COMPLETE)
 		return
 	end

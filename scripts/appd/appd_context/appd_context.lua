@@ -1120,11 +1120,11 @@ end
 
 -- 等级改变了
 function PlayerInfo:OnLevelChanged()
-	print("level changed")
+	outFmtDebug("level changed")
 	self:factionUpLevel()
 	
 	-- 成就
-	self:SetAchieve(ACHIEVE_TYPE_LEVEL, self:GetLevel())
+	self:SetAchieve(QUEST_TARGET_TYPE_PLAYER_LEVEL, self:GetLevel())
 	-- 加任务
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_PLAYER_LEVEL, {self:GetLevel()})
@@ -1133,7 +1133,7 @@ end
 
 -- 战力改变了
 function PlayerInfo:OnForceChanged()
-	print("force changed")
+	outFmtDebug("force changed")
 	self:factionUpForce()
 	-- 加任务
 	local questMgr = self:getQuestMgr()
@@ -1396,6 +1396,26 @@ end
 -- 清空欠款
 function PlayerInfo:ClearArrears()
 	self:SetDouble(PLAYER_INT_FIELD_ARREARS, 0)
+end
+
+-- 每日任务完成数
+function PlayerInfo:GetDailyQuestFinished()
+	return self:GetUInt32(PLAYER_INT_FIELD_DAILY_QUEST_FINISHED)
+end
+
+-- 获得每日任务完成数
+function PlayerInfo:GetDailyQuestFinished()
+	return self:GetUInt32(PLAYER_INT_FIELD_DAILY_QUEST_FINISHED)
+end
+
+-- 增加每日任务完成数
+function PlayerInfo:AddDailyQuestFinished()
+	self:AddUInt32(PLAYER_INT_FIELD_DAILY_QUEST_FINISHED, 1)
+end
+
+-- 清空每日任务完成数
+function PlayerInfo:ClearDailyQuestFinished()
+	self:SetUInt32(PLAYER_INT_FIELD_DAILY_QUEST_FINISHED, 0)
 end
 
 -- 关闭连接

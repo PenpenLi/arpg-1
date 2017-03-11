@@ -99,4 +99,5 @@ function PlayerInfo:onRealReset()
 	self:DoDoujiantaiDayReward()
 	
 	self:RefreshDoujiantaiEnemy()
+	self:DailyQuestReset()
 end

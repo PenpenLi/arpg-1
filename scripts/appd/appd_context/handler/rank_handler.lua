@@ -52,10 +52,8 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 	data.my_guid = self:GetGuid()
 	data.ranktype = types
 	function data.fun (data, objs)
-		--print("callbacked ===================")
 		local targetPlayer = objs[data.callback_guid]
 		if not targetPlayer then return end
-		--print("target player =", targetPlayer:GetGuid())
 		
 		local myplayer = app.objMgr:getObj(data.my_guid)
 		if not myplayer then return end

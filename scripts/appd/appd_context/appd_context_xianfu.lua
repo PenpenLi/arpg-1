@@ -15,7 +15,7 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 	-- 这里获得3v3队伍匹配的信息
 	data.player_guid = self:GetGuid()
 	data.indx = indx
-	print("$$$$$$$$$$$$$$$$$$$$$$", data.indx)
+	outFmtDebug("$$$$$$$$$$$$$$$$$$$$$$ %d", data.indx)
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		outFmtDebug("OnCheckWorldXianfuMatch", response)
@@ -30,7 +30,7 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 		
 		
 		if dict then
-			print("OnCheckWorldXianfuMatch result", dict.ret, dict.msg)
+			outFmtDebug("OnCheckWorldXianfuMatch result %d %s", dict.ret, dict.msg)
 			-- 匹配到了
 			if dict.ret == 0 then
 				local login_fd = serverConnList:getLogindFD()
@@ -66,10 +66,10 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 			elseif dict.ret == 1 then
 				local target = dict.target
 				local count = dict.count
-				print("taget = ", target, "count = ", count)
+				outFmtDebug("taget = %d, count = %d", target, count)
 				self:call_kuafu_xianfu_match_wait(target ,count)
 			elseif dict.ret == 2 then
-				print("== player on cancel match", self:GetGuid())
+				outFmtDebug("== player on cancel match, %s", self:GetGuid())
 				self:OnCancelMatch(KUAFU_TYPE_XIANFU)
 			end
 		end
@@ -88,7 +88,7 @@ function PlayerInfo:OnCancelWorldXianfuMatchBeforeOffline()
 	local data = {}
 	data.player_guid = self:GetGuid()
 	data.indx = app:GetKuafuTypeMatchingArg(self:GetGuid())
-	print("OnCancelWorldXianfuMatchBeforeOffline", data.indx)
+	outFmtDebug("OnCancelWorldXianfuMatchBeforeOffline %d", data.indx)
 	data.open_time = 1
 	self:OnCancelMatch(KUAFU_TYPE_XIANFU)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
@@ -123,7 +123,7 @@ function PlayerInfo:OnWorldXianfuMatch(indx)
 		)
 		
 		if dict then
-			print("OnWorldXianfuMatch", dict.ret, dict.msg)
+			outFmtDebug("OnWorldXianfuMatch %d %s", dict.ret, dict.msg)
 		end
 	end)
 	
@@ -149,9 +149,14 @@ function PlayerInfo:CheckWorldXianfuReward()
 			end
 		)
 		if dict then
-			print(dict.ret, dict.msg, self:GetGuid())
+			outFmtDebug("%d %s %s", dict.ret, dict.msg, self:GetGuid())
 			
 			if dict.ret == 0 then
+				
+				-- 任务
+				local questMgr = self:getQuestMgr()
+				questMgr:OnUpdate(QUEST_TARGET_TYPE_JOIN_XIANFU)
+				
 				local data = dict.details
 				local itemInfoTable = string.split(data, ",")
 				
@@ -206,7 +211,7 @@ function PlayerInfo:OnSyncMoney()
 			if dict.ret == 0 then
 				local changed = dict.changed
 				if changed ~= 0 then
-					print("got changed ====================== ", changed)
+					outFmtDebug("got changed ====================== %d", changed)
 				end
 				local origin = MONEY_CHANGE_KUAFU_WORLD_XIANFU
 				if changed > 0 then

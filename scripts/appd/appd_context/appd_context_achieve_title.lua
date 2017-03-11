@@ -33,6 +33,10 @@ function PlayerInfo:SetAchieveID(id,num)
 		questMgr:setAchieve(id,config.maxnum)
 		questMgr:setHasAchieve(id)
 		questMgr:addAchieveAll(config.achval)
+		
+		-- 任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_ACHIEVE, {questMgr:getAchieveAll()})
 		return
 	end
 	
@@ -84,6 +88,12 @@ function PlayerInfo:AchieveReward(id)
 	
 end
 
+--总成就奖励
+function PlayerInfo:GetAchieveAll()
+	local questMgr = self:getQuestMgr()
+	return questMgr:getAchieveAll()
+end
+
 --领取总成就奖励
 function PlayerInfo:AchieveAllReward()
 	local questMgr = self:getQuestMgr()
@@ -109,6 +119,26 @@ function PlayerInfo:AchieveAllReward()
 	
 end
 
+--是否拥有称号
+function PlayerInfo:HasTitle(id)
+	local questMgr = self:getQuestMgr()
+	local tf,idx = questMgr:hasTitle(id)
+	return tf
+end
+--是否装配称号
+function PlayerInfo:HasEquTitle(id)
+	local cur = self:GetByte(PLAYER_FIELD_BYTES_2,3)
+	if id == 0 then
+		if cur > 0 then
+			return true
+		end
+	else 
+		if cur == id then
+			return true
+		end
+	end
+	return false
+end
 --添加称号
 function PlayerInfo:AddTitle(id)
 	local questMgr = self:getQuestMgr()
@@ -126,10 +156,14 @@ function PlayerInfo:SetTitle(id)
 	if id == 0 then
 		has = true
 	end
-	
+
 	if has then
 		self:SetByte(PLAYER_FIELD_BYTES_2,3,id)
 		self:CallOptResult(OPRATE_TYPE_ACHIEVE, ACHIEVE_OPERATE_TITLE_SUC)
+		
+		-- 任务
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_SUIT_TITLE, {id})
 	else
 		self:CallOptResult(OPRATE_TYPE_ACHIEVE, ACHIEVE_OPERATE_TITLE_FAL)
 	end
@@ -159,4 +193,11 @@ end
 function PlayerInfo:pickQuest(indx)
 	local questMgr = self:getQuestMgr()
 	questMgr:OnPickQuest(indx)
+end
+
+
+--- 每日任务重置
+function PlayerInfo:DailyQuestReset()
+	local questMgr = self:getQuestMgr()
+	questMgr:OnDailyQuestReset()
 end

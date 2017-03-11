@@ -11,10 +11,12 @@ function RobotdObjectManager:ctor( player )
 	--所有的binlogod
 	self.binlogTypes = {}
 	self.binlogInstances = {}
-	self.binlogTypes[guidMgr.ObjectTypeUnit] = require('robotd.object.robotd_unit')	--精灵对象
+	self.binlogTypes[guidMgr.ObjectTypeUnit] = require('robotd.object.robotd_unit')		--精灵对象
 	self.binlogTypes[guidMgr.ObjectTypeMap] = require('robotd.object.robotd_map_info')	--地图对象
+	self.binlogTypes[guidMgr.ObjectTypeItemMgr] = require('robotd.object.robotd_item')	--物品对象
+	self.binlogTypes[guidMgr.ObjectTypeQuest] = require('robotd.object.robotd_quest')	--任务对象
+	self.binlogTypes[guidMgr.ObjectTypeSpell] = require('robotd.object.robotd_spell')	--技能对象
 	
-		
 	self.__tags = require('util.tags_manager').new()
 	self.__objs = {}
 	self.__ptr2obj = {}
@@ -35,11 +37,18 @@ function RobotdObjectManager:afterAttachObject( obj )
 	elseif(prefix == guidMgr.ObjectTypeMap)then
 		self.player.mapInfo = obj
 		return
-	elseif(prefix == guidMgr.ObjectTypeItem)then
-		self.player:AddItem(obj)
+	elseif(prefix == guidMgr.ObjectTypeItemMgr)then
+		self.player.itemMgr = obj
+		return
+	-- 任务对象
+	elseif (prefix == guidMgr.ObjectTypeQuest) then
+		self.player.quest = obj
+		return
+	elseif (prefix == guidMgr.ObjectTypeSpell) then
+		self.player.spellMgr = obj
 		return
 	elseif(obj:GetGuid() == GLOBAL_GAME_CONFIG)then
-		self.player.gameconfig = obj;
+		self.player.gameconfig = obj
 		return
 	end
 end

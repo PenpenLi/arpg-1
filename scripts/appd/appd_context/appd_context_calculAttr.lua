@@ -270,7 +270,7 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 		end
 	end
 	
-	print("base skill force ", battleForce)
+	outFmtDebug("base skill force %d", battleForce)
 	
 	-- 装备
 	local itemMgr = self:getItemMgr()
@@ -284,7 +284,7 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	local nonForce = spellMgr:calculMountAttr(attrs)
 	battleForce = battleForce + nonForce
 	
-	print("mount force ", battleForce)
+	outFmtDebug("mount force %d", battleForce)
 		
 	printAttr("mount ", attrs)
 	
@@ -318,7 +318,7 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	end
 	
 	
-	print("illusion force ", battleForce)	
+	outFmtDebug("illusion force %d", battleForce)	
 	printAttr("illusion ", attrs)
 
 	-- 神兵
@@ -349,19 +349,19 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 		end
 	end
 	
-	print("all force ", battleForce)	
+	outFmtDebug("all force %d", battleForce)	
 	
 	binLogLib.SetDouble(attr_binlog, 0, battleForce)
 end
 
 function printAttr(str, dict)
-	print("attr after ", str)
+	outFmtDebug("attr after %s", str)
 	local list = {}
 	for k, v in pairs(dict) do
 		table.insert(list, k..":"..v)
 	end
-	print(string.join(" ", list))
-	print("----------------")
+	outFmtDebug(string.join(" ", list))
+	outFmtDebug("----------------")
 end
 
 function PlayerInfo:GetSkillBattlePoint(spellId, lv)

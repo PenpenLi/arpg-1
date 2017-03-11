@@ -31,7 +31,10 @@ end
 
 --获取栈的描述字符串
 function ActionBase:ToString()
-	local strTable = self:GetName() .. " "
+	local x,y = self.player:GetPos()
+	local mapid = self.player:GetMapID()
+	local nowpos = string.format("now (%d, %d, %d)", mapid, x, y)
+	local strTable = self:GetName() .. " " .. nowpos .. " "
 	for k,v in pairs(self) do
 		local strK = ""
 		if type(k) == "string" then

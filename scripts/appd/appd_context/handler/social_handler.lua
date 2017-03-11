@@ -54,10 +54,10 @@ function PlayerInfo:Handle_Revenge_Enemy(pkt)
 	data.callback_guid = guid
 	data.my_guid = self:GetGuid()
 	function data.fun (data, objs)
-		print("callbacked ===================")
+		outFmtDebug("callbacked ===================")
 		local targetPlayer = objs[data.callback_guid]
 		if not targetPlayer then return end
-		print("target player =", targetPlayer:GetGuid())
+		outFmtDebug("target player = %s", targetPlayer:GetGuid())
 	end
 	GetObjects(data)
 end

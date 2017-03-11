@@ -211,7 +211,11 @@ function GlobalCounter:BattleFinish(playerInfo, fightRank, battleResult)
 		playerInfo:DoujianFirstReward(fightRank)
 		
 		-- 成就
-		self:AddAchieve(ACHIEVE_TYPE_DOUJIANTAI, 1)
+		playerInfo:AddAchieve(QUEST_TARGET_TYPE_DOUJIANTAI, 1)
+		
+		-- 任务
+		local questMgr = playerInfo:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_DOUJIANTAI)
 
 		-- 没排名情况下挑战
 		if prevRank == 0 then
@@ -304,7 +308,7 @@ function GlobalCounter:NoticeEnemyToRefreshIfItIsPlayer(guid, rank)
 			enemyInfo:SetDoujiantaiRank(rank)
 			-- 名次变了需要刷新可挑战对手信息
 			local instMgr = enemyInfo:getInstanceMgr()
-			print("enemy RefreshEnemysAfterRankChanged")
+			outFmtDebug("enemy RefreshEnemysAfterRankChanged")
 			instMgr:RefreshEnemysAfterRankChanged()
 		end
 	end

@@ -15,7 +15,10 @@ function PlayerInfo:ctor(account, fd, robot_ptr)
 	self.generalWarTime = 0
 	self.isWipeOut = false
 	self:UnitMgrInit()
+	self:ItemMgrInit()
 	self:ActionInit()
+	
+	self.questStart = false
 end
 
 --打印调试信息
@@ -164,20 +167,77 @@ end
 --发送gm命令
 function PlayerInfo:SendGmCommand(comm)
 	--outFmtDebug("PlayerInfo:SendGmCommand gmlv:%s %s ===================== ",self:GetGMLevel(),comm)
-	if(self:GetGMLevel() == 0)then
+	--if(self:GetGMLevel() == 0)then
 		--没有权限就不用发了
 		--assert(false)
-		return false
-	end
+	--	return false
+	--end
 	
-	self:call_chat(CHAT_TYPE_WORLD , "" ,comm)
+	self:call_chat_by_channel(CHAT_TYPE_WORLD, comm)
 end
+
 function PlayerInfo:GetKuafuJoin()
 	return self:GetFlags(PLAYER_FLAG_KUAFU_JOIN)
+end
+
+-- []
+function PlayerInfo:RandomInt(limit)
+	limit = limit or 100
+	if limit < 1 then
+		limit = 100
+	end
+	local randDict = {-100000000, -1, 0, limit, limit+1, 100000000}
+	local type = randInt(1, #randDict)
+	local ret = randDict[type]
+	if ret == limit then
+		ret = randInt(1, limit)
+	end
+	
+	return ret
+end
+
+-- 获得玩家的技能信息
+function PlayerInfo:GetSkillInfo()
+	local skillIdInfo = {{}}
+	local skillLevelInfo = {}
+	
+	for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
+		local id = self:GetUInt16(i, 0)
+		local lv = self:GetByte(i, 2)
+		local st = self:GetByte(i, 3)
+		if st == 1 then
+			table.insert(skillIdInfo[st], id)
+		else
+			skillIdInfo[st] = id
+		end
+		skillLevelInfo[st] = lv
+	end
+	
+	return skillIdInfo, skillLevelInfo
+end
+
+-- 释放技能
+function PlayerInfo:CastSpell(skillId, x, y, caster, target)
+	self:call_spell_start (skillId, x, y, caster, target)
+end
+
+--停止移动状态
+function PlayerInfo:stopMoving(x,y)
+	self:call_unit_move (self.my_unit:GetUIntGuid(), x, y, {x, y})
+	return self.my_unit:stopMoving(x,y)
+end
+
+
+function PathfindingGotoFailure(player, mapid)
+	local x, y = player:GetPos()
+	outFmtError("A player in (%d, %d) find path fail check %d.txt main road", x, y, mapid)
 end
 
 require("robotd.context.robotd_context_unit_mgr")
 require("robotd.context.robotd_context_hanlder")
 require("robotd.context.robotd_context_action_mgr")
+
+require("robotd.context.robotd_context_item_mgr")
+require("robotd.context.robotd_context_quest_mgr")
 
 return PlayerInfo

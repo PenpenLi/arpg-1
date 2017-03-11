@@ -236,7 +236,6 @@ packet.register_on_external_packet(function ( player_ptr, pkt )
 		logLib.WriteAttackPacker(self:GetGuid(), optcode, ACCACK_PACKET_TYPE_UNPACK, '')
 	else
 		args.__optcode = optcode		
-		--print("handler opcode = "..optcode)
 		if OpcodeHandlerFuncTable[optcode] then
 			doxpcall(OpcodeHandlerFuncTable[optcode], _player, args)
 		end

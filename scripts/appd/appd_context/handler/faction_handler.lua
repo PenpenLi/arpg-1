@@ -82,7 +82,7 @@ end
 function PlayerInfo:Handle_Faction_Create( pkt )
 	local name = pkt.name
 	local icon = pkt.icon
-	--print(name,"*",#name)
+
 	outFmtDebug("Handle_Faction_Create")
 	
 	--玩家已经有帮派了
@@ -191,7 +191,7 @@ end
 function PlayerInfo:Handle_Faction_Upgrade(pkt)
 	local faction_guid = self:GetFactionId()
 	if faction_guid == "" then
-		print("Handle_Faction_Upgrade with no faction = ")
+		outFmtDebug("Handle_Faction_Upgrade with no faction = ")
 		return
 	end
 	local faction = app.objMgr:getObj(faction_guid)
@@ -215,7 +215,7 @@ end
 
 --快速加入帮派
 function PlayerInfo:Handle_Faction_FastJoin(pkt)
-	print("Handle_Faction_FastJoin")
+	outFmtDebug("Handle_Faction_FastJoin")
 	local flag = true
 	app.objMgr:foreachAllFaction(function(faction)
 		
@@ -246,7 +246,7 @@ end
 function PlayerInfo:Hanlde_Faction_Apply( pkt )
 	local faction_guid = self:GetFactionId()
 	if faction_guid ~= "" then
-		print("you cannot join other, have faction = "..faction_guid)
+		outFmtDebug("you cannot join other, have faction = %s", faction_guid)
 		return
 	end
 

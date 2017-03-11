@@ -53,7 +53,7 @@ KUAFU_XIANFU_MAPID = 3003
 
 --pk服，根据跨服类型选择要传送到的地图id
 function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, reverse_str)
-	print("####################### kuafu_type == ", kuafu_type)
+	outFmtDebug("####################### kuafu_type = %d", kuafu_type)
 	
 	if(kuafu_type == KUAFU_TYPE_FENGLIUZHEN)then
 		local general_id = string.format("flz_%s", reverse_str)		--warid即房间id

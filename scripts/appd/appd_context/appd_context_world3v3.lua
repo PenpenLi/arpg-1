@@ -27,7 +27,7 @@ function PlayerInfo:OnCheckWorld3v3Match()
 		
 		
 		if dict then
-			print("OnCheckWorld3v3Match result", dict.ret, dict.msg)
+			outFmtDebug("OnCheckWorld3v3Match result %d %s", dict.ret, dict.msg)
 			-- 匹配到了
 			if dict.ret == 0 then
 				local login_fd = serverConnList:getLogindFD()
@@ -49,7 +49,7 @@ function PlayerInfo:OnCheckWorld3v3Match()
 				instMgr:add3v3EnterTimes()
 			-- timeout取消匹配
 			elseif dict.ret == 2 then
-				print("== player on cancel match", self:GetGuid())
+				outFmtDebug("== player on cancel match %s", self:GetGuid())
 				self:OnCancelMatch(KUAFU_TYPE_FENGLIUZHEN)
 			-- 有人未准备好
 			elseif dict.ret == 3 then
@@ -138,7 +138,7 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 		)
 		
 		if dict then
-			print("OnWorld3v3GroupMatch result", dict.ret, dict.msg, self:GetGuid())
+			outFmtDebug("OnWorld3v3GroupMatch result %d %s %s", dict.ret, dict.msg, self:GetGuid())
 		end
 	end)
 	
@@ -165,7 +165,7 @@ function PlayerInfo:CheckWorld3v3Reward()
 			end
 		)
 		if dict then
-			print(dict.ret, dict.msg, askguid)
+			outFmtDebug("%d %s %s", dict.ret, dict.msg, askguid)
 			
 			if dict.ret == 0 then
 				local data = dict.details
@@ -173,9 +173,14 @@ function PlayerInfo:CheckWorld3v3Reward()
 					data = json.decode(data)
 				end
 				self:AddKuafu3v3Score(data.score)
+				
+				-- 任务
+				local questMgr = self:getQuestMgr()
+				questMgr:OnUpdate(QUEST_TARGET_TYPE_JOIN_KUAFU_3V3)
 				-- data.honor
 				if data.result == 1 then
 					self:Kuafu3v3Win()
+					questMgr:OnUpdate(QUEST_TARGET_TYPE_WIN_KUAFU_3V3)
 				elseif data.result == -1 then
 					self:Kuafu3v3Lose()
 				else
@@ -215,7 +220,7 @@ function PlayerInfo:World3v3Rank()
 			end
 		)
 		if dict then
-			print(dict.ret, dict.msg)
+			outFmtDebug("%d %s", dict.ret, dict.msg)
 		end
 		
 	end)
@@ -238,7 +243,7 @@ function UpdateKuafuRank()
 		)
 		
 		if dict then
-			print(dict.ret, dict.msg)
+			outFmtDebug("%d %s", dict.ret, dict.msg)
 			if type(dict.details) == "string" and string.len(dict.details) > 0 then
 				dict.details = json.decode(dict.details)
 			end
@@ -252,7 +257,7 @@ end
 
 -- 准备比赛
 function PlayerInfo:OnPrepareMatch(oper)
-	print("OnPrepareMatch ", oper)
+	outFmtDebug("OnPrepareMatch %d", oper)
 	
 	local url = string.format("%s%s/prepare_match", globalGameConfig:GetExtWebInterface(), sub)
 	
@@ -272,7 +277,7 @@ function PlayerInfo:OnPrepareMatch(oper)
 		)
 		
 		if dict then
-			print(dict.ret, dict.msg)
+			outFmtDebug("%d %s", dict.ret, dict.msg)
 		
 			if dict.ret == 0 then
 				local wait_info = dict.wait_info

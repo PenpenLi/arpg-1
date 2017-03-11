@@ -19,4 +19,21 @@ for id,config in ipairs(tb_achieve_base) do
 	table.insert(tb_achieve_type_list[achtype],config.id)
 end
 
+tb_quest_daily_list = {}
+for id, config in ipairs(tb_char_level) do
+	local elements = {}
+	for _, val in ipairs(config.dailyQuests) do
+		table.insert(elements, val)
+	end
+	
+	local before = tb_quest_daily_list[id-1]
+	if before then
+		for _, val in ipairs(before) do
+			table.insert(elements, val)
+		end
+	end
+	
+	tb_quest_daily_list[id] = elements
+end
+
 --print(#tb_faction_shop_list)

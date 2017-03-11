@@ -66,7 +66,7 @@ function PlayerInfo:DoHandleRaiseSpell(raiseType, spellId)
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_RAISE_SKILL, {spellId})
 	
-	outFmtInfo("raise spell %d success, from %d to %d", spellId, prev, spellLv)
+	outFmtDebug("raise spell %d success, from %d to %d", spellId, prev, spellLv)
 end
 
 -- 设置技能信息
@@ -94,7 +94,7 @@ function PlayerInfo:DoHandleUpgradeAngleSpell(spellId)
 	--发送到场景服替换主动技能信息
 	--self:Send2ScenedReplaceEquipedSpell(slot, nextId, 1)
 	
-	outFmtInfo("upgrade spell success, from %d to %d", spellId, nextId)
+	outFmtDebug("upgrade spell success, from %d to %d", spellId, nextId)
 end
 
 -- 看看能否激活
@@ -215,7 +215,7 @@ function PlayerInfo:onActiveSpell(spellId, autoEquip)
 		else
 			self:SetSpellInfo(spellId, 1)
 		end
-		outFmtInfo("on active spell %d", spellId)
+		outFmtDebug("on active spell %d", spellId)
 		return
 	end
 	
@@ -242,14 +242,14 @@ function PlayerInfo:onActiveSpellWithoutInitiative(spellId)
 	if self:isPassiveSpell(config.is_initiative) then
 		--同步到p对象中
 		self:updatePassive(spellId, 1)
-		outFmtInfo("on active spell %d", spellId)
+		outFmtDebug("on active spell %d", spellId)
 		return
 	end
 	
 	-- 辅助技能
 	if self:isSupportSpell(config.is_initiative) then
 		playerLib.AddSupportSpell(self.ptr, spellId)
-		outFmtInfo("on active spell %d", spellId)
+		outFmtDebug("on active spell %d", spellId)
 		return
 	end
 end
@@ -482,7 +482,7 @@ function PlayerInfo:DoHandleRaiseMount()
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_TRAIN_MOUNT)
 	
-	outFmtInfo("raise from (%d, %d, %d) to (%d, %d, %d)", level, star, trainExp, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getTrainExp())
+	outFmtDebug("raise from (%d, %d, %d) to (%d, %d, %d)", level, star, trainExp, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getTrainExp())
 end
 
 -- 随机暴击值
@@ -523,7 +523,7 @@ function PlayerInfo:DoHandleUpgradeMount()
 		spellMgr:setBlessExp(now)
 	end
 	
-	outFmtInfo("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
+	outFmtDebug("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
 end
 
 -- 一键进阶
@@ -588,7 +588,7 @@ function PlayerInfo:DoHandleUpgradeMountOneStep(useItem)
 	if prev ~= now then
 		spellMgr:setBlessExp(now)
 	end
-	outFmtInfo("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
+	outFmtDebug("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
 end
 
 -- 进行进阶一次
@@ -631,7 +631,7 @@ function PlayerInfo:upgraded()
 	self:DoAfterUpgrade(level+1)
 	
 	-- 成就
-	self:AddAchieve(ACHIEVE_TYPE_MOUNT, 1)
+	self:AddAchieve(QUEST_TARGET_TYPE_MOUNT_LEVEL, 1)
 end
 
 -- 进阶后做某些事
@@ -897,7 +897,7 @@ function PlayerInfo:ApplyDivineActive(id,t)
 		-- 重算战斗力(当前和属性绑定在一起)
 		self:RecalcAttrAndBattlePoint()
 		
-		self:AddAchieve(ACHIEVE_TYPE_DIVINE_NUM,1)
+		self:AddAchieve(QUEST_TARGET_TYPE_DIVINE_NUM,1)
 		
 		return true
 	end
@@ -936,18 +936,18 @@ function PlayerInfo:DivineUpLev(divineId)
 
 	 		--激活对应的被动技能
 	 		local slist = tb_divine_base[divineId].passiveskill
-	 		--outFmtInfo("skill lengt",#slist)
+	 		--outFmtDebug("skill lengt",#slist)
 	 		for _, skill in pairs(slist) do
-	 			--outFmtInfo("passive skill %d,%d",skill[1],skill[2])
+	 			--outFmtDebug("passive skill %d,%d",skill[1],skill[2])
 	 			if skill[2] == nowLev then
-	 				--outFmtInfo("mingzhong passive skill %d",skill[1])
+	 				--outFmtDebug("mingzhong passive skill %d",skill[1])
 	 				self:onDivineActivedSpell(divineId,skill[1],true)
 	 			end
 	 		end
 			-- 重算战斗力(当前和属性绑定在一起)
 			self:RecalcAttrAndBattlePoint()
 			
-			self:AddAchieve(ACHIEVE_TYPE_DIVINE_LEV,1)
+			self:AddAchieve(QUEST_TARGET_TYPE_DIVINE_LEV,1)
 	 	else
 	 		spellMgr:setDivinLevBless(idx,curlev,now)
 	 	end

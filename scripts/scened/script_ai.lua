@@ -35,6 +35,7 @@ AI_Base = {
 		end,	--当伤害发生前
 	DamageDeal =
 		function(self,owner,unit,damage)
+			
 		end,	--当伤害发生后
 	--当生物产生伤害时 ps:unit可能是兵种
 	GiveDamage =
@@ -63,7 +64,10 @@ AI_Base = {
 			if GetUnitTypeID(killer_ptr) == TYPEID_PLAYER then
 				local isPkServer = globalGameConfig:IsPKServer()
 				if not isPkServer then
-					playerLib.SendToAppdDoSomething(killer_ptr, SCENED_APPD_KILL_MONSTER, entry)
+					local playerPtrs = mapLib.GetPlayersAfterCreatureDead(map, creatureInfo:GetIntGuid())
+					for _, player_ptr in ipairs(playerPtrs) do
+						playerLib.SendToAppdDoSomething(player_ptr, SCENED_APPD_KILL_MONSTER, entry)
+					end
 				end
 			end
 			return 0							--返回尸体的存活时间

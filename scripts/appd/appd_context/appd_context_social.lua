@@ -159,8 +159,8 @@ function PlayerInfo:SureApplyFriend(guid)
 		socialMgr:setSocilaItem(idx,0,0,"","")
 		self:AddFriend(friend)
 		
-		self:AddAchieve(ACHIEVE_TYPE_FRIEND,1)
-		friend:AddAchieve(ACHIEVE_TYPE_FRIEND,1)
+		self:AddAchieve(QUEST_TARGET_TYPE_FRIEND_NUM,1)
+		friend:AddAchieve(QUEST_TARGET_TYPE_FRIEND_NUM,1)
 		
 		return true
 	else
@@ -284,9 +284,6 @@ function PlayerInfo:AddGiftFriend(guid,gift)
 		end
 	end
 	
-	--for k,v in pairs(money) do
-	--	print(k,v[1],v[2])
-	--end
 
 	--是否有足够的资源
 	if not self:checkMoneyEnoughs(money) then

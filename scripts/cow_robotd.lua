@@ -9,6 +9,9 @@ require('util.functions')
 outString('operation_info.lua is loading')
 require("template.operation_info")
 
+outString('item_template.lua is loading')
+require("template.tables.init")
+
 config = {
 	war_server_optcode ={
 		CMSG_FORCED_INTO,

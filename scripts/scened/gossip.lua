@@ -30,7 +30,7 @@ end
 
 --客户端发起的世界地图传送
 function Script_WorldMap_Teleport(player,map_id,p_x,p_y)
-	print("Script_WorldMap_Teleport")
+	outFmtDebug("Script_WorldMap_Teleport")
 	
 	-- 是否在传送感应区内
 	
@@ -317,7 +317,7 @@ function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 	end
 	
 	if #itemDict > 0 then
-		print("call_appd_add_items")
+		outFmtDebug("call_appd_add_items")
 		call_appd_add_items(playerInfo:GetPlayerGuid(), itemDict, itemOperType)
 	end
 	

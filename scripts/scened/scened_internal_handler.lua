@@ -11,7 +11,7 @@ packet.register_on_internal_packet(function ( cid, pkt )
 	local optcode = packet.optcode(pkt)
 	local f = scenedInsternalHanlders[optcode]
 	if f then
-		f(Packet.new(nil, pkt))
+		doxpcall(f, Packet.new(nil, pkt))
 --		pkt:delete()
 	else
 		--print(cid)

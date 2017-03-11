@@ -24,5 +24,14 @@ require("appd.quest.QuestKillMonster")
 require("appd.quest.QuestUseItem")
 require("appd.quest.QuestSuit")
 
+require("appd.quest.QuestDoujiantaiWin")
+require("appd.quest.QuestAchieve")
+require("appd.quest.QuestSuitTitle")
+require("appd.quest.QuestSuitFashion")
+require("appd.quest.QuestJoinDoujiantai")
+require("appd.quest.QuestJoinWorld3V3")
+require("appd.quest.QuestWorld3v3Win")
+require("appd.quest.QuestJoinXianfu")
+
 -- 这个一定要放到最后
 require("appd.quest.QuestManager")

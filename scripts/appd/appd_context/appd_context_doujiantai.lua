@@ -64,6 +64,9 @@ function PlayerInfo:OnDoujiantaiFight(indx)
 	-- 发起传送
 	call_appd_teleport(self:GetScenedFD(), self:GetGuid(), x, y, DOUJIANTAI_MAP_ID, generalId)
 	
+	-- 任务
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_JOIN_DOUJIANTAI)
 	
 	instMgr:addDoujianEnterTimes()
 	curtime = curtime + 1

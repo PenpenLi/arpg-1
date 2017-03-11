@@ -156,7 +156,7 @@ function GetEnrolledPlayer()
 	
 	for playerGuid, _ in pairs(Enroll) do
 		local playerInfo = app.objMgr:getObj(playerGuid)
-		print(playerGuid, playerInfo)
+		outFmtDebug(playerGuid, playerInfo)
 		if playerInfo then
 			table.insert(tb, playerInfo)
 		end

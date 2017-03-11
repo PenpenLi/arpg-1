@@ -11,13 +11,14 @@ function ActionScenedUseGameObject:GetType()
 end
 
 --初始化变量
-function ActionScenedUseGameObject:Initialize(object_id, mapid, x, y)	
+function ActionScenedUseGameObject:Initialize(object_id, mapid, x, y, callback)	
 	self.to_mapid = mapid
 	self.to_x = x
 	self.to_y = y
 	self.object_id = object_id
 	self.is_goto = false
 	self.action_finish = false
+	self.callback = callback
 end
 
 --获取类型名
@@ -29,6 +30,9 @@ end
 function ActionScenedUseGameObject:Update(diff)
 	--已经完成所有动作
 	if(self.action_finish)then
+		if self.callback then
+			self.callback()
+		end
 		return false, 1
 	end
 
@@ -38,7 +42,7 @@ function ActionScenedUseGameObject:Update(diff)
 	if(self.is_goto == false)then
 		--已经在这里了就不用再寻路了
 		if(mapid == self.to_mapid and self.player.my_unit:GetDistanceByPos(self.to_x,self.to_y)<=3)then
-			outFmtDebug("ActionScenedUseGameObject:Update %s use object fail", self:ToString())
+			outFmtDebug("ActionScenedUseGameObject:Update is already exist")
 			self.is_goto = true
 			return true
 		end
@@ -73,7 +77,7 @@ function ActionScenedUseGameObject:Update(diff)
 		outFmtDebug("ActionScenedUseGameObject:Update object not find, %s", self:ToString())
 		return false, 3
 	else
-		self.player:call_use_gameobject(unit:GetUIntGuid(), 0)
+		self.player:call_use_gameobject(unit:GetUIntGuid())
 		--等待一秒以后退出
 		self:SetWaitTimeInterval(1000)
 		self.action_finish = true

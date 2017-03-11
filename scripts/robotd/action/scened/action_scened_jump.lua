@@ -7,9 +7,9 @@ function ActionJump:GetType()
 end
 
 --初始化变量
-function ActionJump:Initialize(x, y)
-	self.to_x = x
-	self.to_y = y
+function ActionJump:Initialize(indx, callback)
+	self.indx = indx
+	self.callback = callback
 	self.toJump = false
 end
 
@@ -22,13 +22,24 @@ end
 function ActionJump:Update(diff)
 	if(self.toJump == false)then
 		local x, y = self.player:GetPos()
-		outFmtDebug("~~~~~~~~~~~ActionJump~~~~~~~~~~~~~guid:%s fromx:%s fromy:%s tox:%s toy:%s", self.player.my_unit:GetGuid(), x,y,self.to_x ,self.to_y)
-		self.player.my_unit:stopMoving(x,y)
-		self.player:call_move_stop(self.player.my_unit:GetUIntGuid(),x,y)
-		self.player:call_spell_start(200 ,self.to_x ,self.to_y ,0 ,0)
-		self.player:SetPos(self.to_x, self.to_y)
-		self:SetWaitTimeInterval(2000)
+		-- 先停止
+		self.player:stopMoving(x,y)
+		
+		self.player:call_use_jump_point(self.indx)
+		local jump_info = tb_map_jump_point_detail[self.indx]
+		local len = #jump_info.show
+		local to = jump_info.show[len]
+		
+		outFmtDebug("~~~~~~~~~~~ActionJump~~~~~~~~~~~~~guid:%s fromx:%s fromy:%s tox:%s toy:%s", self.player.my_unit:GetGuid(), x,y,to[1] ,to[2])
+
+
+		self.player:SetPos(to[ 1 ], to[ 2 ])
+		self:SetWaitTimeInterval(jump_info.last * 1000)
+		
 		self.toJump = true
+		if self.callback then
+			self.callback()
+		end
 		return true
 	end
 	

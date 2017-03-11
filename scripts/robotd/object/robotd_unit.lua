@@ -7,9 +7,9 @@ end
 
 --获取整数guid
 function RobotdUnit:GetUIntGuid()
-	if(self.u_guid == nil)then		
+	if(self.u_guid == nil)then
 		local guid = self:GetGuid()
-		local index = string.find(guid, '%.')
+		local index = string.find(guid, '%.') or 0
 		guid = string.sub(guid, 2, index - 1)
 		self.u_guid = tonumber(guid)
 	end
@@ -43,12 +43,12 @@ end
 
 --获取模板ID
 function RobotdUnit:GetEntry()
-	return self:GetUInt32(UNIT_FIELD_ENTRY)
+	return self:GetUInt16(UNIT_FIELD_UINT16_0, 0)
 end
 
 --获取所在地图模板ID
 function RobotdUnit:GetMapID()
-	return self:GetUInt32(UNIT_FIELD_MAP_ID)
+	return self:GetUInt16(UNIT_FIELD_UINT16_1, 0)
 end
 
 --获取所在地图实例ID

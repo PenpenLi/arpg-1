@@ -5,42 +5,76 @@ function RobotdItem:ctor()
 	
 end
 
---获取模板ID
-function RobotdItem:GetEntry()
-	return self:GetUInt32(ITEM_FIELD_ENTRY)
+-- 遍历背包的数据
+function RobotdItem:foreach(callback)
+	for i = 128, 1000 do
+		local itemData = self:GetNeededItemData(i)
+		if itemData and callback then
+			callback(itemData)
+		end
+	end
 end
 
---获取数量
-function RobotdItem:GetCount()
-	return self:GetUInt32(ITEM_FIELD_STACK_COUNT)
+function RobotdItem:GetSuitEntryAndBagPosBySuitPos(suitpos, suitEntry)
+	suitEntry = suitEntry or 0
+	local entry, bagpos
+
+	self:foreach(function(item)
+		local config = tb_item_template[item.entry]
+		if config.pos > 0 and (suitpos == 0 or suitpos == config.pos) and (suitEntry == 0 or suitEntry == item.entry) then
+			entry = item.entry
+			bagpos = item.pos
+			return
+		end
+	end)
+
+	return entry, bagpos
 end
 
---获取所在包裹
-function RobotdItem:GetBag()
-	return self:GetUInt32(ITEM_FIELD_CONTAINED)
+function RobotdItem:GetItemPosByEntry(entry)
+	local pos
+
+	self:foreach(function(item)
+		if item.entry == entry then
+			pos = item.pos
+			return
+		end
+	end)
+
+	return pos
 end
 
---获取所在位置
-function RobotdItem:GetPos()
-	return self:GetUInt32(ITEM_FIELD_POS)
+function RobotdItem:GetItemGuidByEntry(entry)
+	local item_guid
+	self:foreach(function(item)
+		if item.entry == entry then
+			item_guid = item.item_guid
+			return 
+		end
+	end)
+	
+	return item_guid
 end
 
---是否需要鉴定
-function RobotdItem:GetNeedAppraisal()
-	return self:GetByte(ITEM_FIELD_EQUIP_BASE_INFO, 2)
+function RobotdItem:GetNeededItemData (indx)
+	if indx >= self:GetUInt32Len() then
+		return
+	end
+	local itemStr = self:GetStr(indx)
+	if (string.len(itemStr) == 0) then
+		return
+	end
+	local ary = string.split(itemStr, ";")
+	
+	local bgItem = {}
+	bgItem.pos = self:GetUInt32(indx)
+	bgItem.id	 = tonumber(ary[ 1 ])
+	bgItem.entry = tonumber(ary[ 2 ])
+	bgItem.count = tonumber(ary[ 3 ])
+	bgItem.dataIndex = indx
+	bgItem.item_guid = self:GetGuid() .. ";" .. bgItem.id
+	
+	return bgItem
 end
-
-
---获取装备战斗力
-function RobotdItem:GetEquipZDL()
-	return self:GetUInt32(ITEM_FIELD_EQUIP_ZDL)
-end
-
---获取强化等级
-function RobotdItem:GetStrengthenLev()
-	return self:GetByte(ITEM_FIELD_EQUIP_STRENGTHEN_LEV, 0)
-end
-
-
 
 return RobotdItem
