@@ -47,6 +47,7 @@ function ActionScenedGoto:Update(diff)
 	if self.is_jump then
 		return true
 	end
+	--[[
 	--新手村才需要检测跳跃
 	if(mapid == BORN_MAP)then
 		--检测当前坐标是否是跳跃点
@@ -65,7 +66,7 @@ function ActionScenedGoto:Update(diff)
 			end
 		end
 	end
-
+	]]
 	if(self.player.my_unit:IsMoving() == false)then
 		--outFmtDebug("================1111111111111111111111111111")
 		--寻路发包

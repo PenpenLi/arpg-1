@@ -90,8 +90,12 @@ end
 
 --寻找下一个要去的地图传送点
 function ActionScenedPathfinding:FindTeleObject()
+	local mapid = self.player:GetMapID()
+	if not tb_map_teleport[mapid] then
+		return
+	end
 	--当前地图所有的传送点
-	local tele_pos = tb_map_teleport[self.player:GetMapID()].teleports
+	local tele_pos = tb_map_teleport[mapid].teleports
 	-- 没有返回
 	if not tele_pos then return end
 	for	i, v in ipairs(tele_pos) do		

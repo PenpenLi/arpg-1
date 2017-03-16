@@ -291,13 +291,6 @@ MAX_QUEST_INFO_COUNT		= QUEST_INFO_STEP_END,
 
 QUEST_FIELD_QUEST_START			//任务开始
 QUEST_FIELD_QUEST_END			//任务结束
-
-	QUEST_STATUS_NONE           = 0,		// 
-	QUEST_STATUS_COMPLETE       = 1,		//完成
-	QUEST_STATUS_UNAVAILABLE    = 2,		//得不到的，没空的，不能利用的???
-	QUEST_STATUS_INCOMPLETE     = 3,		//不完全,未完成
-	QUEST_STATUS_AVAILABLE      = 4,		//有效，可接受
-	QUEST_STATUS_FAILED         = 5,		//失败
 --]]
 
 -- 每完成一个每日任务判断是否需要领奖
@@ -314,7 +307,7 @@ function AppQuestMgr:OnGetDailyQuestRewards()
 			playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
 			return
 		end
-		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
+		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_BAR)
 	end
 end
 
@@ -343,16 +336,55 @@ function AppQuestMgr:OnDailyQuestReset()
 	local playerInfo = self:getOwner()
 	playerInfo:ClearDailyQuestFinished()
 	
-	-- 给每日任务的第一个任务
+	-- 删除原来的任务
 	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
 		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 
-		if questId > 0 and tb_quest[questId].type == QUEST_TYPE_DAILY then
+		if questId > 0 and (tb_quest[questId].type == QUEST_TYPE_DAILY or tb_quest[questId].type == QUEST_TYPE_DAILY2) then
 			self:OnRemoveQuest(start)
-			break
 		end
 	end
+	-- 给每日任务的第一个任务
 	self:OnAddQuest(tb_quest_daily_base[ 1 ].npcQuest)
+	
+	-- 日常任务
+	self:OnAddQuest(tb_quest_daily2_base[ 1 ].npcQuest)
+	
+end
+
+-- 随机生成日常任务
+function AppQuestMgr:RandomGenerateDaily2Quest()
+	local indx = self:GetDaily2QuestIndx()
+	if indx > 0 then
+		local config = tb_quest_daily2[indx]
+		for i, questSetId in ipairs(config.questSet) do
+			local num = config.questSelectNum[ i ]
+			if num then
+				local questSet = tb_quest_daily2_set[questSetId].questSet
+				local rdDict = GetRandomIndexTable(#questSet, num)
+				
+				for _, indx in ipairs(rdDict) do
+					local questId = questSet[indx]
+					self:OnAddQuest(questId)
+				end
+			end
+		end
+	end
+end
+
+-- 随机生成日常任务
+function AppQuestMgr:GetDaily2QuestIndx()
+	local playerInfo = self:getOwner()
+	local level = playerInfo:GetLevel()
+	
+	for indx, info in ipairs(tb_quest_daily2) do
+		local levelrange = info.levelrange
+		if levelrange[ 1 ] <= level and level <= levelrange[ 2 ] then
+			return indx
+		end
+	end
+	
+	return 0
 end
 
 -- 激活下一个关联的任务
@@ -368,6 +400,14 @@ function AppQuestMgr:ActiveFlowingQuests(questId)
 		end
 		self:OnGetDailyQuestRewards()
 		self:RandomGenerateDailyQuest()
+		return
+	end
+	
+	-- 日常任务
+	if config.type == QUEST_TYPE_DAILY2 then
+		if config.start == 1 then
+			self:RandomGenerateDaily2Quest()
+		end
 		return
 	end
 	
@@ -407,12 +447,91 @@ function AppQuestMgr:OnPickQuest(indx)
 	end
 end
 
+-- 提交日常任务
+function AppQuestMgr:OnSubmitQuestDaily2()
+	local playerInfo = self:getOwner()
+	local finished = 0
+
+	local indice = self:GetQuestDaily2Indice()
+	-- 初始任务不能提交
+	if #indice == 1 then
+		return
+	end
+	
+	local all = #indice
+	local belongLvRangeId = 0
+	for _, start in ipairs(indice) do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+		local state = self:GetUInt16(start + QUEST_INFO_ID, 1)
+		
+		if state == QUEST_STATUS_COMPLETE then
+			self:OnInnerPickQuest(start)
+		end
+		state = self:GetUInt16(start + QUEST_INFO_ID, 1)
+		if state == QUEST_STATUS_END then
+			finished = finished + 1
+		end
+		
+		-- 设置显示模式
+		self:SetUInt16(start + QUEST_INFO_ID, 1, state + 10)
+		-- 所属等级段
+		belongLvRangeId = tb_quest[questId].belongLvRangeId
+	end
+
+	if tb_quest_daily2[belongLvRangeId] then
+		-- 给完成奖励
+		local config = tb_quest_daily2[belongLvRangeId]
+		if config.rewardsSelect[finished] then
+			local rewards = tb_quest_daily2_finish_reward[config.rewardsSelect[finished]].rewards
+			playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
+		end
+		
+		-- 给全部完成奖励
+		if finished >= all then
+			local rewards = config.allFinishrewards
+			playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
+		end
+	end
+end
+
+function AppQuestMgr:GetQuestDaily2Indice()
+	local indice = {}
+	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+
+		if questId > 0 and tb_quest[questId].type == QUEST_TYPE_DAILY2 then
+			table.insert(indice, start)
+		end
+	end
+	
+	return indice
+end
+
+-- 领取某个日常任务的奖励
+function AppQuestMgr:OnPickingDaily2Quest(questId)
+	local playerInfo = self:getOwner()
+	local questSetId = tb_quest[questId].belongSet
+	
+	if tb_quest_daily2_set[questSetId] then
+		local rewards = tb_quest_daily2_set[questSetId].rewards
+		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
+	end
+end
+
 -- 内部领取奖励
 function AppQuestMgr:OnInnerPickQuest(start)
 	local playerInfo = self:getOwner()
 	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+
+	-- 设一个已领取状态
+	self:OnQuestPicked(start)
 	
-	self:OnRemoveQuest(start)
+	-- 日常任务不能删除
+	if tb_quest[questId].type == QUEST_TYPE_DAILY2 and tb_quest[questId].start == 0 then
+		self:OnPickingDaily2Quest(questId)
+	else
+		self:OnRemoveQuest(start)
+	end
 	-- 领取奖励
 	if #tb_quest[questId].rewards > 0 then
 		local gender = playerInfo:GetGender()
@@ -427,7 +546,7 @@ function AppQuestMgr:OnInnerPickQuest(start)
 			playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
 			return
 		end
-		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST)
+		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_BAR)
 	end
 	
 	-- 如果是主线任务 当前主线任务id + 1000000 表示完成
@@ -508,6 +627,12 @@ function AppQuestMgr:OnAddQuest(addQuestId)
 	end
 	
 	outFmtDebug("quest max count excceed for add quest %d", addQuestId)
+end
+
+-- 通过位置移除任务
+function AppQuestMgr:OnQuestPicked(start)
+	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+	self:SetUInt16(start + QUEST_INFO_ID, 1, QUEST_STATUS_END)
 end
 
 -- 通过位置移除任务

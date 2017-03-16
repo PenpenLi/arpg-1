@@ -271,6 +271,7 @@ CMSG_DOUJIANTAI_GET_RANK		= 266	-- /*斗剑台排行榜*/
 CMSG_DOUJIANTAI_REFRESH_ENEMYS		= 270	-- /*斗剑台刷新对手*/	
 MSG_DOUJIANTAI_TOP3		= 271	-- /*斗剑台三甲*/	
 MSG_USE_JUMP_POINT		= 272	-- /*使用跳点*/	
+CMSG_SUBMIT_QUEST_DAILY2		= 280	-- /*提交日常任务*/	
 
 
 ---------------------------------------------------------------------
@@ -8003,8 +8004,9 @@ end
 
 
 -- /*获得奖励提示*/	
-function Protocols.pack_item_notice ( list)
+function Protocols.pack_item_notice ( showType ,list)
 	local output = Packet.new(SMSG_ITEM_NOTICE)
+	output:writeByte(showType)
 	output:writeI16(#list)
 	for i = 1,#list,1
 	do
@@ -8014,8 +8016,8 @@ function Protocols.pack_item_notice ( list)
 end
 
 -- /*获得奖励提示*/	
-function Protocols.call_item_notice ( playerInfo, list)
-	local output = Protocols.	pack_item_notice ( list)
+function Protocols.call_item_notice ( playerInfo, showType ,list)
+	local output = Protocols.	pack_item_notice ( showType ,list)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -8025,6 +8027,10 @@ function Protocols.unpack_item_notice (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.showType = input:readByte()
+	if not ret then
+		return false
+	end
 	ret,len = input:readU16()
 	if not ret then
 		return false
@@ -9432,6 +9438,31 @@ function Protocols.unpack_use_jump_point (pkt)
 end
 
 
+-- /*提交日常任务*/	
+function Protocols.pack_submit_quest_daily2 (  )
+	local output = Packet.new(CMSG_SUBMIT_QUEST_DAILY2)
+	return output
+end
+
+-- /*提交日常任务*/	
+function Protocols.call_submit_quest_daily2 ( playerInfo )
+	local output = Protocols.	pack_submit_quest_daily2 (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*提交日常任务*/	
+function Protocols.unpack_submit_quest_daily2 (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9695,6 +9726,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_doujiantai_refresh_enemys = self.call_doujiantai_refresh_enemys
 	playerInfo.call_doujiantai_top3 = self.call_doujiantai_top3
 	playerInfo.call_use_jump_point = self.call_use_jump_point
+	playerInfo.call_submit_quest_daily2 = self.call_submit_quest_daily2
 end
 
 local unpack_handler = {
@@ -9955,6 +9987,7 @@ local unpack_handler = {
 [CMSG_DOUJIANTAI_REFRESH_ENEMYS] =  Protocols.unpack_doujiantai_refresh_enemys,
 [MSG_DOUJIANTAI_TOP3] =  Protocols.unpack_doujiantai_top3,
 [MSG_USE_JUMP_POINT] =  Protocols.unpack_use_jump_point,
+[CMSG_SUBMIT_QUEST_DAILY2] =  Protocols.unpack_submit_quest_daily2,
 
 }
 

@@ -49,7 +49,7 @@ function ActionScenedUseGameObject:Update(diff)
 
 		if(self.to_mapid > 0)then
 			--访问GO随机点计算
-			local pos_tab = mapLib.RandomPos(self.to_mapid,1,self.to_x, self.to_y,4)
+			local pos_tab = mapLib.RandomPos(self.to_mapid,1,self.to_x, self.to_y,3)
 			local is_canRun = mapLib.IsCanRun(self.to_mapid,pos_tab[1].x,pos_tab[1].y)
 			if(is_canRun)then
 				self.to_x = pos_tab[1].x

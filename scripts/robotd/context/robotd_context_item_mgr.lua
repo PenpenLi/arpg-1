@@ -82,3 +82,21 @@ function PlayerInfo:Send_Use_Item()
 	
 	return true
 end
+
+-- 购买商品
+function PlayerInfo:Send_Mall_Buy()
+	local id = self:RandomInt(#tb_shop)
+	local count = self:RandomInt(1)
+	local time = 0
+	if tb_shop[ id ] then
+		count = self:RandomInt(tb_shop[id].count)
+		time = self:RandomInt(#tb_shop[id].timeCostResource)
+	end
+	self:call_mall_buy (id ,count ,time)
+end
+
+-- 强化部位
+function PlayerInfo:Send_Strength()
+	local part = self:RandomInt(10)
+	self:call_strength (part)
+end

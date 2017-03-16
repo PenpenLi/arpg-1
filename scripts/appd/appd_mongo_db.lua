@@ -26,7 +26,11 @@ end
 function AppdMongoDB:getServerName( s )
 	-- '30_38_196280920' 	==> '30_38'
 	-- 'p1.2_2590'			==> '2_2590'
-	return string.sub(s, string.find(s, '%w+_%w+'))
+	local startIndx = string.find(s, '%w+_%w+')
+	if not startIndx then
+		return
+	end
+	return string.sub(s, startIndx)
 end
 
 --传入表名拼接出库及表名

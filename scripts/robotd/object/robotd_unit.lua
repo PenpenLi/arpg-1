@@ -56,6 +56,10 @@ function RobotdUnit:GetInstanceID()
 	return self:GetUInt32(UNIT_FIELD_INSTANCE_ID)
 end
 
+function RobotdUnit:IsAlive()
+	return self:GetByte(UNIT_FIELD_BYTE_0, 1) == DEATH_STATE_ALIVE
+end
+
 --获取当前坐标
 function RobotdUnit:GetPos()
 	return unitLib.getUnitPos(self.ptr)

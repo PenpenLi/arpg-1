@@ -21,6 +21,11 @@ function PlayerInfo:ctor(account, fd, robot_ptr)
 	self.questStart = false
 end
 
+-- 重置些事情
+function PlayerInfo:Reset()
+	self.questStart = false
+end
+
 --打印调试信息
 function PlayerInfo:GetDebugInfo()
 	local x,y = self:GetPos()
@@ -196,6 +201,14 @@ function PlayerInfo:RandomInt(limit)
 	return ret
 end
 
+function PlayerInfo:RandomString(str)
+	local indx = randInt(1, 2)
+	if indx == 2 then
+		str = ""
+	end
+	return str
+end
+
 -- 获得玩家的技能信息
 function PlayerInfo:GetSkillInfo()
 	local skillIdInfo = {{}}
@@ -227,11 +240,605 @@ function PlayerInfo:stopMoving(x,y)
 	return self.my_unit:stopMoving(x,y)
 end
 
+-- 创建帮派
+function PlayerInfo:Send_Create_Faction()
+	local name = self:RandomString(self:GetGuid())
+	local icon = self:RandomInt(102)
+	self:call_create_faction (name ,icon)
+end
+
+-- 升级帮派
+function PlayerInfo:Send_Faction_Upgrade()
+	self:call_faction_upgrade ()
+end
+
+-- 加入帮派
+function PlayerInfo:Send_Faction_Join()
+	local id = self:RandomString(self:GetGuid())
+	self:call_faction_join (id)
+end
+
+--升级基础技能
+function PlayerInfo:Send_Raise_Base_Spell()
+	local raiseType = self:RandomInt(10)
+	local spellId = self:RandomInt(10000)
+	self:call_raise_base_spell(raiseType, spellId)
+end
+
+--升级怒气技能
+function PlayerInfo:Send_Upgrade_Anger_Spell()
+	local spellId = self:RandomInt(10000)
+	self:call_upgrade_anger_spell(spellId)
+end
+
+--升级坐骑
+function PlayerInfo:Send_Raise_Mount()
+	self:call_raise_mount()
+end
+
+--升星坐骑
+function PlayerInfo:Send_Upgrade_Mount()
+	local val = randInt(0, 1)
+	local useItem = val
+	self:call_upgrade_mount(useItem)
+end
+
+--一键升星坐骑
+function PlayerInfo:Send_Upgrade_Mount_One_Step()
+	local val = randInt(0, 1)
+	local useItem = val
+	self:call_upgrade_mount_one_step(useItem)
+end
+
+--
+function PlayerInfo:Send_Illusion_Mount_Active()
+	local illuId = self:RandomInt(#tb_mount_illusion)
+	self:call_illusion_mount_active(illuId)
+end
+
+--
+function PlayerInfo:Send_Illusion_Mount()
+	local illuId = self:RandomInt(#tb_mount_illusion)
+	self:call_illusion_mount(illuId)
+end
+
+--
+function PlayerInfo:Send_Gem()
+	local part = self:RandomInt(10)
+	self:call_gem(part)
+end
+
+--
+function PlayerInfo:Send_Divine_Active()
+	local id = self:RandomInt(#tb_divine_base)
+	self:call_divine_active(id)
+end
+
+--
+function PlayerInfo:Send_Divine_Uplev()
+	local id = self:RandomInt(#tb_divine_base)
+	self:call_divine_uplev(id)
+end
+
+--
+function PlayerInfo:Send_Divine_Switch()
+	local id = self:RandomInt(#tb_divine_base)
+	self:call_divine_switch(id)
+end
+
+--
+function PlayerInfo:Send_Sweep_Vip_Instance()
+	local id = self:RandomInt(#tb_map_vip)
+	self:call_sweep_vip_instance(id)
+end
+
+--
+function PlayerInfo:Send_Hang_Up()
+	self:call_hang_up()
+end
+
+--
+function PlayerInfo:Send_Hang_Up_Setting()
+	self:call_hang_up_setting(0, 0, 0, 0)
+end
+
+--
+function PlayerInfo:Send_Sweep_Trial_Instance()
+	self:call_sweep_trial_instance()
+end
+
+--
+function PlayerInfo:Send_Reset_Trial_Instance()
+	self:call_reset_trial_instance()
+end
+
+--
+function PlayerInfo:Send_Social_Add_Friend()
+	self:call_social_add_friend('')
+end
+
+--
+function PlayerInfo:Send_Social_Sureadd_Friend()
+	self:call_social_sureadd_friend('')
+end
+
+--
+function PlayerInfo:Send_Social_Gift_Friend()
+	self:call_social_gift_friend('', '')
+end
+
+--
+function PlayerInfo:Send_Social_Recommend_Friend()
+	self:call_social_recommend_friend()
+end
+
+--
+function PlayerInfo:Send_Social_Revenge_Enemy()
+	self:call_social_revenge_enemy('')
+end
+
+--
+function PlayerInfo:Send_Social_Del_Friend()
+	self:call_social_del_friend('')
+end
+
+--
+function PlayerInfo:Send_Social_Clear_Apply()
+	self:call_social_clear_apply()
+end
+
+--
+function PlayerInfo:Send_Social_Add_Friend_Byname()
+	self:call_social_add_friend_byname('')
+end
+
+--
+function PlayerInfo:Send_Chat_By_Channel()
+	local channel = self:RandomInt(10)
+	self:call_chat_by_channel(channel, 'aaaaaaa')
+end
+
+--
+function PlayerInfo:Send_Msg_Decline()
+	self:call_msg_decline(0, 0)
+end
+
+--
+function PlayerInfo:Send_Block_Chat()
+	self:call_block_chat('')
+end
+
+--
+function PlayerInfo:Send_Faction_Getlist()
+	local page = self:RandomInt(10)
+	local num = self:RandomInt(10)
+	local grep = self:RandomInt(10)
+	self:call_faction_getlist(page, num, grep)
+end
+
+--
+function PlayerInfo:Send_Faction_Manager()
+	local opt_type = self:RandomInt(10)
+	local r1 = self:RandomInt(10)
+	local r2 = self:RandomInt(10)
+	local r3 = ''
+	local r4 = ''
+	
+	self:call_faction_manager(opt_type, r1, r2, r3, r4)
+end
+
+--
+function PlayerInfo:Send_Faction_Member_Operate()
+	local opt_type = self:RandomInt(10)
+	local r1 = self:RandomInt(10)
+	local r2 = self:RandomInt(10)
+	local r3 = ''
+	local r4 = ''
+	self:call_faction_member_operate(opt_type, r1, r2, r3, r4)
+end
+
+--
+function PlayerInfo:Send_Faction_Fast_Join()
+	self:call_faction_fast_join()
+end
+
+--
+function PlayerInfo:Send_Read_Mail()
+	local indx = self:RandomInt(100)
+	self:call_read_mail(indx)
+end
+
+--
+function PlayerInfo:Send_Pick_Mail()
+	local indx = self:RandomInt(100)
+	self:call_pick_mail(indx)
+end
+
+--
+function PlayerInfo:Send_Remove_Mail()
+	local indx = self:RandomInt(100)
+	self:call_remove_mail(indx)
+end
+
+--
+function PlayerInfo:Send_Pick_Mail_One_Step()
+	self:call_pick_mail_one_step()
+end
+
+--
+function PlayerInfo:Send_Remove_Mail_One_Step()
+	self:call_remove_mail_one_step()
+end
+
+--
+function PlayerInfo:Send_Cancel_Block_Chat()
+	local indx = self:RandomInt(10)
+	self:call_cancel_block_chat(indx)
+end
+
+--
+function PlayerInfo:Send_World_Boss_Enroll()
+	self:call_world_boss_enroll()
+end
+
+--
+function PlayerInfo:Send_Rank_Add_Like()
+	local type = self:RandomInt(MAX_RANK_TYPE)
+	local guid = self:RandomString(self:GetGuid())
+	local num  = self:RandomInt(1)
+	self:call_rank_add_like(type, guid, num)
+end
+
+--
+function PlayerInfo:Send_Res_Instance_Sweep()
+	local id = self:RandomInt(#tb_instance_res)
+	self:call_res_instance_sweep(id)
+end
+
+--
+function PlayerInfo:Send_Get_Activity_Reward()
+	local id  = self:RandomInt(#tb_activity_base)
+	local vip = self:RandomInt(10)
+	self:call_get_activity_reward(id, vip)
+end
+
+--
+function PlayerInfo:Send_Get_Achieve_Reward()
+	local id  = self:RandomInt(#tb_achieve_base)
+	self:call_get_achieve_reward(id)
+end
+
+--
+function PlayerInfo:Send_Get_Achieve_All_Reward()
+	self:call_get_achieve_all_reward()
+end
+
+--
+function PlayerInfo:Send_Set_Title()
+	local id = self:RandomInt(#tb_title_base)
+	self:call_set_title(id)
+end
+
+--
+function PlayerInfo:Send_Init_Title()
+	local id = self:RandomInt(#tb_title_base)
+	self:call_init_title(id)
+end
+
+--
+function PlayerInfo:Send_Welfare_Shouchong_Reward()
+	self:call_welfare_shouchong_reward()
+end
+
+--
+function PlayerInfo:Send_Welfare_Checkin()
+	self:call_welfare_checkin()
+end
+
+--
+function PlayerInfo:Send_Welfare_Checkin_All()
+	local id = self:RandomInt(#tb_welfare_checkin_all)
+	self:call_welfare_checkin_all(id)
+end
+
+--
+function PlayerInfo:Send_Welfare_Checkin_Getback()
+	local id = self:RandomInt(#tb_welfare_back)
+	self:call_welfare_checkin_getback(id)
+end
+
+--
+function PlayerInfo:Send_Welfare_Level()
+	local id = self:RandomInt(#tb_welfare_level)
+	self:call_welfare_level(id)
+end
+
+--
+function PlayerInfo:Send_Welfare_Active_Getback()
+	local id = self:RandomInt(100)
+	local best = self:RandomInt(1)
+	local num = self:RandomInt(100)
+	self:call_welfare_active_getback(id, best, num)
+end
+
+--
+function PlayerInfo:Send_Welfare_Getalllist_Getback()
+	local best = self:RandomInt(1)
+	self:call_welfare_getalllist_getback(best)
+end
+
+--
+function PlayerInfo:Send_Welfare_Getall_Getback()
+	local best = self:RandomInt(1)
+	self:call_welfare_getall_getback(best)
+end
+
+--
+function PlayerInfo:Send_Pick_Quest_Reward()
+	local indx = self:RandomInt(50)
+	self:call_pick_quest_reward(indx)
+end
+
+--
+function PlayerInfo:Send_Use_Virtual_Item()
+	local entry = self:RandomInt(50000)
+	self:call_use_virtual_item(entry)
+end
+
+--
+function PlayerInfo:Send_Pick_Quest_Chapter_Reward()
+	local indx = self:RandomInt(50)
+	self:call_pick_quest_chapter_reward(indx)
+end
+
+--
+function PlayerInfo:Send_Kuafu_3v3_Match()
+	self:call_kuafu_3v3_match()
+end
+
+--
+function PlayerInfo:Send_Kuafu_3v3_Match_Oper()
+	local oper = self:RandomInt(1)
+	self:call_kuafu_3v3_match_oper(oper)
+end
+
+--
+function PlayerInfo:Send_Kuafu_3v3_Buytimes()
+	local num = self:RandomInt(10)
+	self:call_kuafu_3v3_buytimes(num)
+end
+
+--
+function PlayerInfo:Send_Kuafu_3v3_Dayreward()
+	local id = self:RandomInt(#tb_kuafu3v3_day_reward)
+	self:call_kuafu_3v3_dayreward(id)
+end
+
+--
+function PlayerInfo:Send_Kuafu_3v3_Getranlist()
+	self:call_kuafu_3v3_getranlist()
+end
+
+--
+function PlayerInfo:Send_Kuafu_3v3_Getmyrank()
+	self:call_kuafu_3v3_getmyrank()
+end
+
+--
+function PlayerInfo:Send_Kuafu_3v3_Cancel_Match()
+	local type = self:RandomInt(2)
+	self:call_kuafu_3v3_cancel_match(type)
+end
+
+--
+function PlayerInfo:Send_Kuafu_Xianfu_Match()
+	local indx = self:RandomInt(3)
+	self:call_kuafu_xianfu_match(indx)
+end
+
+--
+function PlayerInfo:Send_Buy_Xianfu_Item()
+	local type = self:RandomInt(3)
+	local indx = self:RandomInt(2)
+	local count = self:RandomInt(20)
+	self:call_buy_xianfu_item(type, indx, count)
+end
+
+--
+function PlayerInfo:Send_Doujiantai_Fight()
+	local rank = self:RandomInt(1000)
+	self:call_doujiantai_fight(rank)
+end
+
+--
+function PlayerInfo:Send_Doujiantai_Buytime()
+	local num = self:RandomInt(10)
+	self:call_doujiantai_buytime(num)
+end
+
+--
+function PlayerInfo:Send_Doujiantai_Clearcd()
+	self:call_doujiantai_clearcd()
+end
+
+--
+function PlayerInfo:Send_Doujiantai_First_Reward()
+	local id = self:RandomInt(#tb_doujiantai_first)
+	self:call_doujiantai_first_reward(id)
+end
+
+--
+function PlayerInfo:Send_Doujiantai_Get_Enemys_Info()
+	self:call_doujiantai_get_enemys_info()
+end
+
+--
+function PlayerInfo:Send_Doujiantai_Get_Rank()
+	local startIdx = self:RandomInt(100)
+	local   endIdx = self:RandomInt(100)
+	self:call_doujiantai_get_rank(startIdx, endIdx)
+end
+
+--
+function PlayerInfo:Send_Doujiantai_Refresh_Enemys()
+	self:call_doujiantai_refresh_enemys()
+end
+
+--
+function PlayerInfo:Send_Doujiantai_Top3()
+	self:call_doujiantai_top3()
+end
+
+--
+function PlayerInfo:Send_Submit_Quest_Daily2()
+	self:call_submit_quest_daily2()
+end
+
+
+--
+function PlayerInfo:Send_Change_Line()
+	local lineNo = self:RandomInt(100)
+	self:call_change_line(lineNo)
+end
+
+--
+function PlayerInfo:Send_Show_Map_Line()
+	self:call_show_map_line()
+end
+
+--
+function PlayerInfo:Send_Spell_Start()
+	local spellId = self:RandomInt(1000)
+	local tx = self:RandomInt(100)
+	local ty = self:RandomInt(100)
+	local caster = self:RandomInt(1000)
+	local target = self:RandomInt(1000)
+	
+	self:call_spell_start(spellId, tx, ty, caster, target)
+end
+
+--
+function PlayerInfo:Send_Teleport()
+	local uintGuid = self:RandomInt(1000000)
+	self:call_teleport(uintGuid)
+end
+
+--
+function PlayerInfo:Send_Use_Gameobject()
+	local uintGuid = self:RandomInt(1000000)
+	self:call_use_gameobject(uintGuid)
+end
+
+--
+function PlayerInfo:Send_Instance_Exit()
+	local r = self:RandomInt(3)
+	self:call_instance_exit(r)
+end
+
+--
+function PlayerInfo:Send_Ride_Mount()
+	self:call_ride_mount()
+end
+
+--
+function PlayerInfo:Send_Change_Battle_Mode()
+	local mode = self:RandomInt(3)
+	self:call_change_battle_mode(mode)
+end
+
+--
+function PlayerInfo:Send_Jump_Start()
+	local tx = self:RandomInt(200)
+	local ty = self:RandomInt(200)
+	self:call_jump_start(tx, ty)
+end
+
+--
+function PlayerInfo:Send_Enter_Vip_Instance()
+	local id = self:RandomInt(#tb_map_vip)
+	local hard = self:RandomInt(3)
+	self:call_enter_vip_instance(id, hard)
+end
+
+--
+function PlayerInfo:Send_Enter_Trial_Instance()
+	self:call_enter_trial_instance()
+end
+
+--
+function PlayerInfo:Send_Teleport_Main_City()
+	self:call_teleport_main_city()
+end
+
+--
+function PlayerInfo:Send_Use_Broadcast_Gameobject()
+	local target = self:RandomInt(10000000)
+	self:call_use_broadcast_gameobject(target)
+end
+
+--
+function PlayerInfo:Send_World_Boss_Fight()
+	self:call_world_boss_fight()
+end
+
+--
+function PlayerInfo:Send_Res_Instance_Enter()
+	local id = self:RandomInt(#tb_instance_res)
+	self:call_res_instance_enter(id)
+end
+
+--
+function PlayerInfo:Send_Teleport_Map()
+	local mapid = self:RandomInt(1008)
+	local lineNo = self:RandomInt(10)
+	self:call_teleport_map(mapid, lineNo)
+end
+
+--
+function PlayerInfo:Send_Teleport_Field_Boss()
+	local mapid = self:RandomInt(1008)
+	local lineNo = self:RandomInt(10)
+	self:call_teleport_field_boss(mapid, lineNo)
+end
+
+--
+function PlayerInfo:Send_Talk_With_Npc()
+	local entry = self:RandomInt(40000)
+	local questId = self:RandomInt(1000)
+	self:call_talk_with_npc(entry, questId)
+end
+
+--
+function PlayerInfo:Send_Loot_Select()
+	local tx = self:RandomInt(200)
+	local ty = self:RandomInt(200)
+	self:call_loot_select(tx, ty)
+end
+
+--
+function PlayerInfo:Send_Gold_Respawn()
+	self:call_gold_respawn(1)
+end
+
+--
+function PlayerInfo:Send_Clientsubscription()
+	local guid = self:RandomInt(10000000)
+	self:call_clientSubscription(guid)
+end
+
+--
+function PlayerInfo:Send_Use_Jump_Point()
+	local id = self:RandomInt(10)
+	self:call_use_jump_point(id)
+end
+
 
 function PathfindingGotoFailure(player, mapid)
 	local x, y = player:GetPos()
 	outFmtError("A player in (%d, %d) find path fail check %d.txt main road", x, y, mapid)
 end
+
+
 
 require("robotd.context.robotd_context_unit_mgr")
 require("robotd.context.robotd_context_hanlder")
@@ -239,5 +846,6 @@ require("robotd.context.robotd_context_action_mgr")
 
 require("robotd.context.robotd_context_item_mgr")
 require("robotd.context.robotd_context_quest_mgr")
+require("robotd.context.robotd_context_test_mgr")
 
 return PlayerInfo

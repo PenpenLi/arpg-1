@@ -93,8 +93,16 @@ require("template.tables.tb_welfare_back")
 -- 任务
 require("template.tables.tb_quest")
 require("template.tables.tb_quest_chapter")
+
+-- 每日环任务
 require("template.tables.tb_quest_daily_base")
 require("template.tables.tb_quest_daily")
+
+-- 日常任务
+require("template.tables.tb_quest_daily2")
+require("template.tables.tb_quest_daily2_base")
+require("template.tables.tb_quest_daily2_set")
+require("template.tables.tb_quest_daily2_finish_reward")
 
 
 --竞技

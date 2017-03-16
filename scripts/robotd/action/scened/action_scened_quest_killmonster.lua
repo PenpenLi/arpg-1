@@ -61,7 +61,7 @@ function ActionScenedQuestKillMonster:GoTo()
 	local mapid = self.player:GetMapID()
 	local x, y = self.player:GetPos()
 	--寻路没成功，使用失败
-	if(mapid ~= self.mapid or self.player.my_unit:GetDistanceByPos(self.to_x,self.to_y)>3)then
+	if(mapid ~= self.mapid or self.player.my_unit:GetDistanceByPos(self.to_x,self.to_y)>4)then
 		outFmtDebug("ActionScenedQuestKillMonster:Update %s goto destination fail,from: %s %s %s", self:ToString(), mapid, x, y)
 		return false
 	else
@@ -156,7 +156,7 @@ function ActionScenedQuestKillMonster:Update(diff)
 	local is_canRun = mapLib.IsCanRun(attack_create:GetMapID(),x,y)
 	if(is_canRun == false)then
 		outFmtDebug("ActionScenedQuestKillMonster:Update create pos can't run %u %u %u", attack_create:GetMapID(),x,y)
-		local pos_tab = mapLib.RandomPos(attack_create:GetMapID(),1,x,y,4)
+		local pos_tab = mapLib.RandomPos(attack_create:GetMapID(),1,x,y,3)
 		is_canRun = mapLib.IsCanRun(attack_create:GetMapID(),pos_tab[1].x,pos_tab[1].y)
 		if(is_canRun)then
 			x = pos_tab[1].x

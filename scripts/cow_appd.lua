@@ -179,6 +179,8 @@ config = {
 		CMSG_DOUJIANTAI_REFRESH_ENEMYS,
 		
 		MSG_DOUJIANTAI_TOP3,
+		
+		CMSG_SUBMIT_QUEST_DAILY2,
 	},
 	--pk服命令表
 	pk_external_router_map = {

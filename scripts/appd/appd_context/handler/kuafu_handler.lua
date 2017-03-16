@@ -268,6 +268,15 @@ end
 function PlayerInfo:Handle_Doujian_Get_Rank(pkt)
 	local startIdx = pkt.startIdx
 	local endIdx = pkt.endIdx
+	if startIdx > endIdx then
+		return
+	end
+	if startIdx < 1 then
+		return 
+	end
+	if endIdx > MAX_DOUJIANTAI_RANK_COUNT then
+		return 
+	end
 	self:GetDoujiantaiRankList(startIdx,endIdx)
 end
 

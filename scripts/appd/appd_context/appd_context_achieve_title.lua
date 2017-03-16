@@ -195,6 +195,11 @@ function PlayerInfo:pickQuest(indx)
 	questMgr:OnPickQuest(indx)
 end
 
+function PlayerInfo:SubmitQuestDaily2()
+	local questMgr = self:getQuestMgr()
+	questMgr:OnSubmitQuestDaily2()
+end
+
 
 --- 每日任务重置
 function PlayerInfo:DailyQuestReset()

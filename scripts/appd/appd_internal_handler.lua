@@ -44,7 +44,8 @@ local function on_scened_quest_add_item( pkt )
 		outFmtDebug("quest_add_item:player %s not online item_entry %d count %d", player_guid, item_entry, count)
 		return
 	end
-	player:AppdAddItems({{item_entry, count}}, nil, logtype)
+	-- 从场景服过来的必须用这个
+	player:PlayerAddItems({{item_entry, count}}, nil, logtype)
 	--player:AddItemByEntry(item_entry, count, nil, logtype, bind, true, true, stronglv, failtime)
 end
 

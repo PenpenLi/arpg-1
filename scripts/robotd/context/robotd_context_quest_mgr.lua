@@ -7,9 +7,10 @@ function PlayerInfo:DoNextQuest()
 		return
 	end
 	
-	local questInfo = self.quest:GetMainQuestInfo()
+	-- 先日常任务
+	local questInfo = self.quest:GetQuestInfo()
 	if not questInfo then
-		outFmtDebug("		no main quest")
+		outFmtDebug("		no available quest")
 		return
 	end
 	

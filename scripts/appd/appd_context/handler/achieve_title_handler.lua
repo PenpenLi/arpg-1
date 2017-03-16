@@ -44,3 +44,8 @@ function PlayerInfo:Handle_Pick_Quest_Chapter_Reward(pkt)
 	local indx = pkt.indx
 	
 end
+
+-- 提交任务
+function PlayerInfo:Handle_Submit_Quest_Daily2(pkt)
+	self:SubmitQuestDaily2()
+end

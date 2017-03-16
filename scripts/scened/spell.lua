@@ -192,7 +192,15 @@ function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, uni
 	local allTargets = {}
 	--落雁斩1
 	if spell_id >= 5 and spell_id <= 65536 then
-		SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+		local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
+		-- 普通技能
+		if tb_skill_uplevel[index].skillEffectType == SKILL_EFFECT_TYPE_NORMAL then
+			SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+		-- 如果是 自己加血, 别人扣血的给自己扣
+		elseif tb_skill_uplevel[index].skillEffectType == SKILL_EFFECT_TYPE_HUIXUE1 then
+			DoSpellCastHuiXue1(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+		end
+		
 		-- 如果是玩家 且 是野外地图的话就看看会不会打断采集动作
 		if GetUnitTypeID(caster) == TYPEID_PLAYER then
 			local mapid = unitLib.GetMapID(caster)
@@ -209,6 +217,19 @@ function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, uni
 		end
 	end
 	return true
+end
+
+-- 敌方扣血, 自己加血
+function DoSpellCastHuiXue1(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+	-- 自己加血
+	local index = tb_skill_base[spell_id].uplevel_id[1] + spell_lv - 1
+	local params = tb_skill_uplevel[index].skillEffectParams
+	local casterInfo = UnitInfo:new{ptr = caster}
+	local hp = math.floor(casterInfo:GetDamage() * params[ 1 ] / 10000 + params[ 2 ])
+	casterInfo:ModifyHealth(hp)
+	
+	-- 敌方扣血
+	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 end
 
 -- 受到伤害前需要进行的操作

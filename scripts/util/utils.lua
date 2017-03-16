@@ -177,7 +177,7 @@ end
 dict = {[itemId] = num}
 ]]
 function Change_To_Item_Reward_Info(dict, exp)
-	exp = exp or false
+	exp = exp or true
 	-- 扫荡的结果发送
 	local list = {}
 	for item_id, num in pairs(dict) do

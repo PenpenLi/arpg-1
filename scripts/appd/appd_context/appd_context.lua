@@ -71,14 +71,15 @@ end
 --[[
 rewardDict :  {{itemId, count},{itemId1, count1}}
 --]]
-function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline)
+function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, showType)
 	times = times or 1
 	deadline = deadline or 0
+	showType = showType or 0
 	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline)
 	-- 获得信息
 	local dict = changeTableStruct(rewardDict)
 	local list = Change_To_Item_Reward_Info(dict)
-	self:call_item_notice (list)
+	self:call_item_notice (showType, list)
 end
 
 --[[

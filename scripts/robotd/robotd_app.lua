@@ -56,6 +56,11 @@ function RobotdApp:RobotLoginOk(account, fd, robot_ptr)
 	robot_map[account] = robot
 end
 
+function RobotdApp:RobotRespawn(account)
+	local robot = robot_map[account]
+	robot:Reset()
+end
+
 --机器人登出游戏服
 function RobotdApp:RobotLogout(account, fd)
 	local robot = robot_map[account]

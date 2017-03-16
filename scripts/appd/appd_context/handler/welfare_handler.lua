@@ -41,6 +41,9 @@ end
 --领取找回奖励
 function PlayerInfo:Handle_Welfare_ActiveGetback(pkt)
 	local type = pkt.id
+	if type < 1 or type > 5 then
+		return
+	end
 	local best
 	if pkt.best == 1 then
 		best = true

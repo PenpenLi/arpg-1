@@ -64,10 +64,17 @@ function RobotdItem:GetNeededItemData (indx)
 	if (string.len(itemStr) == 0) then
 		return
 	end
+	
+	-- 装备位的不用
+	local pos = self:GetUInt32(indx)
+	if pos > 1000 then
+		return
+	end
+	
 	local ary = string.split(itemStr, ";")
 	
 	local bgItem = {}
-	bgItem.pos = self:GetUInt32(indx)
+	bgItem.pos 	 = pos
 	bgItem.id	 = tonumber(ary[ 1 ])
 	bgItem.entry = tonumber(ary[ 2 ])
 	bgItem.count = tonumber(ary[ 3 ])

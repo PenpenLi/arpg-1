@@ -962,6 +962,7 @@ send_map_line,s2c,213,/*返回本地图的分线号信息*/,STATUS_NEVER,False
 
 #
 item_notice,s2c,214,/*获得奖励提示*/,STATUS_NEVER,False
+	showType,uint8,False,/*显示位置类型*/
 	list,item_reward_info,True,/*道具列表*/
 
 #
@@ -1152,3 +1153,7 @@ doujiantai_top3,both,271,/*斗剑台三甲*/,STATUS_NEVER,False
 #
 use_jump_point,both,272,/*使用跳点*/,STATUS_NEVER,False
 	id,uint32,False,/*跳点id*/
+
+#
+submit_quest_daily2,c2s,280,/*提交日常任务*/,STATUS_NEVER,False
+	

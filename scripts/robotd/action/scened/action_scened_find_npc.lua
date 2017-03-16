@@ -39,7 +39,7 @@ function ActionScenedFindNpc:Update(diff)
 	--先寻路
 	if(self.is_goto == false)then
 		--已经在这里了就不用再寻路了
-		if(mapid == self.to_mapid and self.player.my_unit:GetDistanceByPos(self.to_x,self.to_y)<=3)then
+		if(mapid == self.to_mapid and self.player.my_unit:GetDistanceByPos(self.to_x,self.to_y)<=4)then
 			outFmtDebug("ActionScenedFindNpc:Update is already here")
 			self.is_goto = true
 			self.isClose = true
@@ -76,7 +76,7 @@ function ActionScenedFindNpc:Update(diff)
 	end
 	
 	--寻路没成功，使用失败
-	if(mapid ~= self.to_mapid or self.player.my_unit:GetDistanceByPos(self.to_x,self.to_y)>3)then
+	if(mapid ~= self.to_mapid or self.player.my_unit:GetDistanceByPos(self.to_x,self.to_y)>4)then
 		outFmtDebug("ActionScenedFindNpc:Update %s use object fail", self:ToString())
 		return false, 2
 	end

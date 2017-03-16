@@ -194,6 +194,9 @@ function PlayerInfo:Handle_Faction_Upgrade(pkt)
 		outFmtDebug("Handle_Faction_Upgrade with no faction = ")
 		return
 	end
+	if not app.objMgr:IsFactionGuid(faction_guid) then
+		return
+	end
 	local faction = app.objMgr:getObj(faction_guid)
 	if faction then
 		faction:FactionLevelUp(self)
@@ -249,8 +252,15 @@ function PlayerInfo:Hanlde_Faction_Apply( pkt )
 		outFmtDebug("you cannot join other, have faction = %s", faction_guid)
 		return
 	end
-
-	local faction = app.objMgr:getObj(pkt.id)   --帮派guid
+	
+	local target_faction_guid = pkt.id
+	
+	if not app.objMgr:IsFactionGuid(target_faction_guid) then
+		return
+	end 
+	
+	local faction = app.objMgr:getObj(target_faction_guid)   --帮派guid
+	
 	if faction then		
 		if self:GetLevel() < faction:GetFactionMinLev() then
 			--玩家等级不够
@@ -285,7 +295,13 @@ function PlayerInfo:Hanlde_Faction_Manager( pkt )
 	if faction_guid == "" then
 		return
 	end
+	
+	if not app.objMgr:IsFactionGuid(faction_guid) then
+		return
+	end
+	
 	local faction = app.objMgr:getObj(faction_guid)
+	
 	if faction == nil then
 		return
 	end
@@ -339,6 +355,11 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	if faction_guid == "" then
 		return
 	end
+	
+	if not app.objMgr:IsFactionGuid(faction_guid) then
+		return
+	end
+	
 	local faction = app.objMgr:getObj(faction_guid)
 	if faction == nil then
 		return

@@ -323,5 +323,5 @@ function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 	
 	-- 获得提示
 	local list = Change_To_Item_Reward_Info(rewardDict)
-	playerInfo:call_item_notice (list)
+	playerInfo:call_item_notice (0, list)
 end

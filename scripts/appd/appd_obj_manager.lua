@@ -77,4 +77,14 @@ function AppObjectManager:foreachAllGroup(func)
 	end)
 end
 
+-- 判断GUID是否是帮派的guid
+function AppObjectManager:IsFactionGuid(guid)
+	return string.sub(guid, 1, 1) == guidMgr.ObjectTypeFaction
+end
+
+-- 判断GUID是否是帮派的guid
+function AppObjectManager:IsPlayerGuid(guid)
+	return string.sub(guid, 1, 1) == guidMgr.ObjectTypePlayer
+end
+
 return AppObjectManager

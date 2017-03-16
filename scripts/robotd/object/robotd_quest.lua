@@ -19,23 +19,63 @@ end
 	}
 }
 --]]
-function RobotdQuest:GetMainQuestInfo()
-	local indx = self:GetMainQuestIndx()
-	if not indx then
-		return
+--[[
+QUEST_TYPE_MAIN = 0	-- 主线任务
+QUEST_TYPE_EXTENSIONS = 1	-- 支线任务
+QUEST_TYPE_ACTIVITY = 2	-- 活动任务
+QUEST_TYPE_QIYU = 3	-- 奇遇任务
+QUEST_TYPE_DAILY = 4	-- 每日任务
+]]
+local questPriority = {
+	QUEST_TYPE_DAILY,
+	QUEST_TYPE_MAIN,
+	QUEST_TYPE_EXTENSIONS,
+	QUEST_TYPE_ACTIVITY,
+	QUEST_TYPE_QIYU
+}
+
+function RobotdQuest:GetQuestInfo()
+	for _, type in ipairs(questPriority) do
+		local indx = self:GetTypedQuestIndx(type)
+		if indx then
+			local questInfo = self:GetQuestInfoByIndx(indx)
+			if self:IsAvailableQuest(questInfo) then
+				return questInfo
+			end
+		end
 	end
 	
-	return self:GetQuestInfoByIndx(indx)
+	return
 end
 
--- 获得主线任务的binlogindx
-function RobotdQuest:GetMainQuestIndx()
+function RobotdQuest:IsAvailableQuest(questInfo)
+	if questInfo.state == QUEST_STATUS_COMPLETE then
+		return true
+	end
+	
+	-- 如果是提升等级/战力/荣誉点的就不做
+	local config = tb_quest[questInfo.questId]
+	local targets = config.targets
+	-- 找任务目标
+	for i, target in ipairs(targets) do
+		local targetType = target[ 1 ]
+		local stepInfo	 = questInfo.steps[i]
+		if not Quest_Function[targetType] then
+			return false
+		end
+	end
+	
+	return true
+end
+
+-- 获得对应类型的任务binlogindx
+function RobotdQuest:GetTypedQuestIndx(type)
 
 	local intstart = QUEST_FIELD_QUEST_START
 	for i = 1, MAX_QUEST_COUNT do
 		local questId = self:GetUInt16(intstart + QUEST_INFO_ID, 0)
 		if questId > 0 then
-			if tb_quest[questId].type == QUEST_TYPE_MAIN then
+			if tb_quest[questId].type == type then
 				return intstart
 			end
 		end

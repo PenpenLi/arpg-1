@@ -28,14 +28,24 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 			return
 		end
 		
+		if not app.objMgr:IsFactionGuid(guid) then
+			return
+		end
+		
 		local faction = app.objMgr:getObj(guid)
+		
+		if not faction then
+			return
+		end
 		guid = faction:GetBangZhuGuid()
 	else 
 		return
 	end
 	
 	
-	
+	if not app.objMgr:IsPlayerGuid(guid) then
+		return
+	end
 	player = app.objMgr:getObj(guid)
 	
 	if player ~= nil then

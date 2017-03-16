@@ -150,4 +150,6 @@ hanlders[CMSG_DOUJIANTAI_REFRESH_ENEMYS] = PlayerInfo.Handle_Doujiantai_Refresh_
 
 hanlders[MSG_DOUJIANTAI_TOP3] = PlayerInfo.Handle_Doujiantai_Top3
 
+hanlders[CMSG_SUBMIT_QUEST_DAILY2] = PlayerInfo.Handle_Submit_Quest_Daily2
+
 return hanlders

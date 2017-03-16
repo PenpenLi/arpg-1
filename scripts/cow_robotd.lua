@@ -6,6 +6,8 @@ outString(__SCRIPTS_ROOT__..'tea_robotd.lua')
 outString('util.functions is loading')
 require('util.functions')
 
+require("util/utils")
+
 outString('operation_info.lua is loading')
 require("template.operation_info")
 
@@ -45,7 +47,6 @@ config = {
 		CMSG_GET_SEAWAR_SORT,				--海战排行榜
 	},
 }
-
 
 app = require("robotd.robotd_app").new()
 
