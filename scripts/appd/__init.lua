@@ -16,6 +16,9 @@ require("appd/gm_command")
 outString('load appd/use_item script')
 require("appd/use_item")
 
+outString('load appd/sell_item script')
+require("appd/sell_item")
+
 outString('load appd/query script')
 require("appd/query")
 

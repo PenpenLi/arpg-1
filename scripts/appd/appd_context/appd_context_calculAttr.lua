@@ -1,3 +1,5 @@
+local protocols = require('share.protocols')
+
 --获得当前生命
 function PlayerInfo:GetHealth()
 	return self:GetDouble(PLAYER_FIELD_HEALTH)
@@ -222,6 +224,28 @@ PlayerInfo_Set_Attr_Func = {
 	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PlayerInfo.SetResistCritMultiple,
 }
 
+PlayerInfo_Get_Attr_Func = {
+	[EQUIP_ATTR_MAXHEALTH] = PlayerInfo.GetMaxhealth,
+	[EQUIP_ATTR_DAMAGE] = PlayerInfo.GetDamage,
+	[EQUIP_ATTR_ARMOR] = PlayerInfo.GetArmor,
+	[EQUIP_ATTR_HIT] = PlayerInfo.GetHit,
+	[EQUIP_ATTR_DODGE] = PlayerInfo.GetDodge,
+	[EQUIP_ATTR_CRIT] = PlayerInfo.GetCrit,
+	[EQUIP_ATTR_TOUGH] = PlayerInfo.GetTough,
+	[EQUIP_ATTR_ATTACK_SPEED] = PlayerInfo.GetAttackSpeed,
+	[EQUIP_ATTR_MOVE_SPEED] = PlayerInfo.GetMoveSpeed,
+	[EQUIP_ATTR_AMPLIFY_DAMAGE] = PlayerInfo.GetAmplifyDamage,
+	[EQUIP_ATTR_IGNORE_DEFENSE] = PlayerInfo.GetIgnoreDefense,
+	[EQUIP_ATTR_DAMAGE_RESIST] = PlayerInfo.GetDamageResist,
+	[EQUIP_ATTR_DAMAGE_RETURNED] = PlayerInfo.GetDamageReturned,
+	[EQUIP_ATTR_HIT_RATE] = PlayerInfo.GetHitRate,
+	[EQUIP_ATTR_DODGE_RATE] = PlayerInfo.GetDodgeRate,
+	[EQUIP_ATTR_CRIT_RATE] = PlayerInfo.GetCritRate,
+	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = PlayerInfo.GetCriticalResistRate,
+	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = PlayerInfo.GetDamageCritMultiple,
+	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PlayerInfo.GetResistCritMultiple,
+}
+
 
 function PlayerInfo:RecalcAttrAndBattlePoint()
 	playerLib.SendAttr(self.ptr)
@@ -337,10 +361,19 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	-- 算属性的战力
 	battleForce = battleForce + DoAnyOneCalcForce(attrs)
+	
+	local prevlist = {}
 	-- 设置到playerBase中
 	for attrId, val in pairs(attrs) do
 		--local index = attrId - 1
 		--binLogLib.SetUInt32(attr_binlog, index, val)
+		local getFunc = PlayerInfo_Get_Attr_Func[attrId]
+		if getFunc then
+			local prev = getFunc(self)
+			if val ~= prev then
+				prevlist[attrId] = val - prev
+			end
+		end
 			
 		local func = PlayerInfo_Set_Attr_Func[attrId]
 		if func then
@@ -352,7 +385,26 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	outFmtDebug("all force %d", battleForce)	
 	
 	binLogLib.SetDouble(attr_binlog, 0, battleForce)
+	
+	self:SendAttrChanged(prevlist)
 end
+
+-- 发送修改的属性
+function PlayerInfo:SendAttrChanged(prevlist)
+	local attrChangedList = {}
+	for attrId, val in pairs(prevlist) do
+		table.insert(attrChangedList, {attrId, val})
+	end
+	-- 通知客户端属性改变
+	local pkt = protocols.pack_attribute_changed ()
+	pkt:writeU16(#attrChangedList)
+	for _, info in ipairs(attrChangedList) do
+		pkt:writeU16(info[ 1 ])
+		pkt:writeDouble(info[ 2 ])
+	end
+	self:SendPacket(pkt)
+	pkt:delete()
+end 
 
 function printAttr(str, dict)
 	outFmtDebug("attr after %s", str)

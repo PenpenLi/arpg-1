@@ -1509,7 +1509,8 @@ PLAYER_INT_FIELD_WORLD_3V3_TREND_INFO = 650	-- 胜负走势
 PLAYER_INT_FIELD_DOUJIANTAI_RANK = 651	-- 斗剑台排名
 PLAYER_INT_FIELD_DOUJIANTAI_REFRESH_TIME = 652	-- 最后一次刷新对手时间戳
 PLAYER_INT_FIELD_ARREARS = 653	-- 欠费
-PLAYER_INT_FIELD_DAILY_QUEST_FINISHED = 655	--  每日任务完成数 
+PLAYER_INT_FIELD_DAILY_QUEST_FINISHED = 655	--  每日任务完成数
+PLAYER_INT_FIELD_BAG_SORT_TIME = 656	-- 整理背包时间戳
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 字符串部分
 PLAYER_STRING_FIELD_ACCOUNT = 4	-- 账号

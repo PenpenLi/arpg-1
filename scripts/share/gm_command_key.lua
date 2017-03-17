@@ -149,6 +149,8 @@ function GetGmCommandKey(gm_str)
 		return GM_COMMAND_UNSET_OTHER_TAG
 	elseif(gm_str == '@分线' or gm_str == '@subline')then
 		return GM_COMMAND_SUBLINE
+	elseif(gm_str == '@测试' or gm_str == '@test')then
+		return 999
 	end
 	return gm_key
 end

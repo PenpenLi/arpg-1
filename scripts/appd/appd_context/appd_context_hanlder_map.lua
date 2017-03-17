@@ -10,6 +10,9 @@ hanlders[CMSG_RECEIVE_GIFT_PACKS] = PlayerInfo.Hanlde_Receive_Gift_Packs
 hanlders[CMSG_QUERY_PLAYER_INFO] = PlayerInfo.Hanlde_Query_Player_Info
 hanlders[CMSG_USE_GOLD_OPT] = PlayerInfo.Hanlde_Use_Gold
 hanlders[CMSG_BAG_ITEM_USER] = PlayerInfo.Hanlde_Bag_Item_User
+hanlders[CMSG_BAG_ITEM_SELL] = PlayerInfo.Hanlde_Bag_Item_Sell
+hanlders[CMSG_BAG_ITEM_SORT] = PlayerInfo.Hanlde_Bag_Item_Sort
+
 hanlders[CMSG_BAG_EXCHANGE_POS] = PlayerInfo.Hanlde_Bag_Exchange_Pos
 hanlders[CMSG_BAG_DESTROY] = PlayerInfo.Hanlde_Bag_Destroy
 hanlders[CMSG_BAG_ITEM_SPLIT] = PlayerInfo.Hanlde_Bag_Item_Split

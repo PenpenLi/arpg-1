@@ -360,3 +360,45 @@ end
 
 -- print(GetNextWeekXStartTimeFromNow(1))
 -- print(GetNextWeekXStartTimeFromTimestamp(1, 1488211200-weektimes))
+
+function mi_sort(list, comp, onSwapCallback)
+	comp = comp or function (a, b) return a < b end
+	if not list or #list == 0 then
+		return
+	end
+	_sort(list, 1, #list, comp, onSwapCallback)
+end
+
+function _sort(list, lt, rt, comp, callback)
+	local i = lt
+	local j = rt
+	local mid = math.floor((i + j) / 2)
+	local midValue = list[mid]
+	
+	while (i <= j) do
+		while (comp(list[ i ], midValue)) do
+			i = i + 1
+		end
+		while (comp(midValue, list[ j ])) do
+			j = j - 1
+		end
+		if i <= j then
+			if callback then
+				callback(list[ i ], list[ j ])
+			end
+			local tmp = list[ i ]
+			list[ i ] = list[ j ]
+			list[ j ] = tmp
+			i = i + 1
+			j = j - 1
+		end
+	end
+	
+	if i < rt then
+		_sort(list, i, rt, comp, callback)
+	end
+	
+	if j > lt then
+		_sort(list, lt, j, comp, callback)
+	end
+end

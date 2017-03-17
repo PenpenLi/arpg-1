@@ -271,7 +271,10 @@ CMSG_DOUJIANTAI_GET_RANK		= 266	-- /*斗剑台排行榜*/
 CMSG_DOUJIANTAI_REFRESH_ENEMYS		= 270	-- /*斗剑台刷新对手*/	
 MSG_DOUJIANTAI_TOP3		= 271	-- /*斗剑台三甲*/	
 MSG_USE_JUMP_POINT		= 272	-- /*使用跳点*/	
+CMSG_BAG_ITEM_SELL		= 273	-- /*出售物品*/	
+CMSG_BAG_ITEM_SORT		= 274	-- /*整理物品*/	
 CMSG_SUBMIT_QUEST_DAILY2		= 280	-- /*提交日常任务*/	
+SMSG_ATTRIBUTE_CHANGED		= 281	-- /*属性改变*/	
 
 
 ---------------------------------------------------------------------
@@ -9438,6 +9441,65 @@ function Protocols.unpack_use_jump_point (pkt)
 end
 
 
+-- /*出售物品*/	
+function Protocols.pack_bag_item_sell ( item_guid ,count)
+	local output = Packet.new(CMSG_BAG_ITEM_SELL)
+	output:writeUTF(item_guid)
+	output:writeU32(count)
+	return output
+end
+
+-- /*出售物品*/	
+function Protocols.call_bag_item_sell ( playerInfo, item_guid ,count)
+	local output = Protocols.	pack_bag_item_sell ( item_guid ,count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*出售物品*/	
+function Protocols.unpack_bag_item_sell (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.item_guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.count = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*整理物品*/	
+function Protocols.pack_bag_item_sort (  )
+	local output = Packet.new(CMSG_BAG_ITEM_SORT)
+	return output
+end
+
+-- /*整理物品*/	
+function Protocols.call_bag_item_sort ( playerInfo )
+	local output = Protocols.	pack_bag_item_sort (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*整理物品*/	
+function Protocols.unpack_bag_item_sort (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 -- /*提交日常任务*/	
 function Protocols.pack_submit_quest_daily2 (  )
 	local output = Packet.new(CMSG_SUBMIT_QUEST_DAILY2)
@@ -9453,6 +9515,31 @@ end
 
 -- /*提交日常任务*/	
 function Protocols.unpack_submit_quest_daily2 (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*属性改变*/	
+function Protocols.pack_attribute_changed (  )
+	local output = Packet.new(SMSG_ATTRIBUTE_CHANGED)
+	return output
+end
+
+-- /*属性改变*/	
+function Protocols.call_attribute_changed ( playerInfo )
+	local output = Protocols.	pack_attribute_changed (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*属性改变*/	
+function Protocols.unpack_attribute_changed (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
@@ -9726,7 +9813,10 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_doujiantai_refresh_enemys = self.call_doujiantai_refresh_enemys
 	playerInfo.call_doujiantai_top3 = self.call_doujiantai_top3
 	playerInfo.call_use_jump_point = self.call_use_jump_point
+	playerInfo.call_bag_item_sell = self.call_bag_item_sell
+	playerInfo.call_bag_item_sort = self.call_bag_item_sort
 	playerInfo.call_submit_quest_daily2 = self.call_submit_quest_daily2
+	playerInfo.call_attribute_changed = self.call_attribute_changed
 end
 
 local unpack_handler = {
@@ -9987,7 +10077,10 @@ local unpack_handler = {
 [CMSG_DOUJIANTAI_REFRESH_ENEMYS] =  Protocols.unpack_doujiantai_refresh_enemys,
 [MSG_DOUJIANTAI_TOP3] =  Protocols.unpack_doujiantai_top3,
 [MSG_USE_JUMP_POINT] =  Protocols.unpack_use_jump_point,
+[CMSG_BAG_ITEM_SELL] =  Protocols.unpack_bag_item_sell,
+[CMSG_BAG_ITEM_SORT] =  Protocols.unpack_bag_item_sort,
 [CMSG_SUBMIT_QUEST_DAILY2] =  Protocols.unpack_submit_quest_daily2,
+[SMSG_ATTRIBUTE_CHANGED] =  Protocols.unpack_attribute_changed,
 
 }
 

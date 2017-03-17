@@ -1419,6 +1419,16 @@ function PlayerInfo:ClearDailyQuestFinished()
 	self:SetUInt32(PLAYER_INT_FIELD_DAILY_QUEST_FINISHED, 0)
 end
 
+-- 获得整理背包时间戳
+function PlayerInfo:GetBagSortTime()
+	return self:GetUInt32(PLAYER_INT_FIELD_BAG_SORT_TIME)
+end
+
+-- 设置整理背包时间戳
+function PlayerInfo:SetBagSortTime(val)
+	self:SetUInt32(PLAYER_INT_FIELD_BAG_SORT_TIME, val)
+end
+
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)
 	if is_force == nil then is_force = false end

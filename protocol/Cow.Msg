@@ -1153,7 +1153,18 @@ doujiantai_top3,both,271,/*斗剑台三甲*/,STATUS_NEVER,False
 #
 use_jump_point,both,272,/*使用跳点*/,STATUS_NEVER,False
 	id,uint32,False,/*跳点id*/
+	
+#
+bag_item_sell,c2s,273,/*出售物品*/,STATUS_NEVER,False
+	item_guid,String,False,/*物品guid*/
+	count,uint32,False,/*个数*/
+	
+#
+bag_item_sort,c2s,274,/*整理物品*/,STATUS_NEVER,False
 
 #
 submit_quest_daily2,c2s,280,/*提交日常任务*/,STATUS_NEVER,False
+
+#
+attribute_changed,s2c,281,/*属性改变*/,STATUS_NEVER,False
 	

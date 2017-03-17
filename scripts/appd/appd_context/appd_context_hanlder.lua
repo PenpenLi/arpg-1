@@ -185,6 +185,17 @@ function PlayerInfo:Hanlde_Bag_Item_User(pkt)
 	UseItem(self, pkt.item_guid, pkt.count)
 end
 
+-- 出售背包物品
+function PlayerInfo:Hanlde_Bag_Item_Sell(pkt)
+	SellItem(self, pkt.item_guid, pkt.count)
+end
+
+-- 整理背包物品
+function PlayerInfo:Hanlde_Bag_Item_Sell(pkt)
+	SortItem(self)
+end
+
+
 function PlayerInfo:Handle_Use_Virtual_Item(pkt)
 	local entry = pkt.entry
 	if not tb_item_template[entry] or tb_item_template[entry].out_bag ~= 1 then
