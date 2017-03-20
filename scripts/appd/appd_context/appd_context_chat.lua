@@ -358,7 +358,9 @@ function PlayerInfo:GmCommand(str)
 			temp = temp..','..tokens[i]
 		end
 		call_opt_command(0, 0, temp)
-		
+	elseif(gm_key == 998)then		-- @整理接口
+		outFmtInfo("test sort: ")
+		SortItem(self)
 	elseif(gm_key == 999)then		-- @测试接口
 		--[[itemsell
 		if(tokens[2] == nil or tokens[3] == nil)then
@@ -366,10 +368,17 @@ function PlayerInfo:GmCommand(str)
 		end
 		outFmtInfo("test sell: %s %s %s",tokens[1],tokens[2], tokens[3])
 		SellItem(self, tokens[2], tonumber(tokens[3]))
-		]]
+		--]]
 		--itemsort
+		--[[
 		outFmtInfo("test sort: ")
 		SortItem(self)
+		--]]
+		if tokens[2] == nil and  tokens[3] == nil then
+			return
+		end
+		self:UnlockModuleByLevel(tonumber(tokens[2]),tonumber(tokens[3]))
+		
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

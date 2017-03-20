@@ -47,7 +47,7 @@ end
 
 --关闭游戏服连接
 function PlayerInfo:Close()
-	closeContext(self.ptr)
+	playerLib.close(self.ptr)
 end
 
 --心跳

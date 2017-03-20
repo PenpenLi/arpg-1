@@ -191,7 +191,7 @@ function PlayerInfo:Hanlde_Bag_Item_Sell(pkt)
 end
 
 -- 整理背包物品
-function PlayerInfo:Hanlde_Bag_Item_Sell(pkt)
+function PlayerInfo:Hanlde_Bag_Item_Sort(pkt)
 	SortItem(self)
 end
 

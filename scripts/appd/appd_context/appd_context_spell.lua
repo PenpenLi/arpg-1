@@ -93,6 +93,7 @@ function PlayerInfo:DoHandleUpgradeAngleSpell(spellId)
 	self:RecalcAttrAndBattlePoint()
 	--发送到场景服替换主动技能信息
 	--self:Send2ScenedReplaceEquipedSpell(slot, nextId, 1)
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_ANGLE_SKILL)
 	
 	outFmtDebug("upgrade spell success, from %d to %d", spellId, nextId)
 end
@@ -453,8 +454,10 @@ function PlayerInfo:DoHandleRaiseMount()
 	local trainConfig = tb_mount_train[seq]
 	local limit = trainConfig.exp
 	
-	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_EXP, {addExp})
-	
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_EXP, {addExp, multi})
+	--if multi > 1 then
+	--	self:call_operate_result_tip(MODULE_MOUNT,MODULE_MOUNT_UPGRADE,0,0,multi)
+	--end
 	-- 如果升星了
 	if addExp + trainExp >= limit then
 		local value = addExp + trainExp - limit

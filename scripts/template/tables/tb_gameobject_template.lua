@@ -33,4 +33,6 @@ tb_gameobject_template = {
 	[23] = {id = 23,name = "采集石剑1",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
 	[24] = {id = 24,name = "采集石剑2",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
 	[30] = {id = 30,name = "跳点",time = 0,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 4,go_flag = 0,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 2,trigger_height = 2,},
+	[25] = {id = 25,name = "探索佛像",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
+	[26] = {id = 26,name = "探索大鼓",time = 3,actionState = 0,regX = 0,regY = 0,isAround = 0,judge = 0,go_flag = 292,quest_id0 = 0,quest_id1 = 0,quest_id2 = 0,quest_id3 = 0,trigger_width = 6,trigger_height = 6,},
 }

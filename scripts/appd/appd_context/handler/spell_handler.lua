@@ -260,6 +260,10 @@ end
 -- 升级神兵
 function PlayerInfo:Handle_Divine_UpLev(pkt)
 	local id = pkt.id
+	if tb_divine_base[id] == nil then
+		outFmtError("table has no divine id = %d", id)
+		return
+	end
 	local spellMgr = self:getSpellMgr()
 
 	if not spellMgr:hasDivine(id) then
@@ -272,6 +276,10 @@ end
 --切换神兵
 function PlayerInfo:Handle_Divine_Switch(pkt)
 	local id = pkt.id
+	if tb_divine_base[id] == nil then
+		outFmtError("table has no divine id = %d", id)
+		return
+	end
 	local spellMgr = self:getSpellMgr()
 
 	if not spellMgr:hasDivine(id) then

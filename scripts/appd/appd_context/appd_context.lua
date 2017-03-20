@@ -824,7 +824,8 @@ function PlayerInfo:AddItemByEntry(entry, count, money_log, item_log, item_bind,
 	for _, record in pairs(config.records) do
 		-- 全服
 		if record == ITEM_RECORD_BROADCAST then
-			app:CallOptResult(OPRATE_TYPE_REWARD, item_log, {self:GetName(), config.name})
+			local itemName = GetColordItemName(entry)
+			app:CallOptResult(OPRATE_TYPE_REWARD, item_log, {self:GetName(), itemName})
 		end
 		
 		--[[
@@ -1145,6 +1146,7 @@ end
 function PlayerInfo:AddFirstQuest()
 	local level = self:GetLevel()
 	self:AddLevelActiveQuest(level)
+	self:UnlockModuleByLevel(0, level)
 end
 
 -- 增加等级解锁的任务
@@ -1371,6 +1373,10 @@ end
 
 -- 获得avatar
 function PlayerInfo:GetAvatar()
+	local fashionId = self:GetUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_FASHION)
+	if fashionId > 0 then
+		return fashionId
+	end
 	return self:GetUInt32(PLAYER_FIELD_EQUIPMENT + EQUIPMENT_TYPE_COAT)
 end
 
@@ -1429,6 +1435,10 @@ function PlayerInfo:SetBagSortTime(val)
 	self:SetUInt32(PLAYER_INT_FIELD_BAG_SORT_TIME, val)
 end
 
+
+
+
+
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)
 	if is_force == nil then is_force = false end
@@ -1465,6 +1475,7 @@ require("appd/appd_context/appd_context_kuafu")
 require("appd/appd_context/appd_context_world3v3")
 require("appd/appd_context/appd_context_xianfu")
 require("appd/appd_context/appd_context_doujiantai")
+require("appd/appd_context/appd_context_module_unlock")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")

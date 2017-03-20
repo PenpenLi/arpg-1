@@ -35,13 +35,16 @@ function SellItem(player, item_guid, count)
 		return
 	end
 	
-	itemMgr:delItemObj(item,count)
+		local price = tb_item_template[item:getEntry()].price
 	
-	player:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_NPC_SELL, tb_item_template[item:getEntry()].price*count, "",
-		item:getEntry(), count, item:isBind() and ITEM_BIND_GET or ITEM_BIND_NONE ,item:getFailTime() > 0 and 1 or 0)
-
+	if itemMgr:delItemObj(item,count) then
+	
+		player:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_NPC_SELL, price*count)
+		--print("")
+	end
 	
 end
+
 --整理主背包物品入口
 --[[
 @player:玩家对象
@@ -50,8 +53,8 @@ end
 function SortItem(player)
 	local nowtime = os.time()
 	local lasttime = player:GetBagSortTime()
-	if  nowtime - lasttime < 10 then
-		outFmtError("SortItem: less than 10s from last sort!")
+	if  nowtime - lasttime < tb_item_sort_cd[1].cd then
+		--outFmtError("SortItem: less than 10s from last sort!")
 		return
 	end
 	player:SetBagSortTime(nowtime)

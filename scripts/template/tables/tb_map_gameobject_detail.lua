@@ -15,4 +15,6 @@ tb_map_gameobject_detail = {
 	[5] = {id = 5,entry = 22,position = {120,11},angle = 180,},
 	[6] = {id = 6,entry = 23,position = {54,104},angle = 180,},
 	[7] = {id = 7,entry = 24,position = {54,55},angle = 180,},
+	[8] = {id = 8,entry = 25,position = {37,42},angle = 180,},
+	[9] = {id = 9,entry = 26,position = {20,42},angle = 180,},
 }

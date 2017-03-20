@@ -90,11 +90,12 @@ local function on_scened_player_upgrade( pkt )
 		end
 	end
 	
+	--[[
 	-- FIXME:解锁坐骑 先在这里处理
 	if prevLevel < 8 and 8 <= player_lv then
 		player:activeMount()
 	end
-	
+	--]]
 	-- 到C++中改变等级列表
 	playerLevelChanged(player_guid, prevLevel, player_lv)
 	
@@ -102,6 +103,8 @@ local function on_scened_player_upgrade( pkt )
 	for level = prevLevel + 1, player_lv do
 		player:AddLevelActiveQuest(level)
 	end
+	
+	player:UnlockModuleByLevel(prevLevel, player_lv)
 	--[[
 	-- 如技能解锁
 	local socialSysInfo = player:getSocialSystem()

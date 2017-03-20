@@ -8,4 +8,5 @@ tb_map_gameobject = {
 	--  gameobjects:array	采集物列表
 	[1] = {id = 1,gameobjects = {},},
 	[1001] = {id = 1001,gameobjects = {3,4,5,6,7},},
+	[1002] = {id = 1002,gameobjects = {8,9},},
 }

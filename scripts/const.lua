@@ -117,15 +117,6 @@ RESET_HOSTING_HOSTING =1	--托管中
 TIME_ZONE_HOUR = 8		--时区 todo目前写死
 
 
---计算基础战斗力的公式
-function DOCalculForce(attrs)
-	--基础属性战斗力=1*外功+1*内功+1*外防+1*内防+0.34*生命值+5*闪避+5*命中+5*暴击+5*抗暴
-	local force = attrs[EQUIP_ATTR_OUT_DAMAGE] + attrs[EQUIP_ATTR_IN_DAMAGE] + attrs[EQUIP_ATTR_OUT_DEF] + attrs[EQUIP_ATTR_IN_DEF]
-				+ attrs[EQUIP_ATTR_HP]*0.34 + attrs[EQUIP_ATTR_EVA]*5 + attrs[EQUIP_ATTR_HIT]*5 + attrs[EQUIP_ATTR_CRIT]*5 + attrs[EQUIP_ATTR_CRIT_DEF]*5
-
-	return math.floor(force)
-end
-
 KUAFU_MAP_ID_CONFIG = {}
 --根据地图id判断所在地图是否为跨服地图
 function IsKuafuMapID(map_id)

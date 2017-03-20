@@ -92,3 +92,5 @@ require("template.tables.tb_doujiantai_base")
 
 require("template.tables.tb_map_jump_point")
 require("template.tables.tb_map_jump_point_detail")
+
+require("template.tables.tb_item_quality_color")

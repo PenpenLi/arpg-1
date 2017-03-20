@@ -1,15 +1,5 @@
 require("math")
 --------------------------------------
---计算玩家战斗力
-function DoCalculPlayerForce(player, attrs, spells_force)
-	local force = DOCalculForce(attrs)
-	--加上技能战斗力
-	for i = 1,#spells_force do
-		force = force + spells_force[i]
-	end
-	return force
-end
-
 
 --------------------------------------------------------------------------------------------------------------
 -- 传送的时候该做点什么事

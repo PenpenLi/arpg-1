@@ -392,6 +392,8 @@ function AppQuestMgr:ActiveFlowingQuests(questId)
 	local config = tb_quest[questId]
 	local playerInfo = self:getOwner()
 	
+	playerInfo:UnlockModuleByTaskId(questId)
+	
 	-- 每日任务
 	if config.type == QUEST_TYPE_DAILY then
 		if config.start == 0 then
@@ -532,6 +534,14 @@ function AppQuestMgr:OnInnerPickQuest(start)
 	else
 		self:OnRemoveQuest(start)
 	end
+	
+	-- 如果是主线任务 当前主线任务id + 1000000 表示完成
+	if tb_quest[questId].type == QUEST_TYPE_MAIN then
+		playerInfo:SetMainQuestID(1000000 + questId)
+	end
+	
+	self:ActiveFlowingQuests(questId)
+	
 	-- 领取奖励
 	if #tb_quest[questId].rewards > 0 then
 		local gender = playerInfo:GetGender()
@@ -549,17 +559,11 @@ function AppQuestMgr:OnInnerPickQuest(start)
 		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_BAR)
 	end
 	
-	-- 如果是主线任务 当前主线任务id + 1000000 表示完成
-	if tb_quest[questId].type == QUEST_TYPE_MAIN then
-		playerInfo:SetMainQuestID(1000000 + questId)
-	end
-	
 	-- 如果是章节最后一个任务 自动领取章节奖励
 	if tb_quest[questId].chapterLast == 1 then
 		local chapterIndex = tb_quest[questId].chapter
 		self:OnPickQuestChapterReward(chapterIndex)
 	end
-	self:ActiveFlowingQuests(questId)
 end
 
 -- 如果需要初始化进度的

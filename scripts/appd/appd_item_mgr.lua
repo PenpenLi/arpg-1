@@ -118,6 +118,7 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 	
 	local src_item = self:getBagItemByPos(src_bag, src_pos)
 	local dst_item = self:getBagItemByPos(dst_bag, dst_pos)
+
 	if not src_item then
 		outFmtError("exchangePos:not find src_item src_bag %d src_pos %d", src_bag, src_pos)
 		return false
@@ -175,7 +176,7 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 				return false
 			end
 			--校验是否是装备
-			if src_temp.type ~= ITEM_TYPE_EQUIP then
+			if src_temp.type ~= ITEM_TYPE_EQUIP and ITEM_TYPE_FASHION ~= src_temp.type then
 				outFmtError("exchangePos:src_item %d pos %d not equip item!", src_item:getEntry(), src_pos)
 				return false
 			end
@@ -369,14 +370,7 @@ function AppItemMgr:handleCoolDown( entry )
 	self:getOwner():call_bag_item_cooldown({list})
 end
 
---获得物品管理器的拥有者
-function ItemMgrBase:getOwner()
-	--物品管理器guid转玩家guid
-	if not self.owner_guid then
-		self.owner_guid = guidMgr.replace(self.itemMgr:GetGuid(), guidMgr.ObjectTypePlayer)
-	end
-	return app.objMgr:getObj(self.owner_guid)	
-end
+
 
 --判断一组物品的数量是否够{{entry,count},{entry,count} ...} 
 function AppItemMgr:hasMulItem(costItemTable,multiple)

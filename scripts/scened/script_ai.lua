@@ -68,6 +68,7 @@ AI_Base = {
 					for _, player_ptr in ipairs(playerPtrs) do
 						playerLib.SendToAppdDoSomething(player_ptr, SCENED_APPD_KILL_MONSTER, entry)
 					end
+					playerLib.SendToAppdDoSomething(killer_ptr, SCENED_APPD_KILL_MONSTER_COLLECT, entry)
 				end
 			end
 			return 0							--返回尸体的存活时间

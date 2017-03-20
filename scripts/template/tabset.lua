@@ -37,3 +37,32 @@ for id, config in ipairs(tb_char_level) do
 end
 
 --print(#tb_faction_shop_list)
+tb_system_base_task_list = {}
+tb_system_base_level_list = {}
+
+for id,info in pairs(tb_system_base) do
+	if info.questId ~= 0 then
+		if tb_system_base_task_list[info.questId] == nil then
+			local list = {}
+			table.insert(list,id)
+			tb_system_base_task_list[info.questId] = list
+		else
+			table.insert(tb_system_base_task_list[info.questId],id)
+			
+		end
+	
+	else
+		if tb_system_base_level_list[info.level] == nil then
+			local list = {}
+			table.insert(list,id)
+			tb_system_base_level_list[info.level] = list
+		else
+			table.insert(tb_system_base_level_list[info.level],id)
+			
+		end
+		
+	end
+	
+end
+
+

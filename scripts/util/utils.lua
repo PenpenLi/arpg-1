@@ -358,6 +358,16 @@ function GetNextWeekXStartTimeFromTimestamp(x, timestamp)
 	return real_time
 end
 
+-- 获得带颜色的道具名称
+function GetColordItemName(entry)
+	local quality = tb_item_template[entry].quality
+	local color = "ffffff"
+	if tb_item_quality_color[quality] then
+		color = tb_item_quality_color[quality].color
+	end
+	return string.format("[%s]%s", color, tb_item_template[entry].name)
+end
+
 -- print(GetNextWeekXStartTimeFromNow(1))
 -- print(GetNextWeekXStartTimeFromTimestamp(1, 1488211200-weektimes))
 

@@ -173,9 +173,22 @@ function GiftPacksInfo:AddGiftPacksInfo(gift_type, start_time, end_time, gift_na
 	return 1
 end
 
+-- 判断礼包是否存在
+function GiftPacksInfo:IsIndexHasMail(indx)
+	if indx < 0 or indx >= MAX_GIFTPACKS_INFO_COUNT then
+		return false
+	end
+	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
+	return self:GetUInt32(intIndex + GIFTPACKS_INFO_INT_START_TIME) > 0
+end
 
 -- 设置读
 function GiftPacksInfo:mailRead(indx)
+	-- 邮件不存在
+	if not self:IsIndexHasMail(indx) then
+		return
+	end
+	
 	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
 	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
 	
@@ -190,6 +203,11 @@ end
 
 -- 领取礼包
 function GiftPacksInfo:pickMail(playerInfo, indx)
+	-- 邮件不存在
+	if not self:IsIndexHasMail(indx) then
+		return
+	end
+	
 	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
 	
 	-- 已经领了的判断和过期/删除的判断
@@ -199,7 +217,7 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	
 	local items = self:GetGiftPacksItem(indx)
 	-- 没有附件
-	if items == "" then
+	if items == "" or string.len(items) == 0 then
 		return
 	end
 	
@@ -233,6 +251,11 @@ end
 
 -- 删除礼包
 function GiftPacksInfo:removeMail(indx)
+	-- 邮件不存在
+	if not self:IsIndexHasMail(indx) then
+		return
+	end
+	
 	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
 	
 	-- 已经删除的判断

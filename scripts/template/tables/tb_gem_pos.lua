@@ -16,4 +16,10 @@ tb_gem_pos = {
 	[8] = {id = 8,gemtype = 1,},
 	[9] = {id = 9,gemtype = 2,},
 	[10] = {id = 10,gemtype = 3,},
+	[11] = {id = 11,gemtype = 4,},
+	[12] = {id = 12,gemtype = 5,},
+	[13] = {id = 13,gemtype = 6,},
+	[14] = {id = 14,gemtype = 7,},
+	[15] = {id = 15,gemtype = 8,},
+	[16] = {id = 16,gemtype = 9,},
 }

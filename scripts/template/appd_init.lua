@@ -11,6 +11,8 @@ require("template.tables.tb_assistangerspell_upgrade")
 require("template.tables.tb_learn_spell")
 require("template.tables.tb_item_template")
 require("template.tables.tb_bag_size")
+require("template.tables.tb_item_sort_cd")
+
 
 require("template.tables.tb_mount_base")
 require("template.tables.tb_mount_illusion")
@@ -130,8 +132,9 @@ require("template.tables.tb_doujiantai_fight_range")
 
 require("template.tables.tb_creature_template")
 require("template.tables.tb_gameobject_template")
+require("template.tables.tb_system_base")
 
-
+require("template.tables.tb_item_quality_color")
 
 --- 数据预处理
 require("template.tabset")

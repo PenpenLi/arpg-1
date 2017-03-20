@@ -9,7 +9,7 @@ tb_bag_size = {
 	--  num_init:int	初始包裹
 	--  num_max:int	包裹上限
 	[1] = {id = 1,type = 0,num_init = 35,num_max = 210,},
-	[2] = {id = 2,type = 1,num_init = 12,num_max = 12,},
+	[2] = {id = 2,type = 1,num_init = 14,num_max = 14,},
 	[3] = {id = 3,type = 2,num_init = 140,num_max = 140,},
 	[4] = {id = 4,type = 3,num_init = 20,num_max = 20,},
 	[5] = {id = 5,type = 4,num_init = 42,num_max = 42,},

@@ -37,6 +37,9 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		self:AddAchieve(QUEST_TARGET_TYPE_KILL_MONSTER_NUM, 1)
 		local questMgr = self:getQuestMgr()
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_KILL_MONSTER, {data})
+	elseif SCENED_APPD_KILL_MONSTER_COLLECT == ntype then
+		local questMgr = self:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_KILL_MONSTER_COLLECT, {data})
 	elseif SCENED_APPD_JOIN_FIELD_BOSS == ntype then
 		-- 参加野外BOSS
 		local questMgr = self:getQuestMgr()

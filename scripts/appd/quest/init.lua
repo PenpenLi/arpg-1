@@ -32,6 +32,7 @@ require("appd.quest.QuestJoinDoujiantai")
 require("appd.quest.QuestJoinWorld3V3")
 require("appd.quest.QuestWorld3V3Win")
 require("appd.quest.QuestJoinXianfu")
+require("appd.quest.QuestKillMonsterCollect")
 
 -- 这个一定要放到最后
 require("appd.quest.QuestManager")

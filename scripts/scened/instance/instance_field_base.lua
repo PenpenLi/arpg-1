@@ -310,7 +310,8 @@ function InstanceFieldBase:OnTimer_PickingTreasure(player)
 		local itemConfig = tb_item_template[entry]
 		for _, record in pairs(itemConfig.records) do
 			if record == ITEM_RECORD_MAP then
-				table.insert(rewards, tb_item_template[entry].name)
+				local itemName = GetColordItemName(entry)
+				table.insert(rewards, itemName)
 			end
 		end
 	end

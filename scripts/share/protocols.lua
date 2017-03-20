@@ -275,6 +275,8 @@ CMSG_BAG_ITEM_SELL		= 273	-- /*出售物品*/
 CMSG_BAG_ITEM_SORT		= 274	-- /*整理物品*/	
 CMSG_SUBMIT_QUEST_DAILY2		= 280	-- /*提交日常任务*/	
 SMSG_ATTRIBUTE_CHANGED		= 281	-- /*属性改变*/	
+SMSG_BAG_FIND_EQUIP_BETTER		= 282	-- /*背包有更强装备*/	
+SMSG_MODULE_ACTIVE		= 283	-- /*模块解锁*/	
 
 
 ---------------------------------------------------------------------
@@ -9550,6 +9552,69 @@ function Protocols.unpack_attribute_changed (pkt)
 end
 
 
+-- /*背包有更强装备*/	
+function Protocols.pack_bag_find_equip_better ( item_id ,pos)
+	local output = Packet.new(SMSG_BAG_FIND_EQUIP_BETTER)
+	output:writeU32(item_id)
+	output:writeU32(pos)
+	return output
+end
+
+-- /*背包有更强装备*/	
+function Protocols.call_bag_find_equip_better ( playerInfo, item_id ,pos)
+	local output = Protocols.	pack_bag_find_equip_better ( item_id ,pos)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*背包有更强装备*/	
+function Protocols.unpack_bag_find_equip_better (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.item_id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.pos = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*模块解锁*/	
+function Protocols.pack_module_active ( moduleId)
+	local output = Packet.new(SMSG_MODULE_ACTIVE)
+	output:writeU32(moduleId)
+	return output
+end
+
+-- /*模块解锁*/	
+function Protocols.call_module_active ( playerInfo, moduleId)
+	local output = Protocols.	pack_module_active ( moduleId)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*模块解锁*/	
+function Protocols.unpack_module_active (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.moduleId = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9817,6 +9882,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_bag_item_sort = self.call_bag_item_sort
 	playerInfo.call_submit_quest_daily2 = self.call_submit_quest_daily2
 	playerInfo.call_attribute_changed = self.call_attribute_changed
+	playerInfo.call_bag_find_equip_better = self.call_bag_find_equip_better
+	playerInfo.call_module_active = self.call_module_active
 end
 
 local unpack_handler = {
@@ -10081,6 +10148,8 @@ local unpack_handler = {
 [CMSG_BAG_ITEM_SORT] =  Protocols.unpack_bag_item_sort,
 [CMSG_SUBMIT_QUEST_DAILY2] =  Protocols.unpack_submit_quest_daily2,
 [SMSG_ATTRIBUTE_CHANGED] =  Protocols.unpack_attribute_changed,
+[SMSG_BAG_FIND_EQUIP_BETTER] =  Protocols.unpack_bag_find_equip_better,
+[SMSG_MODULE_ACTIVE] =  Protocols.unpack_module_active,
 
 }
 

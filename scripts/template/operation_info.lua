@@ -1145,5 +1145,23 @@ function OperationFailedToString(type, reason, data)
 		end
 		return "未知错误1  OPRATE_TYPE_DOUJIAN " .. reason .. "    "  .. data
 	end
+	if(type == OPRATE_TYPE_GEM)then
+		if (reason ==UPGRADE_OPRATE_SKILL_SUCCESS)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_SKILL_SUCCESS技能升级成功 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT_EXP)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_MOUNT_EXP坐骑经验+{1} - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT_STAR)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_MOUNT_STAR坐骑星级+1 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_MOUNT)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_MOUNT进阶成功 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_ANGLE_SKILL)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_ANGLE_SKILL怒气技能进阶成功 - " .. data 
+		end
+		return "未知错误1  OPRATE_TYPE_GEM " .. reason .. "    "  .. data
+	end
 	return "未知错误2   " .. type .. "  " .. reason .. "    "  .. data
 end

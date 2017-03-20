@@ -18,7 +18,14 @@ function AppItemInstance:itemAppaisal(item)
 		self:createAddAtrr(item,attr_config,attr_length)
 
 		--重算下战斗力
-		--self:resetItemForce(item)
+		self:resetItemForce(item)
+		
+		
+			
+			
+			
+			
+		
 	end
 	
 	
@@ -29,60 +36,22 @@ end
 
 --获得物品属性 ps：这里只获得pk属性相关的，不包括特殊属性
 function AppItemInstance:getItemCalculAttr( item ,attrs)
-	-- local attrs = {}
-	--Ttab(attrs)
-	-- for i = 1, MAX_EQUIP_ATTR - 1 do
-	-- 	attrs[i] = item.item:GetAttr(GetAttrKey({[1] = i})[1])
-	-- end
-	-- --汇总属性前先把固定属性加到基础属性
-	-- for i = EQUIP_ATTR_HP, EQUIP_ATTR_CRIT_DEF do		
-	-- 	attrs[i] = attrs[i] + attrs[ i + MAX_BASE_ATTR ]
-	-- end	
-	-- return attrs
 	--先添加基础属性
 	local entry = item:getEntry()
 	local item_tempate = tb_item_template[entry]
-	local ary = item_tempate.basic_properties;
+	local ary = item_tempate.basic_properties
 	for i=1,#ary do
+		if not attrs[ary[i][1]] then
+			attrs[ary[i][1]] = 0
+		end
 		attrs[ary[i][1]] = attrs[ary[i][1]] + ary[i][2]
 	end
-	--Ttab(attrs)
-	--强化属性
-
-	local part = item_tempate.pos
-	local player = self:getOwner()
-	local spellMgr = player:getSpellMgr()
-	local qhLev = spellMgr:getStrengLev(part)
-	if qhLev > 0 then
-		local qhid = (part-1)*#tb_strengthen_bless + qhLev
-		local config = tb_strengthen_base[qhid].pros
-		--outFmtInfo("config%d %d %d %d",#config,qhid,qhLev,part)
-		for i=1,#config do
-			attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
-		end
-		--Ttab(attrs)
-	end
-	
-	--宝石属性
-	local gem = spellMgr:getGemAllLev(part)
-	local gemtype = tb_gem_pos[part].gemtype
-	--outFmtInfo("gem %d",gemtype)
-	for i=1,#gem do
-		local gemlev = gem[i]
-		if gemlev > 0 then
-			local gemid = (gemtype-1)*#tb_gem_mul + gemlev
-			local gemconfig = tb_gem_base[gemid].pros
-			for i=1,#gemconfig do
-				attrs[gemconfig[i][1]] = attrs[gemconfig[i][1]] + gemconfig[i][2]
-			end
-		end
-	end
-	--outFmtInfo("gem")
-	--Ttab(attrs)
-
 
 	--添加附加属性
 	local func = function (key,val)
+		if not attrs[key] then
+			attrs[key] = 0
+		end
 		attrs[key] = attrs[key] + val
 	end
 
@@ -213,23 +182,17 @@ end
 
 --重算物品战斗力
 function AppItemInstance:resetItemForce(item)
-	--[[
-	local temp_attrs = self:getItemCalculAttr(item)
-	--强加加成
-	local streng_lv = item:getStrongLv()
-	if streng_lv > 0 then
-		for i = EQUIP_ATTR_HP,EQUIP_ATTR_CRIT_DEF
-		do
-			temp_attrs[i] = temp_attrs[i] + math.floor(item:getAttr(i) * tb_equip_intensify[streng_lv].prop_rate /10000)
-		end
-	end
-	local force = DOCalculForce( temp_attrs )		--计算战斗力
+	----[[
+	local temp_attrs = {}
+	self:getItemCalculAttr(item, temp_attrs)
+	
+	local force = DoAnyOneCalcForce( temp_attrs )		--计算战斗力
 	local cur_force = item:getAttr(ITEM_OTHER_ATTR_FORCE)
 	if cur_force == 0 or cur_force ~= force then
 		item:setAttr(ITEM_OTHER_ATTR_FORCE, force)		--更新物品战斗力		
 	end	
 	self.itemMgr:SavePtr(item.item)
-	]]
+	--]]
 end
 
 --查找商品列表

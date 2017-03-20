@@ -221,4 +221,6 @@ function PlayerInfo:SendProtocol()
 		outFmtInfo("invoke %s", FuncName[index])
 		doxpcall(callback, self)
 	end
+	
+	return true
 end

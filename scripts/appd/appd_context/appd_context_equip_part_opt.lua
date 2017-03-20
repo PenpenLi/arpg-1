@@ -136,6 +136,12 @@ function PlayerInfo:gem (pkt)
 			-- 添加祝福值
 			spellMgr:setGemCurBless(part,now)
 		end
+		
+		if mul > 1 then
+			--self:call_operate_result_tip(MODULE_MIX,MODULE_MIX_GEM,0,0,mul)
+			self:CallOptResult(OPRATE_TYPE_GEM, GEM_TYPE_CRIT,mul)
+		end
+		
 	
 		-- 加任务
 		local questMgr = self:getQuestMgr()

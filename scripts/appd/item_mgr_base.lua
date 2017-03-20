@@ -95,7 +95,22 @@ function ItemMgrBase:addItem(entry, count, isBind, isAppaisal, isSystem, strong_
 		if fail_time > 0 then item:setFailTime(fail_time) end
 		if strong_lv > 0 then item:setStrongLv(strong_lv) end	
 		if isAppaisal and self.itemAppaisal then self:itemAppaisal(item) end
-		self.itemMgr:Add(item.item, bag_type, pos)
+		
+		
+		local bag_pos = self.itemMgr:Add(item.item, bag_type, pos)
+		
+		if item_tempate.type == ITEM_TYPE_EQUIP then
+			
+			-- 与背包对应位置装备战力比较
+			local equiped_item = self:getBagItemByPos(BAG_TYPE_EQUIP,item_tempate.pos)
+	
+			if not equiped_item or item:getForce() > equiped_item:getForce() then
+				outFmtInfo("addItem: find better equip %d %d %d ",entry,bag_pos, item:getForce())
+				--local item_guid = string.format("%s;%d",self:GetGuid(), result_pos)
+				self:getOwner():call_bag_find_equip_better(entry, bag_pos)
+			end
+		end
+		
 		count = count - overlay
 	end
 	return 0
@@ -111,7 +126,7 @@ function ItemMgrBase:addItemByStr(bag_type, str, pos)
 	local item = require("appd.appd_item").new()
 	if not item:fromString(str) then return false end	
 	local id = self.itemMgr:Add(item.item, bag_type, pos)	--找个空位放到包裹
-	if id > 0 then return true end	
+	if id >= 0 then return true end	
 	return false
 end
 
@@ -377,5 +392,16 @@ function ItemMgrBase:canHold(bag_type, entry, count, isBind, fail_time)
 	can_hold = can_hold + max_over_lay * empty_count	
 	return can_hold >= count
 end
+
+
+--获得物品管理器的拥有者
+function ItemMgrBase:getOwner()
+	--物品管理器guid转玩家guid
+	if not self.owner_guid then
+		self.owner_guid = guidMgr.replace(self.itemMgr:GetGuid(), guidMgr.ObjectTypePlayer)
+	end
+	return app.objMgr:getObj(self.owner_guid)	
+end
+
 
 return ItemMgrBase

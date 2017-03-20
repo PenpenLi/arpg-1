@@ -1167,4 +1167,13 @@ submit_quest_daily2,c2s,280,/*提交日常任务*/,STATUS_NEVER,False
 
 #
 attribute_changed,s2c,281,/*属性改变*/,STATUS_NEVER,False
+
+#
+bag_find_equip_better,s2c,282,/*背包有更强装备*/,STATUS_NEVER,False
+	item_id,uint32,False,/*物品id*/
+	pos,uint32,False,/*背包位置*/
+
+#
+module_active,s2c,283,/*模块解锁*/,STATUS_NEVER,False
+	moduleId,uint32,False,/*模块id*/
 	
