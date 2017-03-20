@@ -155,4 +155,6 @@ hanlders[MSG_DOUJIANTAI_TOP3] = PlayerInfo.Handle_Doujiantai_Top3
 
 hanlders[CMSG_SUBMIT_QUEST_DAILY2] = PlayerInfo.Handle_Submit_Quest_Daily2
 
+hanlders[CMSG_PICK_DAILY2_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest_Daily2
+
 return hanlders

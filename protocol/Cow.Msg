@@ -1176,4 +1176,7 @@ bag_find_equip_better,s2c,282,/*背包有更强装备*/,STATUS_NEVER,False
 #
 module_active,s2c,283,/*模块解锁*/,STATUS_NEVER,False
 	moduleId,uint32,False,/*模块id*/
-	
+
+#
+pick_daily2_quest_reward,c2s,284,/*领取日常任务奖励*/,STATUS_NEVER,False
+	indx,uint8,False,/*任务序号*/

@@ -195,6 +195,11 @@ function PlayerInfo:pickQuest(indx)
 	questMgr:OnPickQuest(indx)
 end
 
+function PlayerInfo:OnPickDaily2Quest(indx)
+	local questMgr = self:getQuestMgr()
+	questMgr:OnPickDailyQuest(indx)
+end
+
 function PlayerInfo:SubmitQuestDaily2()
 	local questMgr = self:getQuestMgr()
 	questMgr:OnSubmitQuestDaily2()

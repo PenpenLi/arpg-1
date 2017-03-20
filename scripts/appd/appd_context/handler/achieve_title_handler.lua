@@ -49,3 +49,7 @@ end
 function PlayerInfo:Handle_Submit_Quest_Daily2(pkt)
 	self:SubmitQuestDaily2()
 end
+
+function PlayerInfo:Handle_Pick_Quest_Daily2()
+	self:OnPickDaily2Quest()
+end

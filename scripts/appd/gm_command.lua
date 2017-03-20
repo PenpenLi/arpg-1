@@ -79,6 +79,9 @@ function  DoGMScripts(player_ptr, gm_commands)
 				end
 			end
 		end
+	elseif (tokens[1] == "@完成当前主线")then
+		local questMgr = player:getQuestMgr()
+		questMgr:FinishCurrentMainQuest()
 	elseif(tokens[1] == "@军团等级")then
 		local faction = app.objMgr:getObj(player:GetFactionId())
 		if (faction ~= nil) then

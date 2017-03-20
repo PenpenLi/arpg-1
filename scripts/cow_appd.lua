@@ -183,6 +183,7 @@ config = {
 		MSG_DOUJIANTAI_TOP3,
 		
 		CMSG_SUBMIT_QUEST_DAILY2,
+		CMSG_PICK_DAILY2_QUEST_REWARD,
 	},
 	--pk服命令表
 	pk_external_router_map = {

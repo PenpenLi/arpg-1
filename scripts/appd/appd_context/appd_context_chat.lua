@@ -430,8 +430,9 @@ function PlayerInfo:CheckChatLimit(c_type, content)
 	--频率限制
 	local guid = self:GetGuid()
 	local t = os.time()
+	local seconds = 1
 	local last_time = last_chat_time[guid] or 0
-	if(last_time + 5 > t)then
+	if(last_time + seconds > t)then
 		self:CallOptResult(OPRATE_TYPE_CHAT, CHAT_RESULT_CHECK_LIMIT)
 		return false
 	end

@@ -346,10 +346,24 @@ function AppQuestMgr:OnDailyQuestReset()
 	end
 	-- 给每日任务的第一个任务
 	self:OnAddQuest(tb_quest_daily_base[ 1 ].npcQuest)
-	
+		
 	-- 日常任务
 	self:OnAddQuest(tb_quest_daily2_base[ 1 ].npcQuest)
 	
+	-- 重置日常任务个数
+	self:ClearDaily2Finished()
+	
+	-- 重置日常任务提交情况
+	self:ClearDaily2Submit()
+	
+	-- 清空日常任务
+	for start = QUEST_FIELD_DAILY2_QUEST_START, QUEST_FIELD_DAILY2_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+
+		if questId > 0 and tb_quest[questId].type == QUEST_TYPE_DAILY2 then
+			self:OnRemoveQuest(start)
+		end
+	end
 end
 
 -- 随机生成日常任务
@@ -365,7 +379,7 @@ function AppQuestMgr:RandomGenerateDaily2Quest()
 				
 				for _, indx in ipairs(rdDict) do
 					local questId = questSet[indx]
-					self:OnAddQuest(questId)
+					self:OnAddQuest(questId, QUEST_FIELD_DAILY2_QUEST_START, QUEST_FIELD_DAILY2_QUEST_END)
 				end
 			end
 		end
@@ -438,6 +452,36 @@ function AppQuestMgr:OnPickQuestChapterReward(indx)
 	--playerInfo:SetQuestChapterPicked(indx)
 end
 
+-- 清空日常任务完成个数
+function AppQuestMgr:ClearDaily2Finished()
+	self:SetUInt32(QUEST_FIELD_DAILY2_FINISHED, 0)
+end
+
+-- 获得日常任务完成个数
+function AppQuestMgr:GetDaily2Finished()
+	return self:GetUInt32(QUEST_FIELD_DAILY2_FINISHED)
+end
+
+-- 增加日常任务完成个数
+function AppQuestMgr:AddDaily2Finished()
+	self:AddUInt32(QUEST_FIELD_DAILY2_FINISHED, 1)
+end
+
+-- 清空日常任务提交情况
+function AppQuestMgr:ClearDaily2Submit()
+	self:SetUInt32(QUEST_FIELD_DAILY2_SUBMIT, 0)
+end
+
+-- 设置日常任务已提交
+function AppQuestMgr:Daily2Submit()
+	self:SetUInt32(QUEST_FIELD_DAILY2_SUBMIT, 1)
+end
+
+-- 查询日常任务是否已提交
+function AppQuestMgr:IsDaily2Submited()
+	return self:GetUInt32(QUEST_FIELD_DAILY2_SUBMIT) > 0
+end
+
 -- 领取奖励
 function AppQuestMgr:OnPickQuest(indx)
 	local start = QUEST_FIELD_QUEST_START + indx * MAX_QUEST_INFO_COUNT
@@ -449,37 +493,59 @@ function AppQuestMgr:OnPickQuest(indx)
 	end
 end
 
+-- 领取日常任务
+function AppQuestMgr:OnPickDailyQuest(indx)
+	local start = QUEST_FIELD_DAILY2_QUEST_START + indx * MAX_QUEST_INFO_COUNT
+	
+	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+	local state   = self:GetUInt16(start + QUEST_INFO_ID, 1)
+	if questId > 0 and state == QUEST_STATUS_COMPLETE then
+		self:OnInnerPickQuest(start)
+	end
+end
+
+-- 获取日常任务的binlog索引
+function AppQuestMgr:GetQuestDaily2Indice()
+	local indice = {}
+	for start = QUEST_FIELD_DAILY2_QUEST_START, QUEST_FIELD_DAILY2_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+		if questId > 0 then
+			table.insert(indice, questId)
+		end
+	end
+	
+	return indice
+end
+
 -- 提交日常任务
 function AppQuestMgr:OnSubmitQuestDaily2()
-	local playerInfo = self:getOwner()
-	local finished = 0
-
-	local indice = self:GetQuestDaily2Indice()
-	-- 初始任务不能提交
-	if #indice == 1 then
+	-- 已经领取过了, 不需要领取了
+	if self:IsDaily2Submited() then
 		return
 	end
 	
+	local indice = self:GetQuestDaily2Indice()
 	local all = #indice
+	if all == 0 then
+		return
+	end
+	
 	local belongLvRangeId = 0
 	for _, start in ipairs(indice) do
 		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 		local state = self:GetUInt16(start + QUEST_INFO_ID, 1)
-		
+
 		if state == QUEST_STATUS_COMPLETE then
 			self:OnInnerPickQuest(start)
 		end
-		state = self:GetUInt16(start + QUEST_INFO_ID, 1)
-		if state == QUEST_STATUS_END then
-			finished = finished + 1
-		end
-		
-		-- 设置显示模式
-		self:SetUInt16(start + QUEST_INFO_ID, 1, state + 10)
 		-- 所属等级段
 		belongLvRangeId = tb_quest[questId].belongLvRangeId
 	end
+	
+	self:Daily2Submit()
 
+	local playerInfo = self:getOwner()
+	local finished = self:GetDaily2Finished()
 	if tb_quest_daily2[belongLvRangeId] then
 		-- 给完成奖励
 		local config = tb_quest_daily2[belongLvRangeId]
@@ -496,19 +562,7 @@ function AppQuestMgr:OnSubmitQuestDaily2()
 	end
 end
 
-function AppQuestMgr:GetQuestDaily2Indice()
-	local indice = {}
-	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
-		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
-
-		if questId > 0 and tb_quest[questId].type == QUEST_TYPE_DAILY2 then
-			table.insert(indice, start)
-		end
-	end
-	
-	return indice
-end
-
+--[[
 -- 领取某个日常任务的奖励
 function AppQuestMgr:OnPickingDaily2Quest(questId)
 	local playerInfo = self:getOwner()
@@ -519,6 +573,7 @@ function AppQuestMgr:OnPickingDaily2Quest(questId)
 		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
 	end
 end
+--]]
 
 -- 内部领取奖励
 function AppQuestMgr:OnInnerPickQuest(start)
@@ -530,7 +585,12 @@ function AppQuestMgr:OnInnerPickQuest(start)
 	
 	-- 日常任务不能删除
 	if tb_quest[questId].type == QUEST_TYPE_DAILY2 and tb_quest[questId].start == 0 then
-		self:OnPickingDaily2Quest(questId)
+		-- 由于策划保证多个任务会配一样的任务奖励, 那就走任务那套奖励
+		--self:OnPickingDaily2Quest(questId)
+		-- 未提交任务才需要加计数
+		if not self:IsDaily2Submited() then
+			self:AddDaily2Finished()
+		end
 	else
 		self:OnRemoveQuest(start)
 	end
@@ -605,11 +665,13 @@ function AppQuestMgr:OnCheckMainQuestActive(currLevel)
 	end
 end
 
--- 增加非主线任务
-function AppQuestMgr:OnAddQuest(addQuestId)
+-- 增加任务
+function AppQuestMgr:OnAddQuest(addQuestId, binlogStart, binlogEnd)
 	local playerInfo = self:getOwner()
+	binlogStart = binlogStart or QUEST_FIELD_QUEST_START
+	binlogEnd = binlogEnd or QUEST_FIELD_QUEST_END
 	
-	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+	for start = binlogStart, binlogEnd - 1, MAX_QUEST_INFO_COUNT do
 		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 
 		if questId == 0 then
@@ -648,20 +710,6 @@ function AppQuestMgr:OnRemoveQuest(start)
 	end
 end
 
--- 通过任务id移除任务
-function AppQuestMgr:OnRemoveQuestByQuestID(removeQuestId)
-	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
-		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
-
-		if questId == removeQuestId then
-			for i = 0, MAX_QUEST_INFO_COUNT-1 do
-				self:SetUInt32(start + i, 0)
-			end
-			return
-		end
-	end
-end
-
 -- 选择主线任务
 function AppQuestMgr:OnSelectMainQuest(id)
 	-- 换的不是主线任务 不让换
@@ -685,9 +733,30 @@ function AppQuestMgr:OnSelectMainQuest(id)
 	self:OnAddQuest(id)
 end
 
+-- 完成当前主线
+function AppQuestMgr:FinishCurrentMainQuest()
+	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+		if questId > 0 then
+			if tb_quest[questId].type == QUEST_TYPE_MAIN then
+				self:SetUInt16(start + QUEST_INFO_ID, 1, QUEST_STATUS_COMPLETE)
+				return
+			end
+		end
+	end
+end
+
 -- 遍历任务是否需要更新
 function AppQuestMgr:OnUpdate(questTargetType, params)
-	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+	-- 普通任务
+	self:OnInnerUpdate(questTargetType, params, QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END)
+	
+	-- 日常任务
+	self:OnInnerUpdate(questTargetType, params, QUEST_FIELD_DAILY2_QUEST_START, QUEST_FIELD_DAILY2_QUEST_END)
+end
+
+function AppQuestMgr:OnInnerUpdate(questTargetType, params, binlogStart, binlogEnd)
+	for start = binlogStart, binlogEnd - 1, MAX_QUEST_INFO_COUNT do
 		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 		local state   = self:GetUInt16(start + QUEST_INFO_ID, 1)
 
@@ -731,6 +800,7 @@ end
 -- 检查任务是否完成
 function AppQuestMgr:CheckQuestFinish(start)
 	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+	local state   = self:GetUInt16(start + QUEST_INFO_ID, 1)
 	local config = tb_quest[questId]
 	local targets = config.targets
 	local size = math.min(#targets, MAX_QUEST_TARGET_COUNT)

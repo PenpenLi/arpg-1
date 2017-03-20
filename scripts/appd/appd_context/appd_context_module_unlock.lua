@@ -59,6 +59,8 @@ function PlayerInfo:AddOpenMenuFlag(id,subid)
 		self:activeMount()
 	end
 	
+	self:call_module_active (id * 10 + subid)
+	
 	local allIds = self:GetAllOpenMenuIds()
 	if allIds[id] == nil then
 		if self:GetOpenMenuIndex() == MAX_PLAYER_OPEN_MENU_COUNT then
@@ -69,7 +71,6 @@ function PlayerInfo:AddOpenMenuFlag(id,subid)
 		self:SetBit(self:OpenMenuStart() + OPEN_MENU_SUB_FLAG,subid)
 		self:OpenMenuNext()
 		
-		self:call_module_active (id * 10 + subid)
 		return 1
 	else
 		self:SetBit(PLAYER_INT_FIELD_OPEN_MENU_START + allIds[id] * MAX_OPEN_MENU_ATTR_COUNT + OPEN_MENU_SUB_FLAG,subid)

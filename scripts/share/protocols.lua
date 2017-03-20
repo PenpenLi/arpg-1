@@ -277,6 +277,7 @@ CMSG_SUBMIT_QUEST_DAILY2		= 280	-- /*提交日常任务*/
 SMSG_ATTRIBUTE_CHANGED		= 281	-- /*属性改变*/	
 SMSG_BAG_FIND_EQUIP_BETTER		= 282	-- /*背包有更强装备*/	
 SMSG_MODULE_ACTIVE		= 283	-- /*模块解锁*/	
+CMSG_PICK_DAILY2_QUEST_REWARD		= 284	-- /*领取日常任务奖励*/	
 
 
 ---------------------------------------------------------------------
@@ -9615,6 +9616,35 @@ function Protocols.unpack_module_active (pkt)
 end
 
 
+-- /*领取日常任务奖励*/	
+function Protocols.pack_pick_daily2_quest_reward ( indx)
+	local output = Packet.new(CMSG_PICK_DAILY2_QUEST_REWARD)
+	output:writeByte(indx)
+	return output
+end
+
+-- /*领取日常任务奖励*/	
+function Protocols.call_pick_daily2_quest_reward ( playerInfo, indx)
+	local output = Protocols.	pack_pick_daily2_quest_reward ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取日常任务奖励*/	
+function Protocols.unpack_pick_daily2_quest_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9884,6 +9914,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_attribute_changed = self.call_attribute_changed
 	playerInfo.call_bag_find_equip_better = self.call_bag_find_equip_better
 	playerInfo.call_module_active = self.call_module_active
+	playerInfo.call_pick_daily2_quest_reward = self.call_pick_daily2_quest_reward
 end
 
 local unpack_handler = {
@@ -10150,6 +10181,7 @@ local unpack_handler = {
 [SMSG_ATTRIBUTE_CHANGED] =  Protocols.unpack_attribute_changed,
 [SMSG_BAG_FIND_EQUIP_BETTER] =  Protocols.unpack_bag_find_equip_better,
 [SMSG_MODULE_ACTIVE] =  Protocols.unpack_module_active,
+[CMSG_PICK_DAILY2_QUEST_REWARD] =  Protocols.unpack_pick_daily2_quest_reward,
 
 }
 
