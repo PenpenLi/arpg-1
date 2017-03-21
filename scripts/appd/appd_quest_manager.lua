@@ -499,7 +499,38 @@ function AppQuestMgr:OnPickDailyQuest(indx)
 	
 	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 	local state   = self:GetUInt16(start + QUEST_INFO_ID, 1)
-	if questId > 0 and state == QUEST_STATUS_COMPLETE then
+	if questId > 0 then
+		if state == QUEST_STATUS_COMPLETE then
+			self:OnInnerPickQuest(start)
+		else
+			self:CheckIfTheTurnItemInQuest(start)
+		end
+	end
+end
+
+-- 上交任务的判断
+function AppQuestMgr:CheckIfTheTurnItemInQuest(start)
+	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+	local playerInfo = self:getOwner()
+	
+	local config = tb_quest[questId]
+	local target = config.targets[ 1 ]
+	local targetType = target[ 1 ]
+	local entry = target[ 2 ]
+	local count = target[ 3 ]
+	
+	-- 如果不是上交任务返回
+	if targetType ~= QUEST_TARGET_TYPE_TURN_ITEM_IN then
+		return
+	end
+	
+	-- 扣道具成功
+	if playerInfo:useMulItem({{entry, count}}) then
+		-- 设置进度信息
+		local qtIndx = GetOneQuestTargetStartIndx(start, 0)
+		self:SetUInt32(qtIndx + QUEST_TARGET_INFO_PROCESS, count)
+		self:SetUInt16(qtIndx + QUEST_TARGET_INFO_SHORT0, 0, 1)
+		
 		self:OnInnerPickQuest(start)
 	end
 end
@@ -510,7 +541,7 @@ function AppQuestMgr:GetQuestDaily2Indice()
 	for start = QUEST_FIELD_DAILY2_QUEST_START, QUEST_FIELD_DAILY2_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
 		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 		if questId > 0 then
-			table.insert(indice, questId)
+			table.insert(indice, start)
 		end
 	end
 	
@@ -537,6 +568,8 @@ function AppQuestMgr:OnSubmitQuestDaily2()
 
 		if state == QUEST_STATUS_COMPLETE then
 			self:OnInnerPickQuest(start)
+		else
+			self:CheckIfTheTurnItemInQuest(start)
 		end
 		-- 所属等级段
 		belongLvRangeId = tb_quest[questId].belongLvRangeId

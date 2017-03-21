@@ -50,6 +50,13 @@ function PlayerInfo:Handle_Submit_Quest_Daily2(pkt)
 	self:SubmitQuestDaily2()
 end
 
-function PlayerInfo:Handle_Pick_Quest_Daily2()
-	self:OnPickDaily2Quest()
+-- 领取日常任务奖励
+function PlayerInfo:Handle_Pick_Quest_Daily2(pkt)
+	local indx = pkt.indx
+	
+	-- 任务下标不存在
+	if indx < 0 or indx >= MAX_DAILY2_QUEST_COUNT then
+		return
+	end
+	self:OnPickDaily2Quest(indx)
 end
