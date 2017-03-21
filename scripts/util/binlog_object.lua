@@ -9,10 +9,16 @@ function BinLogObject:GetBit(index, offset)
 end
 	
 function BinLogObject:SetBit (index, offset)
+	if self:GetBit(index, offset) then
+		return
+	end
 	binLogLib.SetBit(self.ptr, index, offset)
 end
 
 function BinLogObject:UnSetBit (index, offset)
+	if not self:GetBit(index, offset) then
+		return
+	end
 	binLogLib.UnSetBit(self.ptr, index, offset)
 end
 
@@ -29,6 +35,9 @@ function BinLogObject:SubByte (index, offset, value)
 end
 
 function BinLogObject:SetByte (index, offset, value)
+	if self:GetByte(index, offset) == value then
+		return
+	end
 	binLogLib.SetByte(self.ptr, index, offset, value)
 end
 
@@ -45,6 +54,9 @@ function BinLogObject:SubUInt16 (index, offset, value)
 end
 
 function BinLogObject:SetUInt16 (index, offset, value)
+	if self:GetUInt16(index, offset) == value then
+		return
+	end
 	binLogLib.SetUInt16(self.ptr, index, offset, value)
 end
 
@@ -57,6 +69,9 @@ function BinLogObject:GetUInt32 (index)
 end
 
 function BinLogObject:SetUInt32 (index, value)
+	if self:GetUInt32(index) == value then
+		return
+	end
 	binLogLib.SetUInt32(self.ptr, index, value)
 end
 
@@ -73,6 +88,9 @@ function BinLogObject:GetInt32 (index)
 end
 
 function BinLogObject:SetInt32 (index, value)
+	if self:GetInt32(index) == value then
+		return
+	end
 	binLogLib.SetInt32(self.ptr, index, value)
 end
 
@@ -89,6 +107,9 @@ function BinLogObject:GetDouble (index)
 end
 
 function BinLogObject:SetDouble (index, value)
+	if self:GetDouble(index) == value then
+		return
+	end
 	binLogLib.SetDouble(self.ptr, index, value)
 end
 
@@ -105,10 +126,17 @@ function BinLogObject:GetFloat (index)
 end
 
 function BinLogObject:SetFloat (index, value)
+	if self:GetFloat(index) == value then
+		return
+	end
 	binLogLib.SetFloat(self.ptr, index, value)
 end
 
 function BinLogObject:SetStr (index,value)
+	local prev = self:GetStr(index)
+	if prev == value or string.len(prev) == 0 and string.len(value) == 0 then
+		return
+	end
 	binLogLib.SetStr(self.ptr, index,value)
 end
 

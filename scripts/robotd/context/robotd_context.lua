@@ -389,7 +389,8 @@ end
 
 --
 function PlayerInfo:Send_Social_Add_Friend_Byname()
-	self:call_social_add_friend_byname('')
+	local guid = self:RandomString(self:GetGuid())
+	self:call_social_add_friend_byname(guid)
 end
 
 --
@@ -405,7 +406,8 @@ end
 
 --
 function PlayerInfo:Send_Block_Chat()
-	self:call_block_chat('')
+	local guid = self:RandomString(self:GetGuid())
+	self:call_block_chat(guid)
 end
 
 --
@@ -421,8 +423,8 @@ function PlayerInfo:Send_Faction_Manager()
 	local opt_type = self:RandomInt(10)
 	local r1 = self:RandomInt(10)
 	local r2 = self:RandomInt(10)
-	local r3 = ''
-	local r4 = ''
+	local r3 = self:RandomString(self:GetGuid())
+	local r4 = self:RandomString(self:GetGuid())
 	
 	self:call_faction_manager(opt_type, r1, r2, r3, r4)
 end
@@ -432,8 +434,8 @@ function PlayerInfo:Send_Faction_Member_Operate()
 	local opt_type = self:RandomInt(10)
 	local r1 = self:RandomInt(10)
 	local r2 = self:RandomInt(10)
-	local r3 = ''
-	local r4 = ''
+	local r3 = self:RandomString(self:GetGuid())
+	local r4 = self:RandomString(self:GetGuid())
 	self:call_faction_member_operate(opt_type, r1, r2, r3, r4)
 end
 

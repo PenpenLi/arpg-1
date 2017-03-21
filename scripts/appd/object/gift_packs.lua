@@ -190,6 +190,10 @@ function GiftPacksInfo:mailRead(indx)
 	end
 	
 	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
+	-- 已经设置只读
+	if self:GetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2) == 1 then
+		return
+	end
 	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
 	
 	local strIndex = GIFTPACKS_STRING_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_STRING
