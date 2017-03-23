@@ -191,6 +191,13 @@ ILLUSION_EXPIRE_ACTIVE = 3		--有实现的激活
 -- 申请解锁幻化坐骑
 function PlayerInfo:Handle_Illusion_Active(pkt)
 	local illuId = pkt.illuId
+	local spellMgr = self:getSpellMgr()
+	
+	-- 当前是否有坐骑
+	if not spellMgr:hasMount() then
+		outFmtError("player not active mount")
+		return
+	end
 	
 	-- 幻化存在
 	if tb_mount_illusion[illuId] == nil then
@@ -204,7 +211,6 @@ function PlayerInfo:Handle_Illusion_Active(pkt)
 		return
 	end
 	
-	local spellMgr = self:getSpellMgr()
 	-- 幻化是否存在
 	if spellMgr:hasIllusion(illuId) then
 		outFmtError("player already has illusion id = %d", illuId)
@@ -223,8 +229,14 @@ end
 -- 申请幻化坐骑
 function PlayerInfo:Handle_Illusion(pkt)
 	local illuId = pkt.illuId
-	
 	local spellMgr = self:getSpellMgr()
+	
+	-- 当前是否有坐骑
+	if not spellMgr:hasMount() then
+		outFmtError("player not active mount")
+		return
+	end
+	
 	-- 幻化是否存在
 	if not spellMgr:hasIllusion(illuId) then
 		outFmtError("player has no illusion id = %d", illuId)

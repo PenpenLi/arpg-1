@@ -33,6 +33,7 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 			outFmtDebug("OnCheckWorldXianfuMatch result %d %s", dict.ret, dict.msg)
 			-- 匹配到了
 			if dict.ret == 0 then
+				outFmtInfo("$$$$ on xianfu matched guid = %s", self:GetGuid())
 				local login_fd = serverConnList:getLogindFD()
 				local guid = self:GetGuid()
 				-- dict.enter_info = json.decode(dict.enter_info)
@@ -61,6 +62,8 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 				local war_id = enter_info.war_id
 				local battle_server = enter_info.battle_server
 				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, indx, battle_server, '', KUAFU_TYPE_XIANFU)
+				-- 设置正在进行跨服标志
+				self:KuafuMarked(KUAFU_TYPE_XIANFU)
 				
 			-- timeout取消匹配
 			elseif dict.ret == 1 then
@@ -100,10 +103,16 @@ end
 
 -- 匹配仙府夺宝
 function PlayerInfo:OnWorldXianfuMatch(indx)
+	-- 已经在跨服了
+	if self:IsKuafuing() then
+		return false
+	end
+	
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
 		return false
 	end
-
+	
+	outFmtInfo("###OnWorldXianfuMatch guid = %s", self:GetGuid())
 	local url = string.format("%s%s/match", globalGameConfig:GetExtWebInterface(), sub)
 	local data = {}
 	data.player_guid = self:GetGuid()

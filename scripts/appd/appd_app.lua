@@ -282,7 +282,7 @@ function AppdApp:RankReward()
 	--FIXME
 	local ranktype = {RANK_TYPE_POWER,RANK_TYPE_LEVEL,RANK_TYPE_MONEY,RANK_TYPE_DIVINE,RANK_TYPE_MOUNT}
 	
-	for _,rt in ipairs(ranktype) do
+	for i,rt in ipairs(ranktype) do
 		local tab = GetRankGuidTable(rt)
 		for k,v in ipairs(tab) do
 			local idx = (10 + i)*65536 + k

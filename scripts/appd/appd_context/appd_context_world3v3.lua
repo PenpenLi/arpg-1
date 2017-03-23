@@ -43,6 +43,8 @@ function PlayerInfo:OnCheckWorld3v3Match()
 				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, pos, battle_server)
 				-- 已经匹配到了
 				app:SetMatchingKuafuType(self:GetGuid(), nil)
+				-- 设置正在进行跨服标志
+				self:KuafuMarked(KUAFU_TYPE_FENGLIUZHEN)
 				
 				-- 增加进入次数
 				local instMgr = self:getInstanceMgr()
@@ -101,6 +103,11 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 	-- 队长才能进行匹配, 不是的不让进
 	local group_guid = self:GetGuid()
 	if app.world_3v3_player_team[self:GetGuid()] ~= group_guid then
+		return false
+	end
+	
+	-- 已经在跨服了
+	if self:IsKuafuing() then
 		return false
 	end
 	

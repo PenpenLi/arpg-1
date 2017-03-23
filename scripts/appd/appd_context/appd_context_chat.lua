@@ -374,11 +374,14 @@ function PlayerInfo:GmCommand(str)
 		outFmtInfo("test sort: ")
 		SortItem(self)
 		--]]
+		--[[
 		if tokens[2] == nil and  tokens[3] == nil then
 			return
 		end
 		self:UnlockModuleByLevel(tonumber(tokens[2]),tonumber(tokens[3]))
+		--]]
 		
+		--call_appd_teleport(self:GetScenedFD(), self:GetGuid(), 32, 27, 3004, ''..os.time())
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

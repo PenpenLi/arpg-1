@@ -502,7 +502,7 @@ function AppQuestMgr:OnPickDailyQuest(indx)
 	if questId > 0 then
 		if state == QUEST_STATUS_COMPLETE then
 			self:OnInnerPickQuest(start)
-		else
+		elseif state == QUEST_STATUS_INCOMPLETE then
 			self:CheckIfTheTurnItemInQuest(start)
 		end
 	end
@@ -568,7 +568,7 @@ function AppQuestMgr:OnSubmitQuestDaily2()
 
 		if state == QUEST_STATUS_COMPLETE then
 			self:OnInnerPickQuest(start)
-		else
+		elseif state == QUEST_STATUS_INCOMPLETE then
 			self:CheckIfTheTurnItemInQuest(start)
 		end
 		-- 所属等级段
@@ -846,7 +846,7 @@ function AppQuestMgr:CheckQuestFinish(start)
 	end
 	
 	-- 不是自动跳过的对话的需要这样
-	if targets[ 1 ][ 1 ] ~= QUEST_TARGET_TYPE_TALK and config.popup ~= 0 then
+	if --[[targets[ 1 ][ 1 ] ~= QUEST_TARGET_TYPE_TALK and--]] config.popup ~= 0 then
 		self:SetUInt16(start + QUEST_INFO_ID, 1, QUEST_STATUS_COMPLETE)
 		return
 	end

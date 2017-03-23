@@ -367,3 +367,5 @@ function msgRealContent(playerInfo, info)
 	end
 	return ""
 end
+
+SYSTEM_NAME = '系统'

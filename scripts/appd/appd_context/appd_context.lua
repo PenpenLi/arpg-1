@@ -653,6 +653,9 @@ function PlayerInfo:Login()
 	
 	-- 同步斗剑台信息
 	globalCounter:Login(self)
+	
+	-- 把跨服的信息清空
+	self:KuafuUnMarked()
 end
 
 --pk服玩家登陆做点啥
@@ -1435,9 +1438,55 @@ function PlayerInfo:SetBagSortTime(val)
 	self:SetUInt32(PLAYER_INT_FIELD_BAG_SORT_TIME, val)
 end
 
+--获取帮派商店已购买商品index 和 num
+function PlayerInfo:GetBuyedFactionShopItem(item)
+	for i=PLAYER_INT_FIELD_BUYED_FACTION_SHOP,PLAYER_INT_FIELD_BUYED_FACTION_SHOP_END-1 do
+		local id = self:GetUInt16(i,0)
+		if id == item then
+			return i,self:GetUInt16(i,1)
+		end
+	end
+	return -1,0
+end
 
+--添加帮派商店已购买商品index 和 num
+function PlayerInfo:AddBuyedFactionShopItem(item_id,item_num)
+	for i=PLAYER_INT_FIELD_BUYED_FACTION_SHOP,PLAYER_INT_FIELD_BUYED_FACTION_SHOP_END-1 do
+		local id = self:GetUInt16(i,0)
+		local num = self:GetUInt16(i,1)
+		if id == 0 then
+			self:SetUInt16(i,0,item_id)
+			self:SetUInt16(i,1,item_num)
+			return
+		elseif id == item_id then
+			self:SetUInt16(i,1,num + item_num)
+			return
+		end
+	end
+end
 
+--清理帮派商店已购买商品index 和 num
+function PlayerInfo:ClearBuyedFactionShopItem()
+	for i=PLAYER_INT_FIELD_BUYED_FACTION_SHOP,PLAYER_INT_FIELD_BUYED_FACTION_SHOP_END-1 do
+		self:SetUInt16(i,0,0)
+		self:SetUInt16(i,1,0)
+	end
+end
 
+-- 跨服回来进行清空标志
+function PlayerInfo:KuafuUnMarked()
+	self:KuafuMarked(0)
+end
+
+-- 当前正在进行的跨服类型
+function PlayerInfo:KuafuMarked(kuafuType)
+	self:SetUInt32(PLAYER_INT_FIELD_KUAFU_NUMBER, kuafuType)
+end
+
+-- 是否正在跨服
+function PlayerInfo:IsKuafuing()
+	return self:GetUInt32(PLAYER_INT_FIELD_KUAFU_NUMBER) > 0
+end
 
 -- 关闭连接
 function PlayerInfo:CloseSession(fd, is_force)

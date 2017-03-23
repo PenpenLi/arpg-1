@@ -77,6 +77,8 @@ end
 function PlayerInfo:clearFaction()
 	self:SetFactionId("")
 	self:SetFactionName("")
+	--Todo 退工会处理商店购买记录
+	self:ClearBuyedFactionShopItem()
 end
 --创建帮派
 function PlayerInfo:Handle_Faction_Create( pkt )

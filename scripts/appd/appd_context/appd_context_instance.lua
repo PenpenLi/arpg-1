@@ -1,5 +1,10 @@
 -- 检测能否进入VIP副本
 function PlayerInfo:checkVipMapTeleport(id, hard)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_VIP)) then
+		return
+	end
+
 	local instMgr = self:getInstanceMgr()
 	instMgr:checkIfCanEnterVIP(id, hard)
 end
@@ -12,6 +17,10 @@ end
 
 -- 进行扫荡
 function PlayerInfo:sweepVIP(id)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_VIP)) then
+		return
+	end
 	-- 每个信息4个byte[0:下次需要通关难度,1:当前难度,2:挑战次数,3:购买次数]
 	local config = tb_map_vip[id]
 	local indx = INSTANCE_INT_FIELD_VIP_START + id - 1
@@ -56,6 +65,10 @@ end
 ---------------------------试炼塔-----------------------------
 -- 检测能否进入试炼塔副本
 function PlayerInfo:checkTrialMapTeleport()
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TRIAL)) then
+		return
+	end
 	local instMgr = self:getInstanceMgr()
 	instMgr:checkIfCanEnterTrial()
 end
@@ -83,6 +96,10 @@ end
 
 -- 一键扫荡
 function PlayerInfo:sweepTrial()
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TRIAL)) then
+		return
+	end
 	local instMgr = self:getInstanceMgr()
 	instMgr:sweepTrialInstance()
 end

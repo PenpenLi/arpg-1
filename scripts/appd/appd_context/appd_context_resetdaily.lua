@@ -100,4 +100,6 @@ function PlayerInfo:onRealReset()
 	
 	self:RefreshDoujiantaiEnemy()
 	self:DailyQuestReset()
+	
+	self:ClearBuyedFactionShopItem()
 end

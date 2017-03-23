@@ -63,6 +63,7 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 		outFmtError("exchangePos:not find %s owner!", self.itemMgr:GetGuid())
 		return false
 	end
+	
 	--有些包裹是不允许交换位置操作的:1、摊位包裹不允许转移物品 2、系统包裹不允许放入物品
 	if src_bag == BAG_TYPE_STALL or dst_bag == BAG_TYPE_SYSTEM then
 		outFmtError("exchangePos: src_bag %d or dst_bag %d is invalid!", src_bag, dst_bag)
@@ -199,6 +200,12 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 				return false
 			end
 			]]
+			if ITEM_TYPE_FASHION == src_temp.type and not owner:GetOpenMenuFlag(MODULE_FASHION,MODULE_FASHION_ALL) then
+				outFmtError("exchangePos:Fashion Module not unlock !")
+				return false
+			end
+			
+		
 		end		
 	end
 	

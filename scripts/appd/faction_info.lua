@@ -949,6 +949,7 @@ function FactionInfo:FactionQuit( player,is_merge)
 	if is_merge == nil then
 		--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_SUB_MEMBER)
 	end
+	player:ClearBuyedFactionShopItem()
 end
 --离线成员移除
 function FactionInfo:FactionOutlineQuit(guid)
@@ -1253,6 +1254,7 @@ function FactionInfo:FactionLevelUp(player )
 	end
 	self:SetFactionMoney(money - config.cost)
 	self:SetFactionLevel(lv + 1)
+	self:RefreshShop()
 	--升级成功
 	player:CallOptResult(OPERTE_TYPE_FACTION, OPEATE_TYPE_FACTION_LEVEL_UP)
 	
@@ -1447,8 +1449,9 @@ function FactionInfo:ShopItem(player,item,num)
 		return
 	end
 	local idx,curNum = self:GetShopItem(item)
+	local buyedIndex, buyedNum = player:GetBuyedFactionShopItem(item)
 	if idx ~= -1 then
-		if num > curNum then
+		if num > curNum - buyedNum then
 			player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_SHOP_NUMLOW)
 			return
 		end
@@ -1464,7 +1467,8 @@ function FactionInfo:ShopItem(player,item,num)
 	
 		if player:costMoneys(MONEY_CHANGE_FACTION_SHOP,config.costResource,num) then
 			curNum = curNum - num
-			self:SetShopItemNum(idx,curNum)
+			--self:SetShopItemNum(idx,curNum)
+			player:AddBuyedFactionShopItem(item,num)
 			player:AddItemByEntry(config.itemId, num, nil, 9, true)--FIXME
 		end
 	end
