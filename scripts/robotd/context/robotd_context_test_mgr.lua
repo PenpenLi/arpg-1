@@ -71,8 +71,6 @@ local ProtocolsFunc = {
 	PlayerInfo.Send_Kuafu_3v3_Getranlist,
 	PlayerInfo.Send_Kuafu_3v3_Getmyrank,
 	PlayerInfo.Send_Kuafu_3v3_Cancel_Match,
-	PlayerInfo.Send_Kuafu_Xianfu_Match,
-	PlayerInfo.Send_Buy_Xianfu_Item,
 	PlayerInfo.Send_Doujiantai_Fight,
 	PlayerInfo.Send_Doujiantai_Buytime,
 	PlayerInfo.Send_Doujiantai_Clearcd,
@@ -104,6 +102,8 @@ local ProtocolsFunc = {
 	PlayerInfo.Send_Gold_Respawn,
 	PlayerInfo.Send_Clientsubscription,
 	PlayerInfo.Send_Use_Jump_Point,
+	PlayerInfo.Send_Buy_Xianfu_Item,
+	PlayerInfo.Send_Kuafu_Xianfu_Match,
 }
 
 local FuncName = {
@@ -179,8 +179,6 @@ local FuncName = {
 	"Send_Kuafu_3v3_Getranlist",
 	"Send_Kuafu_3v3_Getmyrank",
 	"Send_Kuafu_3v3_Cancel_Match",
-	"Send_Kuafu_Xianfu_Match",
-	"Send_Buy_Xianfu_Item",
 	"Send_Doujiantai_Fight",
 	"Send_Doujiantai_Buytime",
 	"Send_Doujiantai_Clearcd",
@@ -212,13 +210,15 @@ local FuncName = {
 	"Send_Gold_Respawn",
 	"Send_Clientsubscription",
 	"Send_Use_Jump_Point",
+	"Send_Buy_Xianfu_Item",
+	"Send_Kuafu_Xianfu_Match",
 }
 
 function PlayerInfo:SendProtocol()
-	local indice = GetRandomIndexTable(#ProtocolsFunc, 6)
+	local indice = GetRandomIndexTable(#ProtocolsFunc, math.min(#ProtocolsFunc, 6))
 	for _, index in ipairs(indice) do
 		local callback = ProtocolsFunc[index]
-		outFmtInfo("invoke %s", FuncName[index])
+		outFmtInfo("%s invoke %s", self:GetGuid(), FuncName[index])
 		doxpcall(callback, self)
 	end
 	

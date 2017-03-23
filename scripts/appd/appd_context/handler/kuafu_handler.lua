@@ -48,6 +48,11 @@ function PlayerInfo:Handle_Kuafu_3v3_Match(pkt)
 		return
 	end
 	
+	-- 模块没开 不让进
+	if not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_XIANMO) then
+		return
+	end
+	
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
 		self:CallOptResult(OPRATE_TYPE_ATHLETICS, ATHLETICS_OPERATE_IN_MATCH)
 		return
@@ -204,6 +209,11 @@ function PlayerInfo:Handle_Kuafu_Xianfu_Match(pkt)
 		return
 	end
 	
+	-- 模块没开 不让进
+	if not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_XIANFU) then
+		return
+	end
+	
 	local rt = self:OnWorldXianfuMatch(indx)
 	if rt then
 		-- 开始匹配
@@ -228,6 +238,11 @@ function PlayerInfo:Handle_Doujiantai_Fight(pkt)
 	local rank = pkt.rank
 	-- 不再挑战名次内
 	if rank < 0 or rank >= 3 then
+		return
+	end
+	
+	-- 模块没开 不让进
+	if not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_DOUJIANTAI) then
 		return
 	end
 	

@@ -13,4 +13,5 @@ tb_divine_base = {
 	--  strength:int	可强化
 	[1] = {id = 1,skill = 1011,passiveskill = {{1012,3}},avtivetype = 1,avtivedata = {{101,10}},time = -1,strength = 1,},
 	[2] = {id = 2,skill = 1013,passiveskill = {{1014,3}},avtivetype = 2,avtivedata = {{1,700}},time = -1,strength = 1,},
+	[3] = {id = 3,skill = 1013,passiveskill = {{1014,3}},avtivetype = 2,avtivedata = {{1,700}},time = -1,strength = 1,},
 }

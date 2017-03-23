@@ -142,7 +142,7 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 			local desc = tb_mail[data].desc
 			local name = tb_mail[data].name
 			local giftType = tb_mail[data].source
-			AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, itemConfig, "系统")
+			AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, itemConfig, SYSTEM_NAME)
 		end
 	end
 end
@@ -1055,6 +1055,16 @@ end
 function PlayerInfo:SetMountForce(val)
 	self:SetUInt32(PLAYER_FIELD_MOUNT_FORCE,val)
 end
+
+-- 设置技能战力
+function PlayerInfo:SetSkillForce(val)
+	self:SetUInt32(PLAYER_FIELD_SKILL_FORCE, val)
+end
+--[[
+	PLAYER_FIELD_SKILL_FORCE			= PLAYER_FIELD_MOUNT_FORCE + 1,				//技能战力
+	PLAYER_FILED_GEM_FORCE				= PLAYER_FIELD_SKILL_FORCE + 1,				//宝石战力
+	PLAYER_FIELD_STRENGTH_FORCE			= PLAYER_FILED_GEM_FORCE + 1,				//强化战力
+--]]
 
 local OFFLINE_MAIL_PATH_FORMAT = __OFFLINE_MAIL_FOLDER__.."/%s.mail"
 local OFFLINE_MAIL_INFO = "%u|%u|%u|%s|%s|%s|%s\n"

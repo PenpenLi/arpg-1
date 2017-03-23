@@ -24,7 +24,7 @@ function Rank3v3kuafuWeek()
 				end
 				rewardStr = rewardStr..d[1]..","..d[2]
 			end
-			AddGiftPacksData(v[6],0,GIFT_PACKS_TYPE_3V3_WEEK,os.time(),os.time() + 86400*30, config.mailname, config.maildesc, rewardStr, "系统")
+			AddGiftPacksData(v[6],0,GIFT_PACKS_TYPE_3V3_WEEK,os.time(),os.time() + 86400*30, config.mailname, config.maildesc, rewardStr, SYSTEM_NAME)
 		end
 		
 	end
@@ -93,7 +93,7 @@ function PlayerInfo:Rank3v3SegmentReward()
 		rewardStr = rewardStr..d[1]..","..d[2]
 	end
 	
-	AddGiftPacksData(self:GetGuid(),0,GIFT_PACKS_TYPE_3V3_MONTH,os.time(),os.time() + 86400*30, config.mailname, config.maildesc, rewardStr, "系统")
+	AddGiftPacksData(self:GetGuid(),0,GIFT_PACKS_TYPE_3V3_MONTH,os.time(),os.time() + 86400*30, config.mailname, config.maildesc, rewardStr, SYSTEM_NAME)
 	
 	--重置时间 积分清空
 	instMgr:set3v3SegmentTime(ktime)

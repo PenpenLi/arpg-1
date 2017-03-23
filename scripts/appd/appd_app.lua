@@ -292,7 +292,7 @@ function AppdApp:RankReward()
 				local desc = config.desc
 				local name = config.name
 				local giftType = config.source
-				AddGiftPacksData(v,0,giftType,os.time(),os.time() + 86400*30, name, desc, config.items, "系统")
+				AddGiftPacksData(v,0,giftType,os.time(),os.time() + 86400*30, name, desc, config.items, SYSTEM_NAME)
 			end
 		end
 	end

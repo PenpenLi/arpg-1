@@ -265,7 +265,7 @@ function PlayerInfo:DoDoujiantaiDayReward()
 				rewardStr = rewardStr..d[1]..","..d[2]
 			end
 			
-			AddGiftPacksData(self:GetGuid(),0,GIFT_PACKS_TYPE_DOUJIAN_DAY,os.time(),os.time() + 86400*30, v.mailtitle, v.maildesc, rewardStr, "ϵͳ")
+			AddGiftPacksData(self:GetGuid(),0,GIFT_PACKS_TYPE_DOUJIAN_DAY,os.time(),os.time() + 86400*30, v.mailtitle, v.maildesc, rewardStr, SYSTEM_NAME)
 			break
 		end
 	end

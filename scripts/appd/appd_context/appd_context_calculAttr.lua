@@ -283,17 +283,17 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	-- 技能管理类
 	local spellMgr = self:getSpellMgr()
-	
+	local skillForce = 0
 	--基础技能战力
 	for i = SPELL_INT_FIELD_BASE_SPELL_START, SPELL_INT_FIELD_BASE_SPELL_END - 1 do
 		local spellID	= spellMgr:GetUInt16(i, 0)
 		local lv 		= spellMgr:GetUInt16(i, 1)
 		if spellID > 0 then
 			local bp = self:GetSkillBattlePoint(spellID, lv)
-			battleForce = battleForce + bp
+			skillForce = skillForce + bp
 		end
 	end
-	
+	battleForce = battleForce + skillForce
 	outFmtDebug("base skill force %d", battleForce)
 	
 	-- 装备
@@ -305,46 +305,12 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	printAttr("suit ", attrs)
 
 	-- 坐骑
-	local nonForce = spellMgr:calculMountAttr(attrs)
-	battleForce = battleForce + nonForce
+	local mountNonprosForce = spellMgr:calculMountAttr(attrs)
+	battleForce = battleForce + mountNonprosForce
 	
 	outFmtDebug("mount force %d", battleForce)
-		
 	printAttr("mount ", attrs)
 	
-	-- 幻化
-	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
-		local illusionId = spellMgr:GetUInt32(i+ILLUSION_ATTR_ID)
-		if illusionId > 0 then
-			local illuConfig = tb_mount_illusion[illusionId]
-			-- 属性
-			for _, val in ipairs(illuConfig.pros)do
-				local indx = val[ 1 ]
-				-- 速度属性就不在这里计算了
-				if indx ~= EQUIP_ATTR_MOVE_SPEED then
-					if attrs[indx] == nil then
-						attrs[indx] = 0
-					end
-					attrs[indx] = attrs[indx] + val[ 2 ]
-				end
-			end
-			
-			-- 坐骑幻化技能战力
-			for j = ILLUSION_ATTR_SPELL_START + i, ILLUSION_ATTR_SPELL_END + i - 1 do
-				local spellID	= spellMgr:GetUInt16(j, 0)
-				local lv		= spellMgr:GetUInt16(j, 1)
-				if spellID > 0 then
-					local bp = self:GetSkillBattlePoint(spellID, lv)
-					battleForce = battleForce + bp
-				end
-			end
-		end
-	end
-	
-	
-	outFmtDebug("illusion force %d", battleForce)	
-	printAttr("illusion ", attrs)
-
 	-- 神兵
 	spellMgr:calculDivineAttr(attrs)
 	

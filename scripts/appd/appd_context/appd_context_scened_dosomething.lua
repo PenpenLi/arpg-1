@@ -31,7 +31,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		local desc = tb_mail[data].desc
 		local name = tb_mail[data].name
 		local giftType = tb_mail[data].source
-		AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, str, "系统")
+		AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, str, SYSTEM_NAME)
 	elseif SCENED_APPD_KILL_MONSTER == ntype then
 		-- 成就
 		self:AddAchieve(QUEST_TARGET_TYPE_KILL_MONSTER_NUM, 1)
