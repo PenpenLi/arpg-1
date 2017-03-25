@@ -55,7 +55,7 @@ function PlayerInfo:AddOpenMenuFlag(id,subid)
 	end
 	
 	-- ½âËø×øÆï
-	if id == MODULE_MOUNT then
+	if id == MODULE_MOUNT_GET and subid == MODULE_MOUNT_GET_ALL then
 		self:activeMount()
 	end
 	

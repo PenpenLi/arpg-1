@@ -774,7 +774,10 @@ Instance_base = {
 		spells: 技能数据 {{技能ID,释放概率（万分比）,这个技能动作时间,技能等级, 技能组}, ..., {}}
 		--]]
 	GetImageInfo = function(self, config)
-		config.id = 6000 + config.gender
+		if config.gender ~= 1 and config.gender ~= 2 then
+			config.gender = 1
+		end
+		config.id = tb_char_info[config.gender].dummy_entry
 		--[[
 		local image = {}
 				

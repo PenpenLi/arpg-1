@@ -34,6 +34,7 @@ tb_system_base = {
 	[2071] = {id = 2071,level = 101,questId = 0,},
 	[2081] = {id = 2081,level = 101,questId = 0,},
 	[2091] = {id = 2091,level = 101,questId = 0,},
+	[2101] = {id = 2101,level = 1,questId = 10203,},
 	[3011] = {id = 3011,level = 18,questId = 0,},
 	[3012] = {id = 3012,level = 1,questId = 0,},
 	[3013] = {id = 3013,level = 101,questId = 0,},

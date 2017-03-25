@@ -3,9 +3,9 @@
 ---------------------------------------------------------------------------------
 
 
-tb_quest_daily2_finish_reward = {
-	--  id:int	不能等级段不同完成数的奖励id
-	--  rewards:array	奖励
-	[1] = {id = 1,rewards = {{1201,5}},},
-	[2] = {id = 2,rewards = {{1202,5},{3,10}},},
+tb_char_info = {
+	--  id:int	玩家性别
+	--  dummy_entry:int	假人生物ID
+	[1] = {id = 1,dummy_entry = 6303,},
+	[2] = {id = 2,dummy_entry = 6304,},
 }

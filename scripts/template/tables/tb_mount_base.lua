@@ -11,6 +11,9 @@ tb_mount_base = {
 	--  addTrainExp:int	培养增加经验
 	--  trainIds:array	普通培养编号
 	--  speed:int	坐骑速度
-	[1] = {id = 1,mountID = 20001,skills = {11015},traincost = {{7,100}},addTrainExp = 100,trainIds = {1,2},speed = 150,},
-	[2] = {id = 2,mountID = 20002,skills = {11016},traincost = {{7,150}},addTrainExp = 200,trainIds = {1,2},speed = 150,},
+	[1] = {id = 1,mountID = 5101,skills = {11019},traincost = {{7,100}},addTrainExp = 100,trainIds = {1,2},speed = 150,},
+	[2] = {id = 2,mountID = 5102,skills = {11020},traincost = {{7,150}},addTrainExp = 200,trainIds = {1,2},speed = 150,},
+	[3] = {id = 3,mountID = 5103,skills = {11021},traincost = {{7,100}},addTrainExp = 100,trainIds = {1,2},speed = 150,},
+	[4] = {id = 4,mountID = 5104,skills = {11022},traincost = {{7,100}},addTrainExp = 100,trainIds = {1,2},speed = 150,},
+	[5] = {id = 5,mountID = 5105,skills = {11023},traincost = {{7,100}},addTrainExp = 100,trainIds = {1,2},speed = 150,},
 }

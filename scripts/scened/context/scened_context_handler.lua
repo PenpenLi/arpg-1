@@ -169,7 +169,7 @@ function ScenedContext:Hanlde_Instance_All_Kill_Opt(packet)
 	end
 end
 
-JUMP_SKILL = 1
+JUMP_SKILL = 10001
 
 --跳跃	
 function ScenedContext:Hanlde_Jump_Start(packet)

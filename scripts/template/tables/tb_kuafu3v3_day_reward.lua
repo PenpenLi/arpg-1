@@ -7,7 +7,7 @@ tb_kuafu3v3_day_reward = {
 	--  id:int	序号
 	--  num:int	场次
 	--  reward:array	奖励
-	[1] = {id = 1,num = 1,reward = {{101,1}},},
-	[2] = {id = 2,num = 5,reward = {{102,2}},},
-	[3] = {id = 3,num = 10,reward = {{103,3}},},
+	[1] = {id = 1,num = 1,reward = {{201,1}},},
+	[2] = {id = 2,num = 5,reward = {{202,2}},},
+	[3] = {id = 3,num = 10,reward = {{203,3}},},
 }

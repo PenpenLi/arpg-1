@@ -100,6 +100,10 @@ end
 
 -- 申请升星坐骑
 function PlayerInfo:Handle_Raise_Mount(pkt)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) then
+		return
+	end	
 	
 	local spellMgr = self:getSpellMgr()
 	-- 当前是否有坐骑
@@ -133,6 +137,11 @@ end
 function PlayerInfo:Handle_Upgrade_Mount(pkt)
 	local spellMgr = self:getSpellMgr()
 	local useItem = pkt.useItem
+	
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) then
+		return
+	end
 	
 	-- 当前是否有坐骑
 	if not spellMgr:hasMount() then
@@ -169,6 +178,10 @@ end
 -- 一键进阶
 function PlayerInfo:Handle_Upgrade_Mount_One_Step(pkt)
 	local useItem = pkt.useItem
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) then
+		return
+	end	
 	
 	local spellMgr = self:getSpellMgr()
 	-- 当前是否有坐骑
@@ -192,6 +205,11 @@ ILLUSION_EXPIRE_ACTIVE = 3		--有实现的激活
 function PlayerInfo:Handle_Illusion_Active(pkt)
 	local illuId = pkt.illuId
 	local spellMgr = self:getSpellMgr()
+	
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_ILLUSION)) then
+		return
+	end	
 	
 	-- 当前是否有坐骑
 	if not spellMgr:hasMount() then
@@ -230,6 +248,10 @@ end
 function PlayerInfo:Handle_Illusion(pkt)
 	local illuId = pkt.illuId
 	local spellMgr = self:getSpellMgr()
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_ILLUSION)) then
+		return
+	end	
 	
 	-- 当前是否有坐骑
 	if not spellMgr:hasMount() then

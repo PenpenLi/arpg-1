@@ -33,7 +33,6 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 			outFmtDebug("OnCheckWorldXianfuMatch result %d %s", dict.ret, dict.msg)
 			-- 匹配到了
 			if dict.ret == 0 then
-				outFmtInfo("$$$$ on xianfu matched guid = %s", self:GetGuid())
 				local login_fd = serverConnList:getLogindFD()
 				local guid = self:GetGuid()
 				-- dict.enter_info = json.decode(dict.enter_info)
@@ -61,6 +60,7 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 				local pos = enter_info.pos
 				local war_id = enter_info.war_id
 				local battle_server = enter_info.battle_server
+				outFmtInfo("$$$$ on xianfu matched guid = %s war_id = %s", self:GetGuid(), war_id)
 				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, indx, battle_server, '', KUAFU_TYPE_XIANFU)
 				-- 设置正在进行跨服标志
 				self:KuafuMarked(KUAFU_TYPE_XIANFU)

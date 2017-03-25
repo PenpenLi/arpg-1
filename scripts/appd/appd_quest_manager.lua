@@ -564,6 +564,7 @@ function AppQuestMgr:OnSubmitQuestDaily2()
 	local belongLvRangeId = 0
 	for _, start in ipairs(indice) do
 		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+		--[[
 		local state = self:GetUInt16(start + QUEST_INFO_ID, 1)
 
 		if state == QUEST_STATUS_COMPLETE then
@@ -571,27 +572,38 @@ function AppQuestMgr:OnSubmitQuestDaily2()
 		elseif state == QUEST_STATUS_INCOMPLETE then
 			self:CheckIfTheTurnItemInQuest(start)
 		end
+		--]]
 		-- 所属等级段
 		belongLvRangeId = tb_quest[questId].belongLvRangeId
+	end
+	
+	-- 所属区间范围有误
+	if not tb_quest_daily2[belongLvRangeId] then
+		return
+	end
+	
+	local config = tb_quest_daily2[belongLvRangeId]
+	local finished = self:GetDaily2Finished()
+	-- 保底完成数不足
+	if finished < config.finishQuestsNum[ 1 ] then
+		return
 	end
 	
 	self:Daily2Submit()
 
 	local playerInfo = self:getOwner()
-	local finished = self:GetDaily2Finished()
-	if tb_quest_daily2[belongLvRangeId] then
-		-- 给完成奖励
-		local config = tb_quest_daily2[belongLvRangeId]
-		if config.rewardsSelect[finished] then
-			local rewards = tb_quest_daily2_finish_reward[config.rewardsSelect[finished]].rewards
-			playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
-		end
-		
-		-- 给全部完成奖励
-		if finished >= all then
-			local rewards = config.allFinishrewards
-			playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
-		end
+
+	-- 给完成奖励
+
+	if config.rewardsSelect[finished] then
+		local rewards = tb_quest_daily2_finish_reward[config.rewardsSelect[finished]].rewards
+		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
+	end
+	
+	-- 给全部完成奖励
+	if finished >= all then
+		local rewards = config.allFinishrewards
+		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
 	end
 end
 
