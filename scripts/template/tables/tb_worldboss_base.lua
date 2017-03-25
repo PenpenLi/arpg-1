@@ -9,8 +9,8 @@ tb_worldboss_base = {
 	--  born:array	出生点
 	--  rect:array	玩家随机矩形区域
 	--  entry:int	boss模版
-	[1] = {id = 1,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 3231,},
-	[2] = {id = 2,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 3232,},
-	[3] = {id = 3,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 3233,},
-	[4] = {id = 4,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 3234,},
+	[1] = {id = 1,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 7511,},
+	[2] = {id = 2,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 7512,},
+	[3] = {id = 3,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 7513,},
+	[4] = {id = 4,mapid = 2017,born = {40,20},rect = {29,13,52,33},entry = 7514,},
 }
