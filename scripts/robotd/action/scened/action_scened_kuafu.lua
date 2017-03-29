@@ -32,7 +32,16 @@ function ActionScenedKuafu:Update(diff)
 	end
 	
 	-- 如果在仙府夺宝
-	if  self.player:GetMapID() == 3003 then
+	if self.player:GetMapID() == 3003 then
+		local info = self.player:PickTreasure()
+		if info then
+			self:PushAction('robotd.action.scened.action_scened_dosomething', 3003, info[ 1 ], info[ 2 ], function()
+				self.player:call_loot_select(info[ 1 ], info[ 2 ])
+				outFmtInfo("%s call_loot_select at (%d, %d)", self.player:GetGuid(), info[ 1 ], info[ 2 ])
+			end)
+			return true
+		end
+		
 		local params = self.player:FindBossFirst()
 		if params then
 			self:PushAction('robotd.action.scened.action_scened_quest_killmonster', params[ 1 ], params[ 2 ], params[ 3 ], params[ 4 ],  params[ 5 ], params[ 6 ])

@@ -20,6 +20,7 @@ GuidManager.ObjectTypeLogical 				= 'B'	--//业务逻辑
 GuidManager.ObjectTypeGiftPacks				= 'g'	--//礼包
 GuidManager.ObjectTypeMap					= 'M'	--//地图变量
 GuidManager.ObjectTypeMapPlayerInfo			= 'u'	--//任意地图实例信息(目前主要是在线玩家列表),前缀被用光了，这个将就点用吧
+GuidManager.ObjectTypeGridLoot				= 'O'	--//战利品对象
 
 --//以下纯粹是为了借用机制，所以搞些符号代替
 GuidManager.ObjectTypeMapInstance			= '#'	--//地图实例的id规则

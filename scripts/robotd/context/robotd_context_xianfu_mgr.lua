@@ -8,18 +8,21 @@
 	KUAFU_XIANFU_BOSS_BORN_TIME		= KUAFU_XIANFU_BOSS_BORN_INFO + 1,		// 刷新时间戳
 --]]
 
+function PlayerInfo:PickTreasure()
+		-- 有宝箱的先捡起来
+	if self.lootMgr then
+		local lootInfo = self.lootMgr:ReadData()
+		return lootInfo
+	end
+	
+	return
+end
+
+
 function PlayerInfo:FindBossFirst()
 	-- 怪物是否已经
 	if self.bossObserve then
 		return
-	end
-	
-	-- 有宝箱的先捡起来
-	if self.lootMgr then
-		local lootInfo = self.lootMgr:ReadData()
-		for _, info in ipairs(lootInfo) do
-			self:call_loot_select(info[ 1 ], info[ 2 ])
-		end
 	end
 	
 	local mapId = self:GetMapID()

@@ -13,112 +13,120 @@ SPELL_SHIFANG_DIAN					= 4	--坐标点范围
 
 
 --技能开始的逻辑判断 (Handle_Spell_Start) 返回false则条件不满足(玩家才会走这个判断)
-function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, nowtime)
+function DoHandleSpellStart(caster, map_ptr, spell_slot, tar_x, tar_y, target, nowtime)
 	local casterInfo = UnitInfo:new{ptr = caster}
 	
 	-- 是否活着
 	if not casterInfo:IsAlive() then
 		outDebug("do DoHandleSpellStart but caster is not alive")
-		return false
+		return false, 0
 	end
 	
 	--自己无敌
 	if unitLib.HasBuff(caster, BUFF_INVINCIBLE) then
 		print("in the BUFF_INVINCIBLE")
-		return false
-	end
-	
-	-- 技能1-4不能走这个流程
-	if spell_id >= FUNCTIONAL_QING_GONG and spell_id <= FUNCTIONAL_DA_ZUO then
-		return false
-	end
-	
-	-- 未放到技能槽
-	if not casterInfo:HasSpell(spell_id) then
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL)
-		return false
+		return false, 0
 	end
 	
 	-- 本地图是否允许施法
 	local mapid = mapLib.GetMapID(map_ptr)
 	if tb_map[mapid].is_cast == 0 then
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SCENE_DENY)
-		return
+		return false, 0
 	end
-
+	
+	-- TODO: 有特殊物品替换出来的技能先处理
+	
+	-- 当前槽位是否有技能
+	local spell_id = playerLib.GetSlotSpell(caster, spell_slot)
+	if spell_id == 0 then
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL)
+		return false, 0
+	end
+	
 	local config = tb_skill_base[spell_id]
-	if config == nil then
-		--技能不存在
-		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_DOENT_EXIST)
-		return false
+	local current_id = 0
+	
+	-- 检测当前释放的技能
+	if config.group ~= 0 then
+		local follow = config.follow
+		local combats = {spell_id}
+		for _, spell in ipairs(follow) do
+			table.insert(combats, spell)
+		end
+		
+		-- 连招都是有序的
+		table.sort(combats, function (a, b)
+			return a < b
+		end)
+		
+		-- 找出连招进行到哪一个了
+		local lastSpellId = playerLib.GetSpellStyle(caster, config.group)
+		for _, spell in ipairs(combats) do
+			local spellConfig = tb_skill_base[spell]
+			if spellConfig.pre == lastSpellId then
+				current_id = spell
+				break
+			end
+		end
+		-- 如果换了一套技能就用新技能的第一个技能
+		if current_id == 0 then
+			current_id = combats[ 1 ]
+		end
+	else
+		current_id = spell_id
 	end
 
-	if casterInfo:IsSpellCD(spell_id, nowtime) then
-		--技能冷却中
+	--技能冷却中
+	if casterInfo:IsSpellCD(current_id, nowtime) then
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_SPELL_COOLDOWN)
-		return false
+		return false, 0
 	end
-
-	if(not casterInfo:IsCanCast(spell_id))then
-		--被限制施法
+	
+	--被限制施法
+	if(not casterInfo:IsCanCast(current_id))then
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_CAN_NOT_CAST)		
-		return false
+		return false, 0
 	end
-	if(unitLib.GetCurSpell(caster) ~= 0 and unitLib.GetCurSpell(caster) == spell_id)then
-		--此技能已经在施法
+	
+	--此技能已经在施法
+	if(unitLib.GetCurSpell(caster) ~= 0 and unitLib.GetCurSpell(caster) == current_id)then
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST)		
-		return false
+		return false, 0
 	end
 	
 	--当前是跳跃状态
 	if unitLib.HasBuff(caster, BUFF_JUMP_JUMP) then		
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_JUMP_DENY)
-		return false
+		return false, 0
 	end
-	
-	-- 检测拥有技能族的技能释放顺序
-	if config.group ~= 0 then
-		local lastSpellId = playerLib.GetSpellStyle(caster, config.group)
-		if lastSpellId ~= nil then
-			-- 连招顺序不对
-			if config.pre ~= lastSpellId then
-				outFmtDebug("DoHandleSpellStart spellId = %d combat sequence is fail, config.pre = %d, lastspellId = %d", spell_id, config.pre, lastSpellId)
-				return false
-			end
-		end
-	end
-	
+
 	-- 如果是愤怒技能 检测愤怒值是否满了
-	if config.skill_slot == SLOT_ANGER then
-		local cas = playerLib.GetAngerSpell(caster)
-		-- 怒气技能id是否正确
-		if cas ~= spell_id then
-			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL)
-			return false
-		end
-		
+	if config.skill_slot == SLOT_ANGER then		
 		-- 判断怒气值
-		local angerLimit = tb_anger_limit[spell_id].limit
+		local angerLimit = tb_anger_limit[current_id].limit
 		local currAnger = casterInfo:GetSP()
 		if currAnger < angerLimit then
 			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_ENOUGH_ANGER)
-			return false
+			return false, 0
 		end
 	end
 	
-	local spell_type = tb_skill_base[spell_id].type   --获得目标类型
+	-- TODO:
+	local spell_type = tb_skill_base[current_id].type   --获得目标类型
 	if spell_type == TARGET_TYPE_ONESELF then	--目标为自己
 		if not casterInfo:IsAlive() then
 			--已经死了
 			casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_TARGET_DEAD)
-			return false
+			return false, 0
 		end
 	end
 	
-	local target_type = tb_skill_base[spell_id].target_type --获得施放类型
+	-- TODO:
+	local target_type = tb_skill_base[current_id].target_type --获得施放类型
 	if target_type == SPELL_SHIFANG_ZHI or target_type == SPELL_SHIFANG_DIAN or target_type == SPELL_SHIFANG_SHAN then
 		if tar_x == 0 or tar_y == 0 then
-			return false
+			return false, 0
 		end
 	end
 	
@@ -128,7 +136,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_id, tar_x, tar_y, target, now
 	end
 	
 
-	return true
+	return true, current_id
 end
 
 --增加施法信息

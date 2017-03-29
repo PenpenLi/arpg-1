@@ -1095,7 +1095,7 @@ function UnitInfo:AddSP(value)
 	if self:GetTypeID() == TYPEID_UNIT then
 		return
 	end
-	local cas = playerLib.GetAngerSpell(self.ptr)
+	local cas = playerLib.GetSlotSpell(self.ptr, SLOT_ANGER)
 	if cas > 0 then
 		local angerLimit = tb_anger_limit[cas].limit
 		local currAnger = self:GetSP()
