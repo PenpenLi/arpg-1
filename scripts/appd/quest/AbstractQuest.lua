@@ -40,6 +40,9 @@ function AbstractQuest:OnUpdateModeObjectTimes(playerInfo, start, offset, params
 	
 	process = math.min(process + cnt, dest)
 	if showname then
+		if process >= dest then
+			showname = "[00FF00]"..showname
+		end
 		playerInfo:CallOptResult(OPERTE_TYPE_QUEST, QUEST_TYPE_PROCESS,{showname, process, dest})
 	end
 	binLogLib.SetUInt32(quest_ptr, qtIndx + QUEST_TARGET_INFO_PROCESS, process)

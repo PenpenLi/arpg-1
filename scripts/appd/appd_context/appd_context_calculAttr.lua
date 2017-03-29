@@ -293,6 +293,8 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 			skillForce = skillForce + bp
 		end
 	end
+	self:SetSkillForce(skillForce)
+	
 	battleForce = battleForce + skillForce
 	outFmtDebug("base skill force %d", battleForce)
 	

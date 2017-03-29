@@ -1180,3 +1180,6 @@ module_active,s2c,283,/*模块解锁*/,STATUS_NEVER,False
 #
 pick_daily2_quest_reward,c2s,284,/*领取日常任务奖励*/,STATUS_NEVER,False
 	indx,uint8,False,/*任务序号*/
+	
+#
+finish_now_guide,c2s,285,/*完成当前引导*/,STATUS_NEVER,False

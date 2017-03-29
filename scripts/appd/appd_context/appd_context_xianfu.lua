@@ -18,8 +18,9 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 	outFmtDebug("$$$$$$$$$$$$$$$$$$$$$$ %d", data.indx)
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("OnCheckWorldXianfuMatch", response)
-		
+		if response then
+			outFmtDebug("OnCheckWorldXianfuMatch response = %s", response)
+		end
 		local dict = nil
 		security.call(
 			--try block
@@ -95,8 +96,9 @@ function PlayerInfo:OnCancelWorldXianfuMatchBeforeOffline()
 	data.open_time = 1
 	self:OnCancelMatch(KUAFU_TYPE_XIANFU)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("cancel_match response = ", response)
-		
+		if response then
+			outFmtDebug("OnCancelWorldXianfuMatchBeforeOffline response = %s", response)
+		end
 	end)
 end
 
@@ -121,8 +123,9 @@ function PlayerInfo:OnWorldXianfuMatch(indx)
 	
 	app:SetMatchingKuafuType(self:GetGuid(), KUAFU_TYPE_XIANFU + indx * 65536)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("OnWorldXianfuMatch", response)
-		
+		if response then
+			outFmtDebug("OnWorldXianfuMatch response = %s", response)
+		end
 		local dict = nil
 		security.call(
 			--try block
@@ -148,8 +151,9 @@ function PlayerInfo:CheckWorldXianfuReward()
 	data.open_time = 1
 	
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("CheckWorldXianfuReward reponse = %s", response)
-		
+		if response then
+			outFmtDebug("CheckWorldXianfuReward response = %s", response)
+		end
 		local dict = nil
 		security.call(
 			--try block
@@ -206,8 +210,9 @@ function PlayerInfo:OnSyncMoney()
 	data.isPk = 0
 	
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		
-		outFmtDebug("OnSyncMoney", response)
+		if response then
+			outFmtDebug("OnSyncMoney response = %s", response)
+		end
 		local dict = nil
 		security.call(
 			--try block

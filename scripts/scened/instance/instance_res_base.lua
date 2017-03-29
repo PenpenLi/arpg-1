@@ -39,8 +39,6 @@ function InstanceResBase:OnInitScript(  )
 	self:SetMapQuestEndTime(timestamp)
 	-- 副本时间超时回调
 	self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
-	
-	print("------------")
 end
 
 function InstanceResBase:InitRes(config)

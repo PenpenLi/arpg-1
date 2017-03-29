@@ -733,6 +733,8 @@ function AppQuestMgr:OnAddQuest(addQuestId, binlogStart, binlogEnd)
 			if tb_quest[addQuestId].type == QUEST_TYPE_MAIN then
 				playerInfo:SetMainQuestID(addQuestId)
 			end
+			
+			playerInfo:UpdateGuideIdByTaskId(addQuestId)
 			return
 		end
 	end

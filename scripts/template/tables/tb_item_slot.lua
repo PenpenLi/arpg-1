@@ -8,5 +8,5 @@ tb_item_slot = {
 	--  slot:string	资源槽位
 	[5201] = {id = 5201,slot = "r_ytj_0",},
 	[5202] = {id = 5202,slot = "r_bwq_00",},
-	[5203] = {id = 5203,slot = "r_ytj_0",},
+	[5203] = {id = 5203,slot = "r_tld_01",},
 }

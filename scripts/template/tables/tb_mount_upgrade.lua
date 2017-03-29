@@ -9,6 +9,6 @@ tb_mount_upgrade = {
 	--  addBlessExpRange:array	进阶增加祝福值概率
 	--  upgradeExp:int	进阶到下一级经验
 	--  upgradeMode:int	升阶方式(0:自动, 1:手动)
-	[1] = {id = 1,upgradecost = {{50001,1}},addBlessExpRange = {{1,4000},{2,3000},{3,2000},{4,700},{5,300}},upgradeExp = 150,upgradeMode = 0,},
-	[2] = {id = 2,upgradecost = {{50001,2}},addBlessExpRange = {{1,4000},{2,3000},{3,2000},{4,700},{5,300}},upgradeExp = 200,upgradeMode = 1,},
+	[1] = {id = 1,upgradecost = {{1201,1}},addBlessExpRange = {{1,4000},{2,3000},{3,2000},{4,700},{5,300}},upgradeExp = 150,upgradeMode = 0,},
+	[2] = {id = 2,upgradecost = {{1201,2}},addBlessExpRange = {{1,4000},{2,3000},{3,2000},{4,700},{5,300}},upgradeExp = 200,upgradeMode = 1,},
 }

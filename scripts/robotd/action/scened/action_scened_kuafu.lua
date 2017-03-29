@@ -28,8 +28,20 @@ function ActionScenedKuafu:Update(diff)
 	end
 	if(self.player.Kuafu_Status == nil) then
 		self.player.Kuafu_Status = ACTION_SCENE_KUAfU_STATUS_START
-		outFmtDebug("in million_war zhuangtai init")
+		outFmtDebug("in xianfu init")
 	end
+	
+	-- 如果在仙府夺宝
+	if  self.player:GetMapID() == 3003 then
+		local params = self.player:FindBossFirst()
+		if params then
+			self:PushAction('robotd.action.scened.action_scened_quest_killmonster', params[ 1 ], params[ 2 ], params[ 3 ], params[ 4 ],  params[ 5 ], params[ 6 ])
+			self:SetWaitTimeInterval(1000)
+		end
+		return true
+	end
+	
+	--[[
 	if self.player:GetMapID() == KUAFU_MILLION_WAR_MAPID then
 		if self.player.Kuafu_Status == ACTION_SCENE_KUAfU_STATUS_START then
 			local t = os.time()
@@ -76,6 +88,7 @@ function ActionScenedKuafu:Update(diff)
 			outFmtDebug("in huangjin_war player is Die")
 		end
 	end
+	--]]
 	
 	return true
 end

@@ -71,9 +71,11 @@ function PlayerInfo:AddOpenMenuFlag(id,subid)
 		self:SetBit(self:OpenMenuStart() + OPEN_MENU_SUB_FLAG,subid)
 		self:OpenMenuNext()
 		
+		self:UpdateGuideIdByModuleId(id*10 + subid)
 		return 1
 	else
 		self:SetBit(PLAYER_INT_FIELD_OPEN_MENU_START + allIds[id] * MAX_OPEN_MENU_ATTR_COUNT + OPEN_MENU_SUB_FLAG,subid)
+		self:UpdateGuideIdByModuleId(id*10 + subid)
 		return 1
 	end
 end

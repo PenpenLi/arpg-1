@@ -6,6 +6,6 @@
 tb_hook_hp_item = {
 	--  id:int	序号
 	--  items:array	道具id
-	[1] = {id = 1,items = {50001,50002},},
-	[2] = {id = 2,items = {50003},},
+	[1] = {id = 1,items = {1201,1202},},
+	[2] = {id = 2,items = {1301},},
 }

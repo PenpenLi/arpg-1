@@ -5,6 +5,9 @@ InstanceResGem.exit_time = 10
 
 InstanceResGem.GEM_NAME = "GEM11:11"
 
+-- ³ðºÞ¶È
+InstanceResGem.THREAT_V = 100
+
 function InstanceResGem:ctor(  )
 	
 end

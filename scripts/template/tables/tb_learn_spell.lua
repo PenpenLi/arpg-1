@@ -10,8 +10,8 @@ tb_learn_spell = {
 	--  resource:array	所需资源
 	[10011] = {id = 10011,playerLevel = 2,item = {},resource = {},},
 	[10012] = {id = 10012,playerLevel = 2,item = {},resource = {},},
-	[10013] = {id = 10013,playerLevel = 2,item = {},resource = {},},
-	[10014] = {id = 10014,playerLevel = 2,item = {},resource = {},},
+	[10013] = {id = 10013,playerLevel = 13,item = {},resource = {},},
+	[10014] = {id = 10014,playerLevel = 13,item = {},resource = {},},
 	[10015] = {id = 10015,playerLevel = 0,item = {},resource = {},},
 	[10016] = {id = 10016,playerLevel = 0,item = {},resource = {},},
 	[10017] = {id = 10017,playerLevel = 0,item = {},resource = {},},

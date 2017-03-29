@@ -15,7 +15,9 @@ function PlayerInfo:OnCheckWorld3v3Match()
 	data.player_guid = self:GetPlayerMatchKey()
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		if response then
+			outFmtDebug("OnCheckWorld3v3Match response = %s", response)
+		end
 		
 		local dict = nil
 		security.call(
@@ -82,7 +84,9 @@ function PlayerInfo:OnCancelWorld3v3MatchBeforeOffline()
 	data.open_time = 1
 	self:OnCancelMatch(KUAFU_TYPE_FENGLIUZHEN)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("cancel_match response = ", response)
+		if response then
+			outFmtDebug("cancel_match response = %s", response)
+		end
 	end)
 end
 
@@ -134,7 +138,9 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 	
 	app:SetMatchingKuafuType(self:GetGuid(), KUAFU_TYPE_FENGLIUZHEN)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		if response then
+			outFmtDebug("OnWorld3v3GroupMatch response = %s", response)
+		end
 		
 		local dict = nil
 		security.call(
@@ -162,7 +168,9 @@ function PlayerInfo:CheckWorld3v3Reward()
 	
 	local askguid = self:GetGuid()
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		if response then
+			outFmtDebug("CheckWorld3v3Reward response = %s", response)
+		end
 		
 		local dict = nil
 		security.call(
@@ -218,28 +226,21 @@ function PlayerInfo:World3v3Rank()
 	data.gender = self:GetGender()
 	
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("response = ", response)
-		local dict = nil
-		security.call(
-			--try block
-			function()
-				dict = json.decode(response)
-			end
-		)
-		if dict then
-			outFmtDebug("%d %s", dict.ret, dict.msg)
-		end
-		
+		if response then
+			outFmtDebug("World3v3Rank response = %s", response)
+		end		
 	end)
 end
 
 -- ¸üÐÂÅÅÃû
 function UpdateKuafuRank()
 	local url = string.format("%s%s/check_rank", globalGameConfig:GetExtWebInterface(), sub)
-	
+	outFmtDebug("appd call UpdateKuafuRank url = %s", url)
 	local data = {}
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug(response)
+		if response then
+			outFmtDebug("UpdateKuafuRank response = %s", response)
+		end
 		
 		local dict = nil
 		security.call(
@@ -249,7 +250,7 @@ function UpdateKuafuRank()
 			end
 		)
 		
-		if dict then
+		if dict and dict.ret and dict.msg then
 			outFmtDebug("%d %s", dict.ret, dict.msg)
 			if type(dict.details) == "string" and string.len(dict.details) > 0 then
 				dict.details = json.decode(dict.details)
@@ -273,7 +274,9 @@ function PlayerInfo:OnPrepareMatch(oper)
 	data.oper = oper
 	
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
-		outFmtDebug("OnPrepareMatch = %s", response)
+		if response then
+			outFmtDebug("OnPrepareMatch response = %s", response)
+		end
 		
 		local dict = nil
 		security.call(

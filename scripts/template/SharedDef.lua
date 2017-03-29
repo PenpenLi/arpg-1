@@ -1537,6 +1537,9 @@ PLAYER_INT_FIELD_OPEN_MENU_END = 761
 -- 已购家族商店物品的记录
 PLAYER_INT_FIELD_BUYED_FACTION_SHOP = 762	-- 已购家族商店物品开始
 PLAYER_INT_FIELD_BUYED_FACTION_SHOP_END = 770	-- 已购家族商店物品结束
+-- 记录系统引导ID 
+PLAYER_INT_FIELD_GUIDE_ID_LAST = 771	-- 上次完成的引导
+PLAYER_INT_FIELD_GUIDE_ID_NOW = 772	-- 当前进行中的引导
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 字符串部分
 PLAYER_STRING_FIELD_ACCOUNT = 4	-- 账号

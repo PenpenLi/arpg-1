@@ -4,7 +4,7 @@
 
 
 tb_skill_uplevel = {
-	--  id:int	技能ID
+	--  id:int	升级ID
 	--  skillEffectType:int	技能效果类型
 	--  skillEffectParams:array	技能效果参数
 	--  distance:int	施放距离

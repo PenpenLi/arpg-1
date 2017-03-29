@@ -16,6 +16,7 @@ function RobotdObjectManager:ctor( player )
 	self.binlogTypes[guidMgr.ObjectTypeItemMgr] = require('robotd.object.robotd_item')	--物品对象
 	self.binlogTypes[guidMgr.ObjectTypeQuest] = require('robotd.object.robotd_quest')	--任务对象
 	self.binlogTypes[guidMgr.ObjectTypeSpell] = require('robotd.object.robotd_spell')	--技能对象
+	self.binlogTypes[guidMgr.ObjectTypeGridLoot] = require('robotd.object.robotd_loot')--战利品对象
 	
 	self.__tags = require('util.tags_manager').new()
 	self.__objs = {}
@@ -47,6 +48,9 @@ function RobotdObjectManager:afterAttachObject( obj )
 	elseif (prefix == guidMgr.ObjectTypeSpell) then
 		self.player.spellMgr = obj
 		return
+	elseif (prefix == guidMgr.ObjectTypeGridLoot) then
+		self.player.lootMgr = obj
+		return
 	elseif(obj:GetGuid() == GLOBAL_GAME_CONFIG)then
 		self.player.gameconfig = obj
 		return
@@ -72,6 +76,8 @@ function RobotdObjectManager:onReleaseObject(guid, ptr)
 		self.player:DelUnit(obj)
 	elseif(prefix == guidMgr.ObjectTypeItem)then
 		self.player:DelItem(obj)
+	elseif (prefix == guidMgr.ObjectTypeGridLoot) then
+		self.player.lootMgr = nil
 	elseif(prefix == guidMgr.ObjectTypeMap)then
 		if(self.player.mapInfo == obj)then
 			self.player.mapInfo = nil

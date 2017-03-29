@@ -22,7 +22,7 @@ function ActionScened:Update(diff)
 	if mapId == 0 then
 		return true
 	end
-	
+		
 	outFmtDebug("	ActionScened:Update")
 	local questOperate = self.player:DoNextQuest()
 	if questOperate then

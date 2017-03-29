@@ -12,6 +12,8 @@ hanlders[CMSG_USE_GOLD_OPT] = PlayerInfo.Hanlde_Use_Gold
 hanlders[CMSG_BAG_ITEM_USER] = PlayerInfo.Hanlde_Bag_Item_User
 hanlders[CMSG_BAG_ITEM_SELL] = PlayerInfo.Hanlde_Bag_Item_Sell
 hanlders[CMSG_BAG_ITEM_SORT] = PlayerInfo.Hanlde_Bag_Item_Sort
+hanlders[CMSG_FINISH_NOW_GUIDE] = PlayerInfo.Hanlde_Finish_Now_Guide
+
 
 hanlders[CMSG_BAG_EXCHANGE_POS] = PlayerInfo.Hanlde_Bag_Exchange_Pos
 hanlders[CMSG_BAG_DESTROY] = PlayerInfo.Hanlde_Bag_Destroy
