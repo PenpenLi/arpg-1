@@ -250,10 +250,11 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 		local cd = math.ceil(tb_skill_base[JUMP_SKILL].singleCD / 1000)
 		self:SetPlayerJumpCd(cur_time + cd)
 	
+		--[[
 		if self:isRide() then
 			self:MountUnride() 
 		end
-		
+		--]]
 		if tb_map[mapid].type == MAP_TYPE_FIELD then
 			Select_Instance_Script(self:GetMapID()):new{ptr = map_ptr}:OnStartJump(self)
 		end
