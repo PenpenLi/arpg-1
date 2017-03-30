@@ -6,7 +6,6 @@ InstanceKuafuXianfu.Name = "InstanceKuafuXianfu"
 InstanceKuafuXianfu.exit_time = 20
 InstanceKuafuXianfu.Time_Out_Fail_Callback = "timeoutCallback"
 --InstanceKuafuXianfu.broadcast_nogrid = 1
-InstanceKuafuXianfu.RESPAWN_BASE_GOLD = 5
 InstanceKuafuXianfu.sub = "world_xianfu"
 
 InstanceKuafuXianfu.BOX_EXIST_TIME = 1800
@@ -454,7 +453,7 @@ end
 
 function InstanceKuafuXianfu:OnSendDeathInfo(playerInfo, deathname ,killername ,params)
 	-- 发送野外死亡回城倒计时
-	playerInfo:call_field_death_cooldown(DEAD_PLACE_TYPE_XIANFU, deathname, killername, params, tb_kuafu_xianfu_base[ 1 ].seconds[ 1 ])
+	playerInfo:call_field_death_cooldown(DEAD_PLACE_TYPE_XIANFU, deathname, killername, params, tb_kuafu_xianfu_base[ 1 ].seconds)
 end
 
 
@@ -574,7 +573,7 @@ end
 
 -- 获得单人的复活时间
 function InstanceKuafuXianfu:GetSingleRespawnTime(player)
-	return tb_kuafu_xianfu_base[ 1 ].seconds[ 1 ]
+	return tb_kuafu_xianfu_base[ 1 ].seconds
 end
 
 -- 地图需要清空人时要做的事
@@ -612,7 +611,7 @@ function InstanceKuafuXianfu:OnCheckIfCanCostRespawn(player)
 	
 	-- 死亡次数
 	local times = unitInfo:GetXianfuDeathCount()
-	local cost = self.RESPAWN_BASE_GOLD * times
+	local cost = tb_kuafu_xianfu_base[ 1 ].gold * times
 	
 	local binindx = self:findIndexByName(unitInfo:GetName())
 	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT

@@ -1183,3 +1183,37 @@ pick_daily2_quest_reward,c2s,284,/*领取日常任务奖励*/,STATUS_NEVER,False
 	
 #
 finish_now_guide,c2s,285,/*完成当前引导*/,STATUS_NEVER,False
+
+#
+get_cultivation_info,c2s,286,/*取得修炼场信息*/,STATUS_NEVER,False
+
+#
+update_cultivation_info,s2c,287,/*返回修炼场信息*/,STATUS_NEVER,False
+	start_time,uint32,False,/*修炼开始时间*/
+	lost,uint32,False,/*宝箱掠夺信息*/
+	
+#
+get_cultivation_rivals_info,c2s,288,/*取得当前所有修炼场对手信息*/,STATUS_NEVER,False
+
+#
+update_cultivation_rivals_info,s2c,289,/*返回修炼场对手信息*/,STATUS_NEVER,False
+	list,cultivation_rivals_info,True,/*对手信息列表*/
+
+#
+get_cultivation_reward,c2s,290,/*领取修炼场奖励*/,STATUS_NEVER,False
+
+#
+refresh_cultivation_rivals,c2s,291,/*刷新修炼场对手*/,STATUS_NEVER,False
+
+#
+plunder_cultivation_rival,c2s,292,/*掠夺修炼场对手*/,STATUS_NEVER,False
+	index,uint32,False,/*对手序号*/
+
+#	
+revenge_cultivation_rival,c2s,293,/*反击复仇修炼场对手*/,STATUS_NEVER,False
+	index,uint32,False,/*掠夺记录序号*/
+
+#	
+buy_cultivation_left_plunder_count,c2s,294,/*增加修炼场剩余挑战次数*/,STATUS_NEVER,False
+	count,uint32,False,/*购买数量*/
+	

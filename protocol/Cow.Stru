@@ -95,3 +95,15 @@ line_info,/*坐标结构体*/
 wait_info,/*等待信息*/
 	name,String,50,/*名字*/
 	state,int8,0,/*状态*/
+
+#修炼场对手信息
+cultivation_rivals_info,/*修炼场对手信息*/
+	index,uint32,0,/*序号*/
+	name,String,50,/*名字*/
+	level,uint32,0,/*等级*/
+	weapon,uint32,0,/*武器*/
+	model,uint32,0,/*外观*/
+	divine,uint32,0,/*神兵*/
+	force,uint32,0,/*战力*/
+	chest,uint32,0,/*宝箱*/
+	
