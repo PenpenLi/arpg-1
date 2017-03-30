@@ -70,6 +70,8 @@ tb_system_base = {
 	[5036] = {id = 5036,level = 101,questId = 0,guide_id = 0,},
 	[5041] = {id = 5041,level = 25,questId = 0,guide_id = 0,},
 	[5042] = {id = 5042,level = 40,questId = 0,guide_id = 0,},
+	[5051] = {id = 5051,level = 30,questId = 0,guide_id = 0,},
+	[5052] = {id = 5052,level = 1,questId = 0,guide_id = 0,},
 	[6011] = {id = 6011,level = 10,questId = 0,guide_id = 0,},
 	[6012] = {id = 6012,level = 101,questId = 0,guide_id = 0,},
 	[6013] = {id = 6013,level = 101,questId = 0,guide_id = 0,},
