@@ -59,6 +59,11 @@ function PlayerInfo:AddOpenMenuFlag(id,subid)
 		self:activeMount()
 	end
 	
+	--≤‚ ‘
+	if id == MODULE_PRACTICE and subid == MODULE_PRACTICE_EXP then
+		self:InitCultivation()
+	end
+	
 	self:call_module_active (id * 10 + subid)
 	
 	local allIds = self:GetAllOpenMenuIds()

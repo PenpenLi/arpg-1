@@ -837,19 +837,14 @@ Instance_base = {
 			return nil
 		end
 		
-		if not faction  then
-			faction = 3
-		end
-		
-		if not reborn_time then
-			reborn_time = ''
-		end
+		faction = faction or 3
+		reborn_time = reborn_time or 0
 
-		local creature = mapLib.AddCreature(self.ptr, {templateid = image.id, x = x ,y = y, faction = faction, movetype = WAYFINDING_ATTACK_MOTION_TYPE, active_grid = true, ainame = ai_name, alias_name = '', npcflag={}})
+		local creature = mapLib.AddCreature(self.ptr, {templateid = image.id, x = x ,y = y, respan_time = reborn_time, faction = faction, movetype = WAYFINDING_ATTACK_MOTION_TYPE, active_grid = true, ainame = ai_name, alias_name = '', npcflag={}})
 		if creature == nil then
 			return creature
-		end	
-		
+		end
+
 		--显示相关
 		local lua_creature = UnitInfo:new{ptr = creature}
 		lua_creature:SetName(image.name)

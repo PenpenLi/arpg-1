@@ -264,6 +264,7 @@ function load_lua_scripts()
 		{'斗剑台'				,'scened/instance/instance_doujiantai'},
 		{'跨服3v3'				,'scened/instance/instance_kuafu_3v3'},
 		{'跨服仙府夺宝'			,'scened/instance/instance_kuafu_xianfu'},
+		{'修炼场'			,'scened/instance/instance_xiulianchang'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -301,6 +302,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[3001] = InstanceDoujiantai,
 	[3002] = InstanceKuafu3v3,
 	[3003] = InstanceKuafuXianfu,
+	[3005] = InstanceXiulianchang,
 }
 
 -- 复活点坐标

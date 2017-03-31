@@ -591,7 +591,7 @@ function InstanceKuafuXianfu:OnCheckIfSendToAppdAfterLootSelect(player, entry, c
 	local binindx = self:findIndexByName(playerInfo:GetName())
 	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
 	
-	self:AddByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, 1)
+	self:AddByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, count)
 	
 	outFmtDebug("======== guid = %s,  binindx = %d, picked one , now = %d", playerInfo:GetPlayerGuid(), binindx, self:GetByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0))
 	

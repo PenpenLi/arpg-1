@@ -95,6 +95,9 @@ require("template.tables.tb_kuafu_xianfu_tst_dummy")
 
 require("template.tables.tb_doujiantai_base")
 
+require("template.tables.tb_xiulianchang_base")
+require("template.tables.tb_xiulianchang_dummy")
+
 require("template.tables.tb_map_jump_point")
 require("template.tables.tb_map_jump_point_detail")
 

@@ -64,5 +64,11 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 	elseif SCENED_APPD_DOUJIANTAI == ntype then
 		-- 斗剑台结果
 		globalCounter:BattleFinish(self, data, tonumber(str))
+		
+	elseif SCENED_APPD_XIULIANCHANG == ntype then
+		-- 修练场掠夺结果
+		self:PlunderFinish(data, str)
+	elseif SCENED_APPD_XIANFU_PRACTISE == ntype then
+		self:AppdAddItems({{data, tonumber(str)}}, nil, LOG_ITEM_OPER_TYPE_XIANFU_PRACTISE)
 	end
 end

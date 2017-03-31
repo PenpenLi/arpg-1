@@ -8,5 +8,5 @@ tb_map_field_boss_time = {
 	--  time:array	开始的时刻
 	--  noticestarttime:int	通知活动即将开始时间
 	--  noticebosstime:int	通知BOSS即将刷新时间
-	[1] = {id = 1,time = {{13,0},{21,0}},noticestarttime = 10,noticebosstime = 3,},
+	[1] = {id = 1,time = {{10,0},{13,0},{15,0},{18,0},{20,0},{22,0}},noticestarttime = 10,noticebosstime = 3,},
 }

@@ -114,6 +114,13 @@ function AppdApp:InitCorn()
 	local wbconfig = tb_worldboss_time[ 1 ]
 	self:InitWorldBossCorn(wbconfig.time[ 1 ], wbconfig.time[ 2 ], wbconfig.enrolllast, wbconfig.time_last, wbconfig.notice)
 	
+	--每隔1s检测下修炼场次数回复
+	self.cron:every("修炼场次数回复",1,function()
+		self.objMgr:foreachAllPlayer(function(player)	
+			player:UpdateCultivation()
+		end)		
+	end)
+	
 	--每隔5s检测下失效物品
 	self.cron:every("失效物品检测",5,function()
 		self.objMgr:foreachAllPlayer(function(player)	

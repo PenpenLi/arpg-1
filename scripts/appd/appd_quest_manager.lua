@@ -336,19 +336,57 @@ function AppQuestMgr:OnDailyQuestReset()
 	local playerInfo = self:getOwner()
 	playerInfo:ClearDailyQuestFinished()
 	
+	-- 环任务
+	self:OnAddFirstCircleQuest(tb_quest_daily_base[ 1 ].npcQuest)
+	
+	-- 日常任务
+	self:OnAddFirstDaily2Quest(tb_quest_daily2_base[ 1 ].npcQuest)
+end
+
+--[[
+	在每日重置 和 角色升级的时候可能触发
+--]]
+function AppQuestMgr:OnAddFirstCircleQuest(firstQuestId)
+	if not tb_quest[firstQuestId] then
+		return
+	end
+	
+	local playerInfo = self:getOwner()
+	-- 等级满足才能接取
+	if playerInfo:GetLevel() < tb_quest[firstQuestId].level then
+		return
+	end
+	
+	-- 看看等级是否满足条件
 	-- 删除原来的任务
 	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
 		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
 
-		if questId > 0 and (tb_quest[questId].type == QUEST_TYPE_DAILY or tb_quest[questId].type == QUEST_TYPE_DAILY2) then
+		if questId > 0 and tb_quest[questId].type == QUEST_TYPE_DAILY then
 			self:OnRemoveQuest(start)
 		end
 	end
 	-- 给每日任务的第一个任务
-	self:OnAddQuest(tb_quest_daily_base[ 1 ].npcQuest)
-		
+	self:OnAddQuest()
+end
+
+--[[
+	在每日重置 和 角色升级的时候可能触发
+--]]
+function AppQuestMgr:OnAddFirstDaily2Quest(firstQuestId)
+	if not tb_quest[firstQuestId] then
+		return
+	end
+	
+	local playerInfo = self:getOwner()
+	
+	-- 等级满足才能接取
+	if playerInfo:GetLevel() < tb_quest[firstQuestId].level then
+		return
+	end
+	
 	-- 日常任务
-	self:OnAddQuest(tb_quest_daily2_base[ 1 ].npcQuest)
+	self:OnAddQuest(firstQuestId)
 	
 	-- 重置日常任务个数
 	self:ClearDaily2Finished()
@@ -364,7 +402,9 @@ function AppQuestMgr:OnDailyQuestReset()
 			self:OnRemoveQuest(start)
 		end
 	end
+	
 end
+
 
 -- 随机生成日常任务
 function AppQuestMgr:RandomGenerateDaily2Quest()

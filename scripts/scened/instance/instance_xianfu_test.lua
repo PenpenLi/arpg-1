@@ -6,6 +6,17 @@ InstanceXianfuTest.Time_Out_Fail_Callback = "timeoutCallback"
 InstanceXianfuTest.dummys = 9
 
 InstanceXianfuTest.BOX_EXIST_TIME = 1800
+local dummyPos = {
+	{77, 68},
+	{67, 72},
+	{64, 81},
+	{68, 90},
+	{77, 94},
+	{87, 90},
+	{91, 81},
+	{87, 71},
+	{77, 81},
+}
 
 function InstanceXianfuTest:ctor(  )
 	
@@ -162,10 +173,9 @@ function InstanceXianfuTest:OnDummyRefresh()
 	config.reverse4 = 0
 	config.reverse5 = 0
 	
-	
-	local pos = tb_kuafu_xianfu_tst_base[ 1 ].bornPos[ 1 ]
-	local offsetX = randInt(-5, 5)
-	local offsetY = randInt(-5, 5)
+	local pos = dummyPos[id]
+	local offsetX = 0
+	local offsetY = 0
 	
 	local image = self:GetImageInfo(config)
 	self:AddImageBody(image, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, "AI_XianfuDummy", nil, tb_kuafu_xianfu_tst_base[ 1 ].seconds, nil)
@@ -177,12 +187,34 @@ function InstanceXianfuTest:OnDummyRefresh()
 		local strstart = KUAFU_XIANFU_FIELDS_STR_INFO_START + emptyIndex * MAX_KUAFU_XIANFU_STR_COUNT
 
 		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_NAME, config.name)
-		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_GUID, config.name)
+		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_GUID, 'robot'..id)
 
 		self:SetDouble(intstart + KUAFU_XIANFU_PLAYER_SETTLEMENT, config.force)
 	end
 	
 	return true
+end
+
+ --按怪物等级初始化怪物信息
+function InstanceXianfuTest:InitCreatureInfo( creature_ptr, bRecal, mul)
+	mul = mul or 1
+	local creature = UnitInfo:new{ptr = creature_ptr}	
+	local entry = creature:GetEntry()
+	local config = tb_creature_template[entry]
+	if config then
+		--给怪物添加基本信息
+		creature:SetNpcFlags(config.npcflag)
+		if creature:GetLevel() == 0 then
+			creature:SetLevel(config.level)
+		end
+
+		--给怪物添加技能
+		self:SetSpells(creature_ptr, config.spell)
+
+		self:SetCreaturePro(creature, config.pro, bRecal, mul)
+	else
+		outFmtError("no entry[%d] for creature", entry)
+	end
 end
 
 -- 活动正式开始
@@ -271,22 +303,20 @@ function InstanceXianfuTest:DoPlayerExitInstance(player)
 end
 
 --玩家加入地图
-function InstanceXianfuTest:OnJoinPlayer(player)
-	
+function InstanceXianfuTest:OnJoinPlayer(player)	
 	InstanceInstBase.OnJoinPlayer(self, player)
 	
 	local playerInfo = UnitInfo:new{ptr = player}
 	if not playerInfo:IsAlive() then
 		--死亡了还进来，直接弹出去
-		local login_fd = serverConnList:getLogindFD()
-		call_scene_login_to_kuafu_back(login_fd, playerInfo:GetPlayerGuid())
+		unitLib.Respawn(player, RESURRECTION_SPAWNPOINT, 100)
+		mapLib.ExitInstance(self.ptr, player)
 		return
 	end
 	
 	-- 不能重复进入
 	if self:findIndexByName(playerInfo:GetName()) > -1 then
-		local login_fd = serverConnList:getLogindFD()
-		call_scene_login_to_kuafu_back(login_fd, playerInfo:GetPlayerGuid())
+		mapLib.ExitInstance(self.ptr, player)
 		return
 	end
 	
@@ -378,6 +408,8 @@ function InstanceXianfuTest:FindAPlaceToRespawn(unit_ptr, isDummy)
 		local generalId	= self:GetMapGeneralId()
 		playerLib.Teleport(unit_ptr, toMapId, toX, toY, lineNo, generalId)
 	else
+		local dummyGuid = binLogLib.GetStr(unit_ptr, BINLOG_STRING_FIELD_GUID)
+		local dummyName= binLogLib.GetStr(unit_ptr, BINLOG_STRING_FIELD_NAME)
 		unitLib.SetPos(unit_ptr, toX, toY, true)
 	end
 end
@@ -479,10 +511,14 @@ function InstanceXianfuTest:OnDropTreasure(playerInfo, killerInfo, is_offline)
 	
 	if count > 0 then
 		local loot_entry = self:GetBoxid()
-		for i = 1, count do
-			--模板,数量,绑定与否,存在时间,保护时间,强化等级
-			--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
-			AddLootGameObject(self.ptr, playerInfo.ptr, belongGuid, loot_entry, 1, 0, InstanceXianfuTest.BOX_EXIST_TIME, protectTime, 0)
+		if killerInfo and killerInfo:GetTypeID() == TYPEID_UNIT then
+			self:OnCheckIfSendToAppdAfterLootSelect(killerInfo.ptr, loot_entry, count)
+		else
+			for i = 1, count do
+				--模板,数量,绑定与否,存在时间,保护时间,强化等级
+				--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
+				AddLootGameObject(self.ptr, playerInfo.ptr, belongGuid, loot_entry, 1, 0, InstanceXianfuTest.BOX_EXIST_TIME, protectTime, 0)
+			end
 		end
 		
 		self:SubByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, count)
@@ -493,14 +529,20 @@ end
 
 --当玩家离开时触发
 function InstanceXianfuTest:OnLeavePlayer( player, is_offline)
-	local unitInfo = UnitInfo:new{ptr = player}
 	
 	-- 活动副本结束了就不进行处理
 	if self:GetMapState() == self.STATE_FINISH then
 		return
 	end
 	
-	self:OnDropTreasure(unitInfo, nil, true)
+	-- 给玩家奖励
+	local dropConfig 	= tb_kuafu_xianfu_tst_boss[1].bossDrop
+	local count			= dropConfig[ 1 ]
+	local loot_entry 	= self:GetBoxid()
+	
+	--发到应用服进行进入判断
+	playerLib.SendToAppdDoSomething(player, SCENED_APPD_XIANFU_PRACTISE, loot_entry, ""..count)
+		
 	-- 如果没人了 那就结束
 	local persons = mapLib.GetPlayersCounts(self.ptr)
 	if persons == 0 then
@@ -562,8 +604,7 @@ function InstanceXianfuTest:OnCheckIfSendToAppdAfterLootSelect(player, entry, co
 	local binindx = self:findIndexByName(playerInfo:GetName())
 	local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + binindx * MAX_KUAFU_XIANFU_INT_COUNT
 	
-	self:AddByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, 1)
-	
+	self:AddByte(intstart + KUAFU_XIANFU_PLAYER_SHOW_INFO, 0, count)
 	-- 同步到u对象
 	playerInfo:AddXianfuBoxCount(count)
 	
@@ -693,29 +734,34 @@ function AI_XianfuTestBoss:JustDied( map_ptr,owner,killer_ptr )
 	local protectTime	= dropConfig[ 2 ]
 	local loot_entry 	= instanceInfo:GetBoxid()
 	
-	local dummyPick = tb_kuafu_xianfu_tst_boss[ 1 ].dummpy_pick
-	
-	local player_guid = ''
-	for i = 1, boxes-dummyPick do
-		--模板,数量,绑定与否,存在时间,保护时间,强化等级
-		--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
-		AddLootGameObject(map_ptr, owner, player_guid, loot_entry, 1, fcm, InstanceXianfuTest.BOX_EXIST_TIME, protectTime, 0)
-	end
-	
-	local dummys = mapLib.GetAllCreature(map_ptr)
-	for i, dummy in ipairs(dummys) do
-		if binLogLib.GetBit(dummy, UNIT_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE) then
-			table.remove(dummys, i)
-			break
+	local dummyPick = boxes
+	local dummy_ptr = killer_ptr
+	-- 如果是玩家杀的
+	if playerInfo:GetTypeID() == TYPEID_PLAYER then
+		dummy_ptr = nil
+		dummyPick = tb_kuafu_xianfu_tst_boss[ 1 ].dummpy_pick
+		for i = 1, boxes-dummyPick do
+			--模板,数量,绑定与否,存在时间,保护时间,强化等级
+			--local drop_item_config = {entry, 1, 0, 1800, protectTime, 0}		
+			AddLootGameObject(map_ptr, owner, '', loot_entry, 1, fcm, InstanceXianfuTest.BOX_EXIST_TIME, protectTime, 0)
 		end
 	end
 	
-	local mins = math.min(#dummys, dummyPick)
-	local indice = GetRandomIndexTable(#dummys, mins)
-	for _, indx in ipairs(indice) do
-		local dummy_ptr = dummys[indx]
-		instanceInfo:OnCheckIfSendToAppdAfterLootSelect(dummy_ptr, loot_entry, 1)
+	if not dummy_ptr then
+		-- 删掉BOSS
+		local dummys = mapLib.GetAllCreature(map_ptr)
+		for i, dummy in ipairs(dummys) do
+			if binLogLib.GetBit(dummy, UNIT_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE) then
+				table.remove(dummys, i)
+				break
+			end
+		end
+		
+		local indice = GetRandomIndexTable(#dummys, 1)
+		dummy_ptr = dummys[ 1 ]
 	end
+	
+	instanceInfo:OnCheckIfSendToAppdAfterLootSelect(dummy_ptr, loot_entry, dummyPick)
 	
 	return 0
 end

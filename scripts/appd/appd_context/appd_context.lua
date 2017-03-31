@@ -1483,6 +1483,9 @@ function PlayerInfo:ClearBuyedFactionShopItem()
 	end
 end
 
+
+
+
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()
 	self:KuafuMarked(0)
@@ -1537,6 +1540,8 @@ require("appd/appd_context/appd_context_xianfu")
 require("appd/appd_context/appd_context_doujiantai")
 require("appd/appd_context/appd_context_module_unlock")
 require("appd/appd_context/appd_context_guide")
+require("appd/appd_context/appd_context_cultivation")
+
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")
@@ -1552,6 +1557,7 @@ require("appd/appd_context/handler/active_handler")
 require("appd/appd_context/handler/achieve_title_handler")
 require("appd/appd_context/handler/welfare_handler")
 require("appd/appd_context/handler/guide_handler")
+require("appd/appd_context/handler/cultivation_handler")
 
 require("appd/appd_context/appd_context_hanlder")
 

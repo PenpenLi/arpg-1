@@ -16,7 +16,7 @@ function PlayerInfo:OnCheckWorld3v3Match()
 	data.open_time = 1
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		if response then
-			outFmtDebug("OnCheckWorld3v3Match response = %s", response)
+			outFmtDebug("%s OnCheckWorld3v3Match response = %s", self:GetGuid(), response)
 		end
 		
 		local dict = nil
@@ -29,7 +29,7 @@ function PlayerInfo:OnCheckWorld3v3Match()
 		
 		
 		if dict then
-			outFmtDebug("OnCheckWorld3v3Match result %d %s", dict.ret, dict.msg)
+			outFmtDebug("%s OnCheckWorld3v3Match result %d %s", self:GetGuid(), dict.ret, dict.msg)
 			-- 匹配到了
 			if dict.ret == 0 then
 				local login_fd = serverConnList:getLogindFD()
@@ -93,8 +93,10 @@ end
 
 -- 单人匹配3v3
 function PlayerInfo:OnWorld3v3Match()
+	outFmtDebug("PlayerInfo:OnWorld3v3Match")
 	-- 已经在匹配其他了
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
+		outFmtDebug("OnWorld3v3Match IsInKuafuTypeMatching")
 		return false
 	end
 	app.world_3v3_team_dict[self:GetGuid()] = {self:GetGuid()}
@@ -104,19 +106,23 @@ end
 
 -- 队伍匹配3v3
 function PlayerInfo:OnWorld3v3GroupMatch()
+	outFmtDebug("PlayerInfo:OnWorld3v3GroupMatch")
 	-- 队长才能进行匹配, 不是的不让进
 	local group_guid = self:GetGuid()
 	if app.world_3v3_player_team[self:GetGuid()] ~= group_guid then
+		outFmtDebug("OnWorld3v3GroupMatch is not captain")
 		return false
 	end
 	
 	-- 已经在跨服了
 	if self:IsKuafuing() then
+		outFmtDebug("OnWorld3v3GroupMatch is IsKuafuing")
 		return false
 	end
 	
 	-- 已经在匹配其他了
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
+		outFmtDebug("OnWorld3v3GroupMatch IsInKuafuTypeMatching")
 		return false
 	end
 	
@@ -139,7 +145,7 @@ function PlayerInfo:OnWorld3v3GroupMatch()
 	app:SetMatchingKuafuType(self:GetGuid(), KUAFU_TYPE_FENGLIUZHEN)
 	app.http:async_post(url, string.toQueryString(data), function (status_code, response)
 		if response then
-			outFmtDebug("OnWorld3v3GroupMatch response = %s", response)
+			outFmtDebug("%s OnWorld3v3GroupMatch response = %s", self:GetGuid(), response)
 		end
 		
 		local dict = nil

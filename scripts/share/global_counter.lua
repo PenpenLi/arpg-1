@@ -122,7 +122,7 @@ function GlobalCounter:SplitStringTo2dDict(content, delimiter1, delimiter2)
 	delimiter2 = delimiter2 or GlobalCounter.delimiter2
 	
 	local subs = string.split(content, delimiter1)
-	for _, sub in pairs(subs) do
+	for _, sub in ipairs(subs) do
 		local params = string.split(sub, delimiter2)
 		table.insert(f, {tonumber(params[ 1 ]), tonumber(params[ 2 ]), tonumber(params[ 3 ]), tonumber(params[ 4 ]), tonumber(params[ 5 ])})
 	end

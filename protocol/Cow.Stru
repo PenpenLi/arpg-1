@@ -102,8 +102,9 @@ cultivation_rivals_info,/*修炼场对手信息*/
 	name,String,50,/*名字*/
 	level,uint32,0,/*等级*/
 	weapon,uint32,0,/*武器*/
-	model,uint32,0,/*外观*/
+	avatar,uint32,0,/*外观*/
 	divine,uint32,0,/*神兵*/
 	force,uint32,0,/*战力*/
 	chest,uint32,0,/*宝箱*/
+	gender,uint32,0,/*性别*/
 	

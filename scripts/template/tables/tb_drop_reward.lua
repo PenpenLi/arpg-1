@@ -17,4 +17,6 @@ tb_drop_reward = {
 	[5] = {id = 5,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{10,10000},{11,5000}},},
 	[6] = {id = 6,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{3,10000}},},
 	[7] = {id = 7,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{12,10000}},},
+	[8] = {id = 8,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{17,10000}},},
+	[9] = {id = 9,min_level = -1,max_level = -1,possess_time = 10,continue_time = 30,reward = {{18,10000}},},
 }

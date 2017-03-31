@@ -279,6 +279,15 @@ SMSG_BAG_FIND_EQUIP_BETTER		= 282	-- /*背包有更强装备*/
 SMSG_MODULE_ACTIVE		= 283	-- /*模块解锁*/	
 CMSG_PICK_DAILY2_QUEST_REWARD		= 284	-- /*领取日常任务奖励*/	
 CMSG_FINISH_NOW_GUIDE		= 285	-- /*完成当前引导*/	
+CMSG_GET_CULTIVATION_INFO		= 286	-- /*取得修炼场信息*/	
+SMSG_UPDATE_CULTIVATION_INFO		= 287	-- /*返回修炼场信息*/	
+CMSG_GET_CULTIVATION_RIVALS_INFO		= 288	-- /*取得当前所有修炼场对手信息*/	
+SMSG_UPDATE_CULTIVATION_RIVALS_INFO_LIST		= 289	-- /*返回修炼场对手信息*/	
+CMSG_GET_CULTIVATION_REWARD		= 290	-- /*领取修炼场奖励*/	
+CMSG_REFRESH_CULTIVATION_RIVALS		= 291	-- /*刷新修炼场对手*/	
+CMSG_PLUNDER_CULTIVATION_RIVAL		= 292	-- /*掠夺修炼场对手*/	
+CMSG_REVENGE_CULTIVATION_RIVAL		= 293	-- /*反击复仇修炼场对手*/	
+CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT		= 294	-- /*增加修炼场剩余挑战次数*/	
 
 
 ---------------------------------------------------------------------
@@ -1101,6 +1110,116 @@ function wait_info_t:write( output )
 		self.state = 0
 	end
 	output:writeByte(self.state)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*修炼场对手信息*/
+
+cultivation_rivals_info_t = class('cultivation_rivals_info_t')
+
+function cultivation_rivals_info_t:read( input )
+
+	local ret
+	ret,self.index = input:readU32() --/*序号*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.name = input:readUTFByLen(50)  --/*名字*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.level = input:readU32() --/*等级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.weapon = input:readU32() --/*武器*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.avatar = input:readU32() --/*外观*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.divine = input:readU32() --/*神兵*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.force = input:readU32() --/*战力*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.chest = input:readU32() --/*宝箱*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.gender = input:readU32() --/*性别*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function cultivation_rivals_info_t:write( output )
+	if(self.index == nil)then
+		self.index = 0
+	end
+	output:writeU32(self.index)
+	
+	if(self.name == nil)then
+		self.name = ''
+	end
+	output:writeUTFByLen(self.name , 50 ) 
+	
+	if(self.level == nil)then
+		self.level = 0
+	end
+	output:writeU32(self.level)
+	
+	if(self.weapon == nil)then
+		self.weapon = 0
+	end
+	output:writeU32(self.weapon)
+	
+	if(self.avatar == nil)then
+		self.avatar = 0
+	end
+	output:writeU32(self.avatar)
+	
+	if(self.divine == nil)then
+		self.divine = 0
+	end
+	output:writeU32(self.divine)
+	
+	if(self.force == nil)then
+		self.force = 0
+	end
+	output:writeU32(self.force)
+	
+	if(self.chest == nil)then
+		self.chest = 0
+	end
+	output:writeU32(self.chest)
+	
+	if(self.gender == nil)then
+		self.gender = 0
+	end
+	output:writeU32(self.gender)
 	
 	return output
 end
@@ -9671,6 +9790,269 @@ function Protocols.unpack_finish_now_guide (pkt)
 end
 
 
+-- /*取得修炼场信息*/	
+function Protocols.pack_get_cultivation_info (  )
+	local output = Packet.new(CMSG_GET_CULTIVATION_INFO)
+	return output
+end
+
+-- /*取得修炼场信息*/	
+function Protocols.call_get_cultivation_info ( playerInfo )
+	local output = Protocols.	pack_get_cultivation_info (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*取得修炼场信息*/	
+function Protocols.unpack_get_cultivation_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回修炼场信息*/	
+function Protocols.pack_update_cultivation_info ( start_time ,lost)
+	local output = Packet.new(SMSG_UPDATE_CULTIVATION_INFO)
+	output:writeU32(start_time)
+	output:writeU32(lost)
+	return output
+end
+
+-- /*返回修炼场信息*/	
+function Protocols.call_update_cultivation_info ( playerInfo, start_time ,lost)
+	local output = Protocols.	pack_update_cultivation_info ( start_time ,lost)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回修炼场信息*/	
+function Protocols.unpack_update_cultivation_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.start_time = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.lost = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*取得当前所有修炼场对手信息*/	
+function Protocols.pack_get_cultivation_rivals_info (  )
+	local output = Packet.new(CMSG_GET_CULTIVATION_RIVALS_INFO)
+	return output
+end
+
+-- /*取得当前所有修炼场对手信息*/	
+function Protocols.call_get_cultivation_rivals_info ( playerInfo )
+	local output = Protocols.	pack_get_cultivation_rivals_info (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*取得当前所有修炼场对手信息*/	
+function Protocols.unpack_get_cultivation_rivals_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回修炼场对手信息*/	
+function Protocols.pack_update_cultivation_rivals_info_list ( list)
+	local output = Packet.new(SMSG_UPDATE_CULTIVATION_RIVALS_INFO_LIST)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*返回修炼场对手信息*/	
+function Protocols.call_update_cultivation_rivals_info_list ( playerInfo, list)
+	local output = Protocols.	pack_update_cultivation_rivals_info_list ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回修炼场对手信息*/	
+function Protocols.unpack_update_cultivation_rivals_info_list (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = cultivation_rivals_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*领取修炼场奖励*/	
+function Protocols.pack_get_cultivation_reward (  )
+	local output = Packet.new(CMSG_GET_CULTIVATION_REWARD)
+	return output
+end
+
+-- /*领取修炼场奖励*/	
+function Protocols.call_get_cultivation_reward ( playerInfo )
+	local output = Protocols.	pack_get_cultivation_reward (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取修炼场奖励*/	
+function Protocols.unpack_get_cultivation_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*刷新修炼场对手*/	
+function Protocols.pack_refresh_cultivation_rivals (  )
+	local output = Packet.new(CMSG_REFRESH_CULTIVATION_RIVALS)
+	return output
+end
+
+-- /*刷新修炼场对手*/	
+function Protocols.call_refresh_cultivation_rivals ( playerInfo )
+	local output = Protocols.	pack_refresh_cultivation_rivals (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*刷新修炼场对手*/	
+function Protocols.unpack_refresh_cultivation_rivals (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*掠夺修炼场对手*/	
+function Protocols.pack_plunder_cultivation_rival ( index)
+	local output = Packet.new(CMSG_PLUNDER_CULTIVATION_RIVAL)
+	output:writeU32(index)
+	return output
+end
+
+-- /*掠夺修炼场对手*/	
+function Protocols.call_plunder_cultivation_rival ( playerInfo, index)
+	local output = Protocols.	pack_plunder_cultivation_rival ( index)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*掠夺修炼场对手*/	
+function Protocols.unpack_plunder_cultivation_rival (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.index = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*反击复仇修炼场对手*/	
+function Protocols.pack_revenge_cultivation_rival ( index)
+	local output = Packet.new(CMSG_REVENGE_CULTIVATION_RIVAL)
+	output:writeU32(index)
+	return output
+end
+
+-- /*反击复仇修炼场对手*/	
+function Protocols.call_revenge_cultivation_rival ( playerInfo, index)
+	local output = Protocols.	pack_revenge_cultivation_rival ( index)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*反击复仇修炼场对手*/	
+function Protocols.unpack_revenge_cultivation_rival (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.index = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*增加修炼场剩余挑战次数*/	
+function Protocols.pack_buy_cultivation_left_plunder_count ( count)
+	local output = Packet.new(CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT)
+	output:writeU32(count)
+	return output
+end
+
+-- /*增加修炼场剩余挑战次数*/	
+function Protocols.call_buy_cultivation_left_plunder_count ( playerInfo, count)
+	local output = Protocols.	pack_buy_cultivation_left_plunder_count ( count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*增加修炼场剩余挑战次数*/	
+function Protocols.unpack_buy_cultivation_left_plunder_count (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.count = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -9942,6 +10324,15 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_module_active = self.call_module_active
 	playerInfo.call_pick_daily2_quest_reward = self.call_pick_daily2_quest_reward
 	playerInfo.call_finish_now_guide = self.call_finish_now_guide
+	playerInfo.call_get_cultivation_info = self.call_get_cultivation_info
+	playerInfo.call_update_cultivation_info = self.call_update_cultivation_info
+	playerInfo.call_get_cultivation_rivals_info = self.call_get_cultivation_rivals_info
+	playerInfo.call_update_cultivation_rivals_info_list = self.call_update_cultivation_rivals_info_list
+	playerInfo.call_get_cultivation_reward = self.call_get_cultivation_reward
+	playerInfo.call_refresh_cultivation_rivals = self.call_refresh_cultivation_rivals
+	playerInfo.call_plunder_cultivation_rival = self.call_plunder_cultivation_rival
+	playerInfo.call_revenge_cultivation_rival = self.call_revenge_cultivation_rival
+	playerInfo.call_buy_cultivation_left_plunder_count = self.call_buy_cultivation_left_plunder_count
 end
 
 local unpack_handler = {
@@ -10210,6 +10601,15 @@ local unpack_handler = {
 [SMSG_MODULE_ACTIVE] =  Protocols.unpack_module_active,
 [CMSG_PICK_DAILY2_QUEST_REWARD] =  Protocols.unpack_pick_daily2_quest_reward,
 [CMSG_FINISH_NOW_GUIDE] =  Protocols.unpack_finish_now_guide,
+[CMSG_GET_CULTIVATION_INFO] =  Protocols.unpack_get_cultivation_info,
+[SMSG_UPDATE_CULTIVATION_INFO] =  Protocols.unpack_update_cultivation_info,
+[CMSG_GET_CULTIVATION_RIVALS_INFO] =  Protocols.unpack_get_cultivation_rivals_info,
+[SMSG_UPDATE_CULTIVATION_RIVALS_INFO_LIST] =  Protocols.unpack_update_cultivation_rivals_info_list,
+[CMSG_GET_CULTIVATION_REWARD] =  Protocols.unpack_get_cultivation_reward,
+[CMSG_REFRESH_CULTIVATION_RIVALS] =  Protocols.unpack_refresh_cultivation_rivals,
+[CMSG_PLUNDER_CULTIVATION_RIVAL] =  Protocols.unpack_plunder_cultivation_rival,
+[CMSG_REVENGE_CULTIVATION_RIVAL] =  Protocols.unpack_revenge_cultivation_rival,
+[CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT] =  Protocols.unpack_buy_cultivation_left_plunder_count,
 
 }
 

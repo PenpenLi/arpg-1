@@ -9,4 +9,6 @@ tb_box = {
 	--  cost:array	消耗
 	[1501] = {id = 1501,dropids = {5},cost = {},},
 	[1502] = {id = 1502,dropids = {6,7},cost = {},},
+	[1503] = {id = 1503,dropids = {13,14},cost = {},},
+	[1504] = {id = 1504,dropids = {15,16},cost = {},},
 }

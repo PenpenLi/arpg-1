@@ -1196,7 +1196,7 @@ update_cultivation_info,s2c,287,/*返回修炼场信息*/,STATUS_NEVER,False
 get_cultivation_rivals_info,c2s,288,/*取得当前所有修炼场对手信息*/,STATUS_NEVER,False
 
 #
-update_cultivation_rivals_info,s2c,289,/*返回修炼场对手信息*/,STATUS_NEVER,False
+update_cultivation_rivals_info_list,s2c,289,/*返回修炼场对手信息*/,STATUS_NEVER,False
 	list,cultivation_rivals_info,True,/*对手信息列表*/
 
 #

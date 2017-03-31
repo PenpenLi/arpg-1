@@ -10,7 +10,7 @@ end
 -- 增加某种类型的成就
 function PlayerInfo:AddAchieve(type,num)
 	local list = tb_achieve_type_list[type]
-	
+	if not list then return end
 	for _,v in ipairs(list) do
 		self:AddAchieveID(v,num)
 	end

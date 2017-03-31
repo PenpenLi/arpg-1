@@ -102,4 +102,6 @@ function PlayerInfo:onRealReset()
 	self:DailyQuestReset()
 	
 	self:ClearBuyedFactionShopItem()
+	
+	self:DailyResetCultivation()
 end

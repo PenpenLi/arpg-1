@@ -10,6 +10,6 @@ tb_map_jump_point_detail = {
 	--  entry:int	跳点模版
 	--  show:array	显示的路径
 	--  last:int	持续时间
-	[1] = {id = 1,mapid = 1001,point = {83,79},entry = 30,show = {{99,74},{108,53},{123,34}},last = 2,},
-	[2] = {id = 2,mapid = 1001,point = {116,39},entry = 30,show = {{108,53},{99,74},{77,80}},last = 2,},
+	[1] = {id = 1,mapid = 1001,point = {83,79},entry = 5,show = {{99,74},{108,53},{123,34}},last = 2,},
+	[2] = {id = 2,mapid = 1001,point = {116,39},entry = 5,show = {{108,53},{99,74},{77,80}},last = 2,},
 }

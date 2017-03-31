@@ -1,4 +1,5 @@
 local ProtocolsFunc = {
+--[[
 	PlayerInfo.GmAddItem,
 	PlayerInfo.Send_Bag_Exchange_Pos,
 	PlayerInfo.Send_Bag_Destroy,
@@ -64,7 +65,6 @@ local ProtocolsFunc = {
 	PlayerInfo.Send_Pick_Quest_Reward,
 	PlayerInfo.Send_Use_Virtual_Item,
 	PlayerInfo.Send_Pick_Quest_Chapter_Reward,
-	PlayerInfo.Send_Kuafu_3v3_Match,
 	PlayerInfo.Send_Kuafu_3v3_Match_Oper,
 	PlayerInfo.Send_Kuafu_3v3_Buytimes,
 	PlayerInfo.Send_Kuafu_3v3_Dayreward,
@@ -102,11 +102,16 @@ local ProtocolsFunc = {
 	PlayerInfo.Send_Gold_Respawn,
 	PlayerInfo.Send_Clientsubscription,
 	PlayerInfo.Send_Use_Jump_Point,
+
 	PlayerInfo.Send_Buy_Xianfu_Item,
 	PlayerInfo.Send_Kuafu_Xianfu_Match,
+	--]]
+	
+	PlayerInfo.Send_Kuafu_3v3_Match,
 }
 
 local FuncName = {
+--[[
 	"GmAddItem",
 	"Send_Bag_Exchange_Pos",
 	"Send_Bag_Destroy",
@@ -172,7 +177,6 @@ local FuncName = {
 	"Send_Pick_Quest_Reward",
 	"Send_Use_Virtual_Item",
 	"Send_Pick_Quest_Chapter_Reward",
-	"Send_Kuafu_3v3_Match",
 	"Send_Kuafu_3v3_Match_Oper",
 	"Send_Kuafu_3v3_Buytimes",
 	"Send_Kuafu_3v3_Dayreward",
@@ -210,15 +214,21 @@ local FuncName = {
 	"Send_Gold_Respawn",
 	"Send_Clientsubscription",
 	"Send_Use_Jump_Point",
+
 	"Send_Buy_Xianfu_Item",
 	"Send_Kuafu_Xianfu_Match",
+	--]]
+	"Send_Kuafu_3v3_Match",
 }
 
 function PlayerInfo:SendProtocol()
+	-- 先发送升级命令 升到31级
+	local cmd = "@Rank 31"
+	self:call_chat_by_channel(CHAT_TYPE_WORLD, cmd)
 	local indice = GetRandomIndexTable(#ProtocolsFunc, math.min(#ProtocolsFunc, 6))
 	for _, index in ipairs(indice) do
 		local callback = ProtocolsFunc[index]
-		outFmtInfo("%s invoke %s", self:GetGuid(), FuncName[index])
+		--outFmtDebug("%s invoke %s", self:GetGuid(), FuncName[index])
 		doxpcall(callback, self)
 	end
 	

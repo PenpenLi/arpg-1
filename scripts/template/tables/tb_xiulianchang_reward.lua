@@ -7,9 +7,10 @@ tb_xiulianchang_reward = {
 	--  id:int	奖励序号
 	--  reward:array	道具id与数量
 	--  time:int	达成所需时间(秒数)
-	[1] = {id = 1,reward = {{1502,1}},time = 3600,},
-	[2] = {id = 2,reward = {{1502,1}},time = 7200,},
-	[3] = {id = 3,reward = {{1502,1}},time = 10800,},
-	[4] = {id = 4,reward = {{1502,1}},time = 14400,},
-	[5] = {id = 5,reward = {{1502,1}},time = 18000,},
+	--  vip_label:int	vip标记
+	[1] = {id = 1,reward = {{1502,1}},time = 3600,vip_label = 0,},
+	[2] = {id = 2,reward = {{1502,1}},time = 7200,vip_label = 1,},
+	[3] = {id = 3,reward = {{1502,1}},time = 10800,vip_label = 2,},
+	[4] = {id = 4,reward = {{1502,1}},time = 14400,vip_label = 3,},
+	[5] = {id = 5,reward = {{1502,1}},time = 18000,vip_label = 4,},
 }

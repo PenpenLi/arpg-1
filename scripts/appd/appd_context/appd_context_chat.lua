@@ -382,6 +382,16 @@ function PlayerInfo:GmCommand(str)
 		--]]
 		
 		--call_appd_teleport(self:GetScenedFD(), self:GetGuid(), 32, 27, 3004, ''..os.time())
+		
+		
+		print("left count: ",self:GetCultivationLeftPlunderCount())
+		print("total buy count: ",self:GetCultivationTodayPurchaseCount())
+		self:BuyCultivationLeftPlunderCount(10)
+		--self:PlunderCultivationRival(0)
+		
+		print("total buy count: ",self:GetCultivationTodayPurchaseCount())
+		print("left count: ",self:GetCultivationLeftPlunderCount())
+		--self:RefreshCultivationRivals()
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

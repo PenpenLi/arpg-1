@@ -129,6 +129,16 @@ require("template.tables.tb_doujiantai_rank")
 require("template.tables.tb_doujiantai_first")
 require("template.tables.tb_doujiantai_day")
 
+-- 修炼场
+require("template.tables.tb_xiulianchang_base")
+require("template.tables.tb_xiulianchang_dummy")
+require("template.tables.tb_xiulianchang_reward")
+require("template.tables.tb_xiulianchang_vip")
+require("template.tables.tb_xiulianchang_fight_range")
+
+
+
+
 ---------------------------------------------------
 require("template.tables.tb_doujiantai_fight_range")
 

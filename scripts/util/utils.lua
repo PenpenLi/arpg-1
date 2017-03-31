@@ -412,3 +412,108 @@ function _sort(list, lt, rt, comp, callback)
 		_sort(list, lt, j, comp, callback)
 	end
 end
+
+function IsKeyInTable(key, tbl)
+	for k,v in pairs(tbl) do
+		if k == key then
+			return true;
+		end
+	end
+	return false;
+end
+
+--[[
+	delimiter1: 第一层的分隔符
+	delimiter2: 第二层的分隔符
+--]]
+function Join2dDictString(dict, delimiter1, delimiter2)
+	delimiter1 = delimiter1 or GlobalCounter.delimiter1
+	delimiter2 = delimiter2 or GlobalCounter.delimiter2
+	
+	local f = {}
+	
+	for _, element in ipairs(dict) do
+		table.insert(f, string.join(delimiter2, element))
+	end
+		
+	if #f == 0 then
+		return ''
+	end
+	return string.join(delimiter1, f)
+end
+
+--[[
+	content	  : 加密的内容
+	delimiter1: 第一层的分隔符
+	delimiter2: 第二层的分隔符
+--]]
+function SplitStringTo2dDict(content, delimiter1, delimiter2)
+	local f = {}
+	
+	if string.len(content) == 0 then
+		return f
+	end
+	
+	delimiter1 = delimiter1 or GlobalCounter.delimiter1
+	delimiter2 = delimiter2 or GlobalCounter.delimiter2
+	
+	local subs = string.split(content, delimiter1)
+	for _, sub in pairs(subs) do
+		local params = string.split(sub, delimiter2)
+		table.insert(f, {tonumber(params[ 1 ]), tonumber(params[ 2 ]), tonumber(params[ 3 ]), tonumber(params[ 4 ]), tonumber(params[ 5 ])})
+	end
+	
+	return f
+end
+
+-- 组装内容
+function JoinDummyInfoIntoContent(guid, config)
+	local content = string.format("%s|%s|%d|%d|%s|%d|%d|%d|%s|%s|%d|%d|%d|%d|%d|%d|%d",
+		guid,
+		config.name, 
+		config.gender,
+		config.level,
+		Join2dDictString(config.attrs),
+		config.weapon,
+		config.avatar,
+		config.divine,
+		Join2dDictString(config.spells),
+		Join2dDictString(config.passivespells),
+		config.force,
+		config.vip,
+		config.reverse1,
+		config.reverse2,
+		config.reverse3,
+		config.reverse4,
+		config.reverse5
+	)
+	
+	return content
+end
+
+-- 解析内容
+function GetDummyInfoFromContent(content)
+	
+	local elements = string.split(content, '|')
+	
+	local config  = {}
+	config.guid   = elements[ 1 ]
+	config.name   = elements[ 2 ]
+	config.gender = tonumber(elements[ 3 ])
+	config.level  = tonumber(elements[ 4 ])
+	config.attrs  = SplitStringTo2dDict(elements[ 5 ])
+	config.weapon = tonumber(elements[ 6 ])
+	config.avatar = tonumber(elements[ 7 ])
+	config.divine = tonumber(elements[ 8 ])
+	config.spells = SplitStringTo2dDict(elements[ 9 ])
+	config.passivespells = SplitStringTo2dDict(elements[ 10 ])
+	config.force  = tonumber(elements[ 11 ])
+	config.vip    = tonumber(elements[ 12 ])
+	config.reverse1 = tonumber(elements[ 13 ])
+	config.reverse2 = tonumber(elements[ 14 ])
+	config.reverse3 = tonumber(elements[ 15 ])
+	config.reverse4 = tonumber(elements[ 16 ])
+	config.reverse5 = tonumber(elements[ 17 ])
+	
+	return config
+end

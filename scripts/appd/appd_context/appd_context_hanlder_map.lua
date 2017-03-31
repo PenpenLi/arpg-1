@@ -14,6 +14,15 @@ hanlders[CMSG_BAG_ITEM_SELL] = PlayerInfo.Hanlde_Bag_Item_Sell
 hanlders[CMSG_BAG_ITEM_SORT] = PlayerInfo.Hanlde_Bag_Item_Sort
 hanlders[CMSG_FINISH_NOW_GUIDE] = PlayerInfo.Hanlde_Finish_Now_Guide
 
+--修炼场
+hanlders[CMSG_GET_CULTIVATION_INFO] = PlayerInfo.Hanlde_Get_Cultivation_Info
+hanlders[CMSG_GET_CULTIVATION_RIVALS_INFO] = PlayerInfo.Hanlde_Get_Cultivation_Rivals_Info
+hanlders[CMSG_GET_CULTIVATION_REWARD] = PlayerInfo.Hanlde_Get_Cultivation_Reward
+hanlders[CMSG_REFRESH_CULTIVATION_RIVALS] = PlayerInfo.Hanlde_Refresh_Cultivation_Rivals
+hanlders[CMSG_PLUNDER_CULTIVATION_RIVAL] = PlayerInfo.Hanlde_Plunder_Cultivation_Rival
+hanlders[CMSG_REVENGE_CULTIVATION_RIVAL] = PlayerInfo.Hanlde_Revenge_Cultivation_Rival
+hanlders[CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT] = PlayerInfo.Hanlde_Buy_Cultivation_Left_Plunder_Count
+
 
 hanlders[CMSG_BAG_EXCHANGE_POS] = PlayerInfo.Hanlde_Bag_Exchange_Pos
 hanlders[CMSG_BAG_DESTROY] = PlayerInfo.Hanlde_Bag_Destroy
