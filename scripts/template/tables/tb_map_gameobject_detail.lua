@@ -17,4 +17,13 @@ tb_map_gameobject_detail = {
 	[7] = {id = 7,entry = 24,position = {54,55},angle = 180,},
 	[8] = {id = 8,entry = 25,position = {37,42},angle = 180,},
 	[9] = {id = 9,entry = 26,position = {20,42},angle = 180,},
+	[11] = {id = 11,entry = 31,position = {107,195},angle = 180,},
+	[12] = {id = 12,entry = 32,position = {212,24},angle = 180,},
+	[13] = {id = 13,entry = 33,position = {141,137},angle = 180,},
+	[14] = {id = 14,entry = 34,position = {201,105},angle = 180,},
+	[15] = {id = 15,entry = 35,position = {91,110},angle = 180,},
+	[16] = {id = 16,entry = 36,position = {141,74},angle = 180,},
+	[17] = {id = 17,entry = 37,position = {211,69},angle = 180,},
+	[18] = {id = 18,entry = 38,position = {157,23},angle = 180,},
+	[19] = {id = 19,entry = 39,position = {187,22},angle = 180,},
 }

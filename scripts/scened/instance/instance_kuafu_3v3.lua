@@ -3,6 +3,8 @@ InstanceKuafu3v3 = class("InstanceKuafu3v3", InstanceInstBase)
 InstanceKuafu3v3.Name = "InstanceKuafu3v3"
 InstanceKuafu3v3.exit_time = 30
 InstanceKuafu3v3.Time_Out_Fail_Callback = "timeoutCallback"
+-- È«Í¼¿É¼û
+InstanceKuafu3v3.broadcast_nogrid = 1
 
 function InstanceKuafu3v3:ctor(  )
 	

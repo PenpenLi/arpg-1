@@ -850,5 +850,6 @@ require("robotd.context.robotd_context_item_mgr")
 require("robotd.context.robotd_context_quest_mgr")
 require("robotd.context.robotd_context_test_mgr")
 require("robotd.context.robotd_context_xianfu_mgr")
+require("robotd.context.robotd_context_world3v3_mgr")
 
 return PlayerInfo

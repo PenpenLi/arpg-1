@@ -1530,6 +1530,7 @@ require("appd/appd_context/appd_context_achieve_title")
 require("appd/appd_context/appd_context_welfare")
 require("appd/appd_context/appd_context_rank_gift")
 
+require("appd/appd_context/appd_context_xianfu_test")
 require("appd/appd_context/appd_context_kuafu")
 require("appd/appd_context/appd_context_world3v3")
 require("appd/appd_context/appd_context_xianfu")

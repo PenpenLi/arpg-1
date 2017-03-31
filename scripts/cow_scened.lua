@@ -147,6 +147,7 @@ config = {
 		CMSG_GOLD_RESPAWN,			--元宝复活
 		MSG_CLIENTSUBSCRIPTION,		--/*查询头像的buffer信息*/
 		MSG_USE_JUMP_POINT,		-- 使用跳点
+		CMSG_XIANFU_RANDOM_RESPAWN,	--随机复活
 		--CMSG_CHANGE_LINE,
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
@@ -258,6 +259,7 @@ function load_lua_scripts()
 		{'资源真气副本脚本'		,'scened/instance/instance_res_zhenqi'},
 		{'资源金币副本脚本'		,'scened/instance/instance_res_gold'},
 		{'资源宝石精华副本脚本'	,'scened/instance/instance_res_gem'},
+		{'仙府夺宝测试副本脚本'	,'scened/instance/instance_xianfu_test'},
 		
 		{'斗剑台'				,'scened/instance/instance_doujiantai'},
 		{'跨服3v3'				,'scened/instance/instance_kuafu_3v3'},
@@ -294,6 +296,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[2013] = InstanceResGold,
 	[2014] = InstanceResGold,
 	[2015] = InstanceResGem,
+	[2018] = InstanceXianfuTest,
 
 	[3001] = InstanceDoujiantai,
 	[3002] = InstanceKuafu3v3,

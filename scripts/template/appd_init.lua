@@ -117,6 +117,8 @@ require("template.tables.tb_kuafu3v3_day_reward")
 require("template.tables.tb_kuafu_xianfu_base")
 require("template.tables.tb_kuafu_xianfu_condition")
 
+require("template.tables.tb_kuafu_xianfu_tst_base")
+
 require("template.tables.tb_box")
 
 -- 斗剑台

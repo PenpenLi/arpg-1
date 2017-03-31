@@ -31,6 +31,12 @@ function ActionScenedKuafu:Update(diff)
 		outFmtDebug("in xianfu init")
 	end
 	
+	-- 3v3 PK
+	if self.player:GetMapID() == 3002 then
+		
+		return true
+	end
+	
 	-- 如果在仙府夺宝
 	if self.player:GetMapID() == 3003 then
 		local info = self.player:PickTreasure()

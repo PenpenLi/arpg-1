@@ -66,6 +66,8 @@ function  DoGMScripts(player_ptr, gm_commands)
 				end
 			end
 		end
+	elseif(tokens[1] == "@仙府体验")then
+		player:EnterXianfuTest()
 	elseif(tokens[1] == "@下一个主线")then
 		if tokens[2] then
 			local id = tonumber(tokens[ 2 ])

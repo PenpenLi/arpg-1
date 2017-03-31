@@ -88,6 +88,11 @@ require("template.tables.tb_kuafu_xianfu_boss")
 require("template.tables.tb_kuafu_xianfu_killed_drop")
 require("template.tables.tb_kuafu_xianfu_condition")
 
+require("template.tables.tb_kuafu_xianfu_tst_base")
+require("template.tables.tb_kuafu_xianfu_tst_boss")
+require("template.tables.tb_kuafu_xianfu_tst_killed_drop")
+require("template.tables.tb_kuafu_xianfu_tst_dummy")
+
 require("template.tables.tb_doujiantai_base")
 
 require("template.tables.tb_map_jump_point")

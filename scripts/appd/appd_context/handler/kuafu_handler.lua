@@ -1,6 +1,6 @@
 -- 3v3 匹配
 function PlayerInfo:Handle_Kuafu_3v3_Match(pkt)
-	
+	--[[
 	local config = tb_kuafu3v3_base[1]
 	
 	--local lev = self:GetLevel()
@@ -52,7 +52,8 @@ function PlayerInfo:Handle_Kuafu_3v3_Match(pkt)
 	if not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_XIANMO) then
 		return
 	end
-	
+	--]]
+
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
 		self:CallOptResult(OPRATE_TYPE_ATHLETICS, ATHLETICS_OPERATE_IN_MATCH)
 		return
@@ -210,9 +211,11 @@ function PlayerInfo:Handle_Kuafu_Xianfu_Match(pkt)
 	end
 	
 	-- 模块没开 不让进
+	--[[
 	if not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_XIANFU) then
 		return
 	end
+	--]]
 	
 	local rt = self:OnWorldXianfuMatch(indx)
 	if rt then
