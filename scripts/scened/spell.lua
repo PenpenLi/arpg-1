@@ -24,7 +24,6 @@ function DoHandleSpellStart(caster, map_ptr, spell_slot, tar_x, tar_y, target, n
 	
 	--自己无敌
 	if unitLib.HasBuff(caster, BUFF_INVINCIBLE) then
-		print("in the BUFF_INVINCIBLE")
 		return false, 0
 	end
 	
@@ -35,10 +34,20 @@ function DoHandleSpellStart(caster, map_ptr, spell_slot, tar_x, tar_y, target, n
 		return false, 0
 	end
 	
+	local spell_id = 0
 	-- TODO: 有特殊物品替换出来的技能先处理
+	local illusionId = casterInfo:GetCharIllusion()
+	if illusionId > 0 then
+		local skillInfo = tb_item_illusion[illusionId].skills
+		if spell_slot >= 1 and spell_slot <= #skillInfo then
+			spell_id = skillInfo[spell_slot][ 1 ]
+		end
+	else
+		spell_id = playerLib.GetSlotSpell(caster, spell_slot)
+	end
 	
 	-- 当前槽位是否有技能
-	local spell_id = playerLib.GetSlotSpell(caster, spell_slot)
+	
 	if spell_id == 0 then
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_NOT_HAVE_SPELL)
 		return false, 0
@@ -102,7 +111,7 @@ function DoHandleSpellStart(caster, map_ptr, spell_slot, tar_x, tar_y, target, n
 	end
 
 	-- 如果是愤怒技能 检测愤怒值是否满了
-	if config.skill_slot == SLOT_ANGER then		
+	if config.skill_slot == SLOT_ANGER and casterInfo:HasSpell(current_id) then		
 		-- 判断怒气值
 		local angerLimit = tb_anger_limit[current_id].limit
 		local currAnger = casterInfo:GetSP()
@@ -586,7 +595,7 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 	
 	
 	-- 如果是怒气技能 先扣除
-	if tb_skill_base[spell_id].skill_slot == SLOT_ANGER then
+	if tb_skill_base[spell_id].skill_slot == SLOT_ANGER and casterInfo:HasSpell(spell_id) then
 		casterInfo:SetSP(0)
 	end
 	
@@ -700,7 +709,6 @@ function isInProtected(killer, target)
 	
 	--对方无敌
 	if unitLib.HasBuff(target, BUFF_INVINCIBLE) then
-		print("in the BUFF_INVINCIBLE")
 		return true
 	end
 	
@@ -809,8 +817,8 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 	--处理技能触发buff
 	handle_cast_monomer_spell_addbuff(caster,target,buff_table)
 	
-	-- 连招技能攒怒气
-	if tb_skill_base[spell_id].skill_slot == SLOT_COMBO then
+	-- 连招技能攒怒气 且 不是幻化产生的技能
+	if tb_skill_base[spell_id].skill_slot == SLOT_COMBO and casterInfo:GetTypeID() == TYPEID_PLAYER and casterInfo:HasSpell(spell_id) then
 		casterInfo:AddSP(10)
 	end
 	

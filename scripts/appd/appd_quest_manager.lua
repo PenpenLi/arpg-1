@@ -709,6 +709,8 @@ function AppQuestMgr:OnInnerPickQuest(start)
 		local chapterIndex = tb_quest[questId].chapter
 		self:OnPickQuestChapterReward(chapterIndex)
 	end
+	
+	playerInfo:AfterQuestDoing(tb_quest[questId].doing)
 end
 
 -- 如果需要初始化进度的

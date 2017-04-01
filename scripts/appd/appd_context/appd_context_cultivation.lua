@@ -1,30 +1,91 @@
 
 local XIULIANCHANG_MAP_ID = 3005
 --C++接口
+function PlayerInfo:LogoutBackupCultivation()
+	playerLib.SetCultivation(self:GetGuid(), self:GetCultivationStartTime(),self:GetCultivationLostInfo(),self:GetWeapon(),self:GetAvatar(),self:GetDivine(),self:GetVIP())
+end
+
+function PlayerInfo:LoginRestoreCultivation()
+	local info = playerLib.GetCultivation(self:GetGuid(),-1)
+	if info ~= nil and info[1] ~= 0  then
+		outFmtDebug("LoginRestoreCultivation : tiem:%d , lost: %d",info[1],info[2])
+		self:SetCultivation(info[1],info[2])
+	end
+end
+
+
 --设置自己的修炼场信息
 function PlayerInfo:SetCultivation(time,lost)
-	playerLib.SetCultivation(self:GetGuid(), time,lost,self:GetWeapon(),self:GetAvatar(),self:GetDivine(),self:GetVIP())
-	
+	--playerLib.SetCultivation(self:GetGuid(), time,lost,self:GetWeapon(),self:GetAvatar(),self:GetDivine(),self:GetVIP())
+	self:SetCultivationStartTime(time)
+	self:SetCultivationLostInfo(lost)
+end
+
+function PlayerInfo:SetCultivationStartTime(value)
+	self:SetUInt32(PLAYER_INT_FIELD_CULTIVATION_START_TIME,value)
+end
+
+function PlayerInfo:GetCultivationStartTime()
+	return self:GetUInt32(PLAYER_INT_FIELD_CULTIVATION_START_TIME)
+end
+
+function PlayerInfo:SetCultivationLostInfo(value)
+	self:SetUInt32(PLAYER_INT_FIELD_CULTIVATION_LOST_INFO,value)
+end
+function PlayerInfo:GetCultivationLostInfo()
+	return self:GetUInt32(PLAYER_INT_FIELD_CULTIVATION_LOST_INFO)
 end
 
 --设置guid对应角色修炼场信息的某项 index[0~5] 0:time 1:lost 2:weapon 3:avatar 4:divine 5:vip
 function PlayerInfo:SetCultivationIndex(guid,index,value)
-	playerLib.SetCultivationByIndexValue(guid,index,value)
+	--playerLib.SetCultivationByIndexValue(guid,index,value)
+	local player = app.objMgr:getObj(guid)
+	-- 没有就加离线文件
+	if not player then 
+		playerLib.SetCultivationByIndexValue(guid,index,value)
+	else
+		if index ==0 then
+			player:SetCultivationStartTime(value)
+		elseif index == 1 then
+			player:SetCultivationLostInfo(value)
+		end
+	end
 	
 end
 --获取guid对应角色修炼场信息 暂时没有用
 function PlayerInfo:GetCultivation(guid)
-	local info = playerLib.GetCultivation(guid, -1)
-	return info
+	--local info = playerLib.GetCultivation(guid, -1)
+	--return info
 end
 --获取guid对应角色修炼场信息的某项
 function PlayerInfo:GetCultivationIndex(guid,index)
+	--[[
 	local info = playerLib.GetCultivation(guid, index)
 	if info ~= nil then
 		return info[1]
 	else
 		return 0 --未开启修炼 但被别人从斗剑台抽到了 先置为0
 	end
+	--]]
+	local player = app.objMgr:getObj(guid)
+	-- 没有就加离线文件
+	if not player then 
+		local info = playerLib.GetCultivation(guid,index)
+		if info ~= nil then
+			return info[1]
+		else
+			return 0 --未开启修炼 但被别人从斗剑台抽到了 先置为0
+		end
+	else
+		if index ==0 then
+			return player:GetCultivationStartTime()
+		elseif index == 1 then
+			return player:GetCultivationLostInfo()
+		elseif index ==5 then
+			return player:GetVIP()
+		end
+	end
+	
 end
 
 
@@ -179,6 +240,8 @@ function PlayerInfo:AddCultivationPlunderRecord(guid,robot_id, name, lv, result,
 	local index = self:GetCultivationPlunderRecordIndex()
 	self:SetCultivationPlunderRecord(index, info)
 	self:CultivationPlunderRecordNext()
+	
+	outFmtDebug("AddCultivationPlunderRecord:%s",info)
 	return 1
 end
 
@@ -194,7 +257,7 @@ end
 
 --修改记录复仇标记为1
 function PlayerInfo:SetCultivationPlunderRecordAfterRevenge(index)
-	local info = GetCultivationPlunderRecord(index)
+	local info = self:GetCultivationPlunderRecord(index)
 	local values = string.split(info, "|")
 
 	local new_info = values[1]..'|'..values[2]..'|'..values[3]..'|'..values[4]..'|'..values[5]..'|'..values[6]..'|'..values[7]..'|'..'1'
@@ -283,7 +346,7 @@ function PlayerInfo:GetCultivationInfo()
 	end
 	local start_time = self:GetCultivationIndex(self:GetGuid(),0)
 	local lost_info = self:GetCultivationIndex(self:GetGuid(),1)
-	self:call_get_cultivation_info(start_time, lost_info)
+	self:call_update_cultivation_info(start_time, lost_info)
 end
 --获取匹配对手角色信息 返回客户端 自定义结构rival_info:(index  姓名 等级 外观 武器 神兵 战力 宝箱数量)
 function PlayerInfo:GetCultivationRivalsInfo()
@@ -406,7 +469,7 @@ function PlayerInfo:GetCultivationReward()
 		been_plunder_count = max_been_plunder_count
 	end
 	
-	local exp_reward = math.floor(next_exp *(cultivation_time / base_exp_time_unit)*(base_exp_reward/10000)*(extend_exp_reward/100 + 1)*(1 - been_plunder_count * plunder_exp_lost / 10000))
+	local exp_reward = math.floor(next_exp * math.floor(cultivation_time / base_exp_time_unit)*(base_exp_reward/10000)*(extend_exp_reward/100 + 1)*(1 - been_plunder_count * plunder_exp_lost / 10000))
 	
 	local rewards = {}
 	table.insert(rewards,{Item_Loot_Exp,exp_reward}) --加经验
@@ -425,6 +488,8 @@ function PlayerInfo:GetCultivationReward()
 	self:SetCultivation(os.time(),0)
 	--清零被掠夺成功次数
 	self:SetCultivationTotalBeenPlunderCount(0)
+	
+	self:GetCultivationInfo()
 	
 end
 
@@ -505,8 +570,10 @@ function PlayerInfo:RefreshCultivationRivals()
 		table.insert(dict, '0|' .. robot_index) --第一段为0 第二段为修炼机器人id
 	end
 	
+	
+	--dict[1] = '958|0' --测试固定敌人
 	for i = 1, #dict do
-		outFmtDebug("RefreshCultivationRivals: new rival_%d guid : %s",i,dict[i])
+		--outFmtDebug("RefreshCultivationRivals: new rival_%d guid : %s",i,dict[i])
 		self:SetCultivationRivalGuid(i-1,dict[i])  
 	end
 	self:SetCultivationLastRefreshTime(os.time())
@@ -627,11 +694,13 @@ function PlayerInfo:BuyCultivationLeftPlunderCount(count)
 end
 
 
-function PlayerInfo:PlunderFinish(result, info)
+function PlayerInfo:PlunderFinish(data, info)
 	local token = string.split(info,'|')
 	local guid = token[1]
 	local robot_id = tonumber(token[2])
 	local level = tonumber(token[3]) 
+	local result = tonumber(token[4]) 
+	local enemy_name = token[5]
 	
 	if result == GlobalCounter.WIN then
 		
@@ -667,12 +736,12 @@ function PlayerInfo:PlunderFinish(result, info)
 				
 				for i = #tb_xiulianchang_reward,1,-1 do
 					local info = tb_xiulianchang_reward[i]
-					if cultivation_time >= info.time and not IsKeyInTable(index,lost_list) then
+					if cultivation_time >= info.time and not IsKeyInTable(i,lost_list) then
 						local random = randInt(1,10000)
 						if random <= info.lost_rate then
 							lost_chest = i
-							table.insert(lost_list,i)
-							if start_time ~= 0 then-- 对方已开启修炼 才产生印象
+							lost_list[i] = 1
+							if start_time ~= 0 then-- 对方已开启修炼 才产生影响
 								self:SetCultivationIndex(guid,1, self:ListToLostInfo(lost_list))
 							end
 							for k,v in ipairs(info.reward) do
@@ -686,6 +755,18 @@ function PlayerInfo:PlunderFinish(result, info)
 			end
 			
 			self:AppdAddItems(rewards,MONEY_CHANGE_CULTIVATION_PLUNDER_REWARD,LOG_ITEM_OPER_TYPE_CULTIVATION_PLUNDER_REWARD)
+			
+			--发送结果
+			local list = {}
+			for _,v in ipairs(rewards) do
+			--奖励通知
+				local stru = item_reward_info_t .new()
+				stru.item_id	= v[1]
+				stru.num 		= v[2]
+				table.insert(list, stru)
+			end
+			self:call_show_cultivation_result_list(result,enemy_name,list)
+			
 			
 			self:AddCultivationTodayPlunderExp(exp_reward)
 			if lost_chest > 0 then
@@ -705,9 +786,11 @@ function PlayerInfo:PlunderFinish(result, info)
 					if not targetPlayer then return end
 					outFmtDebug("target player = %s", targetPlayer:GetGuid())
 					
-					target:AddCultivationTotalBeenPlunderCount(1)
+					targetPlayer:AddCultivationTotalBeenPlunderCount(1)
 					
 					targetPlayer:AddCultivationPlunderRecord(self:GetGuid(),0, self:GetName(), self:GetLevel(), result, lost_chest, os.time(), 0)
+					
+					
 				end
 				GetObjects(data)
 			end
@@ -738,7 +821,18 @@ function PlayerInfo:PlunderFinish(result, info)
 			
 			
 			self:AppdAddItems(rewards,MONEY_CHANGE_CULTIVATION_PLUNDER_REWARD,LOG_ITEM_OPER_TYPE_CULTIVATION_PLUNDER_REWARD)
-		
+			
+			--发送结果
+			local list = {}
+			for _,v in ipairs(rewards) do
+			--奖励通知
+				local stru = item_reward_info_t .new()
+				stru.item_id	= v[1]
+				stru.num 		= v[2]
+				table.insert(list, stru)
+			end
+			self:call_show_cultivation_result_list(result,enemy_name,list)
+			
 			self:AddCultivationTodayPlunderExp(exp_reward)
 			if lost_chest > 0 then
 				self:AddCultivationTodayPlunderChest(1)
@@ -752,10 +846,10 @@ function PlayerInfo:PlunderFinish(result, info)
 			data.callback_guid = guid
 			data.my_guid = self:GetGuid()
 			function data.fun (data, objs)
-				outFmtDebug("callbacked ===================")
+				outFmtDebug("PlunderFinish callbacked ===================")
 				local targetPlayer = objs[data.callback_guid]
 				if not targetPlayer then return end
-				outFmtDebug("target player = %s", targetPlayer:GetGuid())
+				outFmtDebug("PlunderFinish target player = %s", targetPlayer:GetGuid())
 				
 				targetPlayer:AddCultivationPlunderRecord(self:GetGuid(),0, self:GetName(), self:GetLevel(), result, 0, os.time(), 0)
 			end

@@ -387,6 +387,7 @@ function PlayerInfo:GmCommand(str)
 		print("left count: ",self:GetCultivationLeftPlunderCount())
 		print("total buy count: ",self:GetCultivationTodayPurchaseCount())
 		self:BuyCultivationLeftPlunderCount(10)
+		--self:GetCultivationReward()
 		--self:PlunderCultivationRival(0)
 		
 		print("total buy count: ",self:GetCultivationTodayPurchaseCount())

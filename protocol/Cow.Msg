@@ -1217,3 +1217,11 @@ revenge_cultivation_rival,c2s,293,/*反击复仇修炼场对手*/,STATUS_NEVER,False
 buy_cultivation_left_plunder_count,c2s,294,/*增加修炼场剩余挑战次数*/,STATUS_NEVER,False
 	count,uint32,False,/*购买数量*/
 	
+#
+show_cultivation_result_list,s2c,295,/*返回修炼场战斗结果*/,STATUS_NEVER,False
+	result,uint32,False,/*战斗结果-1:失败  1:胜利*/
+	name,String,False,/*对方名称*/
+	list,item_reward_info,True,/奖励道具列表/
+	
+
+	

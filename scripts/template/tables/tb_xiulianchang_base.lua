@@ -15,5 +15,8 @@ tb_xiulianchang_base = {
 	--  base_exp_time_unit:int	计算收益时间单位(秒数)
 	--  max_been_plunder_count:int	最大被掠夺成功生效次数
 	--  plunder_exp_lost:int	单次被掠夺成功exp损失(万分比)
-	[1] = {id = 1,max_plunder_recover_count = 3,plunder_recover_time = 600,rival_refresh_cd = 10,module_id = 0,base_exp_reward = 3,plunder_exp_reward = 6,get_reward_time_limit = 3600,base_exp_time_unit = 60,max_been_plunder_count = 30,plunder_exp_lost = 50,},
+	--  bornPos:array	玩家进入位置
+	--  cd:int	竞技倒计时
+	--  last:int	活动时长(秒钟)
+	[1] = {id = 1,max_plunder_recover_count = 3,plunder_recover_time = 600,rival_refresh_cd = 10,module_id = 5051,base_exp_reward = 3,plunder_exp_reward = 6,get_reward_time_limit = 3600,base_exp_time_unit = 60,max_been_plunder_count = 30,plunder_exp_lost = 50,bornPos = {{7,26},{47,26}},cd = 3,last = 90,},
 }

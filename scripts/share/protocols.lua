@@ -288,6 +288,7 @@ CMSG_REFRESH_CULTIVATION_RIVALS		= 291	-- /*刷新修炼场对手*/
 CMSG_PLUNDER_CULTIVATION_RIVAL		= 292	-- /*掠夺修炼场对手*/	
 CMSG_REVENGE_CULTIVATION_RIVAL		= 293	-- /*反击复仇修炼场对手*/	
 CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT		= 294	-- /*增加修炼场剩余挑战次数*/	
+SMSG_SHOW_CULTIVATION_RESULT_LIST		= 295	-- /*返回修炼场战斗结果*/	
 
 
 ---------------------------------------------------------------------
@@ -10053,6 +10054,58 @@ function Protocols.unpack_buy_cultivation_left_plunder_count (pkt)
 end
 
 
+-- /*返回修炼场战斗结果*/	
+function Protocols.pack_show_cultivation_result_list ( result ,name ,list)
+	local output = Packet.new(SMSG_SHOW_CULTIVATION_RESULT_LIST)
+	output:writeU32(result)
+	output:writeUTF(name)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*返回修炼场战斗结果*/	
+function Protocols.call_show_cultivation_result_list ( playerInfo, result ,name ,list)
+	local output = Protocols.	pack_show_cultivation_result_list ( result ,name ,list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回修炼场战斗结果*/	
+function Protocols.unpack_show_cultivation_result_list (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.result = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -10333,6 +10386,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_plunder_cultivation_rival = self.call_plunder_cultivation_rival
 	playerInfo.call_revenge_cultivation_rival = self.call_revenge_cultivation_rival
 	playerInfo.call_buy_cultivation_left_plunder_count = self.call_buy_cultivation_left_plunder_count
+	playerInfo.call_show_cultivation_result_list = self.call_show_cultivation_result_list
 end
 
 local unpack_handler = {
@@ -10610,6 +10664,7 @@ local unpack_handler = {
 [CMSG_PLUNDER_CULTIVATION_RIVAL] =  Protocols.unpack_plunder_cultivation_rival,
 [CMSG_REVENGE_CULTIVATION_RIVAL] =  Protocols.unpack_revenge_cultivation_rival,
 [CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT] =  Protocols.unpack_buy_cultivation_left_plunder_count,
+[SMSG_SHOW_CULTIVATION_RESULT_LIST] =  Protocols.unpack_show_cultivation_result_list,
 
 }
 

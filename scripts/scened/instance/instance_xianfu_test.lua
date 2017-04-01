@@ -15,7 +15,7 @@ local dummyPos = {
 	{87, 90},
 	{91, 81},
 	{87, 71},
-	{77, 81},
+	{76, 76},
 }
 
 function InstanceXianfuTest:ctor(  )
@@ -319,10 +319,17 @@ function InstanceXianfuTest:OnJoinPlayer(player)
 		mapLib.ExitInstance(self.ptr, player)
 		return
 	end
-	
+		
 	-- 设置名称
 	local emptyIndex = self:findIndexByName()
 	if emptyIndex > -1 then
+		-- 设置幻化
+		local illusionId = tb_kuafu_xianfu_tst_base[ 1 ].illusions[playerInfo:GetGender()]
+		playerInfo:SetCharIllusion(illusionId)
+		
+		local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAXHEALTH)
+		unitLib.SetHealth(player, maxHealth)
+	
 		local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + emptyIndex * MAX_KUAFU_XIANFU_INT_COUNT
 		local strstart = KUAFU_XIANFU_FIELDS_STR_INFO_START + emptyIndex * MAX_KUAFU_XIANFU_STR_COUNT
 
@@ -353,6 +360,14 @@ function InstanceXianfuTest:OnAfterJoinPlayer(player)
 end
 
 function InstanceXianfuTest:DoIsFriendly(killer_ptr, target_ptr)
+	if unitLib.HasBuff(killer_ptr, BUFF_INVINCIBLE) then
+		return 1
+	end
+	
+	if unitLib.HasBuff(target_ptr, BUFF_INVINCIBLE) then
+		return 1
+	end
+	
 	-- 当前地图还在倒计时中 或者 不是开始状态
 	if self:GetMapStartTime() > os.time() or self:GetMapState() ~= self.STATE_START then
 		return 1
@@ -387,17 +402,19 @@ function InstanceXianfuTest:DoAfterRespawn(unit_ptr)
 		end
 		unitInfo:SetUseRespawnMapId(0)
 	else
-		self:FindAPlaceToRespawn(unit_ptr, true)
+		local ox = randInt(-2, 2)
+		local oy = randInt(-2, 2)
+		self:FindAPlaceToRespawn(unit_ptr, true, ox, oy)
 	end
 end
 
-function InstanceXianfuTest:FindAPlaceToRespawn(unit_ptr, isDummy)
+function InstanceXianfuTest:FindAPlaceToRespawn(unit_ptr, isDummy, offsetX, offsetY)
 	isDummy = isDummy or false
 	-- 随机复活区域
 	local a = GetRandomIndexTable(#tb_kuafu_xianfu_tst_base[ 1 ].respawnPos, 1)
 	local pos = tb_kuafu_xianfu_tst_base[ 1 ].respawnPos[a[ 1 ]]
-	local offsetX = 0
-	local offsetY = 0
+	offsetX = offsetX or 0
+	offsetY = offsetY or 0
 	
 	local toX = pos[ 1 ] + offsetX
 	local toY = pos[ 2 ] + offsetY

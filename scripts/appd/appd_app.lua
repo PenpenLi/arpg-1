@@ -172,6 +172,12 @@ function AppdApp:InitCorn()
 	self.cron:every("更新跨服排行", 3600, function()
 		UpdateKuafuRank()
 	end)
+	
+	--10分钟存储一次修炼记录
+	self.cron:every("10分钟存储一次修炼记录", 600, function()
+		-- C++中处理
+		SaveXiulianData()
+	end)
 end
 
 -- 全服野外BOSS定时器初始化

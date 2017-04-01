@@ -2130,6 +2130,13 @@ function UnitInfo:call_kuafu_xianfu_minimap_info_in_custom(playerDict, creatureD
 	output:delete()
 end
 
+function UnitInfo:SetCharIllusion(val)
+	self:SetUInt32(UINT_INT_FIELD_ILLUSION, val)
+end
+
+function UnitInfo:GetCharIllusion()
+	return self:GetUInt32(UINT_INT_FIELD_ILLUSION)
+end
 
 
 require 'scened.unit.unit_spell'

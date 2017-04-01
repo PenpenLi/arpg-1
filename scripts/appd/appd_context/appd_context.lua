@@ -625,6 +625,7 @@ function PlayerInfo:Login()
 		return
 	end
 	
+	
 	--0点重置	
 	self:DoResetDaily()
 
@@ -654,6 +655,9 @@ function PlayerInfo:Login()
 	-- 同步斗剑台信息
 	globalCounter:Login(self)
 	
+	--同步修炼信息
+	self:LoginRestoreCultivation()
+	
 	-- 把跨服的信息清空
 	self:KuafuUnMarked()
 end
@@ -676,6 +680,9 @@ function PlayerInfo:Logout ()
 	self:OnCancelKuafuMatch()
 	-- 同步斗剑台最新玩家数据
 	globalCounter:SyncPlayerInfo(self)
+	
+	--备份修炼信息
+	self:LogoutBackupCultivation()
 end
 
 --有多少个物品
@@ -1541,7 +1548,7 @@ require("appd/appd_context/appd_context_doujiantai")
 require("appd/appd_context/appd_context_module_unlock")
 require("appd/appd_context/appd_context_guide")
 require("appd/appd_context/appd_context_cultivation")
-
+require("appd/appd_context/appd_context_after_quest_doing")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")

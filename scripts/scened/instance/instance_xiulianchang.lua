@@ -79,6 +79,13 @@ function InstanceXiulianchang:GetContent()
 	return self:GetStr(XIULIANCHANG_FIELDS_STR_INFO_CONTENT)
 end
 
+function InstanceXiulianchang:SetName(val)
+	self:SetStr(XIULIANCHANG_FIELDS_STR_INFO_NAME, val)
+end
+
+function InstanceXiulianchang:GetName()
+	return self:GetStr(XIULIANCHANG_FIELDS_STR_INFO_NAME)
+end
 
 
 
@@ -124,6 +131,7 @@ function InstanceXiulianchang:OnCreateCreature()
 		outFmtDebug('InstanceXiulianchang:OnCreateCreature rank == 0 robot_id == 0 guid == empty !!')
 	end
 	self:SetLevel(config.level)
+	self:SetName(config.name)
 	local x = tb_xiulianchang_base[ 1 ].bornPos[ 2 ][ 1 ]
 	local y = tb_xiulianchang_base[ 1 ].bornPos[ 2 ][ 2 ]
 	local image = self:GetImageInfo(config)
@@ -143,7 +151,7 @@ function InstanceXiulianchang:OnTaskStart()
 end
 
 -- 副本失败退出
-function InstanceXiulianchang:timeoutCallback()
+function InstanceXiulianchang:instanceFail()
 	self:SetMapState(self.STATE_FAIL)
 	-- 获得player
 	local allPlayers = mapLib.GetAllPlayer(self.ptr)
@@ -190,6 +198,9 @@ function InstanceXiulianchang:OnLeavePlayer( player, is_offline)
 		self:OnFightResult(player, GlobalCounter.LOSE)
 		self:SetMapState(self.STATE_FAIL)
 	end
+	
+	local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAXHEALTH)
+	unitLib.SetHealth(player, maxHealth)
 end
 
 --当玩家死亡后触发()
@@ -202,7 +213,7 @@ end
 -- 处理结果
 function InstanceXiulianchang:OnFightResult(player, result)
 	self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
-	playerLib.SendToAppdDoSomething(player, SCENED_APPD_XIULIANCHANG, result, self:GetGuid()..'|'..self:GetRobotId()..'|'..self:GetLevel())
+	playerLib.SendToAppdDoSomething(player, SCENED_APPD_XIULIANCHANG, 0, self:GetGuid()..'|'..self:GetRobotId()..'|'..self:GetLevel()..'|'..result..'|'..self:GetName())
 end
 
 

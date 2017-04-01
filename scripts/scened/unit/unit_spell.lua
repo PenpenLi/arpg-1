@@ -126,7 +126,11 @@ end
 
 --获得技能等级
 function UnitInfo:GetSpellLevel(spellId)
-	return playerLib.GetSpellLevel(self.ptr, spellId)
+	local level = playerLib.GetSpellLevel(self.ptr, spellId)
+	if level == 0 then
+		level = 1
+	end
+	return level
 end
 
 
@@ -162,10 +166,8 @@ end
 
 --设置技能cd
 function UnitInfo:SetSpellCD(spell_id, nowtime)
-	local spell_lv = self:GetSpellLevel(spell_id)
-	
 	local config = tb_skill_base[spell_id]
-	if config ~= nil and spell_lv > 0 then
+	if config ~= nil then
 		local levelIndex = self:GetSpellLvIndex(spell_id)
 		local upConfig = tb_skill_uplevel[levelIndex]
 		local category_cd = config.groupCD
@@ -177,9 +179,25 @@ function UnitInfo:SetSpellCD(spell_id, nowtime)
 			-- 一定装备在技能槽
 			-- 给同一族的技能设置公共CD
 			-- 给当前技能设置设置2个技能CD的最大值
-			for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
-				local temp_id = self:GetPlayerUInt16(i, SHORT_SLOT_SPELL_ID)
-				if tb_skill_base[temp_id] ~= nil and group == tb_skill_base[temp_id].group then
+			if self:HasSpell(spell_id) then
+				for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
+					local temp_id = self:GetPlayerUInt16(i, SHORT_SLOT_SPELL_ID)
+					if tb_skill_base[temp_id] ~= nil and group == tb_skill_base[temp_id].group then
+						local tcd = category_cd
+						if temp_id == spell_id then
+							tcd = single_cd
+						end
+						self:FinalSetSpellCD(temp_id, tcd + nowtime)
+					end
+				end
+			else
+				local follow = config.follow
+				local combats = {spell_id}
+				for _, spell in ipairs(follow) do
+					table.insert(combats, spell)
+				end
+					
+				for _, temp_id in ipairs(combats) do
 					local tcd = category_cd
 					if temp_id == spell_id then
 						tcd = single_cd

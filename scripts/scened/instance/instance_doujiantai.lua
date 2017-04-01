@@ -91,7 +91,7 @@ function InstanceDoujiantai:OnTaskStart()
 end
 
 -- 副本失败退出
-function InstanceDoujiantai:timeoutCallback()
+function InstanceDoujiantai:instanceFail()
 	self:SetMapState(self.STATE_FAIL)
 	-- 获得player
 	local allPlayers = mapLib.GetAllPlayer(self.ptr)

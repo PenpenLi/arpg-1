@@ -871,7 +871,13 @@ Instance_base = {
 
 		return creature, pet
 	end,
-
+	
+	-- 是否回到进入点
+	IsNeedTeleportToOrigin =
+		function(self)
+			return false
+		end,
+		
 	-- 打断
 	OnDisrupt =
 		function(self, killer)
