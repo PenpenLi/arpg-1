@@ -301,9 +301,10 @@ function InstanceFieldBase:OnTimer_PickingTreasure(player)
 	
 	-- 播放消息
 	-- 拾取宝箱
-	local dropIdTable = tb_map_field_boss[mapid].dropTable
+	local playerInfo = UnitInfo:new {ptr = player}
+	local dropId = GetRewardIfGenderSensitive(tb_map_field_boss[mapid].dropTable, playerInfo:GetGender())
 	local dict = {}
-	DoRandomDropTable(dropIdTable, dict)
+	DoRandomDropTable({dropId}, dict)
 	PlayerAddRewards(player, dict)
 	local rewards = {}
 	for entry, _ in pairs(dict) do

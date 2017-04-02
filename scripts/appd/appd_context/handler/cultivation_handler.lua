@@ -28,7 +28,7 @@ function PlayerInfo:Hanlde_Revenge_Cultivation_Rival(pkt)
 end
 function PlayerInfo:Hanlde_Buy_Cultivation_Left_Plunder_Count(pkt)
 	local count = pkt.count
-	if index <= 0 then
+	if count <= 0 then
 		return
 	end
 	self:BuyCultivationLeftPlunderCount(count)

@@ -10057,7 +10057,7 @@ end
 -- /*返回修炼场战斗结果*/	
 function Protocols.pack_show_cultivation_result_list ( result ,name ,list)
 	local output = Packet.new(SMSG_SHOW_CULTIVATION_RESULT_LIST)
-	output:writeU32(result)
+	output:writeI32(result)
 	output:writeUTF(name)
 	output:writeI16(#list)
 	for i = 1,#list,1
@@ -10079,7 +10079,7 @@ function Protocols.unpack_show_cultivation_result_list (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
-	ret,param_table.result = input:readU32()
+	ret,param_table.result = input:readI32()
 	if not ret then
 		return false
 	end	

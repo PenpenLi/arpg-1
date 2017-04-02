@@ -10,8 +10,8 @@ tb_xiulianchang_reward = {
 	--  vip_label:int	vip标记
 	--  lost_rate:int	丢失概率(万分比)
 	[1] = {id = 1,reward = {{1502,1}},time = 3600,vip_label = 0,lost_rate = 5000,},
-	[2] = {id = 2,reward = {{2001,1}},time = 7200,vip_label = 1,lost_rate = 3000,},
-	[3] = {id = 3,reward = {{2002,1}},time = 10800,vip_label = 2,lost_rate = 1000,},
-	[4] = {id = 4,reward = {{2003,1}},time = 14400,vip_label = 3,lost_rate = 500,},
-	[5] = {id = 5,reward = {{2004,1}},time = 18000,vip_label = 4,lost_rate = 100,},
+	[2] = {id = 2,reward = {{1502,1}},time = 7200,vip_label = 1,lost_rate = 3000,},
+	[3] = {id = 3,reward = {{1502,1}},time = 10800,vip_label = 2,lost_rate = 1000,},
+	[4] = {id = 4,reward = {{1502,1}},time = 14400,vip_label = 3,lost_rate = 500,},
+	[5] = {id = 5,reward = {{1502,1}},time = 18000,vip_label = 4,lost_rate = 100,},
 }

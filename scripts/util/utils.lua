@@ -517,3 +517,8 @@ function GetDummyInfoFromContent(content)
 	
 	return config
 end
+
+-- 获得性别敏感的奖励
+function GetRewardIfGenderSensitive(rewards, gender)
+	return rewards[gender] or rewards[ 1 ]
+end

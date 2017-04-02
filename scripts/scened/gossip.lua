@@ -297,7 +297,8 @@ enum Money_Type
 function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
 	itemOperType  = itemOperType  or LOG_ITEM_OPER_TYPE_LOOT
-		
+	
+	local nonItemDict = {}
 	local itemDict = {}
 	local playerInfo = UnitInfo:new {ptr = player}
 	for itemId, count in pairs(rewardDict) do 
@@ -305,9 +306,11 @@ function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 			-- 加人物资源
 			local moneyType = GetMoneyType(itemId)
 			playerInfo:AddMoney(moneyType, moneyOperType, count)
+			nonItemDict[itemId] = count
 		elseif itemId == Item_Loot_Exp then
 			-- 加经验
 			playerLib.AddExp(player, count)
+			nonItemDict[itemId] = count
 		else
 			
 			if tb_item_template[itemId] then
@@ -322,6 +325,6 @@ function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 	end
 	
 	-- 获得提示
-	local list = Change_To_Item_Reward_Info(rewardDict)
+	local list = Change_To_Item_Reward_Info(nonItemDict)
 	playerInfo:call_item_notice (0, list)
 end

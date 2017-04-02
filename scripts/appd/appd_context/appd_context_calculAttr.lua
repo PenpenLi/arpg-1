@@ -352,6 +352,8 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	outFmtDebug("all force %d", battleForce)	
 	
+	battleForce = math.floor(battleForce)
+	
 	binLogLib.SetDouble(attr_binlog, 0, battleForce)
 	
 	self:SendAttrChanged(prevlist)

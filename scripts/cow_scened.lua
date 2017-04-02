@@ -285,6 +285,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[ 1 ] = InstanceMainBase,
 	[1001] = InstanceFieldBase,
 	[1002] = InstanceFieldBase,
+	[1003] = InstanceFieldBase,
 	[2001] = InstanceInstBase,
 	[2002] = InstanceInstBase,
 	[2003] = InstanceVIP,

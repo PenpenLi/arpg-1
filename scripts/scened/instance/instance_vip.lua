@@ -149,9 +149,10 @@ function InstanceVIP:AfterProcessUpdate(player)
 		-- »ñµÃËæ»ú½±ÀødropIdTable
 		local id  = self:getIndex()
 		local hard   = self:getHard()
-		local dropIdTable = tb_map_vip[id].rewards[hard]
+		local playerInfo = UnitInfo:new{ptr = player}
+		local dropId = GetRewardIfGenderSensitive(tb_map_vip[id].rewards[hard], playerInfo:GetGender())
 
-		local data = self:RandomReward(player, dropIdTable)
+		local data = self:RandomReward(player, {dropId})
 		
 		self:SetMapReward(data)
 		

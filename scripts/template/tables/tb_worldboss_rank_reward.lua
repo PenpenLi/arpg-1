@@ -7,9 +7,9 @@ tb_worldboss_rank_reward = {
 	--  id:int	排名开始
 	--  id2:int	排名结束
 	--  reward:string	挑战奖励
-	[1] = {id = 1,id2 = 1,reward = "1201,1",},
-	[2] = {id = 2,id2 = 2,reward = "1201,1",},
-	[3] = {id = 3,id2 = 3,reward = "1201,1",},
-	[4] = {id = 4,id2 = 14,reward = "1201,1",},
-	[5] = {id = 5,id2 = -1,reward = "1201,1",},
+	[1] = {id = 1,id2 = 1,reward = "7,1000",},
+	[2] = {id = 2,id2 = 2,reward = "7,500",},
+	[3] = {id = 3,id2 = 3,reward = "7,400",},
+	[4] = {id = 4,id2 = 14,reward = "7,300",},
+	[5] = {id = 5,id2 = -1,reward = "7,150",},
 }

@@ -367,7 +367,7 @@ function AppQuestMgr:OnAddFirstCircleQuest(firstQuestId)
 		end
 	end
 	-- 给每日任务的第一个任务
-	self:OnAddQuest()
+	self:OnAddQuest(firstQuestId)
 end
 
 --[[

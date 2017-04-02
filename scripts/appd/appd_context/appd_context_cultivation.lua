@@ -469,7 +469,7 @@ function PlayerInfo:GetCultivationReward()
 		been_plunder_count = max_been_plunder_count
 	end
 	
-	local exp_reward = math.floor(next_exp * math.floor(cultivation_time / base_exp_time_unit)*(base_exp_reward/10000)*(extend_exp_reward/100 + 1)*(1 - been_plunder_count * plunder_exp_lost / 10000))
+	local exp_reward = math.floor(math.floor(cultivation_time / base_exp_time_unit)* math.floor(next_exp * (base_exp_reward/10000))*(extend_exp_reward/100 + 1)*(1 - been_plunder_count * plunder_exp_lost / 10000))
 	
 	local rewards = {}
 	table.insert(rewards,{Item_Loot_Exp,exp_reward}) --加经验
@@ -571,7 +571,7 @@ function PlayerInfo:RefreshCultivationRivals()
 	end
 	
 	
-	--dict[1] = '958|0' --测试固定敌人
+	--dict[1] = '985|0' --测试固定rank敌人
 	for i = 1, #dict do
 		--outFmtDebug("RefreshCultivationRivals: new rival_%d guid : %s",i,dict[i])
 		self:SetCultivationRivalGuid(i-1,dict[i])  
@@ -591,13 +591,11 @@ function PlayerInfo:PlunderCultivationRival(index)
 	if self:GetCultivationLeftPlunderCount() <= 0 then
 		return
 	end
-	if self:GetCultivationLeftPlunderCount() - 1 < tb_xiulianchang_base[1].max_plunder_recover_count then
+	if self:GetCultivationLeftPlunderCount() == tb_xiulianchang_base[1].max_plunder_recover_count then
 		self:SetCultivationLastPlunderTime(os.time())
-		self:AddCultivationLeftPlunderCount(-1)
-	else
-		
+
 	end
-	
+	self:AddCultivationLeftPlunderCount(-1)
 	--取得对手guid 获取角色信息
 	--进战斗相关处理
 	local info = self:GetCultivationRivalGuid(index)
@@ -671,6 +669,7 @@ function PlayerInfo:BuyCultivationLeftPlunderCount(count)
 	if not self:IsCultivationUnlocked() then
 		return
 	end
+	--print('BuyCultivationLeftPlunderCount')
 	--检测购买条件 vip等级 购买次数上限
 	local vip = self:GetVIP()
 	local vip_info = tb_xiulianchang_vip[vip]
@@ -841,6 +840,8 @@ function PlayerInfo:PlunderFinish(data, info)
 		
 	elseif result == GlobalCounter.LOSE then
 		if string.len(guid) > 0 then--给对方玩家添加记录
+			local list = {}
+			self:call_show_cultivation_result_list(result,enemy_name,list)
 			local data = {}
 			data.name = 'Handle_PlunderFinish'
 			data.callback_guid = guid

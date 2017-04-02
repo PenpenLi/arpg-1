@@ -221,11 +221,8 @@ UseItemScripts = {
 					return
 				end
 				
-				--可以开始给道具了
-				local drops = box_config.dropids
-				-- 默认先选第一个
-				-- 如果需要区分男女的再区分
-				local dropId = drops[gender] or drops[ 1 ]
+				local dropId = GetRewardIfGenderSensitive(box_config.dropids, gender)
+				
 				local dict = {}
 				for i = 1, count do
 					DoRandomDrop(dropId, dict)
