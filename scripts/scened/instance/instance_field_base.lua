@@ -423,7 +423,7 @@ function AI_FieldBoss:DamageDeal( owner, unit, damage)
 	local bossInfo = UnitInfo:new{ptr = owner}
 
 	local currHealth = bossInfo:GetHealth()
-	local maxHealth  = bossInfo:GetMaxhealth()
+	local maxHealth  = bossInfo:GetMaxHealth()
 	
 	local map_ptr = unitLib.GetMap(owner)
 	local instanceInfo = InstanceFieldBase:new{ptr = map_ptr}

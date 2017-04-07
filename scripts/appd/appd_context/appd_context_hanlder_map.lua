@@ -23,6 +23,10 @@ hanlders[CMSG_PLUNDER_CULTIVATION_RIVAL] = PlayerInfo.Hanlde_Plunder_Cultivation
 hanlders[CMSG_REVENGE_CULTIVATION_RIVAL] = PlayerInfo.Hanlde_Revenge_Cultivation_Rival
 hanlders[CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT] = PlayerInfo.Hanlde_Buy_Cultivation_Left_Plunder_Count
 
+--登录大礼
+hanlders[CMSG_GET_LOGIN_ACTIVITY_REWARD] = PlayerInfo.Hanlde_Get_Login_Activity_Reward
+
+
 
 hanlders[CMSG_BAG_EXCHANGE_POS] = PlayerInfo.Hanlde_Bag_Exchange_Pos
 hanlders[CMSG_BAG_DESTROY] = PlayerInfo.Hanlde_Bag_Destroy
@@ -51,7 +55,6 @@ hanlders[CMSG_UPGRADE_MOUNT_ONE_STEP] = PlayerInfo.Handle_Upgrade_Mount_One_Step
 hanlders[CMSG_ILLUSION_MOUNT_ACTIVE] = PlayerInfo.Handle_Illusion_Active
 hanlders[CMSG_ILLUSION_MOUNT] = PlayerInfo.Handle_Illusion
 
-hanlders[CMSG_STRENGTH] = PlayerInfo.strength
 hanlders[CMSG_GEM] = PlayerInfo.gem
 
 hanlders[CMSG_DIVINE_ACTIVE] = PlayerInfo.Handle_Divine_Active
@@ -167,5 +170,7 @@ hanlders[MSG_DOUJIANTAI_TOP3] = PlayerInfo.Handle_Doujiantai_Top3
 hanlders[CMSG_SUBMIT_QUEST_DAILY2] = PlayerInfo.Handle_Submit_Quest_Daily2
 
 hanlders[CMSG_PICK_DAILY2_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest_Daily2
+
+hanlders[CMSG_FINISH_OPTIONAL_GUIDE_STEP] = PlayerInfo.Handle_Optional_Guide_Step
 
 return hanlders

@@ -56,7 +56,7 @@ function InstanceResGem:OnTimerRefreshGemHp()
 	end
 	local gemInfo = UnitInfo:new {ptr = GEM_NPC}
 	local hp = gemInfo:GetHealth()
-	local maxHealth  = gemInfo:GetMaxhealth()
+	local maxHealth  = gemInfo:GetMaxHealth()
 	local rate = math.floor(hp * 100 / maxHealth)
 	self:ProtectorHit(gemInfo:GetEntry(), rate)
 	

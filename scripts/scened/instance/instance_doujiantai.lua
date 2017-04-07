@@ -127,7 +127,7 @@ function InstanceDoujiantai:OnJoinPlayer(player)
 		return
 	end
 	
-	local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAXHEALTH)
+	local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAX_HEALTH)
 	unitLib.SetHealth(player, maxHealth)
 end
 

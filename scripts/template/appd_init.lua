@@ -136,6 +136,8 @@ require("template.tables.tb_xiulianchang_reward")
 require("template.tables.tb_xiulianchang_vip")
 require("template.tables.tb_xiulianchang_fight_range")
 
+--登录大礼
+require("template.tables.tb_login_activity_reward")
 
 
 

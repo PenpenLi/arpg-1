@@ -948,15 +948,27 @@ Instance_base = {
 	SetSpells = function (self, creature_ptr, spells)
 		for i = 1, #spells do
 			local spellInfo = spells[ i ]
+			-- spellInfo = {技能ID,释放概率（万分比）,这个技能动作时间,技能等级,技能组}
 			local skillConfig = tb_skill_base[spellInfo[ 1 ]]
 			if skillConfig then
+				local inteval = spellInfo[ 3 ]
+				if tb_skill_base[spellInfo[ 1 ]].group > 0 then
+					local attackSpeed = binLogLib.GetUInt32(creature_ptr, UNIT_FIELD_ATTACK_SPEED)
+					inteval = OnAttackSpeedChangeToShortenInterval(attackSpeed, inteval)
+				end
 				local index = skillConfig.uplevel_id[ 1 ] + spellInfo[ 4 ] - 1
 				local upgradeConfig = tb_skill_uplevel[index]
 				local dist = upgradeConfig.distance
 				local groupCD = skillConfig.groupCD
 				local singleCD = skillConfig.singleCD
+				if groupCD > inteval then
+					groupCD = inteval
+				end
+				if singleCD > inteval then
+					singleCD = inteval
+				end
 				local targetType = skillConfig.type
-				creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], spellInfo[ 3 ], spellInfo[ 4 ], spellInfo[ 5 ], dist, groupCD, singleCD, targetType)
+				creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], inteval, spellInfo[ 4 ], spellInfo[ 5 ], dist, groupCD, singleCD, targetType)
 			end
 		end
 	end,

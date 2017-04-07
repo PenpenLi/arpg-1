@@ -346,7 +346,7 @@ function AI_WorldBoss:DamageTaken(owner, unit, damage)
 	end
 	
 	local prev = bossInfo:GetHealth()
-	local maxHealth  = bossInfo:GetMaxhealth()
+	local maxHealth  = bossInfo:GetMaxHealth()
 	if damage > prev then
 		damage = prev
 	end

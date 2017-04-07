@@ -136,7 +136,7 @@ end
 
 --获取最大HP
 function RobotdUnit:GetMaxHealth()
-	return self:GetUInt32(UNIT_FIELD_MAXHEALTH)
+	return self:GetUInt32(UNIT_FIELD_MAX_HEALTH)
 end
 
 --是否不在障碍点上

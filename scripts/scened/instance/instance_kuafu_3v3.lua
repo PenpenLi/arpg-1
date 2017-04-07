@@ -402,7 +402,7 @@ function InstanceKuafu3v3:OnPlayerHurt(killer, player, damage)
 	
 	-- 计算玩家血量
 	local indx = self:findIndexByName(targetInfo:GetName())
-	local rate = math.floor((targetInfo:GetHealth() - damage) * 100 / targetInfo:GetMaxhealth())
+	local rate = math.floor((targetInfo:GetHealth() - damage) * 100 / targetInfo:GetMaxHealth())
 	local intStart = KUAFU_3V3_FIELDS_INT_INFO_START + indx * MAX_KUAFU_3V3_INT_COUNT
 	self:SetByte(intStart + KUAFU_3V3_PLAYER_SHOW_INFO, 1, rate)
 	-- 计算玩家伤害

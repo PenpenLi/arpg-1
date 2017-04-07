@@ -134,7 +134,7 @@ function DoBuffTriggerScript(unit,buff_id,buff_lv)
 	--]]
 	if buff_type == BUFF_TYPE_ADD_HP_PER_RATE then --百分比回血
 		local value = config.value * buff_lv
-		local add_hp = math.floor(unitInfo:GetMaxhealth()*value/100)
+		local add_hp = math.floor(unitInfo:GetMaxHealth()*value/100)
 		unitInfo:ModifyHealth(add_hp)
 		
 		local mapid = unitLib.GetMapID(unit)

@@ -95,7 +95,7 @@ function InstanceXiulianchang:OnCreateCreature()
 	local guid = self:GetGuid()
 	
 	local config = {}
-	if rank ~= 0 then --挑战排行中的角色
+	if rank ~= 0 then --挑战排行中的角色 --无效
 		config = globalCounter:GetRankInfo(rank)
 		
 		local enemy = nil
@@ -113,7 +113,7 @@ function InstanceXiulianchang:OnCreateCreature()
 	elseif robot_id ~= 0 then --挑战修炼机器人
 		config = tb_xiulianchang_dummy[robot_id]
 	
-	elseif string.len(guid) > 0 then --复仇玩家
+	elseif string.len(guid) > 0 then --掠夺/复仇玩家
 		config = {}
 		local enemy = nil
 		enemy = mapLib.GetPlayerByPlayerGuid(self.ptr, guid)
@@ -127,8 +127,10 @@ function InstanceXiulianchang:OnCreateCreature()
 			config = GetDummyInfoFromContent(content)
 		end
 		
-	else
-		outFmtDebug('InstanceXiulianchang:OnCreateCreature rank == 0 robot_id == 0 guid == empty !!')
+	else --掠夺斗剑台机器人
+		local content = self:GetContent()
+		config = GetDummyInfoFromContent(content)
+		--outFmtDebug('InstanceXiulianchang:OnCreateCreature rank == 0 robot_id == 0 guid == empty !!')
 	end
 	self:SetLevel(config.level)
 	self:SetName(config.name)
@@ -187,7 +189,7 @@ function InstanceXiulianchang:OnJoinPlayer(player)
 		return
 	end
 	
-	local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAXHEALTH)
+	local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAX_HEALTH)
 	unitLib.SetHealth(player, maxHealth)
 end
 
@@ -199,7 +201,7 @@ function InstanceXiulianchang:OnLeavePlayer( player, is_offline)
 		self:SetMapState(self.STATE_FAIL)
 	end
 	
-	local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAXHEALTH)
+	local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAX_HEALTH)
 	unitLib.SetHealth(player, maxHealth)
 end
 

@@ -7,3 +7,10 @@ function PlayerInfo:EnterXianfuTest()
 	-- 发起传送
 	call_appd_teleport(self:GetScenedFD(), self:GetGuid(), pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, mapid, gerneralId)
 end
+
+-- 进入原地副本
+function PlayerInfo:EnterRemindInstance(mapid, entry, x, y)
+	local prevmapid = self:GetMapId()
+	local gerneralId = string.format("%s|%d|%d|%d|%d|%d", self:GetGuid(), os.time(), prevmapid, entry, x, y)
+	self:CallScenedDoSomething(APPD_SCENED_REMIND_INSTANCE_ENTER, mapid, gerneralId)
+end

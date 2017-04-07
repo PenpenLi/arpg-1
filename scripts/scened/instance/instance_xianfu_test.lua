@@ -255,7 +255,7 @@ function InstanceXianfuTest:OnMonsterRefresh()
 				)
 				-- 标识为boss怪
 				local creatureInfo = UnitInfo:new{ptr = creature}
-				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
+				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
 				
 				local place = string.char(64+indx)
 				
@@ -319,15 +319,28 @@ function InstanceXianfuTest:OnJoinPlayer(player)
 		mapLib.ExitInstance(self.ptr, player)
 		return
 	end
-		
+	
 	-- 设置名称
 	local emptyIndex = self:findIndexByName()
 	if emptyIndex > -1 then
 		-- 设置幻化
 		local illusionId = tb_kuafu_xianfu_tst_base[ 1 ].illusions[playerInfo:GetGender()]
 		playerInfo:SetCharIllusion(illusionId)
+		-- 设置属性
+		local props = tb_kuafu_xianfu_tst_base[ 1 ].prop
+		for _, attrInfo in ipairs(props) do
+			local attrId = attrInfo[ 1 ]
+			local value  = attrInfo[ 2 ]
+			local binlogIndex = GetAttrUnitBinlogIndex(attrId)
+			if binlogIndex then
+				binLogLib.SetUInt32(player, binlogIndex, value)
+				if attrId == EQUIP_ATTR_MAX_HEALTH then
+					playerInfo:ModifyHealth(value)
+				end
+			end
+		end
 		
-		local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAXHEALTH)
+		local maxHealth = binLogLib.GetUInt32(player, UNIT_FIELD_MAX_HEALTH)
 		unitLib.SetHealth(player, maxHealth)
 	
 		local intstart = KUAFU_XIANFU_FIELDS_INT_INFO_START + emptyIndex * MAX_KUAFU_XIANFU_INT_COUNT
@@ -471,7 +484,7 @@ function InstanceXianfuTest:OnPlayerKilledByMonster(player, killer)
 	local playerInfo = UnitInfo:new{ptr = player}
 	
 	-- 被BOSS杀死
-	if killerInfo:GetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE) then
+	if killerInfo:GetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE) then
 		-- 增加死亡次数
 		self:AddPlayerKilledCount(playerInfo)
 		
@@ -768,7 +781,7 @@ function AI_XianfuTestBoss:JustDied( map_ptr,owner,killer_ptr )
 		-- 删掉BOSS
 		local dummys = mapLib.GetAllCreature(map_ptr)
 		for i, dummy in ipairs(dummys) do
-			if binLogLib.GetBit(dummy, UNIT_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE) then
+			if binLogLib.GetBit(dummy, UNIT_FIELD_FLAGS, UNIT_FIELD_FLAGS_IS_BOSS_CREATURE) then
 				table.remove(dummys, i)
 				break
 			end

@@ -231,7 +231,7 @@ end
 
 -- 释放技能
 function PlayerInfo:CastSpell(skillId, x, y, caster, target)
-	self:call_spell_start (skillId, x, y, caster, target)
+	self:call_spell_start (1, x, y, caster, target)
 end
 
 --停止移动状态

@@ -66,8 +66,31 @@ function  DoGMScripts(player_ptr, gm_commands)
 				end
 			end
 		end
+	elseif(tokens[ 1 ] == "@属性")then
+		if tokens[ 2 ] then
+			local equipmentId = tonumber(tokens[ 2 ])
+			if equipmentId < 1 or equipmentId > #attrKeys then
+				return
+			end
+			
+			local playerAttrId = attrKeys[equipmentId]
+			if tokens[ 3 ] then
+				local value = tonumber(tokens[ 3 ])
+				if value < 0 then
+					value = math.max(value, -player:GetDouble(playerAttrId))
+				end
+				player:AddDouble(playerAttrId, value)
+				local prevlist = {
+					[equipmentId] = value,
+				}
+				player:SendAttrChanged(prevlist)
+			end
+		end
 	elseif(tokens[1] == "@仙府体验")then
 		player:EnterXianfuTest()
+	elseif(tokens[1] == "@原地副本")then
+		local x, y = player:GetPosition()
+		player:EnterRemindInstance(3006, 7403, x+1, y+1)
 	elseif(tokens[1] == "@下一个主线")then
 		if tokens[2] then
 			local id = tonumber(tokens[ 2 ])

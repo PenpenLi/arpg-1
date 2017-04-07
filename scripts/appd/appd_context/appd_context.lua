@@ -271,7 +271,7 @@ end
 
 --获取MaxHp
 function PlayerInfo:GetMaxHp ()
-	return self:GetDouble(PLAYER_FIELD_MAXHEALTH)
+	return self:GetDouble(PLAYER_FIELD_MAX_HEALTH)
 end
 
 
@@ -657,6 +657,9 @@ function PlayerInfo:Login()
 	
 	--同步修炼信息
 	self:LoginRestoreCultivation()
+	
+	--初始化登陆大礼
+	self:InitLoginActivity()
 	
 	-- 把跨服的信息清空
 	self:KuafuUnMarked()
@@ -1295,28 +1298,6 @@ function PlayerInfo:SetDoujiantaiLastRefreshTime(val)
 	self:SetUInt32(PLAYER_INT_FIELD_DOUJIANTAI_REFRESH_TIME, val)
 end
 
-local attrKeys = {
-	[EQUIP_ATTR_MAXHEALTH] = PLAYER_FIELD_MAXHEALTH,
-	[EQUIP_ATTR_DAMAGE] = PLAYER_FIELD_DAMAGE,
-	[EQUIP_ATTR_ARMOR] = PLAYER_FIELD_ARMOR,
-	[EQUIP_ATTR_HIT] = PLAYER_FIELD_HIT,
-	[EQUIP_ATTR_DODGE] = PLAYER_FIELD_DODGE,
-	[EQUIP_ATTR_CRIT] = PLAYER_FIELD_CRIT,
-	[EQUIP_ATTR_TOUGH] = PLAYER_FIELD_TOUGH,
-	[EQUIP_ATTR_ATTACK_SPEED] = PLAYER_FIELD_ATTACK_SPEED,
-	[EQUIP_ATTR_MOVE_SPEED] = PLAYER_FIELD_MOVE_SPEED,
-	[EQUIP_ATTR_AMPLIFY_DAMAGE] = PLAYER_FIELD_AMPLIFY_DAMAGE,
-	[EQUIP_ATTR_IGNORE_DEFENSE] = PLAYER_FIELD_IGNORE_DEFENSE,
-	[EQUIP_ATTR_DAMAGE_RESIST] = PLAYER_FIELD_DAMAGE_RESIST,
-	[EQUIP_ATTR_DAMAGE_RETURNED] = PLAYER_FIELD_DAMAGE_RETURNED,
-	[EQUIP_ATTR_HIT_RATE] = PLAYER_FIELD_HIT_RATE,
-	[EQUIP_ATTR_DODGE_RATE] = PLAYER_FIELD_DODGE_RATE,
-	[EQUIP_ATTR_CRIT_RATE] = PLAYER_FIELD_CRIT_RATE,
-	
-	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = PLAYER_FIELD_CRITICAL_RESIST_RATE,
-	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = PLAYER_FIELD_DAMAGE_CRIT_MULTIPLE,
-	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PLAYER_FIELD_RESIST_CRIT_MULTIPLE,
-}
 
 -- 获得玩家属性列表
 function PlayerInfo:GetAttrs()
@@ -1549,6 +1530,7 @@ require("appd/appd_context/appd_context_module_unlock")
 require("appd/appd_context/appd_context_guide")
 require("appd/appd_context/appd_context_cultivation")
 require("appd/appd_context/appd_context_after_quest_doing")
+require("appd/appd_context/appd_context_login_activity")
 
 require("appd/appd_context/handler/faction_handler")
 require("appd/appd_context/handler/GiftPacksHandler")
@@ -1565,6 +1547,8 @@ require("appd/appd_context/handler/achieve_title_handler")
 require("appd/appd_context/handler/welfare_handler")
 require("appd/appd_context/handler/guide_handler")
 require("appd/appd_context/handler/cultivation_handler")
+require("appd/appd_context/handler/login_activity_handler")
+
 
 require("appd/appd_context/appd_context_hanlder")
 

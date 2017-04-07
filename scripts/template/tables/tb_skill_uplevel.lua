@@ -1611,4 +1611,6 @@ tb_skill_uplevel = {
 	[5027] = {id = 5027,skillEffectType = 0,skillEffectParams = {},distance = 6,mcd = 0,num = 1,hurt_percent = 535,cannot_defence_hure = 16000,fight_value = 107,uplevel_item = {},need_level = 9,uplevel_cost = {{6,107}},type_effect = {},},
 	[5028] = {id = 5028,skillEffectType = 0,skillEffectParams = {},distance = 6,mcd = 0,num = 1,hurt_percent = 540,cannot_defence_hure = 18000,fight_value = 108,uplevel_item = {},need_level = 10,uplevel_cost = {{6,108}},type_effect = {},},
 	[5029] = {id = 5029,skillEffectType = 0,skillEffectParams = {},distance = 6,mcd = 0,num = 1,hurt_percent = 545,cannot_defence_hure = 20000,fight_value = 109,uplevel_item = {},need_level = 11,uplevel_cost = {{6,109}},type_effect = {},},
+	[5030] = {id = 5030,skillEffectType = 99,skillEffectParams = {},distance = 6,mcd = 0,num = 10,hurt_percent = 80,cannot_defence_hure = 10,fight_value = 100,uplevel_item = {},need_level = 2,uplevel_cost = {{6,100}},type_effect = {},},
+	[5031] = {id = 5031,skillEffectType = 99,skillEffectParams = {},distance = 6,mcd = 0,num = 5,hurt_percent = 100,cannot_defence_hure = 50,fight_value = 130,uplevel_item = {},need_level = 2,uplevel_cost = {{6,100}},type_effect = {},},
 }

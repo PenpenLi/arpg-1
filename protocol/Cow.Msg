@@ -1224,4 +1224,18 @@ show_cultivation_result_list,s2c,295,/*返回修炼场战斗结果*/,STATUS_NEVER,False
 	list,item_reward_info,True,/奖励道具列表/
 	
 
+#
+get_login_activity_reward,c2s,296,/*领取登录大礼奖励*/,STATUS_NEVER,False
+	id,uint32,False,/*奖励id*/
 	
+#
+cast_spell_start,s2c,300,/*通知客户端释放蓄力技能*/,STATUS_NEVER,False
+	caster_guid,uint32,False,/*释放玩家*/
+	target_guid,uint32,False,/*攻击玩家*/
+	spellid,uint16,False,/*技能id*/
+	data,String,False,/*参数*/
+
+#
+finish_optional_guide_step,c2s,301,/*完成非强制引导的步骤*/,STATUS_NEVER,False
+	guide_id,uint32,False,/*引导id*/
+	step,uint8,False,/*引导分步骤*/

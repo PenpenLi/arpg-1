@@ -3,9 +3,7 @@
 ]]
 
 --强化
-function PlayerInfo:strength (pkt)
-	local part = pkt.part
-	
+function PlayerInfo:strength (part)
 	--部位数据是否非法
 	if part <= 0 or part > EQUIPMENT_COUNT then
 		outFmtError("strength error part %d",part)

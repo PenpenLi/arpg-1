@@ -99,21 +99,29 @@ end
 
 
 ----------------------------------计算战斗公式----------------------------------
--- 攻击方命中率=MAX（0.65，MIN（1，（8*攻击方命中+3*防守方闪避+19000）/（8*攻击方命中+4*防守方闪避+20000）+攻击方命中率%加成-防守方闪避率%加成）)
+-- 攻方命中率=min(命中 * 10000 /(命中+4*lv+20)+命中率增加(万分比),1)
+-- 守方闪避率=max((闪避-忽视闪避(攻方))* 10000 /(闪避-忽视闪避(攻方)+lv*150+3000)+闪避率增加,0)
+-- 实际命中率=攻方命中率-守方闪避率
 -- @param attackInfo: 攻击方
 -- @param hurtInfo: 防守方
 -- return
 --		是否命中
 function isHit(attackInfo, hurtInfo)
-	local hdP = (8 * attackInfo:GetHit() + 3 * hurtInfo:GetDodge() + 19000) / (8 * attackInfo:GetHit() + 4 * hurtInfo:GetDodge() + 20000)
-	local hdrP = (attackInfo:GetHitRate() - hurtInfo:GetDodgeRate()) / 10000
-	local p = math.floor(math.max(0.65, math.min(1, hdP + hdrP)) * 10000)
+	local casterHit  = math.min(attackInfo:GetHit() * 10000 / (attackInfo:GetHit() + 4 * attackInfo:GetLevel() + 20) + attackInfo:GetHitRate(), 10000)
+	local targetMiss1 = hurtInfo:GetMiss() - attackInfo:GetIgnoreMiss()
+	local targetMiss = math.max(targetMiss1 * 10000 / (targetMiss1 + hurtInfo:GetLevel() * 150 + 3000) + hurtInfo:GetMissRate(), 0)
+	local p = math.floor(casterHit - targetMiss)
 	local val = randInt(1, 10000)
-
+	
 	return val <= p
 end
 
--- 普通伤害(不暴击时伤害)=（（（原伤害+攻击方等级伤害）*伤害随机区间）*攻击方技能伤害修正系数+攻击方附加技能伤害）*MAX（0，（1-防守方伤害减免））
+-- 防御免伤=(防御-忽视防御)/((防御-忽视防御)*1.25+500+22.5*lv)
+-- PS：此处防御是守方防御，忽视防御是攻方的忽视防御，lv是守方等级
+
+-- 最终伤害=技能伤害*防御免伤*伤害增强*(1-伤害减免)
+-- PS：此处伤害增强是攻方的伤害增强属性，伤害减免是守方的伤害减免属性
+
 -- @param attackInfo: 攻击方
 -- @param hurtInfo: 防守方
 -- @param skillLevel: 攻击方技能等级
@@ -122,37 +130,15 @@ end
 -- return
 --		伤害
 function getCastDamage(attackInfo, hurtInfo, skillLevel, skillDamFactor, skillDamVal)
-	-- 原伤害
-	local baseDam = getBaseDam(attackInfo, hurtInfo)
-	-- 攻击方等级伤害
-	local attackerLevelDam = getCasterLevelDam(attackInfo)
-	-- 伤害随机区间
-	local damRange = getDamRange()
-	-- 附加技能伤害
-	local skillExtraDam = getSkillExtraDam(skillLevel, skillDamVal)
 	
-	-- 普通伤害
-	local normalDam = ((baseDam + attackerLevelDam) * damRange * skillDamFactor + skillExtraDam) * math.max(0, (1 - hurtInfo:GetDamageResist() / 10000))
-
+	-- 防御免伤
+	local armorDiff = hurtInfo:GetArmor() - attackInfo:GetIgnoreArmor()
+	local armorResit = armorDiff / (armorDiff * 1.25 + 500 + 22.5 * hurtInfo:GetLevel())
+	-- 技能伤害
+	local skillam = getSkillDam(attackInfo:GetDamage(), skillDamFactor, skillDamVal)
+	-- 最终伤害
+	local normalDam = math.floor(skillam * (1-armorResit) * (1 + attackInfo:GetDamageAmplifyRate() / 10000) * (10000 - hurtInfo:GetDamageResistRate()) / 10000)
 	return normalDam
-end
-
--- 原伤害=攻击方攻击*(1+攻击方攻击增强)-防守方防御*MAX(0,（1-攻击方忽视防御）)
--- @param attackInfo: 攻击方
--- @param hurtInfo: 防守方
--- return
---		原伤害
-function getBaseDam(attackInfo, hurtInfo)
-	return attackInfo:GetDamage() * (1 + attackInfo:GetAmplifyDamage() / 10000) - hurtInfo:GetArmor() * math.max(0, (1 - attackInfo:GetIgnoreDefense() / 10000))
-end
-
--- 攻击方等级伤害= ROUND(0.00054*攻击方等级^2.5+1,0)
--- @param attackInfo: 攻击方
--- return
---		等级伤害
-function getCasterLevelDam(attackInfo)
-	local level = attackInfo:GetLevel()
-	return 0.00054 * math.pow(level, 2.5) + 1.5
 end
 
 -- 伤害随机区间：[85%, 115%]
@@ -162,32 +148,41 @@ function getDamRange()
 	return randInt(85, 115) / 100
 end
 
---附加技能伤害
-function getSkillExtraDam(skillLevel, skillDamVal)
-	return skillDamVal
+-- 技能伤害=(攻击*技能伤害系数+技能附加伤害)*伤害随机区间
+-- 伤害随机区间：[85%,115%]
+function getSkillDam(damage, skillDamFactor, skillDamVal)
+	-- 伤害随机区间
+	local damRange = getDamRange()
+	return (damage * skillDamFactor + skillDamVal) * damRange
 end
 
--- 攻击方暴击率=MAX(0，MIN(0.5，（7*攻击方暴击+2000）/（100*防守方坚韧+20*攻击方暴击+50000）+攻击方暴击率%加成-防守方抗暴率%加成))
--- @param attackInfo: 攻击方
--- @param hurtInfo: 防守方
--- return
---		是否暴击
+--[[
+	攻方暴击率=暴击*10000/(暴击*1. 5+3950+25*lv)+暴击率增加
+	守方免暴率=坚韧*10000/(坚韧*8+7000+20*lv)+免暴率增加
+	实际暴击率=max(攻方暴击率-守方免暴率,0)
+
+	@param attackInfo: 攻击方
+	@param hurtInfo: 防守方
+	return
+		是否暴击
+--]]
+
 function isCrit(attackInfo, hurtInfo)
-	local ctP = (7 * attackInfo:GetCrit() + 2000) / (20 * attackInfo:GetCrit() + 100 * hurtInfo:GetTough() + 50000)
-	local ctrP = (attackInfo:GetCritRate() - hurtInfo:GetCriticalResistRate()) / 10000
-	local p = math.floor(math.max(0, math.min(.5, ctP + ctrP)) * 10000)
+	local casterCrit	= math.floor(attackInfo:GetCrit() * 10000 / (attackInfo:GetCrit() * 1.5 + 3950 + 25 * attackInfo:GetLevel()) + attackInfo:GetCritRate())
+	local targetResist	= math.floor(hurtInfo:GetTough() * 10000 / (hurtInfo:GetTough() * 8 + 7000+ 20 * hurtInfo:GetLevel()) + hurtInfo:GetCritResistRate())
+	local p = math.max(casterCrit - targetResist, 0)
 	local val = randInt(1, 10000)
 
 	return val <= p
 end
 
--- 暴击伤害倍数=MAX(1.5,MIN(5,2+攻击方暴击伤害倍数-防守方降暴击伤害倍数))
+-- 爆伤万分比=200%+(爆伤增加(攻方)-爆伤减免(守方)) / 10000
 -- @param attackInfo: 攻击方
 -- @param hurtInfo: 防守方
 -- return
 --		暴击倍数
 function critMult(attackInfo, hurtInfo)
-	return math.max(1.5, math.min(5, 2 + (attackInfo:GetDamageCritMultiple() - hurtInfo:GetResistCritMultiple()) / 10000))
+	return 2 + (attackInfo:GetCritDamRate() - hurtInfo:GetCritResistDamRate()) / 10000
 end
 
 -- 暴击伤害=暴击伤害倍数*普通伤害
@@ -205,5 +200,14 @@ end
 -- return
 --		反弹伤害
 function damageReturned(damage, hurtInfo)
-	return math.floor(damage * hurtInfo:GetDamageReturned() / 10000)
+	return math.floor(damage * hurtInfo:GetDamageReturnRate() / 10000)
+end
+
+-- 吸血
+-- @param damage: 最终伤害
+-- @param casterInfo: 攻击方
+-- return
+--		吸血值
+function damageVampiric(damage, casterInfo)
+	return math.floor(damage * casterInfo:GetVampiricRate() / 10000)
 end

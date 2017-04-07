@@ -1,5 +1,6 @@
 
 local XIULIANCHANG_MAP_ID = 3005
+local ROBOT_CHEST_NUM = 3
 --C++接口
 function PlayerInfo:LogoutBackupCultivation()
 	playerLib.SetCultivation(self:GetGuid(), self:GetCultivationStartTime(),self:GetCultivationLostInfo(),self:GetWeapon(),self:GetAvatar(),self:GetDivine(),self:GetVIP())
@@ -355,15 +356,21 @@ function PlayerInfo:GetCultivationRivalsInfo()
 	end
 	local list = {}
 	for i=0,3 do
-		local guid = 	self:GetCultivationRivalGuid(i)
-		local token = string.split(guid,'|')
+		local info = 	self:GetCultivationRivalGuid(i)
+		local temp = string.split(info,'@')
+		if #temp ~= 2 then
+			return
+		end
+		local token = string.split(temp[1],'|')
 		if #token ~= 2 then
 			return
 		end
-		local rank = tonumber(token[1])
+		local rank = 0
+		local guid = token[1]
 		local robot_id = tonumber(token[2])
+		local content = temp[2]
 
-		if rank ~= 0 then --斗剑台排行对应人物
+		if rank ~= 0 then --斗剑台排行对应人物 --此if部分已无用
 			local config = globalCounter:GetRankInfo(rank)
 			local stru = cultivation_rivals_info_t .new()
 			stru.index	= i
@@ -374,7 +381,7 @@ function PlayerInfo:GetCultivationRivalsInfo()
 			stru.divine	= config.divine
 			stru.force	= config.force
 			if string.len(config.guid) <= 0 then
-				stru.chest = 3
+				stru.chest = ROBOT_CHEST_NUM
 			else
 				local vip = config.vip
 				local start_time = self:GetCultivationIndex(config.guid,0)  --若未开启 则生成假人
@@ -410,7 +417,7 @@ function PlayerInfo:GetCultivationRivalsInfo()
 			stru.gender = config.gender
 			table.insert(list, stru)
 			
-		else --修炼场机器人
+		elseif robot_id ~= 0 then --修炼场机器人
 			local config = tb_xiulianchang_dummy[robot_id]
 			local stru = cultivation_rivals_info_t .new()
 			stru.index	= i
@@ -420,8 +427,74 @@ function PlayerInfo:GetCultivationRivalsInfo()
 			stru.avatar	= config.avatar
 			stru.divine	= config.divine
 			stru.force	= config.force
-			stru.chest	= 3 
+			stru.chest	= ROBOT_CHEST_NUM 
 			stru.gender	= config.gender
+			table.insert(list, stru)
+		else --从content中获取
+			local config = GetDummyInfoFromContent(content)
+			local tempcontent = ''
+			if string.len(config.guid) > 0 then --玩家则更新数据
+				local data = {}
+				data.name = 'Handle_GetCultivationRivalsInfo'
+				data.callback_guid = config.guid
+				data.my_guid = self:GetGuid()
+				function data.fun (data, objs)
+					outFmtDebug("callbacked ===================")
+					local targetPlayer = objs[data.callback_guid]
+					if not targetPlayer then return end
+					outFmtDebug("target player = %s", targetPlayer:GetGuid())
+					
+					local tempconfig = targetPlayer:GetDummyInfo()
+					tempcontent =  JoinDummyInfoIntoContent(data.callback_guid,tempconfig)
+				end
+				GetObjects(data)
+			end
+			if tempcontent ~= '' then
+				config = GetDummyInfoFromContent(tempcontent)
+			end
+			local stru = cultivation_rivals_info_t .new()
+			stru.index	= i
+			stru.name 	= config.name
+			stru.level	= config.level
+			stru.weapon	= config.weapon
+			stru.avatar	= config.avatar
+			stru.divine	= config.divine
+			stru.force	= config.force
+			if string.len(config.guid) <= 0 then
+				stru.chest = ROBOT_CHEST_NUM
+			else
+				local vip = config.vip
+				local start_time = self:GetCultivationIndex(config.guid,0)  --若未开启 则生成假人
+				local lost_info = self:GetCultivationIndex(config.guid,1)
+				if start_time == 0 and lost_info == 0 then
+					stru.chest = 1
+				else
+					local lost_list = self:LostInfoToList(lost_info)
+					local vip_info = tb_xiulianchang_vip[vip]
+					local time_limit = vip_info.time_limit
+					--计算修炼时间
+					local cultivation_time = os.time() - start_time
+					
+					if cultivation_time < tb_xiulianchang_base[1].get_reward_time_limit then
+						stru.chest	= 0
+					else
+						if cultivation_time > time_limit then
+							cultivation_time = time_limit
+						end
+						local count = 0
+						for index,info in ipairs(tb_xiulianchang_reward) do
+							if cultivation_time >= info.time and not IsKeyInTable(index,lost_list) then
+								count = count + 1
+								
+							end
+						end
+						stru.chest = count 
+					end
+				end
+				
+				
+			end
+			stru.gender = config.gender
 			table.insert(list, stru)
 		end
 	end
@@ -555,11 +628,30 @@ function PlayerInfo:RefreshCultivationRivals()
 		
 		local l = rank - range[ 2 ]
 		local r = rank - range[ 1 ]
+		if l <=0 then
+			l = 1
+		end
+		if r >= MAX_DOUJIANTAI_RANK_COUNT +1 then
+			r = MAX_DOUJIANTAI_RANK_COUNT
+		end
 		
 		local rank = randInt(l, r)
+		--rank = 924 --测试固定rank敌人
+		
+		if  rank == player_rank then
+			outFmtDebug('RefreshCultivationRivals: error rank == player_rank')
+			return
+		end
 		if rank > 0 then
 			local config = globalCounter:GetRankInfo(rank)
-			table.insert(dict, rank .. '|0' ) --第一段记录斗剑台名次 第二段为0
+			if string.len(config.guid) > 0 then
+				local content =  JoinDummyInfoIntoContent(config.guid,config)
+				table.insert(dict, config.guid .. '|0@'..content ) --第一段记录斗剑台人物guid 第二段为0 第三段为玩家content
+			else
+				local content =  JoinDummyInfoIntoContent('',config)
+				table.insert(dict,'|0@'..content ) --第一段记录空串 第二段为0 第三段为机器人content
+			end
+			
 		end
 	end
 	
@@ -567,13 +659,13 @@ function PlayerInfo:RefreshCultivationRivals()
 	for i = 1, robot_count do
 		local robot_range = robot_ranges[i]
 		local robot_index = randInt(robot_range[1], robot_range[2])
-		table.insert(dict, '0|' .. robot_index) --第一段为0 第二段为修炼机器人id
+		table.insert(dict, '|' .. robot_index..'@') --第一段为空串 第二段为修炼机器人id 第三段为空串
 	end
 	
 	
-	--dict[1] = '985|0' --测试固定rank敌人
+	--dict[1] = '966|0' --测试固定rank敌人
 	for i = 1, #dict do
-		--outFmtDebug("RefreshCultivationRivals: new rival_%d guid : %s",i,dict[i])
+		outFmtDebug("RefreshCultivationRivals: new rival_%d guid : %s",i,dict[i])
 		self:SetCultivationRivalGuid(i-1,dict[i])  
 	end
 	self:SetCultivationLastRefreshTime(os.time())
@@ -599,13 +691,20 @@ function PlayerInfo:PlunderCultivationRival(index)
 	--取得对手guid 获取角色信息
 	--进战斗相关处理
 	local info = self:GetCultivationRivalGuid(index)
-	local token = string.split(info,'|')
+	local temp = string.split(info,'@')
+	if #temp ~= 2 then
+		return
+	end
+	local token = string.split(temp[1],'|')
+	
 	if #token ~= 2 then
 		return
 	end
-	local rank = tonumber(token[1])
+	local rank = 0
+	local guid = token[1]
 	local robot_id = tonumber(token[2])
-	local generalId = string.format("%d|%s|%d|%d|%s@%s", os.time(), self:GetGuid(), rank, robot_id,'','')
+	local content = temp[2]
+	local generalId = string.format("%d|%s|%d|%d|%s@%s", os.time(), self:GetGuid(), rank, robot_id,guid,content)
 	local x = tb_xiulianchang_base[ 1 ].bornPos[ 1 ][ 1 ]
 	local y = tb_xiulianchang_base[ 1 ].bornPos[ 1 ][ 2 ]
 	-- 发起传送
@@ -804,7 +903,7 @@ function PlayerInfo:PlunderFinish(data, info)
 			local lost_chest = 0
 			table.insert(rewards,{Item_Loot_Exp,exp_reward}) --加经验
 			
-			for i = 3,1,-1 do
+			for i = ROBOT_CHEST_NUM,1,-1 do
 				local info = tb_xiulianchang_reward[i]
 				
 				local random = randInt(1,10000)
@@ -839,9 +938,9 @@ function PlayerInfo:PlunderFinish(data, info)
 		end
 		
 	elseif result == GlobalCounter.LOSE then
+		local list = {}
+		self:call_show_cultivation_result_list(result,enemy_name,list)
 		if string.len(guid) > 0 then--给对方玩家添加记录
-			local list = {}
-			self:call_show_cultivation_result_list(result,enemy_name,list)
 			local data = {}
 			data.name = 'Handle_PlunderFinish'
 			data.callback_guid = guid

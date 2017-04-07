@@ -164,7 +164,7 @@ function InstanceKuafuXianfu:OnMonsterRefresh()
 				)
 				-- ±êÊ¶Îªboss¹Ö
 				local creatureInfo = UnitInfo:new{ptr = creature}
-				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
+				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
 				
 				local place = string.char(64+indx)
 				

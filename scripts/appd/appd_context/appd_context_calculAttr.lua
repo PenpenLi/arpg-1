@@ -1,249 +1,379 @@
 local protocols = require('share.protocols')
 
---获得当前生命
+-- 获得当前生命
 function PlayerInfo:GetHealth()
 	return self:GetDouble(PLAYER_FIELD_HEALTH)
 end
 
---设置当前生命
-function PlayerInfo:SetHealth(val)
-	self:SetDouble(PLAYER_FIELD_HEALTH, val)
+-- 获得最大生命
+function PlayerInfo:GetMaxHealth()
+	return self:GetDouble(PLAYER_FIELD_MAX_HEALTH)
 end
 
---获得最大生命
-function PlayerInfo:GetMaxhealth()
-	return self:GetDouble(PLAYER_FIELD_MAXHEALTH)
-end
-
---设置最大生命
-function PlayerInfo:SetMaxhealth(val)
-	self:SetDouble(PLAYER_FIELD_MAXHEALTH, val)
---	self:SetHealth(val)
-end
-
---获得攻击力
+-- 获得攻击力
 function PlayerInfo:GetDamage()
 	return self:GetDouble(PLAYER_FIELD_DAMAGE)
 end
 
---设置攻击力
-function PlayerInfo:SetDamage(val)
-	self:SetDouble(PLAYER_FIELD_DAMAGE, val)
-end
-
---获得防御力
+-- 获得防御力
 function PlayerInfo:GetArmor()
 	return self:GetDouble(PLAYER_FIELD_ARMOR)
 end
 
---设置防御力
-function PlayerInfo:SetArmor(val)
-	self:SetDouble(PLAYER_FIELD_ARMOR, val)
-end
-
---获得命中
+-- 获得命中
 function PlayerInfo:GetHit()
 	return self:GetDouble(PLAYER_FIELD_HIT)
 end
 
---设置命中
-function PlayerInfo:SetHit(val)
-	self:SetDouble(PLAYER_FIELD_HIT, val)
+-- 获得闪避
+function PlayerInfo:GetMiss()
+	return self:GetDouble(PLAYER_FIELD_MISS)
 end
 
---获得闪避
-function PlayerInfo:GetDodge()
-	return self:GetDouble(PLAYER_FIELD_DODGE)
-end
-
---设置闪避
-function PlayerInfo:SetDodge(val)
-	self:SetDouble(PLAYER_FIELD_DODGE, val)
-end
-
---获得暴击
+-- 获得暴击
 function PlayerInfo:GetCrit()
 	return self:GetDouble(PLAYER_FIELD_CRIT)
 end
 
---设置暴击
-function PlayerInfo:SetCrit(val)
-	self:SetDouble(PLAYER_FIELD_CRIT, val)
-end
-
---获得坚韧
+-- 获得坚韧
 function PlayerInfo:GetTough()
 	return self:GetDouble(PLAYER_FIELD_TOUGH)
 end
 
---设置坚韧
-function PlayerInfo:SetTough(val)
-	self:SetDouble(PLAYER_FIELD_TOUGH, val)
-end
-
---获得攻击速度
+-- 获得攻击速度
 function PlayerInfo:GetAttackSpeed()
 	return self:GetDouble(PLAYER_FIELD_ATTACK_SPEED)
 end
 
---设置攻击速度
-function PlayerInfo:SetAttackSpeed(val)
-	self:SetDouble(PLAYER_FIELD_ATTACK_SPEED, val)
-end
-
---获得伤害加深(万分比)
-function PlayerInfo:GetAmplifyDamage()
-	return self:GetDouble(PLAYER_FIELD_AMPLIFY_DAMAGE)
-end
-
---设置伤害加深(万分比)
-function PlayerInfo:SetAmplifyDamage(val)
-	self:SetDouble(PLAYER_FIELD_AMPLIFY_DAMAGE, val)
-end
-
---获得忽视防御(万分比)
-function PlayerInfo:GetIgnoreDefense()
-	return self:GetDouble(PLAYER_FIELD_IGNORE_DEFENSE)
-end
-
---设置忽视防御(万分比)
-function PlayerInfo:SetIgnoreDefense(val)
-	self:SetDouble(PLAYER_FIELD_IGNORE_DEFENSE, val)
-end
-
---获得伤害减免(万分比)
-function PlayerInfo:GetDamageResist()
-	return self:GetDouble(PLAYER_FIELD_DAMAGE_RESIST)
-end
-
---设置伤害减免(万分比)
-function PlayerInfo:SetDamageResist(val)
-	self:SetDouble(PLAYER_FIELD_DAMAGE_RESIST, val)
-end
-
---获得反弹伤害(万分比)
-function PlayerInfo:GetDamageReturned()
-	return self:GetDouble(PLAYER_FIELD_DAMAGE_RETURNED)
-end
-
---设置反弹伤害(万分比)
-function PlayerInfo:SetDamageReturned(val)
-	self:SetDouble(PLAYER_FIELD_DAMAGE_RETURNED, val)
-end
-
---获得命中率加成(万分比)
-function PlayerInfo:GetHitRate()
-	return self:GetDouble(PLAYER_FIELD_HIT_RATE)
-end
-
---设置命中率加成(万分比)
-function PlayerInfo:SetHitRate(val)
-	self:SetDouble(PLAYER_FIELD_HIT_RATE, val)
-end
-
---获得闪避率加成(万分比)
-function PlayerInfo:GetDodgeRate()
-	return self:GetDouble(PLAYER_FIELD_DODGE_RATE)
-end
-
---设置闪避率加成(万分比)
-function PlayerInfo:SetDodgeRate(val)
-	self:SetDouble(PLAYER_FIELD_DODGE_RATE, val)
-end
-
---获得暴击率加成(万分比)
-function PlayerInfo:GetCritRate()
-	return self:GetDouble(PLAYER_FIELD_CRIT_RATE)
-end
-
---设置暴击率加成(万分比)
-function PlayerInfo:SetCritRate(val)
-	self:SetDouble(PLAYER_FIELD_CRIT_RATE, val)
-end
-
---获得抗暴率加成(万分比)
-function PlayerInfo:GetCriticalResistRate()
-	return self:GetDouble(PLAYER_FIELD_CRITICAL_RESIST_RATE)
-end
-
---设置抗暴率加成(万分比)
-function PlayerInfo:SetCriticalResistRate(val)
-	self:SetDouble(PLAYER_FIELD_CRITICAL_RESIST_RATE, val)
-end
-
---获得暴击伤害倍数(万分比)
-function PlayerInfo:GetDamageCritMultiple()
-	return self:GetDouble(PLAYER_FIELD_DAMAGE_CRIT_MULTIPLE)
-end
-
---设置暴击伤害倍数(万分比)
-function PlayerInfo:SetDamageCritMultiple(val)
-	self:SetDouble(PLAYER_FIELD_DAMAGE_CRIT_MULTIPLE, val)
-end
-
---获得降暴伤害倍数(万分比)
-function PlayerInfo:GetResistCritMultiple()
-	return self:GetDouble(PLAYER_FIELD_RESIST_CRIT_MULTIPLE)
-end
-
---设置降暴伤害倍数(万分比)
-function PlayerInfo:SetResistCritMultiple(val)
-	self:SetDouble(PLAYER_FIELD_RESIST_CRIT_MULTIPLE, val)
-end
-
---获得移动速度
+-- 获得移动速度
 function PlayerInfo:GetMoveSpeed()
 	return self:GetDouble(PLAYER_FIELD_MOVE_SPEED)
 end
 
---设置移动速度
+-- 获得忽视防御
+function PlayerInfo:GetIgnoreArmor()
+	return self:GetDouble(PLAYER_FIELD_IGNORE_ARMOR)
+end
+
+-- 获得忽视闪避
+function PlayerInfo:GetIgnoreMiss()
+	return self:GetDouble(PLAYER_FIELD_IGNORE_MISS)
+end
+
+-- 获得生命值回复
+function PlayerInfo:GetRecovery()
+	return self:GetDouble(PLAYER_FIELD_RECOVERY)
+end
+
+-- 获得伤害加深(万分比)
+function PlayerInfo:GetDamageAmplifyRate()
+	return self:GetDouble(PLAYER_FIELD_DAMAGE_AMPLIFY_RATE)
+end
+
+-- 获得伤害减免(万分比)
+function PlayerInfo:GetDamageResistRate()
+	return self:GetDouble(PLAYER_FIELD_DAMAGE_RESIST_RATE)
+end
+
+-- 获得反弹伤害(万分比)
+function PlayerInfo:GetDamageReturnRate()
+	return self:GetDouble(PLAYER_FIELD_DAMAGE_RETURN_RATE)
+end
+
+-- 获得吸血光环(万分比)
+function PlayerInfo:GetVampiricRate()
+	return self:GetDouble(PLAYER_FIELD_VAMPIRIC_RATE)
+end
+
+-- 获得回复效率(万分比)
+function PlayerInfo:GetRecoveryRate()
+	return self:GetDouble(PLAYER_FIELD_RECOVERY_RATE)
+end
+
+-- 获得暴击率(万分比)
+function PlayerInfo:GetCritRate()
+	return self:GetDouble(PLAYER_FIELD_CRIT_RATE)
+end
+
+-- 获得抗暴率(万分比)
+function PlayerInfo:GetCritResistRate()
+	return self:GetDouble(PLAYER_FIELD_CRIT_RESIST_RATE)
+end
+
+-- 获得暴击伤害倍数(万分比)
+function PlayerInfo:GetCritDamRate()
+	return self:GetDouble(PLAYER_FIELD_CRIT_DAM_RATE)
+end
+
+-- 获得降暴伤害倍数(万分比)
+function PlayerInfo:GetCritResistDamRate()
+	return self:GetDouble(PLAYER_FIELD_CRIT_RESIST_DAM_RATE)
+end
+
+-- 获得命中率(万分比)
+function PlayerInfo:GetHitRate()
+	return self:GetDouble(PLAYER_FIELD_HIT_RATE)
+end
+
+-- 获得闪避率(万分比)
+function PlayerInfo:GetMissRate()
+	return self:GetDouble(PLAYER_FIELD_MISS_RATE)
+end
+
+-- 获得眩晕
+function PlayerInfo:GetStunRate()
+	return self:GetDouble(PLAYER_FIELD_STUN_RATE)
+end
+
+-- 获得定身
+function PlayerInfo:GetRootsRate()
+	return self:GetDouble(PLAYER_FIELD_ROOTS_RATE)
+end
+
+-- 获得沉默
+function PlayerInfo:GetSilenceRate()
+	return self:GetDouble(PLAYER_FIELD_SILENCE_RATE)
+end
+
+-- 获得混乱
+function PlayerInfo:GetChaosRate()
+	return self:GetDouble(PLAYER_FIELD_CHAOS_RATE)
+end
+
+-- 获得魅惑
+function PlayerInfo:GetCharmRate()
+	return self:GetDouble(PLAYER_FIELD_CHARM_RATE)
+end
+
+-- 获得控制增强
+function PlayerInfo:GetControlEnhanceRate()
+	return self:GetDouble(PLAYER_FIELD_CONTROL_ENHANCE_RATE)
+end
+
+-- 获得控制减免
+function PlayerInfo:GetControlResistRate()
+	return self:GetDouble(PLAYER_FIELD_CONTROL_RESIST_RATE)
+end
+
+-- 设置当前生命
+function PlayerInfo:SetHealth(val)
+	self:SetDouble(PLAYER_FIELD_HEALTH, val)
+end
+
+-- 设置最大生命
+function PlayerInfo:SetMaxHealth(val)
+	self:SetDouble(PLAYER_FIELD_MAX_HEALTH, val)
+end
+
+-- 设置攻击力
+function PlayerInfo:SetDamage(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE, val)
+end
+
+-- 设置防御力
+function PlayerInfo:SetArmor(val)
+	self:SetDouble(PLAYER_FIELD_ARMOR, val)
+end
+
+-- 设置命中
+function PlayerInfo:SetHit(val)
+	self:SetDouble(PLAYER_FIELD_HIT, val)
+end
+
+-- 设置闪避
+function PlayerInfo:SetMiss(val)
+	self:SetDouble(PLAYER_FIELD_MISS, val)
+end
+
+-- 设置暴击
+function PlayerInfo:SetCrit(val)
+	self:SetDouble(PLAYER_FIELD_CRIT, val)
+end
+
+-- 设置坚韧
+function PlayerInfo:SetTough(val)
+	self:SetDouble(PLAYER_FIELD_TOUGH, val)
+end
+
+-- 设置攻击速度
+function PlayerInfo:SetAttackSpeed(val)
+	self:SetDouble(PLAYER_FIELD_ATTACK_SPEED, val)
+end
+
+-- 设置移动速度
 function PlayerInfo:SetMoveSpeed(val)
 	self:SetDouble(PLAYER_FIELD_MOVE_SPEED, val)
 end
 
--- PlayerInfo的属性映射方法
-PlayerInfo_Set_Attr_Func = {
-	[EQUIP_ATTR_MAXHEALTH] = PlayerInfo.SetMaxhealth,
-	[EQUIP_ATTR_DAMAGE] = PlayerInfo.SetDamage,
-	[EQUIP_ATTR_ARMOR] = PlayerInfo.SetArmor,
-	[EQUIP_ATTR_HIT] = PlayerInfo.SetHit,
-	[EQUIP_ATTR_DODGE] = PlayerInfo.SetDodge,
-	[EQUIP_ATTR_CRIT] = PlayerInfo.SetCrit,
-	[EQUIP_ATTR_TOUGH] = PlayerInfo.SetTough,
-	[EQUIP_ATTR_ATTACK_SPEED] = PlayerInfo.SetAttackSpeed,
-	[EQUIP_ATTR_MOVE_SPEED] = PlayerInfo.SetMoveSpeed,
-	[EQUIP_ATTR_AMPLIFY_DAMAGE] = PlayerInfo.SetAmplifyDamage,
-	[EQUIP_ATTR_IGNORE_DEFENSE] = PlayerInfo.SetIgnoreDefense,
-	[EQUIP_ATTR_DAMAGE_RESIST] = PlayerInfo.SetDamageResist,
-	[EQUIP_ATTR_DAMAGE_RETURNED] = PlayerInfo.SetDamageReturned,
-	[EQUIP_ATTR_HIT_RATE] = PlayerInfo.SetHitRate,
-	[EQUIP_ATTR_DODGE_RATE] = PlayerInfo.SetDodgeRate,
-	[EQUIP_ATTR_CRIT_RATE] = PlayerInfo.SetCritRate,
-	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = PlayerInfo.SetCriticalResistRate,
-	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = PlayerInfo.SetDamageCritMultiple,
-	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PlayerInfo.SetResistCritMultiple,
+-- 设置忽视防御
+function PlayerInfo:SetIgnoreArmor(val)
+	self:SetDouble(PLAYER_FIELD_IGNORE_ARMOR, val)
+end
+
+-- 设置忽视闪避
+function PlayerInfo:SetIgnoreMiss(val)
+	self:SetDouble(PLAYER_FIELD_IGNORE_MISS, val)
+end
+
+-- 设置生命值回复
+function PlayerInfo:SetRecovery(val)
+	self:SetDouble(PLAYER_FIELD_RECOVERY, val)
+end
+
+-- 设置伤害加深(万分比)
+function PlayerInfo:SetDamageAmplifyRate(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_AMPLIFY_RATE, val)
+end
+
+-- 设置伤害减免(万分比)
+function PlayerInfo:SetDamageResistRate(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_RESIST_RATE, val)
+end
+
+-- 设置反弹伤害(万分比)
+function PlayerInfo:SetDamageReturnRate(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_RETURN_RATE, val)
+end
+
+-- 设置吸血光环(万分比)
+function PlayerInfo:SetVampiricRate(val)
+	self:SetDouble(PLAYER_FIELD_VAMPIRIC_RATE, val)
+end
+
+-- 设置回复效率(万分比)
+function PlayerInfo:SetRecoveryRate(val)
+	self:SetDouble(PLAYER_FIELD_RECOVERY_RATE, val)
+end
+
+-- 设置暴击率(万分比)
+function PlayerInfo:SetCritRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_RATE, val)
+end
+
+-- 设置抗暴率(万分比)
+function PlayerInfo:SetCritResistRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_RESIST_RATE, val)
+end
+
+-- 设置暴击伤害倍数(万分比)
+function PlayerInfo:SetCritDamRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_DAM_RATE, val)
+end
+
+-- 设置降暴伤害倍数(万分比)
+function PlayerInfo:SetCritResistDamRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_RESIST_DAM_RATE, val)
+end
+
+-- 设置命中率(万分比)
+function PlayerInfo:SetHitRate(val)
+	self:SetDouble(PLAYER_FIELD_HIT_RATE, val)
+end
+
+-- 设置闪避率(万分比)
+function PlayerInfo:SetMissRate(val)
+	self:SetDouble(PLAYER_FIELD_MISS_RATE, val)
+end
+
+-- 设置眩晕
+function PlayerInfo:SetStunRate(val)
+	self:SetDouble(PLAYER_FIELD_STUN_RATE, val)
+end
+
+-- 设置定身
+function PlayerInfo:SetRootsRate(val)
+	self:SetDouble(PLAYER_FIELD_ROOTS_RATE, val)
+end
+
+-- 设置沉默
+function PlayerInfo:SetSilenceRate(val)
+	self:SetDouble(PLAYER_FIELD_SILENCE_RATE, val)
+end
+
+-- 设置混乱
+function PlayerInfo:SetChaosRate(val)
+	self:SetDouble(PLAYER_FIELD_CHAOS_RATE, val)
+end
+
+-- 设置魅惑
+function PlayerInfo:SetCharmRate(val)
+	self:SetDouble(PLAYER_FIELD_CHARM_RATE, val)
+end
+
+-- 设置控制增强
+function PlayerInfo:SetControlEnhanceRate(val)
+	self:SetDouble(PLAYER_FIELD_CONTROL_ENHANCE_RATE, val)
+end
+
+-- 设置控制减免
+function PlayerInfo:SetControlResistRate(val)
+	self:SetDouble(PLAYER_FIELD_CONTROL_RESIST_RATE, val)
+end
+
+local PlayerInfo_Get_Attr_Func = {
+	[EQUIP_ATTR_MAX_HEALTH] = PlayerInfo.GetMaxHealth,	--设置最大生命
+	[EQUIP_ATTR_DAMAGE] = PlayerInfo.GetDamage,	--设置攻击力
+	[EQUIP_ATTR_ARMOR] = PlayerInfo.GetArmor,	--设置防御力
+	[EQUIP_ATTR_HIT] = PlayerInfo.GetHit,	--设置命中
+	[EQUIP_ATTR_MISS] = PlayerInfo.GetMiss,	--设置闪避
+	[EQUIP_ATTR_CRIT] = PlayerInfo.GetCrit,	--设置暴击
+	[EQUIP_ATTR_TOUGH] = PlayerInfo.GetTough,	--设置坚韧
+	[EQUIP_ATTR_ATTACK_SPEED] = PlayerInfo.GetAttackSpeed,	--设置攻击速度
+	[EQUIP_ATTR_MOVE_SPEED] = PlayerInfo.GetMoveSpeed,	--设置移动速度
+	[EQUIP_ATTR_IGNORE_ARMOR] = PlayerInfo.GetIgnoreArmor,	--设置忽视防御
+	[EQUIP_ATTR_IGNORE_MISS] = PlayerInfo.GetIgnoreMiss,	--设置忽视闪避
+	[EQUIP_ATTR_RECOVERY] = PlayerInfo.GetRecovery,	--设置生命值回复
+	[EQUIP_ATTR_DAMAGE_AMPLIFY_RATE] = PlayerInfo.GetDamageAmplifyRate,	--设置伤害加深(万分比)
+	[EQUIP_ATTR_DAMAGE_RESIST_RATE] = PlayerInfo.GetDamageResistRate,	--设置伤害减免(万分比)
+	[EQUIP_ATTR_DAMAGE_RETURN_RATE] = PlayerInfo.GetDamageReturnRate,	--设置反弹伤害(万分比)
+	[EQUIP_ATTR_VAMPIRIC_RATE] = PlayerInfo.GetVampiricRate,	--设置吸血光环(万分比)
+	[EQUIP_ATTR_RECOVERY_RATE] = PlayerInfo.GetRecoveryRate,	--设置回复效率(万分比)
+	[EQUIP_ATTR_CRIT_RATE] = PlayerInfo.GetCritRate,	--设置暴击率(万分比)
+	[EQUIP_ATTR_CRIT_RESIST_RATE] = PlayerInfo.GetCritResistRate,	--设置抗暴率(万分比)
+	[EQUIP_ATTR_CRIT_DAM_RATE] = PlayerInfo.GetCritDamRate,	--设置暴击伤害倍数(万分比)
+	[EQUIP_ATTR_CRIT_RESIST_DAM_RATE] = PlayerInfo.GetCritResistDamRate,	--设置降暴伤害倍数(万分比)
+	[EQUIP_ATTR_HIT_RATE] = PlayerInfo.GetHitRate,	--设置命中率(万分比)
+	[EQUIP_ATTR_MISS_RATE] = PlayerInfo.GetMissRate,	--设置闪避率(万分比)
+	[EQUIP_ATTR_STUN_RATE] = PlayerInfo.GetStunRate,	--设置眩晕
+	[EQUIP_ATTR_ROOTS_RATE] = PlayerInfo.GetRootsRate,	--设置定身
+	[EQUIP_ATTR_SILENCE_RATE] = PlayerInfo.GetSilenceRate,	--设置沉默
+	[EQUIP_ATTR_CHAOS_RATE] = PlayerInfo.GetChaosRate,	--设置混乱
+	[EQUIP_ATTR_CHARM_RATE] = PlayerInfo.GetCharmRate,	--设置魅惑
+	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = PlayerInfo.GetControlEnhanceRate,	--设置控制增强
+	[EQUIP_ATTR_CONTROL_RESIST_RATE] = PlayerInfo.GetControlResistRate,	--设置控制减免
 }
 
-PlayerInfo_Get_Attr_Func = {
-	[EQUIP_ATTR_MAXHEALTH] = PlayerInfo.GetMaxhealth,
-	[EQUIP_ATTR_DAMAGE] = PlayerInfo.GetDamage,
-	[EQUIP_ATTR_ARMOR] = PlayerInfo.GetArmor,
-	[EQUIP_ATTR_HIT] = PlayerInfo.GetHit,
-	[EQUIP_ATTR_DODGE] = PlayerInfo.GetDodge,
-	[EQUIP_ATTR_CRIT] = PlayerInfo.GetCrit,
-	[EQUIP_ATTR_TOUGH] = PlayerInfo.GetTough,
-	[EQUIP_ATTR_ATTACK_SPEED] = PlayerInfo.GetAttackSpeed,
-	[EQUIP_ATTR_MOVE_SPEED] = PlayerInfo.GetMoveSpeed,
-	[EQUIP_ATTR_AMPLIFY_DAMAGE] = PlayerInfo.GetAmplifyDamage,
-	[EQUIP_ATTR_IGNORE_DEFENSE] = PlayerInfo.GetIgnoreDefense,
-	[EQUIP_ATTR_DAMAGE_RESIST] = PlayerInfo.GetDamageResist,
-	[EQUIP_ATTR_DAMAGE_RETURNED] = PlayerInfo.GetDamageReturned,
-	[EQUIP_ATTR_HIT_RATE] = PlayerInfo.GetHitRate,
-	[EQUIP_ATTR_DODGE_RATE] = PlayerInfo.GetDodgeRate,
-	[EQUIP_ATTR_CRIT_RATE] = PlayerInfo.GetCritRate,
-	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = PlayerInfo.GetCriticalResistRate,
-	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = PlayerInfo.GetDamageCritMultiple,
-	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = PlayerInfo.GetResistCritMultiple,
+local PlayerInfo_Set_Attr_Func = {
+	[EQUIP_ATTR_MAX_HEALTH] = PlayerInfo.SetMaxHealth,	--设置最大生命
+	[EQUIP_ATTR_DAMAGE] = PlayerInfo.SetDamage,	--设置攻击力
+	[EQUIP_ATTR_ARMOR] = PlayerInfo.SetArmor,	--设置防御力
+	[EQUIP_ATTR_HIT] = PlayerInfo.SetHit,	--设置命中
+	[EQUIP_ATTR_MISS] = PlayerInfo.SetMiss,	--设置闪避
+	[EQUIP_ATTR_CRIT] = PlayerInfo.SetCrit,	--设置暴击
+	[EQUIP_ATTR_TOUGH] = PlayerInfo.SetTough,	--设置坚韧
+	[EQUIP_ATTR_ATTACK_SPEED] = PlayerInfo.SetAttackSpeed,	--设置攻击速度
+	[EQUIP_ATTR_MOVE_SPEED] = PlayerInfo.SetMoveSpeed,	--设置移动速度
+	[EQUIP_ATTR_IGNORE_ARMOR] = PlayerInfo.SetIgnoreArmor,	--设置忽视防御
+	[EQUIP_ATTR_IGNORE_MISS] = PlayerInfo.SetIgnoreMiss,	--设置忽视闪避
+	[EQUIP_ATTR_RECOVERY] = PlayerInfo.SetRecovery,	--设置生命值回复
+	[EQUIP_ATTR_DAMAGE_AMPLIFY_RATE] = PlayerInfo.SetDamageAmplifyRate,	--设置伤害加深(万分比)
+	[EQUIP_ATTR_DAMAGE_RESIST_RATE] = PlayerInfo.SetDamageResistRate,	--设置伤害减免(万分比)
+	[EQUIP_ATTR_DAMAGE_RETURN_RATE] = PlayerInfo.SetDamageReturnRate,	--设置反弹伤害(万分比)
+	[EQUIP_ATTR_VAMPIRIC_RATE] = PlayerInfo.SetVampiricRate,	--设置吸血光环(万分比)
+	[EQUIP_ATTR_RECOVERY_RATE] = PlayerInfo.SetRecoveryRate,	--设置回复效率(万分比)
+	[EQUIP_ATTR_CRIT_RATE] = PlayerInfo.SetCritRate,	--设置暴击率(万分比)
+	[EQUIP_ATTR_CRIT_RESIST_RATE] = PlayerInfo.SetCritResistRate,	--设置抗暴率(万分比)
+	[EQUIP_ATTR_CRIT_DAM_RATE] = PlayerInfo.SetCritDamRate,	--设置暴击伤害倍数(万分比)
+	[EQUIP_ATTR_CRIT_RESIST_DAM_RATE] = PlayerInfo.SetCritResistDamRate,	--设置降暴伤害倍数(万分比)
+	[EQUIP_ATTR_HIT_RATE] = PlayerInfo.SetHitRate,	--设置命中率(万分比)
+	[EQUIP_ATTR_MISS_RATE] = PlayerInfo.SetMissRate,	--设置闪避率(万分比)
+	[EQUIP_ATTR_STUN_RATE] = PlayerInfo.SetStunRate,	--设置眩晕
+	[EQUIP_ATTR_ROOTS_RATE] = PlayerInfo.SetRootsRate,	--设置定身
+	[EQUIP_ATTR_SILENCE_RATE] = PlayerInfo.SetSilenceRate,	--设置沉默
+	[EQUIP_ATTR_CHAOS_RATE] = PlayerInfo.SetChaosRate,	--设置混乱
+	[EQUIP_ATTR_CHARM_RATE] = PlayerInfo.SetCharmRate,	--设置魅惑
+	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = PlayerInfo.SetControlEnhanceRate,	--设置控制增强
+	[EQUIP_ATTR_CONTROL_RESIST_RATE] = PlayerInfo.SetControlResistRate,	--设置控制减免
 }
 
 
@@ -333,6 +463,7 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	local prevlist = {}
 	-- 设置到playerBase中
 	for attrId, val in pairs(attrs) do
+		val = math.floor(val)
 		--local index = attrId - 1
 		--binLogLib.SetUInt32(attr_binlog, index, val)
 		local getFunc = PlayerInfo_Get_Attr_Func[attrId]

@@ -223,7 +223,7 @@ function InstanceInstBase:OnCheckProtectNPCQuest(indx, isTimeout)
 	for _, creature_ptr in pairs(entryList) do
 		local creatureInfo = UnitInfo:new {ptr = creature_ptr}
 		-- 目标未达到
-		if creatureInfo:GetHealth() * 100 < creatureInfo:GetMaxhealth() * target then
+		if creatureInfo:GetHealth() * 100 < creatureInfo:GetMaxHealth() * target then
 			ret = false
 			break
 		end

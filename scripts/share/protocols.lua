@@ -289,6 +289,9 @@ CMSG_PLUNDER_CULTIVATION_RIVAL		= 292	-- /*掠夺修炼场对手*/
 CMSG_REVENGE_CULTIVATION_RIVAL		= 293	-- /*反击复仇修炼场对手*/	
 CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT		= 294	-- /*增加修炼场剩余挑战次数*/	
 SMSG_SHOW_CULTIVATION_RESULT_LIST		= 295	-- /*返回修炼场战斗结果*/	
+CMSG_GET_LOGIN_ACTIVITY_REWARD		= 296	-- /*领取登录大礼奖励*/	
+SMSG_CAST_SPELL_START		= 300	-- /*通知客户端释放蓄力技能*/	
+CMSG_FINISH_OPTIONAL_GUIDE_STEP		= 301	-- /*完成非强制引导的步骤*/	
 
 
 ---------------------------------------------------------------------
@@ -10106,6 +10109,113 @@ function Protocols.unpack_show_cultivation_result_list (pkt)
 end
 
 
+-- /*领取登录大礼奖励*/	
+function Protocols.pack_get_login_activity_reward ( id)
+	local output = Packet.new(CMSG_GET_LOGIN_ACTIVITY_REWARD)
+	output:writeU32(id)
+	return output
+end
+
+-- /*领取登录大礼奖励*/	
+function Protocols.call_get_login_activity_reward ( playerInfo, id)
+	local output = Protocols.	pack_get_login_activity_reward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取登录大礼奖励*/	
+function Protocols.unpack_get_login_activity_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*通知客户端释放蓄力技能*/	
+function Protocols.pack_cast_spell_start ( caster_guid ,target_guid ,spellid ,data)
+	local output = Packet.new(SMSG_CAST_SPELL_START)
+	output:writeU32(caster_guid)
+	output:writeU32(target_guid)
+	output:writeI16(spellid)
+	output:writeUTF(data)
+	return output
+end
+
+-- /*通知客户端释放蓄力技能*/	
+function Protocols.call_cast_spell_start ( playerInfo, caster_guid ,target_guid ,spellid ,data)
+	local output = Protocols.	pack_cast_spell_start ( caster_guid ,target_guid ,spellid ,data)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*通知客户端释放蓄力技能*/	
+function Protocols.unpack_cast_spell_start (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.caster_guid = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.target_guid = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.spellid = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.data = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*完成非强制引导的步骤*/	
+function Protocols.pack_finish_optional_guide_step ( guide_id ,step)
+	local output = Packet.new(CMSG_FINISH_OPTIONAL_GUIDE_STEP)
+	output:writeU32(guide_id)
+	output:writeByte(step)
+	return output
+end
+
+-- /*完成非强制引导的步骤*/	
+function Protocols.call_finish_optional_guide_step ( playerInfo, guide_id ,step)
+	local output = Protocols.	pack_finish_optional_guide_step ( guide_id ,step)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*完成非强制引导的步骤*/	
+function Protocols.unpack_finish_optional_guide_step (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guide_id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.step = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -10387,6 +10497,9 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_revenge_cultivation_rival = self.call_revenge_cultivation_rival
 	playerInfo.call_buy_cultivation_left_plunder_count = self.call_buy_cultivation_left_plunder_count
 	playerInfo.call_show_cultivation_result_list = self.call_show_cultivation_result_list
+	playerInfo.call_get_login_activity_reward = self.call_get_login_activity_reward
+	playerInfo.call_cast_spell_start = self.call_cast_spell_start
+	playerInfo.call_finish_optional_guide_step = self.call_finish_optional_guide_step
 end
 
 local unpack_handler = {
@@ -10665,6 +10778,9 @@ local unpack_handler = {
 [CMSG_REVENGE_CULTIVATION_RIVAL] =  Protocols.unpack_revenge_cultivation_rival,
 [CMSG_BUY_CULTIVATION_LEFT_PLUNDER_COUNT] =  Protocols.unpack_buy_cultivation_left_plunder_count,
 [SMSG_SHOW_CULTIVATION_RESULT_LIST] =  Protocols.unpack_show_cultivation_result_list,
+[CMSG_GET_LOGIN_ACTIVITY_REWARD] =  Protocols.unpack_get_login_activity_reward,
+[SMSG_CAST_SPELL_START] =  Protocols.unpack_cast_spell_start,
+[CMSG_FINISH_OPTIONAL_GUIDE_STEP] =  Protocols.unpack_finish_optional_guide_step,
 
 }
 

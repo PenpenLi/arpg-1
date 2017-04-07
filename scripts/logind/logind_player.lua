@@ -61,7 +61,7 @@ function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, rever
 		local pos = config[reverse]
 		
 		--生命回满
-		self:SetHealth(self:GetMaxhealth())
+		self:SetHealth(self:GetMaxHealth())
 		-- 设置玩家的虚拟阵营
 		self:SetUInt32(PLAYER_INT_FIELD_VIRTUAL_CAMP, reverse)
 		local offsetX = randInt(-3, 3)
@@ -74,7 +74,7 @@ function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, rever
 		local pos = config.bornPos[1]
 		
 		--生命回满
-		self:SetHealth(self:GetMaxhealth())
+		self:SetHealth(self:GetMaxHealth())
 		local offset = config.offset
 		local offsetX = randInt(-offset, offset)
 		local offsetY = randInt(-offset, offset)
@@ -110,138 +110,200 @@ function DoMergeSomething()
 
 end
 
---生命
+-- 获得最大生命
+function LogindPlayer:GetMaxHealth()
+	return self:GetDouble(PLAYER_FIELD_MAX_HEALTH)
+end
+
+-- 设置当前生命
 function LogindPlayer:SetHealth(val)
 	self:SetDouble(PLAYER_FIELD_HEALTH, val)
 end
 
---设置最大生命
-function LogindPlayer:GetMaxhealth()
-	return self:GetDouble(PLAYER_FIELD_MAXHEALTH)
+-- 设置最大生命
+function LogindPlayer:SetMaxHealth(val)
+	self:SetDouble(PLAYER_FIELD_MAX_HEALTH, val)
 end
 
---设置最大生命
-function LogindPlayer:SetMaxhealth(val)
-	self:SetDouble(PLAYER_FIELD_MAXHEALTH, val)
-end
-
---设置攻击力
+-- 设置攻击力
 function LogindPlayer:SetDamage(val)
 	self:SetDouble(PLAYER_FIELD_DAMAGE, val)
 end
 
---设置防御力
+-- 设置防御力
 function LogindPlayer:SetArmor(val)
 	self:SetDouble(PLAYER_FIELD_ARMOR, val)
 end
 
---设置命中
+-- 设置命中
 function LogindPlayer:SetHit(val)
 	self:SetDouble(PLAYER_FIELD_HIT, val)
 end
 
---设置闪避
-function LogindPlayer:SetDodge(val)
-	self:SetDouble(PLAYER_FIELD_DODGE, val)
+-- 设置闪避
+function LogindPlayer:SetMiss(val)
+	self:SetDouble(PLAYER_FIELD_MISS, val)
 end
 
---设置暴击
+-- 设置暴击
 function LogindPlayer:SetCrit(val)
 	self:SetDouble(PLAYER_FIELD_CRIT, val)
 end
 
---设置坚韧
+-- 设置坚韧
 function LogindPlayer:SetTough(val)
 	self:SetDouble(PLAYER_FIELD_TOUGH, val)
 end
 
---设置攻击速度
+-- 设置攻击速度
 function LogindPlayer:SetAttackSpeed(val)
 	self:SetDouble(PLAYER_FIELD_ATTACK_SPEED, val)
 end
 
---设置移动速度
+-- 设置移动速度
 function LogindPlayer:SetMoveSpeed(val)
 	self:SetDouble(PLAYER_FIELD_MOVE_SPEED, val)
 end
 
---设置伤害加深(万分比)
-function LogindPlayer:SetAmplifyDamage(val)
-	self:SetDouble(PLAYER_FIELD_AMPLIFY_DAMAGE, val)
+-- 设置忽视防御
+function LogindPlayer:SetIgnoreArmor(val)
+	self:SetDouble(PLAYER_FIELD_IGNORE_ARMOR, val)
 end
 
---设置忽视防御(万分比)
-function LogindPlayer:SetIgnoreDefense(val)
-	self:SetDouble(PLAYER_FIELD_IGNORE_DEFENSE, val)
+-- 设置忽视闪避
+function LogindPlayer:SetIgnoreMiss(val)
+	self:SetDouble(PLAYER_FIELD_IGNORE_MISS, val)
 end
 
---设置伤害减免(万分比)
-function LogindPlayer:SetDamageResist(val)
-	self:SetDouble(PLAYER_FIELD_DAMAGE_RESIST, val)
+-- 设置生命值回复
+function LogindPlayer:SetRecovery(val)
+	self:SetDouble(PLAYER_FIELD_RECOVERY, val)
 end
 
---设置反弹伤害(万分比)
-function LogindPlayer:SetDamageReturned(val)
-	self:SetDouble(PLAYER_FIELD_DAMAGE_RETURNED, val)
+-- 设置伤害加深(万分比)
+function LogindPlayer:SetDamageAmplifyRate(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_AMPLIFY_RATE, val)
 end
 
---设置命中率加成(万分比)
-function LogindPlayer:SetHitRate(val)
-	self:SetDouble(PLAYER_FIELD_HIT_RATE, val)
+-- 设置伤害减免(万分比)
+function LogindPlayer:SetDamageResistRate(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_RESIST_RATE, val)
 end
 
---设置闪避率加成(万分比)
-function LogindPlayer:SetDodgeRate(val)
-	self:SetDouble(PLAYER_FIELD_DODGE_RATE, val)
+-- 设置反弹伤害(万分比)
+function LogindPlayer:SetDamageReturnRate(val)
+	self:SetDouble(PLAYER_FIELD_DAMAGE_RETURN_RATE, val)
 end
 
---设置暴击率加成(万分比)
+-- 设置吸血光环(万分比)
+function LogindPlayer:SetVampiricRate(val)
+	self:SetDouble(PLAYER_FIELD_VAMPIRIC_RATE, val)
+end
+
+-- 设置回复效率(万分比)
+function LogindPlayer:SetRecoveryRate(val)
+	self:SetDouble(PLAYER_FIELD_RECOVERY_RATE, val)
+end
+
+-- 设置暴击率(万分比)
 function LogindPlayer:SetCritRate(val)
 	self:SetDouble(PLAYER_FIELD_CRIT_RATE, val)
 end
 
---设置抗暴率加成(万分比)
-function LogindPlayer:SetCriticalResistRate(val)
-	self:SetDouble(PLAYER_FIELD_CRITICAL_RESIST_RATE, val)
+-- 设置抗暴率(万分比)
+function LogindPlayer:SetCritResistRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_RESIST_RATE, val)
 end
 
---设置暴击伤害倍数(万分比)
-function LogindPlayer:SetDamageCritMultiple(val)
-	self:SetDouble(PLAYER_FIELD_DAMAGE_CRIT_MULTIPLE, val)
+-- 设置暴击伤害倍数(万分比)
+function LogindPlayer:SetCritDamRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_DAM_RATE, val)
 end
 
---设置降暴伤害倍数(万分比)
-function LogindPlayer:SetResistCritMultiple(val)
-	self:SetDouble(PLAYER_FIELD_RESIST_CRIT_MULTIPLE, val)
+-- 设置降暴伤害倍数(万分比)
+function LogindPlayer:SetCritResistDamRate(val)
+	self:SetDouble(PLAYER_FIELD_CRIT_RESIST_DAM_RATE, val)
 end
 
--- 设置战力
-function LogindPlayer:SetForce(val)
-	self:SetDouble(PLAYER_FIELD_FORCE, val)
+-- 设置命中率(万分比)
+function LogindPlayer:SetHitRate(val)
+	self:SetDouble(PLAYER_FIELD_HIT_RATE, val)
 end
 
--- LogindPlayer的属性映射方法
-InitAttrFunc = {
-	[EQUIP_ATTR_MAXHEALTH] = LogindPlayer.SetMaxhealth,
-	[EQUIP_ATTR_DAMAGE] = LogindPlayer.SetDamage,
-	[EQUIP_ATTR_ARMOR] = LogindPlayer.SetArmor,
-	[EQUIP_ATTR_HIT] = LogindPlayer.SetHit,
-	[EQUIP_ATTR_DODGE] = LogindPlayer.SetDodge,
-	[EQUIP_ATTR_CRIT] = LogindPlayer.SetCrit,
-	[EQUIP_ATTR_TOUGH] = LogindPlayer.SetTough,
-	[EQUIP_ATTR_ATTACK_SPEED] = LogindPlayer.SetAttackSpeed,
-	[EQUIP_ATTR_MOVE_SPEED] = LogindPlayer.SetMoveSpeed,
-	[EQUIP_ATTR_AMPLIFY_DAMAGE] = LogindPlayer.SetAmplifyDamage,
-	[EQUIP_ATTR_IGNORE_DEFENSE] = LogindPlayer.SetIgnoreDefense,
-	[EQUIP_ATTR_DAMAGE_RESIST] = LogindPlayer.SetDamageResist,
-	[EQUIP_ATTR_DAMAGE_RETURNED] = LogindPlayer.SetDamageReturned,
-	[EQUIP_ATTR_HIT_RATE] = LogindPlayer.SetHitRate,
-	[EQUIP_ATTR_DODGE_RATE] = LogindPlayer.SetDodgeRate,
-	[EQUIP_ATTR_CRIT_RATE] = LogindPlayer.SetCritRate,
-	[EQUIP_ATTR_CRITICAL_RESIST_RATE] = LogindPlayer.SetCriticalResistRate,
-	[EQUIP_ATTR_DAMAGE_CRIT_MULTIPLE] = LogindPlayer.SetDamageCritMultiple,
-	[EQUIP_ATTR_RESIST_CRIT_MULTIPLE] = LogindPlayer.SetResistCritMultiple,
+-- 设置闪避率(万分比)
+function LogindPlayer:SetMissRate(val)
+	self:SetDouble(PLAYER_FIELD_MISS_RATE, val)
+end
+
+-- 设置眩晕
+function LogindPlayer:SetStunRate(val)
+	self:SetDouble(PLAYER_FIELD_STUN_RATE, val)
+end
+
+-- 设置定身
+function LogindPlayer:SetRootsRate(val)
+	self:SetDouble(PLAYER_FIELD_ROOTS_RATE, val)
+end
+
+-- 设置沉默
+function LogindPlayer:SetSilenceRate(val)
+	self:SetDouble(PLAYER_FIELD_SILENCE_RATE, val)
+end
+
+-- 设置混乱
+function LogindPlayer:SetChaosRate(val)
+	self:SetDouble(PLAYER_FIELD_CHAOS_RATE, val)
+end
+
+-- 设置魅惑
+function LogindPlayer:SetCharmRate(val)
+	self:SetDouble(PLAYER_FIELD_CHARM_RATE, val)
+end
+
+-- 设置控制增强
+function LogindPlayer:SetControlEnhanceRate(val)
+	self:SetDouble(PLAYER_FIELD_CONTROL_ENHANCE_RATE, val)
+end
+
+-- 设置控制减免
+function LogindPlayer:SetControlResistRate(val)
+	self:SetDouble(PLAYER_FIELD_CONTROL_RESIST_RATE, val)
+end
+
+local InitAttrFunc = {
+	[EQUIP_ATTR_MAX_HEALTH] = LogindPlayer.SetMaxHealth,	--设置最大生命
+	[EQUIP_ATTR_DAMAGE] = LogindPlayer.SetDamage,	--设置攻击力
+	[EQUIP_ATTR_ARMOR] = LogindPlayer.SetArmor,	--设置防御力
+	[EQUIP_ATTR_HIT] = LogindPlayer.SetHit,	--设置命中
+	[EQUIP_ATTR_MISS] = LogindPlayer.SetMiss,	--设置闪避
+	[EQUIP_ATTR_CRIT] = LogindPlayer.SetCrit,	--设置暴击
+	[EQUIP_ATTR_TOUGH] = LogindPlayer.SetTough,	--设置坚韧
+	[EQUIP_ATTR_ATTACK_SPEED] = LogindPlayer.SetAttackSpeed,	--设置攻击速度
+	[EQUIP_ATTR_MOVE_SPEED] = LogindPlayer.SetMoveSpeed,	--设置移动速度
+	[EQUIP_ATTR_IGNORE_ARMOR] = LogindPlayer.SetIgnoreArmor,	--设置忽视防御
+	[EQUIP_ATTR_IGNORE_MISS] = LogindPlayer.SetIgnoreMiss,	--设置忽视闪避
+	[EQUIP_ATTR_RECOVERY] = LogindPlayer.SetRecovery,	--设置生命值回复
+	[EQUIP_ATTR_DAMAGE_AMPLIFY_RATE] = LogindPlayer.SetDamageAmplifyRate,	--设置伤害加深(万分比)
+	[EQUIP_ATTR_DAMAGE_RESIST_RATE] = LogindPlayer.SetDamageResistRate,	--设置伤害减免(万分比)
+	[EQUIP_ATTR_DAMAGE_RETURN_RATE] = LogindPlayer.SetDamageReturnRate,	--设置反弹伤害(万分比)
+	[EQUIP_ATTR_VAMPIRIC_RATE] = LogindPlayer.SetVampiricRate,	--设置吸血光环(万分比)
+	[EQUIP_ATTR_RECOVERY_RATE] = LogindPlayer.SetRecoveryRate,	--设置回复效率(万分比)
+	[EQUIP_ATTR_CRIT_RATE] = LogindPlayer.SetCritRate,	--设置暴击率(万分比)
+	[EQUIP_ATTR_CRIT_RESIST_RATE] = LogindPlayer.SetCritResistRate,	--设置抗暴率(万分比)
+	[EQUIP_ATTR_CRIT_DAM_RATE] = LogindPlayer.SetCritDamRate,	--设置暴击伤害倍数(万分比)
+	[EQUIP_ATTR_CRIT_RESIST_DAM_RATE] = LogindPlayer.SetCritResistDamRate,	--设置降暴伤害倍数(万分比)
+	[EQUIP_ATTR_HIT_RATE] = LogindPlayer.SetHitRate,	--设置命中率(万分比)
+	[EQUIP_ATTR_MISS_RATE] = LogindPlayer.SetMissRate,	--设置闪避率(万分比)
+	[EQUIP_ATTR_STUN_RATE] = LogindPlayer.SetStunRate,	--设置眩晕
+	[EQUIP_ATTR_ROOTS_RATE] = LogindPlayer.SetRootsRate,	--设置定身
+	[EQUIP_ATTR_SILENCE_RATE] = LogindPlayer.SetSilenceRate,	--设置沉默
+	[EQUIP_ATTR_CHAOS_RATE] = LogindPlayer.SetChaosRate,	--设置混乱
+	[EQUIP_ATTR_CHARM_RATE] = LogindPlayer.SetCharmRate,	--设置魅惑
+	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = LogindPlayer.SetControlEnhanceRate,	--设置控制增强
+	[EQUIP_ATTR_CONTROL_RESIST_RATE] = LogindPlayer.SetControlResistRate,	--设置控制减免
 }
+
+
 
 --设置玩家初始信息
 function LogindPlayer:SetNewPlayerInfo()
@@ -254,7 +316,7 @@ function LogindPlayer:SetNewPlayerInfo()
 			if func ~= nil then
 				func(self, val[2])
 				-- 需要设置当前血量
-				if val[ 1 ] == EQUIP_ATTR_MAXHEALTH then
+				if val[ 1 ] == EQUIP_ATTR_MAX_HEALTH then
 					self:SetHealth(val[ 2 ])
 				end
 			end

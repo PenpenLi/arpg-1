@@ -98,6 +98,16 @@ function DoHandleSpellStart(caster, map_ptr, spell_slot, tar_x, tar_y, target, n
 		return false, 0
 	end
 	
+	--[[
+	--TODO:当策划填完表的时候 把这里的注释打开
+	outFmtInfo("show GetCurSpellTime = %d, now = %d", casterInfo:GetCurSpellTime(), nowtime)
+	-- 技能正在施法
+	if casterInfo:GetCurSpellTime() >= nowtime then
+		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST)
+		return false, 0
+	end
+	--]]
+	
 	--此技能已经在施法
 	if(unitLib.GetCurSpell(caster) ~= 0 and unitLib.GetCurSpell(caster) == current_id)then
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST)		
@@ -216,6 +226,50 @@ function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, uni
 		-- 如果是 自己加血, 别人扣血的给自己扣
 		elseif tb_skill_uplevel[index].skillEffectType == SKILL_EFFECT_TYPE_HUIXUE1 then
 			DoSpellCastHuiXue1(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+		else
+			--蓄力技能
+			local casterInfo = UnitInfo:new{ptr = caster}
+			local sing_time = tb_skill_base[spell_id].spell_time
+			if #sing_time > 0 then
+				if unit == nil then
+					handle_cast_add_unit_effect_boss(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data,sing_time)
+					local angle = unitLib.GetOrientation(caster)
+					if target then
+						local x, y = unitLib.GetPos(target)
+						angle = casterInfo:GetAngle(x, y)
+					end
+					local shifang = tb_skill_base[spell_id].target_type --技能释放类型
+					local alarmX, alarmY = unitLib.GetPos(caster)
+					if shifang == SPELL_SHIFANG_DIAN then
+						alarmX = dst_x
+						alarmY = dst_y
+					end
+					
+					casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id, {angle,alarmX,alarmY}, true)
+					return false, spell_id
+				else
+					if casterInfo:GetCurSpellId() == sing_time[ 1 ] then
+						SpellTargetType(caster,target,sing_time[ 1 ],spell_lv,dst_x,dst_y, allTargets, unit, data)
+						casterInfo:ClearCurSpell(true)
+						spell_id = GetRealSpellId(spell_id)
+					end
+				end
+			--不需要蓄力技能	
+			else
+				--[[
+				if(GetUnitTypeID(caster) == TYPEID_PLAYER 
+					or casterInfo:GetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
+					)then
+					local targetintguid = 0
+					if(target ~= nil)then
+						local targetInfo = UnitInfo:new{ptr = target}
+						targetintguid = targetInfo:GetIntGuid()
+					end
+					casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),targetintguid,spell_id,{dst_x,dst_y},true)
+				end
+				--]]
+				SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+			end
 		end
 		
 		-- 如果是玩家 且 是野外地图的话就看看会不会打断采集动作
@@ -233,7 +287,16 @@ function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, uni
 			end
 		end
 	end
-	return true
+	return true, spell_id
+end
+
+-- 如果是蓄力技能就拿到蓄力的id
+function GetRealSpellId(spell_id)
+	local params = tb_skill_base[spell_id].spell_time
+	if #params > 0 then
+		spell_id = params[ 1 ]
+	end
+	return spell_id
 end
 
 -- 敌方扣血, 自己加血
@@ -780,6 +843,9 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 		tar_y = math.floor(tar_y)
 	end
 	
+	-- 设置本次攻击的吸血值
+	casterInfo:SetCurrCastVampiric(0)
+	
 	-- 闪避
 	if not isHit(casterInfo, targetInfo) then
 		AddSpellCastinfo(caster, target, 0, HITINFO_MISS, spell_id, tar_x, tar_y)
@@ -809,9 +875,16 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 	
 	AddSpellCastinfo(caster, target, dam, hitInfo, spell_id, tar_x, tar_y)
 	--判断是否反弹伤害
-	if targetInfo:GetDamageReturned() > 0 then
+	if targetInfo:GetDamageReturnRate() > 0 then
 		local damReturned = damageReturned(dam, targetInfo)
 		AddSpellCastinfo(target, caster, damReturned, HITINFO_FANTANSHANGHAI, spell_id)
+	end
+	
+	-- 吸血
+	if casterInfo:GetVampiricRate() > 0 then
+		local heal = damageVampiric(dam, casterInfo)
+		-- 设置本次攻击的吸血值
+		casterInfo:SetCurrCastVampiric(heal)
 	end
 	
 	--处理技能触发buff

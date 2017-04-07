@@ -24,6 +24,8 @@ function UnitInfo:DoGetAppdDoSomething( ntype, data, str)
 		self:ToWaitingRoom()
 	elseif ntype == APPD_SCENED_WORLD_BOSS_ENTER then
 		self:ToWorldBossRoom(data)
+	elseif ntype == APPD_SCENED_REMIND_INSTANCE_ENTER then
+		self:ToRemindRoom(data, str)
 	end
 end
 
@@ -78,6 +80,15 @@ function UnitInfo:ToWorldBossRoom(line)
 	outFmtDebug("ToWorldBossRoom playerguid = %s, line = %d", self:GetPlayerGuid(), line)
 	
 	playerLib.Teleport(self.ptr, toMapId, toX, toY, line, "")
+end
+
+-- 传送到原地地图房间
+function UnitInfo:ToRemindRoom(mapid, gerneralId)
+	local toX, toY = unitLib.GetPos(self.ptr)
+	local map_ptr = unitLib.GetMap(self.ptr)
+	local lineNo = binLogLib.GetUInt32(map_ptr, MAP_INT_FIELD_LINE_NO)
+	gerneralId = gerneralId .. '|' .. lineNo
+	playerLib.Teleport(self.ptr, mapid, toX, toY, lineNo, gerneralId)
 end
 
 ----------------------------------------场景服需要做的-----------------------------------------------
