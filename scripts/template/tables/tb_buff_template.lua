@@ -19,8 +19,8 @@ tb_buff_template = {
 	[150] = {id = 150,name = "无敌",buff_type = 0,value = 0,duration = 0,frequency = 0,recalculation = 0,die_clear = 0,skill_id = 0,},
 	[151] = {id = 151,name = "隐身",buff_type = 0,value = 0,duration = 0,frequency = 0,recalculation = 0,die_clear = 0,skill_id = 0,},
 	[152] = {id = 152,name = "吟唱",buff_type = 0,value = 0,duration = 0,frequency = 0,recalculation = 0,die_clear = 0,skill_id = 0,},
-	[200] = {id = 200,name = "生命恢复",buff_type = 1,value = 10,duration = 12,frequency = 3,recalculation = 1,die_clear = 0,skill_id = 0,},
+	[200] = {id = 200,name = "生命恢复",buff_type = 31,value = 10,duration = 12,frequency = 3,recalculation = 1,die_clear = 0,skill_id = 0,},
 	[201] = {id = 201,name = "攻击增强",buff_type = 2,value = 20,duration = 10,frequency = 0,recalculation = 1,die_clear = 0,skill_id = 0,},
 	[202] = {id = 202,name = "防御增强",buff_type = 3,value = 20,duration = 10,frequency = 0,recalculation = 1,die_clear = 0,skill_id = 0,},
-	[203] = {id = 203,name = "暴击增强",buff_type = 4,value = 20,duration = 10,frequency = 0,recalculation = 1,die_clear = 0,skill_id = 0,},
+	[203] = {id = 203,name = "暴击增强",buff_type = 6,value = 20,duration = 10,frequency = 0,recalculation = 1,die_clear = 0,skill_id = 0,},
 }
