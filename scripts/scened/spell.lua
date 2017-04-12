@@ -752,6 +752,193 @@ function SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets
 	SetSkillStype(caster, spell_id)
 end
 
+--[[
+0:永久{0}											A
+1:属性改变{1,属性id,区间(a,b]}						A
+2:攻击命中敌人{2,命中时机(0:受伤害前,1:受伤害后)}	A
+3:受到攻击{3}										A
+4:死亡时触发{4}										A
+5:敌方死亡{5}										A
+6:受到buff的时候触发{6,buffid}						A
+7:敌方拥有某个buff的时候触发{7,buffid}				A
+
+--]]
+
+-- 进行计算被动的加成
+function OnPassiveEffect(caster_ptr, target_ptr, params, dispatchType, timing, dispatchParams)
+	local passiveInfos = dispatchPassiveSpell(caster_ptr, target_ptr, dispatchType, dispatchParams, timing)
+	for _, passiveInfo in ipairs(passiveInfos) do
+		PassiveRealEffect(caster_ptr, target_ptr, passiveInfo, params)
+	end
+end
+
+-- 触发被动技能的id
+function dispatchPassiveSpell(caster_ptr, target_ptr, dispatchType, dispatchParams, timing)
+	timing = timing or 0
+	local passiveInfos = {}
+	for i = UINT_INT_FIELD_PASSIVE_SPELL_START, UINT_INT_FIELD_PASSIVE_SPELL_END-1 do
+		local spellID	= binLogLib.GetUInt16(caster_ptr, i, 0)
+		local level		= binLogLib.GetUInt16(caster_ptr, i, 1)
+		if spellID > 0 then
+			local index		= tb_skill_base[spellID].uplevel_id[ 1 ] + level - 1
+			local config	= tb_skill_uplevel[index]
+			
+			local future = playerLib.GetSpellCD(caster_ptr, spellID)
+			if config.dispatch_condition[ 1 ] == dispatchType and getMsTime() >= future then
+				if #config.passive_type > 0 then
+					if dispatchType == PASSIVE_DISPATCH_TYPE_ATTR_CHANGE then
+						local attrId = config.dispatch_condition[ 2 ]
+						local rangea = config.dispatch_condition[ 3 ]
+						local rangeb = config.dispatch_condition[ 4 ]
+						
+						local binlogIndx = GetAttrUnitBinlogIndex(attrId)
+						-- 现在只计算血量
+						if attrId == EQUIP_ATTR_MAX_HEALTH then
+							local currHP = binLogLib.GetUInt32(UNIT_FIELD_HEALTH)
+							local maxHP  = binLogLib.GetUInt32(binlogIndx)
+							local rate = math.floor(currHP / maxHP * 100)
+							if rangea <= rate and rate <= rangeb then
+								table.insert(passiveInfos, {spellID, level})
+							end
+						end
+						
+					elseif dispatchType == PASSIVE_DISPATCH_TYPE_HIT then
+						if timing == config.dispatch_condition[ 2 ] then
+							table.insert(passiveInfos, {spellID, level})
+						end
+					elseif dispatchType == PASSIVE_DISPATCH_TYPE_ON_BUFF then
+						local buffId = config.dispatch_condition[ 2 ]
+						if dispatchParams[ 1 ] == buffId then
+							table.insert(passiveInfos, {spellID, level})
+						end
+					elseif dispatchType == PASSIVE_DISPATCH_TYPE_ENEMY_ON_BUFF then
+						local buffId = config.dispatch_condition[ 2 ]
+						if unitLib.HasBuff(target_ptr, buffId) then
+							table.insert(passiveInfos, {spellID, level})
+						end
+					else
+						table.insert(passiveInfos, {spellID, level})
+					end
+				end
+			end
+		end
+	end
+	
+	return passiveInfos
+end
+
+-- 被动技能的实际效果
+function PassiveRealEffect(caster_ptr, target_ptr, passiveInfo, params)
+	local spellID	= passiveInfo[ 1 ]
+	local level		= passiveInfo[ 2 ]
+	
+	local index		= tb_skill_base[spellID].uplevel_id[ 1 ] + level - 1
+	local config	= tb_skill_uplevel[index]
+	
+	local passiveEffect = config.passive_type
+	
+	local ac = false
+	
+	outFmtInfo("dispatch spellId = %d", spellID)
+	-- 受到伤害前: params = {spellId, spelllv, skillDamFactor, skillDamValue}
+	-- 受到伤害后: params = {spellId, spelllv}
+
+	if passiveEffect[ 1 ] == PASSIVE_EFFECT_TYPE_SPELL_AMPLIFY then
+		-- 只会在受到伤害前有效
+		-- 时机不对判断
+		if not params or #params ~= 4 then
+			return
+		end
+		-- 命中
+		if OnPassiveAvailableCheck(passiveEffect[ 2 ], params[ 1 ], config.effect_spells) then
+			params[ 3 ] = params[ 3 ] + passiveEffect[ 3 ]
+			params[ 4 ] = params[ 4 ] + passiveEffect[ 4 ]
+			ac = true
+		end
+		
+	elseif passiveEffect[ 1 ] == PASSIVE_EFFECT_TYPE_ADD_BUFF then
+		-- 只会在受到伤害后有效
+		-- 时机不对判断
+		if not params or #params ~= 2 then
+			return
+		end
+		-- 命中
+		if OnPassiveAvailableCheck(passiveEffect[ 2 ], params[ 1 ], config.effect_spells) then
+			local buffId = passiveEffect[ 4 ]
+			local lv	 = passiveEffect[ 5 ]
+			local duration = tb_buff_template[buffId].duration
+			local buffUnit = caster_ptr
+			if passiveEffect[ 3 ] == 1 then
+				buffUnit = target_ptr
+			end
+			SpelladdBuff(buffUnit, buffId, caster_ptr, lv, duration)
+			ac = true
+		end
+		
+	elseif passiveEffect[ 1 ] == PASSIVE_EFFECT_TYPE_CHANGE_SPELL then
+		-- 只会在受到伤害前有效
+		-- 时机不对判断
+		if not params or #params ~= 4 then
+			return
+		end
+		-- 命中
+		if OnPassiveAvailableCheck(passiveEffect[ 2 ], params[ 1 ], config.effect_spells) then
+			params[ 1 ] = passiveEffect[ 3 ]
+			params[ 2 ] = passiveEffect[ 4 ]
+			ac = true
+		end
+	
+	elseif passiveEffect[ 1 ] == PASSIVE_EFFECT_TYPE_PLAYER_LOOT_ATTR then
+		local unit_ptr = caster_ptr
+		if passiveEffect[ 2 ] == 1 then
+			unit_ptr = target_ptr
+		end
+		--{6,参照物(0:自己,1:敌方),参照物属性id,获得属性id,获得属性百分比}
+		local binlogIndx = GetAttrUnitBinlogIndex(passiveEffect[ 3 ])
+		local valueO = binLogLib.GetUInt32(unit_ptr, binlogIndx)
+		local added = math.floor(valueO * passiveEffect[ 5 ] / 100)
+		if added > 0 then
+			if passiveEffect[ 4 ] == EQUIP_ATTR_MAX_HEALTH then
+				unitLib.ModifyHealth(caster_ptr, added)
+			else
+				binlogIndx = GetAttrUnitBinlogIndex(passiveEffect[ 4 ])
+				binLogLib.AddUInt32(caster_ptr, binlogIndx, added)
+			end
+			ac = true
+		end
+		
+	elseif passiveEffect[ 1 ] == PASSIVE_EFFECT_TYPE_ADDITIONAL_SPELL then
+		-- 只会在受到伤害后有效
+		-- 时机不对判断
+		if not params or #params ~= 2 then
+			return
+		end
+		-- 命中
+		if OnPassiveAvailableCheck(passiveEffect[ 2 ], params[ 1 ], config.effect_spells) then
+			params[ 1 ] = passiveEffect[ 3 ]
+			params[ 2 ] = passiveEffect[ 4 ]
+			ac = true
+		end
+	end
+	
+	if ac then
+		local unitInfo = UnitInfo:new {ptr = caster_ptr}
+		unitInfo:SetSpellCD(spellID, getMsTime())
+	end
+end
+
+function OnPassiveAvailableCheck(rate, spell, availableSpells)
+	local rand = randInt(1, 10000)
+	if rand > rate then return false end
+	
+	for _, aspell in ipairs(availableSpells) do
+		if spell == aspell then
+			return true
+		end
+	end
+	return false
+end
+
 -- 是否是愤怒技能打到人
 function isAngerSpellHitPlayer(spellId, target)
 	return tb_skill_base[spellId].skill_slot == SLOT_ANGER and GetUnitTypeID(target) == TYPEID_PLAYER
@@ -856,6 +1043,14 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 	local skillDamFactor = tb_skill_uplevel[index].hurt_percent
 	local skillDamVal = tb_skill_uplevel[index].cannot_defence_hure
 	
+	-- 命中且产生伤害前
+	local params = {spell_id, spell_lv, skillDamFactor, skillDamVal}
+	OnPassiveEffect(caster, target, params, PASSIVE_DISPATCH_TYPE_HIT, 0)
+	spell_id 		= params[ 1 ]
+	spell_lv 		= params[ 2 ]
+	skillDamFactor	= params[ 3 ]
+	skillDamVal		= params[ 4 ]
+	
 	local hitInfo = HITINFO_NORMALSWING
 	local normalDam = getCastDamage(casterInfo, targetInfo, spell_lv, skillDamFactor/100, skillDamVal)
 	local dam = 0
@@ -892,59 +1087,32 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 	
 	-- 连招技能攒怒气 且 不是幻化产生的技能
 	if tb_skill_base[spell_id].skill_slot == SLOT_COMBO and casterInfo:GetTypeID() == TYPEID_PLAYER and casterInfo:HasSpell(spell_id) then
-		casterInfo:AddSP(10)
+		casterInfo:AddSP(1)
 	end
 	
-	--[[
-	if tb_skill_base[spell_id].is_initiative == 0 then
-		--威望加成
-		base_damage = WeiWangAddSpellDamage(casterInfo,targetInfo,base_damage)
-		--处理buff影响伤害和伤害类型
-		base_damage,hit_info = handle_cast_monomer_buff(caster,target,base_damage,hit_info,spell_id)
-	end
-
-	--需要特殊hit_info的技能
-	if SPECIL_HIT_INFO_TBL[spell_id] ~= nil then
-		hit_info = SPECIL_HIT_INFO_TBL[spell_id]
-	end
-
-	--暗器buff：风花饮月，吸血
-	if unitLib.HasBuff(caster, BUFF_ANQI_FHYY) then
-		local reserve = unitLib.GetBuffReserve(caster, BUFF_ANQI_FHYY)
-		local per = tb_skill_uplevel[reserve].type_effect[2]/100
-		casterInfo:ModifyHealth(base_damage*per)
-	end
+	-- 地方拥有某个BUFF
+	OnPassiveEffect(caster, target, nil, PASSIVE_DISPATCH_TYPE_ENEMY_ON_BUFF)
 	
-	--弈棋伤害加成
-	if caster_typeid == TYPEID_PLAYER then
-		local add_yq = 0
-		local yq_lv = casterInfo:GetYiQiLevel()
-		for key,val in pairs(tb_yiqi_skill)do
-			if val.id == spell_id then
-				for i = 1,#val.shuxing,2 do
-					if yq_lv >= val.shuxing[i] then
-						add_yq = add_yq + val.shuxing[i+1]
-					end
-				end
-			end
-		end
-		if add_yq > 0 then
-			base_damage = base_damage + (base_damage*add_yq/100)
-		end
-	end
-	]]
+	-- 伤害结算后触发的被动技能
+	DoPassiveSpellAfterDamageDeal(caster, target, spell_id)
 	
-	--[[
-	--主动技能并且不是闪避才insert，防止重复
-	if(tb_skill_base[spell_id].is_initiative == 0 and hit_info ~= HITINFO_MISS)then
-		table.insert(allTargets, target)
-		--真实击退
-		DoTrueJiTui(caster,target,spell_id,tar_x,tar_y)
-		DoTrueJiTui2(caster,target,spell_id,tar_x,tar_y)
-	end
-	]]
+	-- 被击中后触发的被动技能
+	DoPassiveSpellAfterDamageDeal(target, caster, 0)
 end
 
+-- 伤害结算后触发的被动技能
+function DoPassiveSpellAfterDamageDeal(caster, target, spell_id)
+	local params = {spell_id, 0}
+	OnPassiveEffect(caster, target, params, PASSIVE_DISPATCH_TYPE_HIT, 1)
+	local nspell_id 		= params[ 1 ]
+	local nspell_lv 		= params[ 2 ]
+	
+	-- 触发了后续技能
+	if nspell_id ~= spell_id and nspell_lv ~= 0 then
+		local dst_x, dst_y = unitLib.GetPos(target)	--获得目标坐标
+		DoSpellCastScript(caster, target, dst_x, dst_y, nspell_id, nspell_lv, nil, data)
+	end
+end
 
 
 --技能触发buff

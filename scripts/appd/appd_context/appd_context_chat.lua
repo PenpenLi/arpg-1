@@ -396,7 +396,8 @@ function PlayerInfo:GmCommand(str)
 		print("left count: ",self:GetCultivationLeftPlunderCount())
 		--self:RefreshCultivationRivals()
 		--]]
-		self:GetLoginActivityReward(1)
+		outFmtDebug('totalday = : %d',self:GetLoginActivityTotalDays())
+		self:GetLoginActivityReward(3)
 		
 	else
 		--[[

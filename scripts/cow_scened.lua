@@ -305,7 +305,12 @@ INSTANCE_SCRIPT_TABLE = {
 	[3002] = InstanceKuafu3v3,
 	[3003] = InstanceKuafuXianfu,
 	[3005] = InstanceXiulianchang,
-	[3006] = InstanceRemind0,
+	
+	[4001] = InstanceRemind0,
+	[4002] = InstanceRemind0,
+	[4003] = InstanceRemind0,
+	[4004] = InstanceRemind0,
+	[4005] = InstanceRemind0,
 }
 
 -- 复活点坐标

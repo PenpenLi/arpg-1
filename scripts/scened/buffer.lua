@@ -141,6 +141,10 @@ function DoBuffTriggerScript(unit,buff_id,buff_lv)
 		local map_ptr = unitLib.GetMap(unit)
 		local mapInfo = Select_Instance_Script(mapid):new {ptr = map_ptr}
 		mapInfo:OnPlayerHurt(unit, unit, -add_hp)
+		if add_hp < 0 then
+			-- 周期性掉血触发
+			DoHandlePassiveEffect(unit, nil, PASSIVE_DISPATCH_TYPE_ATTR_CHANGE)
+		end
 	end
 end
 
@@ -225,18 +229,11 @@ function DOComputeBuffAttr(unit,buff_id,buff_lv)
 	local buff_type = config.buff_type
 	local value = config.value * buff_lv
 	
-	-- 攻击增强百分比
-	if buff_type == BUFF_TYPE_ADD_DAMAGE_RATE then
-		local val = math.floor(unitInfo:GetDamage() * (100 + value) / 100)
-		unitInfo:SetDamage(val)
-	-- 防御增强百分比
-	elseif buff_type == BUFF_TYPE_ADD_ARMOR_RATE then
-		local val = math.floor(unitInfo:GetArmor() * (100 + value) / 100)
-		unitInfo:SetArmor(val)
-	-- 暴击增强百分比
-	elseif buff_type == BUFF_TYPE_ADD_CRIT_RATE then
-		local val = math.floor(unitInfo:GetCrit() * (100 + value) / 100)
-		unitInfo:SetCrit(val)
+	-- 改变属性的
+	if buff_type >= BUFF_TYPE_ATTR_START and buff_type <= BUFF_TYPE_ATTR_END then
+		local attrId = buff_type
+		local binlogIndx = GetAttrUnitBinlogIndex(attrId)
+		binLogLib.AddUInt32(unit, binlogIndx, value)
 	end
 end
 
@@ -370,6 +367,8 @@ function SpelladdBuff(unit, buff_id, buff_giver, lv, bonus_time, reserve)
 			unitLib.AddBuff(unit,buff_id,buff_giver,lv,bonus_time,reserve or 0)
 		end
 	end
+	
+	OnPassiveEffect(unit, buff_giver, nil, PASSIVE_DISPATCH_TYPE_ON_BUFF, 0, {buff_id})
 end
 
 --根据id增加通用性的buff

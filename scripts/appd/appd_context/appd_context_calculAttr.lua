@@ -453,6 +453,11 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	printAttr("title ", attrs)
 	
+	-- 被动技能属性
+	self:PassiveSpellAttr(attrs)
+	
+	printAttr("passive attr ", attrs)
+	
 	-- 获得玩家速度
 	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide())
 	attrs[EQUIP_ATTR_MOVE_SPEED] = speed
@@ -488,6 +493,23 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	binLogLib.SetDouble(attr_binlog, 0, battleForce)
 	
 	self:SendAttrChanged(prevlist)
+end
+
+function PlayerInfo:PassiveSpellAttr(attrs)
+	for i = PLAYER_INT_FIELD_PASSIVE_SPELL_START, PLAYER_INT_FIELD_PASSIVE_SPELL_END-1 do
+		local spellID	= self:GetUInt16(i, 0)
+		local level		= self:GetUInt16(i, 1)
+		if spellID > 0 then
+			local index		= tb_skill_base[spellID].uplevel_id[ 1 ] + level - 1
+			local config	= tb_skill_uplevel[index]
+			-- 加固定属性的
+			if config and config.dispatch_condition[ 1 ] == PASSIVE_DISPATCH_TYPE_FOREVER and config.passive_type[ 1 ] == PASSIVE_EFFECT_TYPE_PLAYER_ATTR then
+				local attrId = config.passive_type[ 2 ]
+				local values = config.passive_type[ 3 ]
+				attrs[attrId] = attrs[attrId] + values
+			end
+		end
+	end
 end
 
 -- 发送修改的属性

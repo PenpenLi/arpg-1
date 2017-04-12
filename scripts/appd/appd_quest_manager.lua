@@ -385,6 +385,15 @@ function AppQuestMgr:OnAddFirstDaily2Quest(firstQuestId)
 		return
 	end
 	
+	-- 删除原来的任务
+	for start = QUEST_FIELD_QUEST_START, QUEST_FIELD_QUEST_END - 1, MAX_QUEST_INFO_COUNT do
+		local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+
+		if questId > 0 and tb_quest[questId].type == QUEST_TYPE_DAILY2 then
+			self:OnRemoveQuest(start)
+		end
+	end
+	
 	-- 日常任务
 	self:OnAddQuest(firstQuestId)
 	
@@ -520,6 +529,17 @@ end
 -- 查询日常任务是否已提交
 function AppQuestMgr:IsDaily2Submited()
 	return self:GetUInt32(QUEST_FIELD_DAILY2_SUBMIT) > 0
+end
+
+function AppQuestMgr:OnExecuteQuestCmdAfterAccepted(indx)
+	local start = QUEST_FIELD_QUEST_START + indx * MAX_QUEST_INFO_COUNT
+	
+	local questId = self:GetUInt16(start + QUEST_INFO_ID, 0)
+	local state   = self:GetUInt16(start + QUEST_INFO_ID, 1)
+	if questId > 0 and state == QUEST_STATUS_INCOMPLETE then
+		local playerInfo = self:getOwner()
+		playerInfo:AfterQuestDoing(tb_quest[questId].afterAccept)
+	end
 end
 
 -- 领取奖励
@@ -710,7 +730,7 @@ function AppQuestMgr:OnInnerPickQuest(start)
 		self:OnPickQuestChapterReward(chapterIndex)
 	end
 	
-	playerInfo:AfterQuestDoing(tb_quest[questId].doing)
+	playerInfo:AfterQuestDoing(tb_quest[questId].afterFinish)
 end
 
 -- 如果需要初始化进度的
@@ -777,6 +797,8 @@ function AppQuestMgr:OnAddQuest(addQuestId, binlogStart, binlogEnd)
 			end
 			
 			playerInfo:UpdateGuideIdByTaskId(addQuestId)
+			
+			playerInfo:AfterQuestDoing(tb_quest[addQuestId].afterAccept)
 			return
 		end
 	end

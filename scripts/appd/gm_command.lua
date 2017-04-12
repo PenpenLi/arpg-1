@@ -90,7 +90,8 @@ function  DoGMScripts(player_ptr, gm_commands)
 		player:EnterXianfuTest()
 	elseif(tokens[1] == "@原地副本")then
 		local x, y = player:GetPosition()
-		player:EnterRemindInstance(3006, 7403, x+1, y+1)
+		local mapid = self:GetMapId()
+		player:EnterRemindInstance(4001, 36, 85, 7403, x+1, y+1, mapid)
 	elseif(tokens[1] == "@下一个主线")then
 		if tokens[2] then
 			local id = tonumber(tokens[ 2 ])

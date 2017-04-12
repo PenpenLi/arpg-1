@@ -38,8 +38,10 @@ function SellItem(player, item_guid, count)
 		local price = tb_item_template[item:getEntry()].price
 	
 	if itemMgr:delItemObj(item,count) then
-	
-		player:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_NPC_SELL, price*count)
+		local item_id = tb_money_type_list[MONEY_TYPE_SILVER]
+		local reward = {{item_id,price*count}}
+		player:AppdAddItems(reward,MONEY_CHANGE_NPC_SELL,nil)
+--		player:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_NPC_SELL, price*count)
 		--print("")
 	end
 	

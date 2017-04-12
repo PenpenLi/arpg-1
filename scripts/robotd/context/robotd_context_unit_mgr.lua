@@ -105,6 +105,7 @@ function PlayerInfo:FindCreate()
 	for k,v in pairs(self.all_creature) do
 		--活着的才有用
 		--刚复活的生物有可能在障碍点里
+		outFmtDebug('FindCreate %s ',k)
 		if(v:IsDie() == false and v:IsUnit() and v:IsNpc()==false and v:IsCanRun())then
 			local v_dis = self.my_unit:GetDistance(v)
 			if(v_dis < dis)then

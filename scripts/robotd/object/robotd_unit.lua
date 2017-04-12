@@ -85,7 +85,7 @@ end
 
 --获取生存状态
 function RobotdUnit:GetDeathState()
-	return self:GetByte(UNIT_FIELD_BYTE_1, 1)
+	return self:GetByte(UNIT_FIELD_BYTE_0, 1)
 end
 
 --是否死亡状态

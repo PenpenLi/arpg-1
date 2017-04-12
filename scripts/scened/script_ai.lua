@@ -200,6 +200,9 @@ AI_Base = {
 AI_guaiwu = class("AI_guaiwu", AI_Base)
 AI_guaiwu.ainame = "AI_guaiwu"
 
+-- 宠物
+AI_PET = class("AI_PET", AI_Base)
+AI_PET.ainame = "AI_PET"
 -------------------------------------------------
 --场景物件怪物ai
 AI_scence_obj = class("AI_scence_obj", AI_Base)

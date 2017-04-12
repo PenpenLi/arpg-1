@@ -404,6 +404,7 @@ function InstanceKuafu3v3:OnPlayerHurt(killer, player, damage)
 	local indx = self:findIndexByName(targetInfo:GetName())
 	local rate = math.floor((targetInfo:GetHealth() - damage) * 100 / targetInfo:GetMaxHealth())
 	local intStart = KUAFU_3V3_FIELDS_INT_INFO_START + indx * MAX_KUAFU_3V3_INT_COUNT
+	rate = math.min(rate, 100)
 	self:SetByte(intStart + KUAFU_3V3_PLAYER_SHOW_INFO, 1, rate)
 	-- ¼ÆËãÍæ¼ÒÉËº¦
 	if damage > 0 then

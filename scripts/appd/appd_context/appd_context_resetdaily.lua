@@ -104,4 +104,5 @@ function PlayerInfo:onRealReset()
 	self:ClearBuyedFactionShopItem()
 	
 	self:DailyResetCultivation()
+	self:DailyResetLoginActivity()
 end

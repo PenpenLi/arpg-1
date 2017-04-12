@@ -173,4 +173,6 @@ hanlders[CMSG_PICK_DAILY2_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest_Daily2
 
 hanlders[CMSG_FINISH_OPTIONAL_GUIDE_STEP] = PlayerInfo.Handle_Optional_Guide_Step
 
+hanlders[CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED] = PlayerInfo.Handle_Execute_Quest_Cmd_After_Accepted
+
 return hanlders

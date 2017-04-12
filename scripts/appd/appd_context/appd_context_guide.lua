@@ -70,7 +70,8 @@ function PlayerInfo:OptionalGuideClicked(guide_id, step)
 	end
 	for i = PLAYER_INT_FIELD_OPTIONAL_GUIDE_START, PLAYER_INT_FIELD_OPTIONAL_GUIDE_END-1, 2 do
 		if self:GetUInt32(i) == guide_id then
-			if step == self:GetUInt32(i+1) then
+			if step >= self:GetUInt32(i+1) then
+				step = math.min(step, 12)
 				self:SetUInt32(i+1, step+1)
 			end
 			return

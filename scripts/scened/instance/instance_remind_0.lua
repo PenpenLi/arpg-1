@@ -1,10 +1,15 @@
 InstanceRemind0 = class("InstanceRemind0", InstanceInstBase)
 
 InstanceRemind0.Name = "InstanceRemind0"
+InstanceRemind0.BOSS_NAME = "InstanceRemindBOSS"
 
 function InstanceRemind0:ctor(  )
 	
 end
+
+-- 服务器退出
+-- 客户端请求退出
+-- 客户端下线
 
 --初始化脚本函数
 function InstanceRemind0:OnInitScript(  )
@@ -24,19 +29,22 @@ function InstanceRemind0:parseGeneralId()
 	local params = string.split(generalId, '|')
 	
 	local prevMapId = tonumber(params[ 3 ])
-	local entry		= tonumber(params[ 4 ])
-	local bornX		= tonumber(params[ 5 ])
-	local bornY		= tonumber(params[ 6 ])
-	local lineNo	= tonumber(params[ 7 ])
+	local entry		= tonumber(params[ 6 ])
+	local bornX		= tonumber(params[ 7 ])
+	local bornY		= tonumber(params[ 8 ])
+	local lineNo	= tonumber(params[ 9 ])
 	self:SetUInt32(MAP_INT_FIELD_RESERVE1, prevMapId)
 	self:SetUInt32(MAP_INT_FIELD_RESERVE2, lineNo)
 	
 	local config	= tb_creature_template[entry]
-	local creature = mapLib.AddCreature(self.ptr, {
-			templateid = entry, x = bornX, y = bornY, 
-			active_grid = true, alias_name = config.name, ainame = 'AI_RemindBoss0', npcflag = {}
-		}
-	)
+	local boss = mapLib.AliasCreature(self.ptr, self.BOSS_NAME)
+	if not boss then
+		local creature = mapLib.AddCreature(self.ptr, {
+				templateid = entry, x = bornX, y = bornY, 
+				active_grid = true, alias_name = self.BOSS_NAME, ainame = 'AI_RemindBoss0', npcflag = {}
+			}
+		)
+	end
 end
 
 --当副本状态发生变化时间触发
@@ -72,6 +80,23 @@ function InstanceRemind0:OnJoinPlayer(player)
 	end
 end
 
+--[[
+--当玩家加入后触发
+function InstanceRemind0:OnAfterJoinPlayer(player)
+	Instance_base.OnAfterJoinPlayer(self, player)
+	
+	----[[
+	-- 加个宠物
+	local bx, by = unitLib.GetPos(player)
+	local pet = mapLib.AddCreature(self.ptr, {templateid = 7403, x = bx+2 ,y = by+2, active_grid = true, ainame = 'AI_PET', alias_name = '宠物A', npcflag={}})
+	creatureLib.MonsterMove(pet, MERCENARY_MOTION_TYPE, player)
+	creatureLib.SetMonsterHost(pet, player)
+	--]]
+end
+--]]
+
+
+
 --当玩家死亡后触发()
 function InstanceRemind0:OnPlayerDeath(player)
 	-- 如果状态已经改变, 即使死了也不再更新时间
@@ -90,10 +115,30 @@ end
 function InstanceRemind0:OnLeavePlayer( player, is_offline)
 	self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
 	self:RemoveTimeOutCallback(self.Leave_Callback)
-	-- 为了处理游戏刷新(不知道怎么退出的情况)
+	-- 为了处理游戏刷新(不知道什么时候退出的情况)
 	if self:GetMapState() == self.STATE_START then
 		self:SetMapState(self.STATE_FAIL)
 	end
+
+	-- 离线情况下
+	if is_offline then
+		local playerInfo = UnitInfo:new{ptr = player}
+		local prevMapId = self:GetUInt32(MAP_INT_FIELD_RESERVE1)
+		local toX, toY = unitLib.GetPos(player)
+		-- 设置玩家坐标
+		playerInfo:SetMapID(prevMapId)
+		unitLib.SetPos(player, toX, toY)
+	end
+end
+
+function InstanceRemind0:IsNeedTeleportToOrigin()
+	return true
+end
+
+function InstanceRemind0:OnSpecifyTeleportOrigin(player)
+	local prevMapId = self:GetUInt32(MAP_INT_FIELD_RESERVE1)
+	local toX, toY = unitLib.GetPos(player)
+	playerLib.SetPlayerEnterOrigin(player, prevMapId, toX, toY)
 end
 
 -------------------------------- BOSS

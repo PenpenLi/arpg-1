@@ -59,3 +59,46 @@ function PlayerInfo:FindBossFirst()
 	-- ‘Ÿ’“»À
 	return
 end
+
+function PlayerInfo:Find3v3Enemy()
+	local self_guid = self:GetGuid()
+	local self_camp = 0
+	local playerInfo_list = {}
+	local enemy_list = {}
+	
+	for emptyIndex = 0,5 do
+		local strStart = KUAFU_3V3_FIELDS_STR_INFO_START + emptyIndex * MAX_KUAFU_3V3_STR_COUNT
+		local intStart = KUAFU_3V3_FIELDS_INT_INFO_START + emptyIndex * MAX_KUAFU_3V3_INT_COUNT
+		
+		local guid = self.mapInfo:GetStr(strStart + KUAFU_3V3_PLAYER_GUID)
+		local camp = self.mapInfo:GetByte(intStart + KUAFU_3V3_PLAYER_SETTLEMENT, 2)
+		
+		outFmtDebug('Find3v3Enemy:mapInfo guid: %s camp:%d',guid,camp)
+		if guid == self_guid then
+			self_camp = camp
+		else
+			table.insert(playerInfo_list,{guid,camp})
+		end
+	end
+	
+	for unit_guid,unit in pairs(self.all_unit) do
+		for i,info in ipairs(playerInfo_list) do
+			local index = string.find(unit_guid, '%.')
+			local guid = string.sub(unit_guid, index + 1, string.len(unit_guid))
+			if(guid == info[1])then
+			
+				if info[2] ~= self_camp then
+					if unit ~= nil then 
+						outFmtDebug('Find3v3Enemy enemy list added  guid: %s camp:%d',info[1],info[2])
+						table.insert(enemy_list,unit)
+					end
+				end
+			end
+			
+		end
+	end
+	
+	
+	
+	return enemy_list
+end

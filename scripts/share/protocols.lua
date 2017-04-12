@@ -292,6 +292,7 @@ SMSG_SHOW_CULTIVATION_RESULT_LIST		= 295	-- /*返回修炼场战斗结果*/
 CMSG_GET_LOGIN_ACTIVITY_REWARD		= 296	-- /*领取登录大礼奖励*/	
 SMSG_CAST_SPELL_START		= 300	-- /*通知客户端释放蓄力技能*/	
 CMSG_FINISH_OPTIONAL_GUIDE_STEP		= 301	-- /*完成非强制引导的步骤*/	
+CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED		= 302	-- /*执行接到任务以后的命令*/	
 
 
 ---------------------------------------------------------------------
@@ -10216,6 +10217,35 @@ function Protocols.unpack_finish_optional_guide_step (pkt)
 end
 
 
+-- /*执行接到任务以后的命令*/	
+function Protocols.pack_execute_quest_cmd_after_accepted ( indx)
+	local output = Packet.new(CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED)
+	output:writeI16(indx)
+	return output
+end
+
+-- /*执行接到任务以后的命令*/	
+function Protocols.call_execute_quest_cmd_after_accepted ( playerInfo, indx)
+	local output = Protocols.	pack_execute_quest_cmd_after_accepted ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*执行接到任务以后的命令*/	
+function Protocols.unpack_execute_quest_cmd_after_accepted (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -10500,6 +10530,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_get_login_activity_reward = self.call_get_login_activity_reward
 	playerInfo.call_cast_spell_start = self.call_cast_spell_start
 	playerInfo.call_finish_optional_guide_step = self.call_finish_optional_guide_step
+	playerInfo.call_execute_quest_cmd_after_accepted = self.call_execute_quest_cmd_after_accepted
 end
 
 local unpack_handler = {
@@ -10781,6 +10812,7 @@ local unpack_handler = {
 [CMSG_GET_LOGIN_ACTIVITY_REWARD] =  Protocols.unpack_get_login_activity_reward,
 [SMSG_CAST_SPELL_START] =  Protocols.unpack_cast_spell_start,
 [CMSG_FINISH_OPTIONAL_GUIDE_STEP] =  Protocols.unpack_finish_optional_guide_step,
+[CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED] =  Protocols.unpack_execute_quest_cmd_after_accepted,
 
 }
 

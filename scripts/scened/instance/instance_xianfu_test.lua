@@ -3,23 +3,16 @@ InstanceXianfuTest = class("InstanceXianfuTest", InstanceInstBase)
 InstanceXianfuTest.Name = "InstanceXianfuTest"
 InstanceXianfuTest.exit_time = 10
 InstanceXianfuTest.Time_Out_Fail_Callback = "timeoutCallback"
-InstanceXianfuTest.dummys = 9
+InstanceXianfuTest.dummys = #tb_kuafu_xianfu_tst_base[ 1 ].dummyPos
 
 InstanceXianfuTest.BOX_EXIST_TIME = 1800
-local dummyPos = {
-	{77, 68},
-	{67, 72},
-	{64, 81},
-	{68, 90},
-	{77, 94},
-	{87, 90},
-	{91, 81},
-	{87, 71},
-	{76, 76},
-}
 
 function InstanceXianfuTest:ctor(  )
 	
+end
+
+function InstanceXianfuTest:IsNeedTeleportToOrigin()
+	return true
 end
 
 --初始化脚本函数
@@ -173,7 +166,7 @@ function InstanceXianfuTest:OnDummyRefresh()
 	config.reverse4 = 0
 	config.reverse5 = 0
 	
-	local pos = dummyPos[id]
+	local pos = tb_kuafu_xianfu_tst_base[ 1 ].dummyPos[id]
 	local offsetX = 0
 	local offsetY = 0
 	

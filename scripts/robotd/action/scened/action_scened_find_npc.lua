@@ -61,6 +61,8 @@ function ActionScenedFindNpc:Update(diff)
 			self.isClose = true
 		end
 
+		outFmtDebug('ActionScenedFindNpc:Update mapid = %d to_mapId = %d',mapid,self.to_mapid)
+
 		if(mapid == self.to_mapid)then
 			self:PushAction('robotd.action.scened.action_scened_goto', self.to_mapid, self.to_x, self.to_y, closeCallback)
 		else

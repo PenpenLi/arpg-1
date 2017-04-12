@@ -67,6 +67,36 @@ function ActionScened:Update(diff)
 				callback()
 			end
 			self:SetWaitTimeInterval(2000)
+		elseif QUEST_TARGET_TYPE_RESOURCE_INSTANCE == questOperate.type then
+			if callback then
+				callback()
+			end
+			self:SetWaitTimeInterval(2000)
+			
+		
+		elseif QUEST_TARGET_TYPE_JOIN_DOUJIANTAI == questOperate.type then
+			if callback then
+				callback()
+			end
+			self:SetWaitTimeInterval(2000)
+			
+		elseif QUEST_TARGET_TYPE_STRENGTH_SUIT == questOperate.type then
+			if callback then
+				callback()
+			end
+			self:SetWaitTimeInterval(2000)
+			
+		elseif QUEST_TARGET_TYPE_RAISE_SKILL == questOperate.type then
+			if callback then
+				callback()
+			end
+			self:SetWaitTimeInterval(2000)
+			
+		elseif QUEST_TARGET_TYPE_TRAIN_MOUNT == questOperate.type then
+			if callback then
+				callback()
+			end
+			self:SetWaitTimeInterval(2000)
 		end
 	end
 	

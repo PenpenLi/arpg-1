@@ -11,6 +11,13 @@ end
 function ActionScenedKuafu:Initialize(...)
 	self:AddTimer("ActionScenedKuafu_update", self.Update, 5000, self)
 	self.player.Kuafu_Status = nil
+	self.Kuafu_3v3_Status = 0
+	self.is_goto = false
+	self.enemy_list = {}
+	
+	local skillIdInfo, skillLevelInfo = self.player:GetSkillInfo()
+	self.normalAttackInfo = skillIdInfo[ 1 ]
+	self.skillLevel = skillLevelInfo[ 1 ]
 end
 
 --获取类型名
@@ -22,6 +29,13 @@ end
 ACTION_SCENE_KUAfU_STATUS_START = -1;
 ACTION_SCENE_KUAfU_STATUS_GUAJI = 1;
 ACTION_SCENE_KUAfU_STATUS_ISDIE = 2;
+
+
+local ACTION_SCENE_KUAfU_3v3_STATUS_NONE			= 0	--初始化状态
+local ACTION_SCENE_KUAfU_3v3_STATUS_GOTO			= 1	--寻路到初始挂机点
+local ACTION_SCENE_KUAfU_3v3_STATUS_FIND_CREATE		= 2	--寻找生物
+local ACTION_SCENE_KUAfU_3v3_STATUS_ATTACK_CREATE	= 3 --攻击生物
+
 function ActionScenedKuafu:Update(diff)
 	if(self.player == nil or self.player.my_unit == nil or self.player.mapInfo == nil)then
 		return true
@@ -33,7 +47,64 @@ function ActionScenedKuafu:Update(diff)
 	
 	-- 3v3 PK
 	if self.player:GetMapID() == 3002 then
+		if self.is_goto then
+			return true
+		end
+			
+		if #self.enemy_list ~= 3 then
+			self.enemy_list = self.player:Find3v3Enemy()
+			if #self.enemy_list == 0 then
+				return true
+			end
+			
+		end
+		local targetUnit = self.enemy_list[1]
+		if(self.enemy_list[2] ~= nil and  self.player.my_unit:GetDistance(self.enemy_list[2]) < self.player.my_unit:GetDistance(targetUnit))then
+			if not targetUnit:IsDie() then
+				targetUnit = self.enemy_list[2]
+			end
+		end
+		if(self.enemy_list[3] ~= nil and  self.player.my_unit:GetDistance(self.enemy_list[3]) < self.player.my_unit:GetDistance(targetUnit))then
+			if not targetUnit:IsDie() then
+				targetUnit = self.enemy_list[3]
+			end
+		end
+		if targetUnit:IsDie() then
+			return true
+		end
+		local to_x,to_y = targetUnit:GetPos()
+		--local to_x,to_y =19+ randInt(-2,2), 63+ randInt(-2,2)
+		outFmtDebug(' x:%d y:%d',to_x,to_y)
 		
+		local caster = self.player.my_unit:GetUIntGuid()
+		local target = targetUnit:GetUIntGuid()
+		
+		local skillId = self.normalAttackInfo[ 1 ]
+		local skillLevelIndx = tb_skill_base[skillId].uplevel_id[ 1 ] + self.skillLevel - 1
+		local range = tb_skill_uplevel[skillLevelIndx].distance
+		--已经到攻击范围内，攻击
+		--if(self.player.my_unit:GetDistance(targetUnit) <= range)then
+		if(self.player.my_unit:GetDistanceByPos(to_x,to_y) <= range)then
+			self.is_goto = false
+			self.Kuafu_3v3_Status = ACTION_SCENE_KUAfU_3v3_STATUS_NONE
+			
+			local skillId = self.normalAttackInfo[ 1 ]
+			table.remove(self.normalAttackInfo, 1)
+			table.insert(self.normalAttackInfo, skillId)
+			self.player:CastSpell(skillId, to_x, to_y, caster, target)
+			self:SetWaitTimeInterval(900)
+			return true
+		elseif(self.Kuafu_3v3_Status <= ACTION_SCENE_KUAfU_3v3_STATUS_GOTO)then
+
+			self.is_goto = true
+			local closeCallback = function ()
+				self.is_goto = false
+				self.Kuafu_3v3_Status = ACTION_SCENE_KUAfU_3v3_STATUS_GOTO
+			end
+			self:PushAction('robotd.action.scened.action_scened_pathfinding', self.player:GetMapID(), to_x, to_y, closeCallback)
+			--self:SetWaitTimeInterval(800)
+			return true
+		end
 		return true
 	end
 	

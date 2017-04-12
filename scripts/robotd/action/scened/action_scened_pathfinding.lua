@@ -74,7 +74,11 @@ function ActionScenedPathfinding:Update(diff)
 	--跨图寻路,先找到传送点，然后使用游戏对象
 	local tele_pos = self:FindTeleObject()
 	if(tele_pos == nil)then
-		outFmtInfo('ActionScenedPathfinding:Update tele_pos == nil %u  %u', self.player:GetMapID(), self.to_mapid)
+		--outFmtInfo('ActionScenedPathfinding:Update tele_pos == nil %u  %u', self.player:GetMapID(), self.to_mapid)
+		self.player:call_instance_exit(0)
+		if self.callback then
+			self.callback()
+		end
 		return false, 2
 	end
 	

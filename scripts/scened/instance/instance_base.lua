@@ -666,13 +666,21 @@ Instance_base = {
 			
 			local killerInfo = UnitInfo:new{ptr = killer_ptr}
 			local targetInfo = UnitInfo:new{ptr = target_ptr}
+			
 
-			-- 先判断
 			local ret = false
 			if killerInfo:GetTypeID() == TYPEID_PLAYER then
-				ret = targetInfo:GetTypeID() ~= TYPEID_UNIT or targetInfo:GetNpcFlags() ~= 0
+				if targetInfo:GetTypeID() == TYPEID_PLAYER then
+					ret = self:CheckPlayerToPlayer(killerInfo, targetInfo)
+				elseif targetInfo:GetTypeID() == TYPEID_UNIT then
+					ret = self:CheckPlayerToCreature(killerInfo, targetInfo)
+				end
 			elseif killerInfo:GetTypeID() == TYPEID_UNIT then
-				ret = targetInfo:GetTypeID() ~= TYPEID_PLAYER
+				if targetInfo:GetTypeID() == TYPEID_PLAYER then
+					ret = self:CheckCreatureToPlayer(killerInfo, targetInfo)
+				elseif targetInfo:GetTypeID() == TYPEID_UNIT then
+					ret = self:CheckCreatureToCreature(killerInfo, targetInfo)
+				end
 			end
 
 			if ret then
@@ -682,6 +690,42 @@ Instance_base = {
 			return 0
 		end,
 	
+	-- 检查玩家攻击玩家
+	CheckPlayerToPlayer = 
+		function (self, killerInfo, targetInfo)
+			return self:DoIsMate(killerInfo:GetGuid(), targetInfo:GetGuid())
+		end,
+	
+	-- 检查玩家攻击生物
+	CheckPlayerToCreature = 
+		function (self, killerInfo, targetInfo)
+			return self:DoIsNpc(targetInfo) or self:DoIsMate(killerInfo:GetGuid(), targetInfo:GetOwner())
+		end,
+	
+	-- 检查生物攻击玩家
+	CheckCreatureToPlayer = 
+		function (self, killerInfo, targetInfo)
+			return self:DoIsMate(killerInfo:GetOwner(), targetInfo:GetGuid())
+		end,
+		
+	-- 检查生物攻击玩家
+	CheckCreatureToCreature = 
+		function (self, killerInfo, targetInfo)
+			return self:DoIsMate(killerInfo:GetOwner(), targetInfo:GetOwner())
+		end,
+
+	-- 2个玩家unitGuid之间是不是好友
+	DoIsMate = 
+		function (self, killerUnitGuid, targetUnitGuid)
+			return killerUnitGuid == targetUnitGuid
+		end,
+	
+	-- 是否是npc
+	DoIsNpc = 
+		function (self, unitInfo)
+			return unitInfo:GetNpcFlags() > 0
+		end,
+
 	--复活处理
 	DoRespawn =
 		function(self,player,cur_map_id,respwan_map,respwan_type,respwan_x,respwan_y)
@@ -1021,6 +1065,11 @@ Instance_base = {
 	end,
 	
 	OnRandomRespawn = function (self, unitInfo)
+
+	end,
+	
+	-- 指定人物会传送到的地方
+	OnSpecifyTeleportOrigin = function (self, player)
 
 	end,
 }

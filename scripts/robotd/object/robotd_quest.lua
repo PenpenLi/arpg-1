@@ -27,11 +27,11 @@ QUEST_TYPE_QIYU = 3	-- 奇遇任务
 QUEST_TYPE_DAILY = 4	-- 每日任务
 ]]
 local questPriority = {
-	QUEST_TYPE_DAILY,
+	--QUEST_TYPE_DAILY,
 	QUEST_TYPE_MAIN,
-	QUEST_TYPE_EXTENSIONS,
-	QUEST_TYPE_ACTIVITY,
-	QUEST_TYPE_QIYU
+	--QUEST_TYPE_EXTENSIONS,
+	--QUEST_TYPE_ACTIVITY,
+	--QUEST_TYPE_QIYU
 }
 
 function RobotdQuest:GetQuestInfo()
@@ -60,6 +60,7 @@ function RobotdQuest:IsAvailableQuest(questInfo)
 	for i, target in ipairs(targets) do
 		local targetType = target[ 1 ]
 		local stepInfo	 = questInfo.steps[i]
+		outFmtDebug('targetType = %d',targetType)
 		if not Quest_Function[targetType] then
 			return false
 		end
@@ -85,7 +86,7 @@ function RobotdQuest:GetTypedQuestIndx(type)
 	return
 end
 
--- 获得任务的binlogindx
+-- 获得任务的下标
 function RobotdQuest:GetQuestIndxById(matchQuestId)
 
 	local intstart = QUEST_FIELD_QUEST_START

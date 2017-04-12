@@ -9,8 +9,7 @@ function PlayerInfo:EnterXianfuTest()
 end
 
 -- 进入原地副本
-function PlayerInfo:EnterRemindInstance(mapid, entry, x, y)
-	local prevmapid = self:GetMapId()
-	local gerneralId = string.format("%s|%d|%d|%d|%d|%d", self:GetGuid(), os.time(), prevmapid, entry, x, y)
+function PlayerInfo:EnterRemindInstance(mapid, ex, ey, entry, x, y, prevmapid)
+	local gerneralId = string.format("%s|%d|%d|%d|%d|%d|%d|%d", self:GetGuid(), os.time(), prevmapid, ex, ey, entry, x, y)
 	self:CallScenedDoSomething(APPD_SCENED_REMIND_INSTANCE_ENTER, mapid, gerneralId)
 end

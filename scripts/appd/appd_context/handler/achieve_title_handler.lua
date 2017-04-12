@@ -39,6 +39,17 @@ function PlayerInfo:Handle_Pick_Quest(pkt)
 	self:pickQuest(indx)
 end
 
+function PlayerInfo:Handle_Execute_Quest_Cmd_After_Accepted(pkt)
+	local indx = pkt.indx
+	
+	-- 任务下标不存在
+	if indx < 0 or indx >= MAX_QUEST_COUNT then
+		return
+	end
+	
+	self:executeQuestCmdAfterAccepted(indx)
+end
+
 -- 领取章节奖励
 function PlayerInfo:Handle_Pick_Quest_Chapter_Reward(pkt)
 	local indx = pkt.indx

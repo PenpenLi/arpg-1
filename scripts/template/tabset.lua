@@ -65,4 +65,10 @@ for id,info in pairs(tb_system_base) do
 	
 end
 
+tb_money_type_list = {}
 
+for id,info in pairs(tb_item_template) do
+	if info.money_type ~= 0 then
+		tb_money_type_list[info.money_type - 1] = id
+	end
+end

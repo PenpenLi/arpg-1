@@ -195,6 +195,7 @@ config = {
 		CMSG_PICK_DAILY2_QUEST_REWARD,
 		
 		CMSG_FINISH_OPTIONAL_GUIDE_STEP,
+		CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED,
 	},
 	--pk服命令表
 	pk_external_router_map = {

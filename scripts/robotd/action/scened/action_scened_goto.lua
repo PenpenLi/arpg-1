@@ -14,6 +14,7 @@ function ActionScenedGoto:Initialize(mapid,x, y, callback)
 	self.send_path = false
 	self.callback = callback
 	self.is_jump = false
+	self.last_update_time = 0
 end
 
 --获取类型名
@@ -31,6 +32,11 @@ function ActionScenedGoto:Update(diff)
 	--不再这张地图了，无法同图寻路
 	if(mapid ~= self.to_mapid)then
 		outFmtDebug("ActionScenedGoto:Update mapid ~= self.to_mapid %s %u", self:ToString(),mapid)
+		-- 发送消息好103
+		self.player:call_instance_exit(0)
+		if self.callback then
+			self.callback()
+		end
 		return false, 1
 	end
 	
@@ -42,6 +48,20 @@ function ActionScenedGoto:Update(diff)
 			self.callback()
 		end
 		return false, 2
+	end
+	
+	if self.player:GetMapID() == 3002 then
+		if(self.player.my_unit:IsMoving() == true)then
+			if self.last_update_time == 0 then
+				self.last_update_time = os.time()
+			end
+			if os.time() - self.last_update_time >= 1 then
+				self.player:stopMoving(x,y)
+				--self.player:SetPos(x,y)
+				self.last_update_time = os.time()
+				return true
+			end
+		end
 	end
 	
 	if self.is_jump then

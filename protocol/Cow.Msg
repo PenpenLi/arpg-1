@@ -1239,3 +1239,7 @@ cast_spell_start,s2c,300,/*通知客户端释放蓄力技能*/,STATUS_NEVER,False
 finish_optional_guide_step,c2s,301,/*完成非强制引导的步骤*/,STATUS_NEVER,False
 	guide_id,uint32,False,/*引导id*/
 	step,uint8,False,/*引导分步骤*/
+
+#
+execute_quest_cmd_after_accepted,c2s,302,/*执行接到任务以后的命令*/,STATUS_NEVER,False
+	indx,uint16,False,/*任务序号下标*/

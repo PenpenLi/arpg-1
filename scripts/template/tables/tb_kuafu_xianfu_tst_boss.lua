@@ -10,5 +10,5 @@ tb_kuafu_xianfu_tst_boss = {
 	--  bossEntry:int	boss模型
 	--  bossDrop:array	boss掉落宝箱个数和保护时间
 	--  dummpy_pick:int	假人拾取多少个
-	[1] = {id = 1,bossPos = {77,81},bossTime = {0,10},bossEntry = 7525,bossDrop = {10,0},dummpy_pick = 2,},
+	[1] = {id = 1,bossPos = {32,32},bossTime = {0,10},bossEntry = 7541,bossDrop = {10,0},dummpy_pick = 2,},
 }

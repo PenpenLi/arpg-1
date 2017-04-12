@@ -84,9 +84,12 @@ end
 
 -- 传送到原地地图房间
 function UnitInfo:ToRemindRoom(mapid, gerneralId)
-	local toX, toY = unitLib.GetPos(self.ptr)
+	local posInfo = string.split(gerneralId, "|")
+	local toX = tonumber(posInfo[ 4 ])
+	local toY = tonumber(posInfo[ 5 ])
 	local map_ptr = unitLib.GetMap(self.ptr)
-	local lineNo = binLogLib.GetUInt32(map_ptr, MAP_INT_FIELD_LINE_NO)
+	local mapInfo = Select_Instance_Script(map_id):new{ptr = map_ptr}
+	local lineNo = mapInfo:GetMapLineNo()
 	gerneralId = gerneralId .. '|' .. lineNo
 	playerLib.Teleport(self.ptr, mapid, toX, toY, lineNo, gerneralId)
 end
