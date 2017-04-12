@@ -85,13 +85,11 @@ end
 function InstanceRemind0:OnAfterJoinPlayer(player)
 	Instance_base.OnAfterJoinPlayer(self, player)
 	
-	----[[
 	-- 加个宠物
 	local bx, by = unitLib.GetPos(player)
 	local pet = mapLib.AddCreature(self.ptr, {templateid = 7403, x = bx+2 ,y = by+2, active_grid = true, ainame = 'AI_PET', alias_name = '宠物A', npcflag={}})
 	creatureLib.MonsterMove(pet, MERCENARY_MOTION_TYPE, player)
 	creatureLib.SetMonsterHost(pet, player)
-	--]]
 end
 --]]
 
