@@ -166,7 +166,11 @@ end
 function InstanceFieldBase:DoIsFriendly(killer_ptr, target_ptr)
 	local killerInfo = UnitInfo:new{ptr = killer_ptr}
 	local targetInfo = UnitInfo:new{ptr = target_ptr}
-
+	
+	if Instance_base.DoIsFriendly(self, killer_ptr, target_ptr) == 0 then
+		return 0
+	end
+	
 	-- 先判断
 	local ret = true
 	if killerInfo:GetTypeID() == TYPEID_PLAYER then
@@ -185,11 +189,7 @@ function InstanceFieldBase:DoIsFriendly(killer_ptr, target_ptr)
 					ret = false
 				end
 			end
-		elseif targetInfo:GetTypeID() == TYPEID_UNIT then
-			ret = false
 		end
-	elseif killerInfo:GetTypeID() == TYPEID_UNIT then
-		ret = targetInfo:GetTypeID() ~= TYPEID_PLAYER
 	end
 	
 	if ret then
@@ -393,7 +393,7 @@ function AI_FieldBoss:JustDied( map_ptr,owner,killer_ptr )
 	AI_Base.JustDied(self,map_ptr,owner,killer_ptr)
 	
 	local bossInfo = UnitInfo:new{ptr = owner}
-	local playerInfo = UnitInfo:new{ptr = killer_ptr}
+	local unitInfo = UnitInfo:new{ptr = killer_ptr}
 	
 	local instanceInfo = InstanceFieldBase:new{ptr = map_ptr}
 	local mapid  = instanceInfo:GetMapId()
@@ -405,9 +405,18 @@ function AI_FieldBoss:JustDied( map_ptr,owner,killer_ptr )
 	local guid = mapLib.GetMaxinumFieldBossDamage(map_ptr)
 	-- 清空BOSS伤害
 	mapLib.ClearFieldBossDamage(map_ptr)
+	
+	-- 如果是怪物就找归属者
+	if unitInfo:GetTypeID() == TYPEID_UNIT then
+		local host = creatureLib.GetMonsterHost(killer_ptr)
+		if host then
+			unitInfo = UnitInfo:new {ptr = host}
+		end
+	end
+	
 	-- BOSS死亡
-	globalValue:FieldBossKilled(mapid, lineNo, guid, playerInfo:GetName())
-	local playerName = ToShowName(playerInfo:GetName())
+	globalValue:FieldBossKilled(mapid, lineNo, guid, unitInfo:GetName())
+	local playerName = ToShowName(unitInfo:GetName())
 	app:CallOptResult(instanceInfo.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_BOSS_KILL, {tb_creature_template[entry].name, playerName, tb_gameobject_template[InstanceFieldBase.Treasure_Entry].name})
 	
 	-- 加宝箱
@@ -432,12 +441,18 @@ function AI_FieldBoss:DamageDeal( owner, unit, damage)
 	
 	globalValue:FieldBossDamageDeal(mapid, lineNo, currHealth * 100 / maxHealth)
 	
-	if damage > 0 then 
-		local unitInfo = UnitInfo:new {ptr = unit}
-		local guid = unitInfo:GetPlayerGuid()
-		mapLib.AddFiledBossDamage(map_ptr, guid, damage)
-		-- 参加野外BOSS
-		playerLib.SendToAppdDoSomething(unit, SCENED_APPD_JOIN_FIELD_BOSS, mapid)
+	if damage > 0 then
+		-- 如果是怪物就找归属者
+		if GetUnitTypeID(unit) == TYPEID_UNIT then
+			unit = creatureLib.GetMonsterHost(unit)
+		end
+		if unit then
+			local unitInfo = UnitInfo:new {ptr = unit}
+			local guid = unitInfo:GetPlayerGuid()
+			mapLib.AddFiledBossDamage(map_ptr, guid, damage)
+			-- 参加野外BOSS
+			playerLib.SendToAppdDoSomething(unit, SCENED_APPD_JOIN_FIELD_BOSS, mapid)
+		end
 	else
 		mapLib.ClearFieldBossDamage(map_ptr)
 	end

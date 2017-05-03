@@ -85,7 +85,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 				}
 				player:SendAttrChanged(prevlist)
 			end
-		end
+		end		
 	elseif(tokens[1] == "@仙府体验")then
 		player:EnterXianfuTest()
 	elseif(tokens[1] == "@原地副本")then
@@ -1090,7 +1090,10 @@ function  DoGMScripts(player_ptr, gm_commands)
 		local strong = paras[5] or 0
 		local fail_time = paras[6] or 0
 		local itemMgr = player:getItemMgr()
-		itemMgr:addItem(id,count,bind,true,true,strong,fail_time)
+		local bagType = tb_item_template[id].belong_bag
+		if bagType >= 0 then
+			itemMgr:addItem(id,count,bind,true,true,strong,fail_time, bagType)
+		end
 	elseif(tokens[1] == "@清理")then
 		local bag_id = paras[2] or BAG_TYPE_MAIN_BAG
 		if(bag_id > MAX_BAG)then

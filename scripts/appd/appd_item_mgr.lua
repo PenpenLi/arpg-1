@@ -64,40 +64,34 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 		return false
 	end
 	
-	--有些包裹是不允许交换位置操作的:1、摊位包裹不允许转移物品 2、系统包裹不允许放入物品
-	if src_bag == BAG_TYPE_STALL or dst_bag == BAG_TYPE_SYSTEM then
-		outFmtError("exchangePos: src_bag %d or dst_bag %d is invalid!", src_bag, dst_bag)
-		return false
-	end
-	
 	if src_bag > MAX_BAG or dst_bag > MAX_BAG then
 		return false
 	end
 	
 	--校验下相互交换的包裹是否合法
 	if src_bag == BAG_TYPE_MAIN_BAG then
-		if dst_bag ~= BAG_TYPE_MAIN_BAG and dst_bag ~= BAG_TYPE_STORAGE and dst_bag ~= BAG_TYPE_STALL 
-		and dst_bag ~= BAG_TYPE_EQUIP and dst_bag ~= BAG_TYPE_REPURCHASE then
+		if dst_bag ~= BAG_TYPE_MAIN_BAG then
 			outFmtError("exchangePos1:cant exchange to dst_bag %d src_bag %d",dst_bag, src_bag)
 			return false
 		end	
-	elseif src_bag == BAG_TYPE_STORAGE then
-		if dst_bag ~= BAG_TYPE_MAIN_BAG and dst_bag ~= BAG_TYPE_STORAGE and dst_bag ~= BAG_TYPE_EQUIP then
-			outFmtError("exchangePos2:cant exchange to dst_bag %d src_bag %d",dst_bag, src_bag)
-			return false
-		end	
 	elseif src_bag == BAG_TYPE_EQUIP then
-		if dst_bag ~= BAG_TYPE_MAIN_BAG then
+		if dst_bag ~= BAG_TYPE_EQUIP_BAG then
 			outFmtError("exchangePos3:cant exchange to dst_bag %d src_bag %d",dst_bag, src_bag)
 			return false
 		end
-	elseif src_bag == BAG_TYPE_REPURCHASE then
-		if dst_bag ~= BAG_TYPE_REPURCHASE and dst_bag ~= BAG_TYPE_MAIN_BAG then
+	elseif src_bag == BAG_TYPE_EQUIP_BAG then
+		if dst_bag ~= BAG_TYPE_EQUIP then
 			outFmtError("exchangePos4:cant exchange to dst_bag %d src_bag %d",dst_bag, src_bag)
 			return false
 		end		
-	else
-		if dst_bag ~= BAG_TYPE_MAIN_BAG then
+	elseif src_bag == BAG_TYPE_GEM then
+		if dst_bag ~= BAG_TYPE_GEM_BAG then
+			--其他包裹就只能交换到主包裹
+			outFmtError("exchangePos5:cant exchange to dst_bag %d src_bag %d",dst_bag, src_bag)
+			return false
+		end
+	elseif src_bag == BAG_TYPE_GEM_BAG then
+		if dst_bag ~= BAG_TYPE_GEM then
 			--其他包裹就只能交换到主包裹
 			outFmtError("exchangePos5:cant exchange to dst_bag %d src_bag %d",dst_bag, src_bag)
 			return false

@@ -39,12 +39,24 @@ function AppItemInstance:getItemCalculAttr( item ,attrs)
 	--先添加基础属性
 	local entry = item:getEntry()
 	local item_tempate = tb_item_template[entry]
+	local pos = item_tempate.pos
 	local ary = item_tempate.basic_properties
 	for i=1,#ary do
 		if not attrs[ary[i][1]] then
 			attrs[ary[i][1]] = 0
 		end
 		attrs[ary[i][1]] = attrs[ary[i][1]] + ary[i][2]
+	end
+	
+	local playerInfo = self:getOwner()
+	local spellMgr = playerInfo:getSpellMgr()
+	
+	-- 加强化属性
+	local strongLv = spellMgr:getStrengLev(pos)
+	if strongLv > 0 then
+		local strongId = (pos - 1) * 100 + strongLv
+		local pros = tb_strengthen_base[strongId].pros
+		mergeAttrs(attrs, pros)
 	end
 
 	--添加附加属性
@@ -57,6 +69,17 @@ function AppItemInstance:getItemCalculAttr( item ,attrs)
 
 	item:forEachBaseAttr(func)
 	--Ttab(attrs)
+	
+	-- 宝石属性
+	local gemtype = tb_gem_pos[pos].gemtype
+	local levels = spellMgr:getGemAllLev(gemtype)
+	for _, gemlevel in ipairs(levels) do
+		if gemlevel > 0 then
+			local gemId = (gemtype - 1) * 10 + gemlevel
+			local pros = tb_gem_base[gemId].pros
+			mergeAttrs(attrs, pros)
+		end
+	end
 end
 
 --物品属性重算
@@ -78,6 +101,22 @@ function AppItemInstance:itemCalculAttr( attrs )
 		--end		
 	end
 	self.itemMgr:ForEachBagItem(BAG_TYPE_EQUIP, func)
+	
+	local playerInfo = self:getOwner()
+	local spellMgr = playerInfo:getSpellMgr()
+	-- 全身强化属性
+	local mulId = spellMgr:getStrengMul()
+	if tb_strengthen_mul[mulId] then
+		local pros = tb_strengthen_mul[mulId].mulpro
+		mergeAttrs(attrs, pros)
+	end
+	
+	-- 全身宝石属性
+	local gemMulId = spellMgr:getGemMul()
+	if tb_gem_mul[gemMulId] then
+		local pros = tb_gem_mul[gemMulId].mulpro
+		mergeAttrs(attrs, pros)
+	end
 	
 	return attrs
 end
@@ -162,11 +201,17 @@ function AppItemInstance:createAddAtrr(item, attr_config, length)
 	local ary = GetRandomIndexTable(#attr_config,length)
 
 	for i = 1,#ary do
-		local lev = randInt(0, 6)
 		local idx = ary[i]
+		local attrInfo = attr_config[idx]
+		local attrId = attrInfo[ 1 ]
+		local a = attrInfo[ 2 ]
+		local b = attrInfo[ 3 ]
+		local val = randInt(a, b)
+		local qua = GetAttrQuality(val, a, b)
+		
 		--outFmtDebug("idx%d",idx)
 		--item:setAddAttr(self:getAddAttKey(,lev), )
-		item:addBaseAttr(attr_config[idx][1],attr_config[idx][2]);
+		item:addBaseAttr(attrId, val, qua);
 	end
 
 end

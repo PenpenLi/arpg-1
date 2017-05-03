@@ -1243,3 +1243,10 @@ finish_optional_guide_step,c2s,301,/*完成非强制引导的步骤*/,STATUS_NEVER,False
 #
 execute_quest_cmd_after_accepted,c2s,302,/*执行接到任务以后的命令*/,STATUS_NEVER,False
 	indx,uint16,False,/*任务序号下标*/
+	
+#
+show_unit_attribute,s2c,310,/*通知客户端显示属性*/,STATUS_NEVER,False
+	
+#
+back_to_famity,c2s,320,/*返回家族*/,STATUS_NEVER,False
+	

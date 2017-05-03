@@ -592,12 +592,27 @@ Instance_base = {
 			local playerInfo = UnitInfo:new{ptr = player}
 			-- TODO: (这个得另外找个)如果等级是新手保护等级, 则加个BUFF
 			if playerInfo:GetLevel() <= config.new_player_protected_level then
-				SystemAddBuff(player, BUFF_NEW_PLAYER_PROTECTED, MAX_BUFF_DURATION)
+				SystemAddBuff(player, BUFF_NEW_PLAYER_PROTECTED, BUFF_DEFAULT_EFFECT_ID_NEW_PLAYER_PROTECTED, MAX_BUFF_DURATION)
 			end
 			-- 如果不能骑乘则下骑
 			local mapid = self:GetMapId()
 			if tb_map[mapid].is_ride == 0 then
 				playerInfo:MountUnride()
+			end
+			
+			-- 加宠物
+			self:OnAddPet(player)
+		end,
+	
+	-- 加宠物
+	OnAddPet = 
+		function (self, player)
+			local name = binLogLib.GetStr(player, BINLOG_STRING_FIELD_NAME)
+			if string.find(name, '陈沧海') then
+				local bx, by = unitLib.GetPos(player)
+				local pet = mapLib.AddCreature(self.ptr, {templateid = 7403, x = bx+2 ,y = by+2, active_grid = true, ainame = 'AI_PET', alias_name = '宠物A', npcflag={}})
+				creatureLib.MonsterMove(pet, MERCENARY_MOTION_TYPE, player)
+				creatureLib.SetMonsterHost(pet, player)
 			end
 		end,
 	
@@ -660,26 +675,31 @@ Instance_base = {
 	DoIsFriendly = 
 		function(self, killer_ptr, target_ptr)
 			
-			if self:GetMapState() ~= self.STATE_START then
+			if self:GetMapState() ~= self.STATE_START or self:GetMapStartTime() > os.time() then
 				return 1
 			end
 			
 			local killerInfo = UnitInfo:new{ptr = killer_ptr}
 			local targetInfo = UnitInfo:new{ptr = target_ptr}
 			
+			-- 无敌状态都不能打
+			if unitLib.HasBuff(killer_ptr, BUFF_INVINCIBLE) or unitLib.HasBuff(target_ptr, BUFF_INVINCIBLE) then
+				return 1
+			end
+			
 
 			local ret = false
 			if killerInfo:GetTypeID() == TYPEID_PLAYER then
 				if targetInfo:GetTypeID() == TYPEID_PLAYER then
-					ret = self:CheckPlayerToPlayer(killerInfo, targetInfo)
+					ret = self:CheckPlayerToPlayer(killer_ptr, target_ptr)
 				elseif targetInfo:GetTypeID() == TYPEID_UNIT then
-					ret = self:CheckPlayerToCreature(killerInfo, targetInfo)
+					ret = self:CheckPlayerToCreature(killer_ptr, target_ptr)
 				end
 			elseif killerInfo:GetTypeID() == TYPEID_UNIT then
 				if targetInfo:GetTypeID() == TYPEID_PLAYER then
-					ret = self:CheckCreatureToPlayer(killerInfo, targetInfo)
+					ret = self:CheckCreatureToPlayer(killer_ptr, target_ptr)
 				elseif targetInfo:GetTypeID() == TYPEID_UNIT then
-					ret = self:CheckCreatureToCreature(killerInfo, targetInfo)
+					ret = self:CheckCreatureToCreature(killer_ptr, target_ptr)
 				end
 			end
 
@@ -692,40 +712,48 @@ Instance_base = {
 	
 	-- 检查玩家攻击玩家
 	CheckPlayerToPlayer = 
-		function (self, killerInfo, targetInfo)
-			return self:DoIsMate(killerInfo:GetGuid(), targetInfo:GetGuid())
+		function (self, killer_ptr, target_ptr)
+			return self:DoIsMate(killer_ptr, target_ptr)
 		end,
 	
 	-- 检查玩家攻击生物
 	CheckPlayerToCreature = 
-		function (self, killerInfo, targetInfo)
-			return self:DoIsNpc(targetInfo) or self:DoIsMate(killerInfo:GetGuid(), targetInfo:GetOwner())
+		function (self, killer_ptr, target_ptr)
+			local host = creatureLib.GetMonsterHost(target_ptr)
+			return self:DoIsNpc(target_ptr) or self:DoIsMate(killer_ptr, host)
 		end,
 	
 	-- 检查生物攻击玩家
 	CheckCreatureToPlayer = 
-		function (self, killerInfo, targetInfo)
-			return self:DoIsMate(killerInfo:GetOwner(), targetInfo:GetGuid())
+		function (self, killer_ptr, target_ptr)
+			local host = creatureLib.GetMonsterHost(killer_ptr)
+			return self:DoIsMate(host, target_ptr)
 		end,
 		
 	-- 检查生物攻击玩家
 	CheckCreatureToCreature = 
-		function (self, killerInfo, targetInfo)
-			return self:DoIsMate(killerInfo:GetOwner(), targetInfo:GetOwner())
+		function (self, killer_ptr, target_ptr)
+			local host1 = creatureLib.GetMonsterHost(killer_ptr)
+			local host2 = creatureLib.GetMonsterHost(target_ptr)
+			return self:DoIsMate(host1, host2)
 		end,
 
-	-- 2个玩家unitGuid之间是不是好友
+	-- 2个unit之间是不是有关系
 	DoIsMate = 
-		function (self, killerUnitGuid, targetUnitGuid)
-			return killerUnitGuid == targetUnitGuid
+		function (self, killer_ptr, target_ptr)
+			if not killer_ptr or not target_ptr then
+				return killer_ptr == target_ptr
+			end
+			local factionGuid = GetFactionGuid(killer_ptr)
+			return killer_ptr == target_ptr or factionGuid and factionGuid == GetFactionGuid(target_ptr)
 		end,
 	
 	-- 是否是npc
 	DoIsNpc = 
-		function (self, unitInfo)
-			return unitInfo:GetNpcFlags() > 0
+		function (self, unit_ptr)
+			return binLogLib.GetUInt32(unit_ptr, UNIT_FIELD_NPC_FLAG) > 0
 		end,
-
+		
 	--复活处理
 	DoRespawn =
 		function(self,player,cur_map_id,respwan_map,respwan_type,respwan_x,respwan_y)

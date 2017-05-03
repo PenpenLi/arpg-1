@@ -30,8 +30,14 @@ function InstanceWorldBossP:OnAfterJoinPlayer(player)
 	local playerInfo = UnitInfo:new{ptr = player}
 	-- 进城修改模式
 	playerInfo:ChangeToPeaceModeAfterTeleport()
-	
-	outFmtDebug("=====================InstanceWorldBossP join guid = %s, line = %d", playerInfo:GetPlayerGuid(), self:GetMapLineNo())
 end
+
+function InstanceWorldBossP:DoIsMate(killer_ptr, target_ptr)
+	if GetUnitTypeID(killer_ptr) == TYPEID_PLAYER and GetUnitTypeID(target_ptr) == TYPEID_PLAYER then
+		return true
+	end
+	return false
+end
+
 
 return InstanceWorldBossP

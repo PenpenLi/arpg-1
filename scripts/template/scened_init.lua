@@ -78,6 +78,7 @@ require("template.tables.tb_map_gameobject_detail")
 
 -- buff
 require("template.tables.tb_buff_template")
+require("template.tables.tb_buff_effect")
 require("template.tables.tb_buff_kuafu3v3")
 require("template.tables.tb_buff_xianfu")
 

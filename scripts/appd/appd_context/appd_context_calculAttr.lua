@@ -503,10 +503,14 @@ function PlayerInfo:PassiveSpellAttr(attrs)
 			local index		= tb_skill_base[spellID].uplevel_id[ 1 ] + level - 1
 			local config	= tb_skill_uplevel[index]
 			-- 加固定属性的
-			if config and config.dispatch_condition[ 1 ] == PASSIVE_DISPATCH_TYPE_FOREVER and config.passive_type[ 1 ] == PASSIVE_EFFECT_TYPE_PLAYER_ATTR then
-				local attrId = config.passive_type[ 2 ]
-				local values = config.passive_type[ 3 ]
-				attrs[attrId] = attrs[attrId] + values
+			if config and config.dispatch_condition[ 1 ] == PASSIVE_DISPATCH_TYPE_FOREVER then
+				for _, passiveInfo in ipairs(config.passive_type) do
+					if passiveInfo[ 1 ] == PASSIVE_EFFECT_TYPE_PLAYER_ATTR then
+						local attrId = passiveInfo[ 2 ]
+						local values = passiveInfo[ 3 ]
+						attrs[attrId] = attrs[attrId] + values
+					end
+				end
 			end
 		end
 	end

@@ -981,6 +981,9 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==OPEATE_TYPE_FACTION_NOT_JOIN)then
 			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - OPEATE_TYPE_FACTION_NOT_JOIN没有可以加入的帮派 - " .. data 
 		end
+		if (reason ==OPERTE_TYPE_FACTION_PLAYER_OFFLINE)then
+			return "ShowOperationFailed OPRATE_TYPE_MOUNT_QICHENG坐骑骑乘 - OPERTE_TYPE_FACTION_PLAYER_OFFLINE对方不在线,无法加入成员 - " .. data 
+		end
 		return "未知错误1  OPRATE_TYPE_MOUNT_QICHENG " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_TELEPORT)then
@@ -1160,6 +1163,18 @@ function OperationFailedToString(type, reason, data)
 		end
 		if (reason ==UPGRADE_OPRATE_ANGLE_SKILL)then
 			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_ANGLE_SKILL怒气技能进阶成功 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_BLESS_SUCCESS)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_BLESS_SUCCESS部位升级成功 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_BLESS_EXP)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_BLESS_EXP部位经验+{1} - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_GEM_SUCCESS)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_GEM_SUCCESS宝石激活成功 - " .. data 
+		end
+		if (reason ==UPGRADE_OPRATE_GEM_EXP)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - UPGRADE_OPRATE_GEM_EXP宝石经验+{1} - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_GEM " .. reason .. "    "  .. data
 	end

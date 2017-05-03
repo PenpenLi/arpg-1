@@ -293,6 +293,8 @@ CMSG_GET_LOGIN_ACTIVITY_REWARD		= 296	-- /*领取登录大礼奖励*/
 SMSG_CAST_SPELL_START		= 300	-- /*通知客户端释放蓄力技能*/	
 CMSG_FINISH_OPTIONAL_GUIDE_STEP		= 301	-- /*完成非强制引导的步骤*/	
 CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED		= 302	-- /*执行接到任务以后的命令*/	
+SMSG_SHOW_UNIT_ATTRIBUTE		= 310	-- /*通知客户端显示属性*/	
+CMSG_BACK_TO_FAMITY		= 320	-- /*返回家族*/	
 
 
 ---------------------------------------------------------------------
@@ -457,6 +459,15 @@ function char_create_info_t:read( input )
 	if not ret then
 		return ret
 	end
+	ret,self.inviteGuid = input:readUTFByLen(50)  --/*邀请的帮派id*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
 
 	return input
 end
@@ -501,6 +512,11 @@ function char_create_info_t:write( output )
 		self.race = 0
 	end
 	output:writeByte(self.race)
+	
+	if(self.inviteGuid == nil)then
+		self.inviteGuid = ''
+	end
+	output:writeUTFByLen(self.inviteGuid , 50 ) 
 	
 	return output
 end
@@ -10246,6 +10262,56 @@ function Protocols.unpack_execute_quest_cmd_after_accepted (pkt)
 end
 
 
+-- /*通知客户端显示属性*/	
+function Protocols.pack_show_unit_attribute (  )
+	local output = Packet.new(SMSG_SHOW_UNIT_ATTRIBUTE)
+	return output
+end
+
+-- /*通知客户端显示属性*/	
+function Protocols.call_show_unit_attribute ( playerInfo )
+	local output = Protocols.	pack_show_unit_attribute (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*通知客户端显示属性*/	
+function Protocols.unpack_show_unit_attribute (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回家族*/	
+function Protocols.pack_back_to_famity (  )
+	local output = Packet.new(CMSG_BACK_TO_FAMITY)
+	return output
+end
+
+-- /*返回家族*/	
+function Protocols.call_back_to_famity ( playerInfo )
+	local output = Protocols.	pack_back_to_famity (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回家族*/	
+function Protocols.unpack_back_to_famity (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -10531,6 +10597,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_cast_spell_start = self.call_cast_spell_start
 	playerInfo.call_finish_optional_guide_step = self.call_finish_optional_guide_step
 	playerInfo.call_execute_quest_cmd_after_accepted = self.call_execute_quest_cmd_after_accepted
+	playerInfo.call_show_unit_attribute = self.call_show_unit_attribute
+	playerInfo.call_back_to_famity = self.call_back_to_famity
 end
 
 local unpack_handler = {
@@ -10813,6 +10881,8 @@ local unpack_handler = {
 [SMSG_CAST_SPELL_START] =  Protocols.unpack_cast_spell_start,
 [CMSG_FINISH_OPTIONAL_GUIDE_STEP] =  Protocols.unpack_finish_optional_guide_step,
 [CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED] =  Protocols.unpack_execute_quest_cmd_after_accepted,
+[SMSG_SHOW_UNIT_ATTRIBUTE] =  Protocols.unpack_show_unit_attribute,
+[CMSG_BACK_TO_FAMITY] =  Protocols.unpack_back_to_famity,
 
 }
 

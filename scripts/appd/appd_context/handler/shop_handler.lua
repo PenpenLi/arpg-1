@@ -1,3 +1,4 @@
+--[[
 -- 商店购买物品
 function PlayerInfo:Handle_Store_Buy(pkt)
 	local itemId	= pkt.id
@@ -17,6 +18,7 @@ function PlayerInfo:Handle_Store_Buy(pkt)
 	self:storeBuyItem(itemId, count)
 	
 end
+--]]
 
 -- 商城购买物品
 function PlayerInfo:Handle_Mall_Buy(pkt)

@@ -27,7 +27,7 @@ function InstanceTrial:OnInitScript(  )
 	
 	self:SetMapQuestEndTime(timestamp)
 	-- 副本时间超时回调
-	self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
+	-- self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
 end
 
 
@@ -36,11 +36,7 @@ function InstanceTrial:GetIndex()
 end
 
 function InstanceTrial:parseGeneralId()
-	
-	local generalId	= self:GetMapGeneralId()
-	local params = string.split(generalId, ':')
-	local indx = tonumber(params[ 1 ])
-	
+	local indx = 1
 	self:SetUInt32(TRIAL_INSTANCE_FIELD_ID, indx)
 end
 
@@ -70,15 +66,11 @@ function InstanceTrial:OnJoinPlayer(player)
 	
 	local playerInfo = UnitInfo:new{ptr = player}
 	if not playerInfo:IsAlive() then
-		--死亡了还进来，直接弹出去
 		unitLib.Respawn(player, RESURRECTION_SPAWNPOINT, 100)
-		mapLib.ExitInstance(self.ptr, player)
-		self:SetMapState(self.STATE_FAIL)
 	end
-	
+
 	-- 刷新怪物
 	self:OnRefreshMonster(player)
-	
 end
 
 --刷怪
@@ -89,11 +81,6 @@ function InstanceTrial:OnRefreshMonster(player)
 	local time = os.time()
 	local startTime = self:GetMapCreateTime()
 	if time - startTime > 2 then
-		-- 重新给怪物加仇恨度
-		local creatureTable = mapLib.GetAllCreature(self.ptr)
-		for _, creature in pairs(creatureTable) do
-			creatureLib.ModifyThreat(creature, player, self.THREAT_V)
-		end
 		return
 	end
 	
@@ -130,11 +117,11 @@ function InstanceTrial:OnRefreshMonster(player)
 			bornY = ly + offy
 			
 			local creature = mapLib.AddCreature(self.ptr, {
-				templateid = entry, x = bornX, y = bornY, 
+				templateid = entry, x = bornX, y = bornY, respan_time = 10,
 				active_grid = true, alias_name = "", ainame = tb_creature_template[entry].ainame, npcflag = {}
 			})
 			
-			creatureLib.ModifyThreat(creature, player, self.THREAT_V)
+			--creatureLib.ModifyThreat(creature, player, self.THREAT_V)
 		end
 	end
 	
@@ -143,11 +130,11 @@ function InstanceTrial:OnRefreshMonster(player)
 		bornX = config.bossInfo[ 1 ]
 		bornY = config.bossInfo[ 2 ]
 		local creature = mapLib.AddCreature(self.ptr, {
-				templateid = entry, x = bornX, y = bornY, 
+				templateid = entry, x = bornX, y = bornY, respan_time = 10,
 				active_grid = true, alias_name = "TrialBoss", ainame = tb_creature_template[entry].ainame, npcflag = {}
 			}
 		)
-		creatureLib.ModifyThreat(creature, player, self.THREAT_V)
+		--creatureLib.ModifyThreat(creature, player, self.THREAT_V)
 	end
 end
 
@@ -158,26 +145,32 @@ end
 
 --当玩家死亡后触发()
 function InstanceTrial:OnPlayerDeath(player)
-	-- 如果状态已经改变, 即使死了也不再更新时间
-	if self:GetMapState() ~= self.STATE_START then
-		return
-	end
-	self:SetMapState(self.STATE_FAIL)
+	
+end
+
+-- 获得单人的复活时间
+function InstanceTrial:GetSingleRespawnTime(player)
+	return 10
 end
 
 --当玩家离开时触发
 function InstanceTrial:OnLeavePlayer( player, is_offline)
 	if not is_offline then
-		self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
 		self:RemoveTimeOutCallback(self.Leave_Callback)
-		self:SetMapEndTime(os.time())
+		self:SetMapEndTime(os.time()-1)
 	end
+end
+
+-- 判断是否能退出副本
+function InstanceTrial:DoPlayerExitInstance(player)
+	return 0	--返回1的话为正常退出，返回0则不让退出
 end
 
 -- 当进度更新时调用
 function InstanceTrial:AfterProcessUpdate(player)
 	-- 判断副本是否
 	if self:CheckQuestAfterTargetUpdate() then
+		--[[
 		local id = self:GetIndex()
 		-- 获得随机奖励dropIdTable
 --		local dropIdTable = tb_map_trial[ id ].reward
@@ -190,6 +183,7 @@ function InstanceTrial:AfterProcessUpdate(player)
 		
 		--发到应用服进行进入判断
 		playerLib.SendToAppdDoSomething(player, SCENED_APPD_PASS_TRIAL_INSTANCE, id)
+		--]]
 	end
 end
 

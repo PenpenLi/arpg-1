@@ -1,6 +1,5 @@
 -- 3v3 ∆•≈‰
 function PlayerInfo:Handle_Kuafu_3v3_Match(pkt)
-	--[[
 	local config = tb_kuafu3v3_base[1]
 	
 	--local lev = self:GetLevel()
@@ -52,7 +51,6 @@ function PlayerInfo:Handle_Kuafu_3v3_Match(pkt)
 	if not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_XIANMO) then
 		return
 	end
-	--]]
 
 	if app:IsInKuafuTypeMatching(self:GetGuid()) then
 		self:CallOptResult(OPRATE_TYPE_ATHLETICS, ATHLETICS_OPERATE_IN_MATCH)

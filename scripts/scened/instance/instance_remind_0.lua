@@ -21,7 +21,17 @@ function InstanceRemind0:OnInitScript(  )
 	
 	self:parseGeneralId()
 	
-	self:SetMapEndTime(os.time() + 60)
+	local timestamp = os.time() + 60
+	self:SetMapQuestEndTime(timestamp)
+	self:SetMapEndTime(timestamp+1)
+	-- 副本时间超时回调
+	self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
+end
+
+-- 副本失败退出
+function InstanceRemind0:timeoutCallback()
+	self:SetMapState(self.STATE_FINISH)
+	return false
 end
 
 function InstanceRemind0:parseGeneralId()
@@ -79,21 +89,6 @@ function InstanceRemind0:OnJoinPlayer(player)
 		self:SetMapState(self.STATE_FAIL)
 	end
 end
-
---[[
---当玩家加入后触发
-function InstanceRemind0:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(self, player)
-	
-	-- 加个宠物
-	local bx, by = unitLib.GetPos(player)
-	local pet = mapLib.AddCreature(self.ptr, {templateid = 7403, x = bx+2 ,y = by+2, active_grid = true, ainame = 'AI_PET', alias_name = '宠物A', npcflag={}})
-	creatureLib.MonsterMove(pet, MERCENARY_MOTION_TYPE, player)
-	creatureLib.SetMonsterHost(pet, player)
-end
---]]
-
-
 
 --当玩家死亡后触发()
 function InstanceRemind0:OnPlayerDeath(player)

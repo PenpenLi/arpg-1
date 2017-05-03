@@ -14,6 +14,7 @@ function ActionScenedKuafu:Initialize(...)
 	self.Kuafu_3v3_Status = 0
 	self.is_goto = false
 	self.enemy_list = {}
+	self.last_update_enemy_time = 0
 	
 	local skillIdInfo, skillLevelInfo = self.player:GetSkillInfo()
 	self.normalAttackInfo = skillIdInfo[ 1 ]
@@ -51,27 +52,23 @@ function ActionScenedKuafu:Update(diff)
 			return true
 		end
 			
-		if #self.enemy_list ~= 3 then
+		if self.last_update_enemy_time == 0 or os.time() - self.last_update_enemy_time >= 1 then
+			self.last_update_enemy_time = os.time()
+		
 			self.enemy_list = self.player:Find3v3Enemy()
-			if #self.enemy_list == 0 then
-				return true
-			end
 			
+		end
+		if #self.enemy_list == 0 then
+			return true
 		end
 		local targetUnit = self.enemy_list[1]
 		if(self.enemy_list[2] ~= nil and  self.player.my_unit:GetDistance(self.enemy_list[2]) < self.player.my_unit:GetDistance(targetUnit))then
-			if not targetUnit:IsDie() then
-				targetUnit = self.enemy_list[2]
-			end
+			targetUnit = self.enemy_list[2]
 		end
 		if(self.enemy_list[3] ~= nil and  self.player.my_unit:GetDistance(self.enemy_list[3]) < self.player.my_unit:GetDistance(targetUnit))then
-			if not targetUnit:IsDie() then
-				targetUnit = self.enemy_list[3]
-			end
+			targetUnit = self.enemy_list[3]
 		end
-		if targetUnit:IsDie() then
-			return true
-		end
+
 		local to_x,to_y = targetUnit:GetPos()
 		--local to_x,to_y =19+ randInt(-2,2), 63+ randInt(-2,2)
 		outFmtDebug(' x:%d y:%d',to_x,to_y)
@@ -85,16 +82,26 @@ function ActionScenedKuafu:Update(diff)
 		--已经到攻击范围内，攻击
 		--if(self.player.my_unit:GetDistance(targetUnit) <= range)then
 		if(self.player.my_unit:GetDistanceByPos(to_x,to_y) <= range)then
-			self.is_goto = false
-			self.Kuafu_3v3_Status = ACTION_SCENE_KUAfU_3v3_STATUS_NONE
+			local p = randInt(0,100)
+			if p > 20 then
+				self.is_goto = false
+				self.Kuafu_3v3_Status = ACTION_SCENE_KUAfU_3v3_STATUS_NONE
+				
+				local skillId = self.normalAttackInfo[ 1 ]
+				table.remove(self.normalAttackInfo, 1)
+				table.insert(self.normalAttackInfo, skillId)
+				self.player:CastSpell(skillId, to_x, to_y, caster, target)
+				self:SetWaitTimeInterval(900)
+				return true
+			end
+			to_x = to_x+ randInt(-2,2)
+			to_y = to_y+ randInt(-2,2)
 			
-			local skillId = self.normalAttackInfo[ 1 ]
-			table.remove(self.normalAttackInfo, 1)
-			table.insert(self.normalAttackInfo, skillId)
-			self.player:CastSpell(skillId, to_x, to_y, caster, target)
-			self:SetWaitTimeInterval(900)
-			return true
-		elseif(self.Kuafu_3v3_Status <= ACTION_SCENE_KUAfU_3v3_STATUS_GOTO)then
+		elseif (self.player.my_unit:GetDistanceByPos(to_x,to_y) > 50)then
+			to_x = 19+ randInt(-4,4)
+			to_y = 63+ randInt(-4,4)
+		end
+		if(self.Kuafu_3v3_Status <= ACTION_SCENE_KUAfU_3v3_STATUS_GOTO)then
 
 			self.is_goto = true
 			local closeCallback = function ()

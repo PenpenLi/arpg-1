@@ -156,6 +156,16 @@ function UnitInfo:CallCastSpellStart( caster_guid, target_guid, spellid, data, i
 	pkt:delete()
 end
 
+function UnitInfo:CallSpellStop(isbrodcast)
+	local pkt = Protocols.pack_spell_stop(self:GetGuid())
+	if isbrodcast then
+		app:Broadcast(self, pkt)
+	else
+		self:SendPacket(pkt)
+	end
+	pkt:delete()
+end
+
 
 function UnitInfo:CheckPlayer(name)
 	if(self:GetTypeID() ~= TYPEID_PLAYER)then
@@ -493,6 +503,18 @@ local tBaseKey = {
 	[EQUIP_ATTR_CONTROL_RESIST_RATE] = UNIT_FIELD_CONTROL_RESIST_RATE,	--控制减免
 }
 
+function GetAttrSize()
+	return #tBaseKey
+end
+
+function foreachAttr(callback)
+	for attrId, binlogIndx in ipairs(tBaseKey) do
+		if (callback) then
+			callback(attrId, binlogIndx)
+		end
+	end
+end
+
 -- 获得属性id对应的精灵对象下标
 function GetAttrUnitBinlogIndex(attrId)
 	return tBaseKey[attrId]
@@ -776,6 +798,22 @@ function UnitInfo:SetCurSpellTime(val)
 	self:SetUInt32(UINT_FIELD_BOOS_CUR_SPELL_TIME, val)
 end
 
+--获取释放的次数
+function UnitInfo:GetCurSpellCount()
+	return self:GetUInt32(UINT_FIELD_BOOS_CUR_SPELL_LAST_COUNT)
+end
+
+--设置释放的次数
+function UnitInfo:SetCurSpellCount(val)
+	self:SetUInt32(UINT_FIELD_BOOS_CUR_SPELL_LAST_COUNT, val)
+end
+
+-- 减少释放次数
+function UnitInfo:SubCurSpellCount()
+	self:SubUInt32(UINT_FIELD_BOOS_CUR_SPELL_LAST_COUNT, 1)
+end
+
+
 --清理BOSS正在释放的技能
 function UnitInfo:ClearCurSpell(is_ok)
 	--被打断
@@ -789,6 +827,7 @@ function UnitInfo:ClearCurSpell(is_ok)
 	end
 	self:SetCurSpellId(0)
 	self:SetCurSpellTime(0)
+	self:SetCurSpellCount(0)
 end
 
 --获得到坐标x,y的直线距离
@@ -1287,6 +1326,10 @@ function GetUnitTypeID(spirit)
 	return binLogLib.GetByte(spirit, UNIT_FIELD_BYTE_0, 0)
 end
 
+function GetFactionGuid(player_ptr)
+	local player_data_ptr = playerLib.GetSession(player_ptr)
+	return binLogLib.GetStr(player_data_ptr, PLAYER_STRING_FIELD_FACTION_GUID)
+end
 
 -- 获得vip等级
 function UnitInfo:GetVIP()
@@ -2183,6 +2226,20 @@ end
 
 function UnitInfo:SetCurrCastVampiric(val)
 	self:SetDouble(UINT_FIELD_VAMPIRIC, val)
+end
+
+
+-- 打断持续动作
+function terminalContinuousAction(player_ptr)
+	-- 野外boss开宝箱
+	local map_ptr = unitLib.GetMap(player_ptr)
+	local mapid = mapLib.GetMapID(map_ptr)
+	
+	local instanceInfo = Select_Instance_Script(mapid):new {ptr = map_ptr} 
+	instanceInfo:OnPlayerAfterMove(player_ptr)
+	
+	-- 持续技能
+	terminalSpell(player_ptr)
 end
 
 

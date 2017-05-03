@@ -1,3 +1,4 @@
+--[[
 -- 商店购买物品
 function PlayerInfo:storeBuyItem(itemId, count)
 	local itemMgr = self:getItemMgr()
@@ -16,6 +17,7 @@ function PlayerInfo:storeBuyItem(itemId, count)
 	-- 加道具
 	itemMgr:addItem(itemId,count,1,true,true,0,0)
 end
+--]]
 
 -- 商城购买物品
 function PlayerInfo:shopBuyItem(id, count, timeid)
@@ -163,7 +165,7 @@ function PlayerInfo:resetDailyShop()
 		local tid = self:GetUInt16(i,0)
 		if tid ~= 0 then
 			local config = tb_shop[tid]
-			if config.limtype == 1 then
+			if config and config.limtype == 1 then
 				self:SetUInt16(i,0,0)
 				self:SetUInt16(i,1,0)
 			end

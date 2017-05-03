@@ -71,11 +71,11 @@ end
 --[[
 rewardDict :  {{itemId, count},{itemId1, count1}}
 --]]
-function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, showType)
+function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, showType, bagFullCategory)
 	times = times or 1
 	deadline = deadline or 0
 	showType = showType or 0
-	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline)
+	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, bagFullCategory)
 	-- 获得信息
 	local dict = changeTableStruct(rewardDict)
 	local list = Change_To_Item_Reward_Info(dict)
@@ -85,12 +85,14 @@ end
 --[[
 有可能场景服发来的增加道具的接口也是这个
 rewardDict :  {{itemId, count},{itemId1, count1}}
+@param : bagFullCategory 0:满了存邮件, 1:满了丢弃, 2: 满了提示背包已满 (外面必须判断是否可以放下, 处理过程和1一样)
 --]]
-function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline)
+function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, bagFullCategory)
 	times = times or 1
 	money_oper_type = money_oper_type or MONEY_CHANGE_SELECT_LOOT
 	item_oper_type  = item_oper_type  or LOG_ITEM_OPER_TYPE_LOOT
 	deadline	= deadline or 0
+	bagFullCategory = bagFullCategory or 0
 	
 	local itemDict = {}
 	-- 先把资源和经验加了, 放背包的道具第二步算
@@ -120,17 +122,24 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 		for i = 1, #itemDict do
 			local entry = itemDict[ i ][ 1 ]
 			local count = itemDict[ i ][ 2 ]
+			local bagType = tb_item_template[entry].belong_bag
+			
+			-- 如果配错了直接返回
+			if bagType == -1 then
+				return
+			end
 			-- 判断背包是否放的下
-			if not itemMgr:canHold(BAG_TYPE_MAIN_BAG, entry, count, 1, 0) then
+			if not itemMgr:canHold(bagType, entry, count, 1, 0) then
 				indx = i
 				break
 			end
 			local bind = tb_item_template[entry].bind_type
-			self:AddItemByEntry(entry, count, nil, item_oper_type, bind, true, true, 0, deadline)
+			--AddItemByEntry(entry, count, money_log, item_log, item_bind, isAppaisal, isSystem, strong_lv, fail_time, bag_type, pos)
+			self:AddItemByEntry(entry, count, nil, item_oper_type, bind, true, true, 0, deadline, bagType)
 		end
 		
 		-- 放不下的存邮件
-		if indx > 0 then
+		if bagFullCategory == 0 and indx > 0 then
 			local mailItem = {}
 			for i = indx, #itemDict do
 				table.insert(mailItem, itemDict[ i ][ 1 ])
@@ -641,6 +650,32 @@ function PlayerInfo:Login()
 		
 		--发送玩家属性到场景服
 		playerLib.SendAttr(self.ptr)
+	end
+	
+	-- 判断是否是帮派邀请的
+	local inviteFactionGuid = self:GetStr(PLAYER_STRING_FIELD_INVITE_FACTION_GUID)
+	if string.len(inviteFactionGuid) > 0 then
+		self:SetStr(PLAYER_STRING_FIELD_INVITE_FACTION_GUID, '')
+		local mapid = FREEMAN_MAP_ID
+		local x		= FREEMAN_FUHUO_X
+		local y		= FREEMAN_FUHUO_Y
+		local generalId = self:GetGuid()
+		
+		--进行加帮派操作
+		if app.objMgr:IsFactionGuid(inviteFactionGuid) then
+			local faction = app.objMgr:getObj(inviteFactionGuid)
+			if faction then
+				-- 发送给logind数据不同
+				if faction:MemberAdd(self, true) then
+					mapid = FACTION_MAP_ID
+					x = FACTION_FUHUO_X
+					y = FACTION_FUHUO_Y
+					generalId = inviteFactionGuid
+				end
+			end
+		end
+		--TODO: 发送
+		call_opt_login_teleport(self:GetGuid(), inviteFactionGuid, mapid, x, y, generalId)
 	end
 
 	self:socialLogIn()

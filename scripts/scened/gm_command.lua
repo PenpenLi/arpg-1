@@ -1,3 +1,5 @@
+local protocols = require('share.protocols')
+
 --场景服
 function  DoGMScripts(player_ptr, gm_commands, runtime)
 	local result = ""
@@ -1071,6 +1073,20 @@ function  DoGMScripts(player_ptr, gm_commands, runtime)
 		else
 			playerInfo:UnSetBit(PLAYER_SCENED_INT_FLAGS, PLAYER_SCENED_FLAGS_SPELL_FANWEI)
 		end
+	elseif(tokens[ 1 ] == "@显示属性")then
+		-- /*通知客户端显示属性*/
+		local playerInfo = UnitInfo:new{ptr = player_ptr}
+		local output = protocols.pack_show_unit_attribute ()
+		local size = GetAttrSize()
+		output:writeU16(size)
+		foreachAttr(function (attrId, binlogIndx)
+			local val = playerInfo:GetUInt32(binlogIndx)
+			output:writeU32(attrId)
+			output:writeU32(val)
+		end)
+		playerInfo:SendPacket(output)
+		output:delete()
+		
 	end
 	
 	return result

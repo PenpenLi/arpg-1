@@ -229,28 +229,41 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	local itemInfoTable = string.split(items, ",")
 	local size = #itemInfoTable / 2
 	
-	-- 判断背包格子是否足够
-	local itemMgr = playerInfo:getItemMgr()
-	local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
-	if emptys < size then
-		playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
-		return
-	end
-	
-	-- 设置领取标志
-	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 1, 1)
-	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
-	self:SetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME, os.time() + 3 * 24 * 3600)
-	self:SetGiftPacksItem("", indx)
+	-- 按所属背包分类
+	local bagContains = {}
 	
 	local rewardDict = {}
 	for i = 1, #itemInfoTable, 2 do
 		local itemId = tonumber(itemInfoTable[ i ])
 		local count  = tonumber(itemInfoTable[i+1])
 		table.insert(rewardDict, {itemId, count})
+		
+		local bagType = tb_item_template[itemId].belong_bag
+		if bagType >= 0 then
+			if not bagContains[bagType] then
+				bagContains[bagType] = {}
+			end
+			table.insert(bagContains[bagType], itemId)
+		end
 	end
 	
-	playerInfo:AppdAddItems(rewardDict, MONEY_CHANGE_GIFT_PACKET, LOG_ITEM_OPER_TYPE_GIFT_PACKS)
+	-- 判断背包格子是否足够
+	local itemMgr = playerInfo:getItemMgr()
+	for bagType, items in pairs(bagContains) do
+		local emptys  = itemMgr:getEmptyCount(bagType)
+		if emptys < #items then
+			playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
+			return
+		end
+	end
+
+	-- 设置领取标志
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 1, 1)
+	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 2, 1)
+	self:SetUInt32(intIndex + GIFTPACKS_INFO_INT_END_TIME, os.time() + 3 * 24 * 3600)
+	self:SetGiftPacksItem("", indx)
+	
+	playerInfo:AppdAddItems(rewardDict, MONEY_CHANGE_GIFT_PACKET, LOG_ITEM_OPER_TYPE_GIFT_PACKS, 1, 0, 0, 2)
 end
 
 -- 删除礼包

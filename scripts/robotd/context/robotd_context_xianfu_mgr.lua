@@ -66,34 +66,47 @@ function PlayerInfo:Find3v3Enemy()
 	local playerInfo_list = {}
 	local enemy_list = {}
 	
+	--outFmtDebug('Find3v3Enemy: self_guid: %s',self_guid)
+	
 	for emptyIndex = 0,5 do
 		local strStart = KUAFU_3V3_FIELDS_STR_INFO_START + emptyIndex * MAX_KUAFU_3V3_STR_COUNT
 		local intStart = KUAFU_3V3_FIELDS_INT_INFO_START + emptyIndex * MAX_KUAFU_3V3_INT_COUNT
 		
 		local guid = self.mapInfo:GetStr(strStart + KUAFU_3V3_PLAYER_GUID)
 		local camp = self.mapInfo:GetByte(intStart + KUAFU_3V3_PLAYER_SETTLEMENT, 2)
+		local isDead = self.mapInfo:GetByte(intStart + KUAFU_3V3_PLAYER_SETTLEMENT, 1)
 		
-		outFmtDebug('Find3v3Enemy:mapInfo guid: %s camp:%d',guid,camp)
+		--outFmtDebug('Find3v3Enemy:mapInfo guid: %s camp:%d dead:%d',guid,camp,isDead)
 		if guid == self_guid then
+			if isDead == 1 then
+				return {}
+			end
 			self_camp = camp
 		else
-			table.insert(playerInfo_list,{guid,camp})
+			table.insert(playerInfo_list,{guid,camp,isDead})
 		end
+	end
+	
+	if self_camp == 0 then
+		return enemy_list
 	end
 	
 	for unit_guid,unit in pairs(self.all_unit) do
 		for i,info in ipairs(playerInfo_list) do
 			local index = string.find(unit_guid, '%.')
-			local guid = string.sub(unit_guid, index + 1, string.len(unit_guid))
-			if(guid == info[1])then
-			
-				if info[2] ~= self_camp then
-					if unit ~= nil then 
-						outFmtDebug('Find3v3Enemy enemy list added  guid: %s camp:%d',info[1],info[2])
-						table.insert(enemy_list,unit)
+			if index ~= nil then
+				local guid = string.sub(unit_guid, index + 1, string.len(unit_guid))
+				if(guid == info[1])then
+				
+					if info[2] ~= self_camp and info[3] ~= 1 then
+						if unit ~= nil then 
+							--outFmtDebug('Find3v3Enemy enemy list added  guid: %s camp:%d',info[1],info[2])
+							table.insert(enemy_list,unit)
+						end
 					end
 				end
 			end
+			
 			
 		end
 	end

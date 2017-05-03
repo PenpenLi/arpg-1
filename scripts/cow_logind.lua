@@ -118,6 +118,7 @@ function RepairPlayerData(account, data_table)
 end
 
 --玩家下线的时候判断是否记录玩家所在地图的信息，最多保留10分钟
+-- fuben_type = baseInfo.instance_type
 function DoIsRecordIntanceInfo(player, map_id, isfuben, fuben_type)	
 	if(isfuben == 0 or fuben_type ~= MAP_INST_TYP_SINGLETON)then
 		return false

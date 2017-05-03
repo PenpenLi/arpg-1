@@ -259,7 +259,7 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 			Select_Instance_Script(self:GetMapID()):new{ptr = map_ptr}:OnStartJump(self)
 		end
 		--增加BUFF, 通过BUFF来控制跳跃时间
-		SpelladdBuff(player_ptr, BUFF_JUMP_JUMP, player_ptr, 1,tb_buff_template[BUFF_JUMP_JUMP].duration)
+		SpelladdBuff(player_ptr, BUFF_JUMP_JUMP, player_ptr, BUFF_DEFAULT_EFFECT_ID_JUMP_JUMP,tb_buff_effect[BUFF_DEFAULT_EFFECT_ID_JUMP_JUMP].duration)
 		
 		--移动
 		--local move_path = {}
@@ -737,6 +737,18 @@ function ScenedContext:Hanlde_Teleport_Main_City(pkt)
 	local map_ptr = unitLib.GetMap(self.ptr)
 	mapLib.ExitInstance(map_ptr, self.ptr)
 end
+
+-- 回到家族
+function ScenedContext:Handle_Back_To_Family(pkt)
+	local factionGuid = self:GetFactionId()
+	if string.len(factionGuid) == 0 then
+		return
+	end
+	local x = randInt(-2, 2)
+	local y = randInt(-2, 2)
+	playerLib.Teleport(self.ptr, FACTION_MAP_ID, x+FACTION_FUHUO_X, y+FACTION_FUHUO_Y, 0, factionGuid)
+end
+
 
 -- 使用需要广播的
 function ScenedContext:Handle_Use_Broadcast_gameobject(pkt)

@@ -34,12 +34,16 @@ function PlayerInfo:strength (part)
 	 	local baseBless = spellMgr:getStrengBlessExp(part)
 	 	local bless = GetRandomExp(config.blessrate)
 	 	local now = baseBless + bless
+		
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_BLESS_EXP, {bless})
 	 	--祝福值满，升星
 	 	if now >= config.bless then
 	 		spellMgr:setStrengLev(part,curlev + 1)
 	 		spellMgr:setStrengBlessExp(part,now-config.bless)
 	 		self:setStrengthMul()
 	 		self:RecalcAttrAndBattlePoint()
+			
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_BLESS_SUCCESS)
 	 	else
 	 		spellMgr:setStrengBlessExp(part,now)
 	 	end
@@ -120,7 +124,7 @@ function PlayerInfo:gem (pkt)
 		local mul = GetRandomExp(tb_gem_rate[1].rate)
 		bless = bless * mul
 		local now = gemCurBless + bless
-
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_GEM_EXP, {bless})
 		--outFmtInfo("gem %d,%d",bless,costConfig.maxexp)
 
 		if now >= costConfig.maxexp then 
@@ -130,6 +134,8 @@ function PlayerInfo:gem (pkt)
 			spellMgr:setGemChgID(part)
 			self:setGemMul()
 			self:RecalcAttrAndBattlePoint()
+			
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_GEM_SUCCESS)
 		else
 			-- 添加祝福值
 			spellMgr:setGemCurBless(part,now)

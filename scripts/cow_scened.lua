@@ -148,6 +148,7 @@ config = {
 		MSG_CLIENTSUBSCRIPTION,		--/*查询头像的buffer信息*/
 		MSG_USE_JUMP_POINT,		-- 使用跳点
 		CMSG_XIANFU_RANDOM_RESPAWN,	--随机复活
+		CMSG_BACK_TO_FAMITY,		-- 返回家族
 		--CMSG_CHANGE_LINE,
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/

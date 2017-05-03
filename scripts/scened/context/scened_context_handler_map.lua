@@ -37,5 +37,7 @@ OpcodeHandlerFuncTable[CMSG_XIANFU_RANDOM_RESPAWN] = ScenedContext.Handle_random
 
 OpcodeHandlerFuncTable[MSG_USE_JUMP_POINT] = ScenedContext.Hanlde_Use_Jump_Point
 
+OpcodeHandlerFuncTable[CMSG_BACK_TO_FAMITY] = ScenedContext.Handle_Back_To_Family
+
 
 return OpcodeHandlerFuncTable

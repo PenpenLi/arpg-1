@@ -201,24 +201,12 @@ function InstanceWorldBoss:OnTimer_UpdateRank()
 	return true
 end
 
-function InstanceWorldBoss:DoIsFriendly(killer_ptr, target_ptr)	
-	local killerInfo = UnitInfo:new{ptr = killer_ptr}
-	local targetInfo = UnitInfo:new{ptr = target_ptr}
-	
-	-- 先判断
-	local ret = true
-	if killerInfo:GetTypeID() == TYPEID_PLAYER then
-		-- 对方不是怪物或者是无敌
-		ret = targetInfo:GetTypeID() ~= TYPEID_UNIT or unitLib.HasBuff(target_ptr, BUFF_INVINCIBLE)
-	elseif killerInfo:GetTypeID() == TYPEID_UNIT then
-		-- 自己无敌情况下不能打别人
-		ret = unitLib.HasBuff(killer_ptr, BUFF_INVINCIBLE)
+
+function InstanceWorldBoss:DoIsMate(killer_ptr, target_ptr)
+	if GetUnitTypeID(killer_ptr) == TYPEID_PLAYER and GetUnitTypeID(target_ptr) == TYPEID_PLAYER then
+		return true
 	end
-	
-	if ret then
-		return 1
-	end
-	return 0
+	return false
 end
 
 function NotifyAllRankUpdate(map_ptr, rankInfo, rankList)
@@ -357,13 +345,27 @@ function AI_WorldBoss:DamageTaken(owner, unit, damage)
 		return
 	end
 	
+	local playerGuid = ''
+	local name = ''
 	local unitInfo = UnitInfo:new {ptr = unit}
+	-- 如果是怪物就找归属者
+	if unitInfo:GetTypeID() == TYPEID_UNIT then
+		local host = creatureLib.GetMonsterHost(unit)
+		if host then
+			unitInfo = UnitInfo:new {ptr = host}
+			playerGuid = unitInfo:GetPlayerGuid()
+			name = unitInfo:GetName()
+		end
+	else
+		playerGuid = unitInfo:GetPlayerGuid()
+		name = unitInfo:GetName()
+	end
 	
 	-- 设置BOSS最大血量
 	InstanceWorldBoss.boss_hp[lineNo] = maxHealth
 	
 	-- 进行排名
-	AddWorldBossDamage(lineNo, unitInfo:GetPlayerGuid(), unitInfo:GetName(), damage)
+	AddWorldBossDamage(lineNo, playerGuid, name, damage)
 	
 	-- 遍历是否需要进行roll点	
 	local prev = currHealth + damage

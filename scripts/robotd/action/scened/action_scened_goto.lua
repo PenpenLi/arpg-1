@@ -56,6 +56,7 @@ function ActionScenedGoto:Update(diff)
 				self.last_update_time = os.time()
 			end
 			if os.time() - self.last_update_time >= 1 then
+				--self.player:call_unit_move (self.player.my_unit:GetUIntGuid(), x, y, {x, y})
 				self.player:stopMoving(x,y)
 				--self.player:SetPos(x,y)
 				self.last_update_time = os.time()

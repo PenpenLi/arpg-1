@@ -80,8 +80,6 @@ end
 --当副本状态发生变化时间触发
 function InstanceKuafu3v3:OnSetState(fromstate,tostate)
 	if tostate == self.STATE_FINISH then
-		print( debug.traceback() )
-		
 		self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
 		
 		--10s后结束副本
@@ -152,18 +150,16 @@ function InstanceKuafu3v3:OnAfterJoinPlayer(player)
 	InstanceInstBase.OnAfterJoinPlayer(self, player)
 end
 
-function InstanceKuafu3v3:DoIsFriendly(killer_ptr, target_ptr)
+
+function InstanceKuafu3v3:DoIsMate(killer_ptr, target_ptr)
 	local killerInfo = UnitInfo:new{ptr = killer_ptr}
 	local targetInfo = UnitInfo:new{ptr = target_ptr}
 	
-	ret = killerInfo:GetVirtualCamp() == targetInfo:GetVirtualCamp()
-	
-	if ret then
-		return 1
+	if killerInfo:GetVirtualCamp() == targetInfo:GetVirtualCamp() then
+		return true
 	end
-	return 0
+	return false
 end
-
 
 -- 是否某方阵营全部死亡
 function InstanceKuafu3v3:IsOneCmapAllDead()
@@ -493,7 +489,7 @@ function InstanceKuafu3v3:OnUseGameObject(user, go, go_entryid, posX, posY)
 				local buffId = effect[ 1 ]
 				local lv = effect[ 2 ]
 				local duration = tb_buff_template[buffId].duration
-				SpelladdBuff(user, buffId, user, lv, duration)
+				--SpelladdBuff(user, buffId, user, lv, duration)
 			end
 			break
 		end

@@ -84,6 +84,17 @@ function MergeSameTable(map, key, value)
 	map[key] = map[key] + value
 end
 
+-- 合并属性
+function mergeAttrs(attrs, pros)
+	for _, attrInfo in ipairs(pros) do
+		local attrId = attrInfo[ 1 ]
+		if not attrs[attrId] then
+			attrs[attrId] = 0
+		end
+		attrs[attrId] = attrs[attrId] + attrInfo[ 2 ]
+	end
+end
+
 function TPrint(map)
 	local out = "{"
 	for i = 1, #map do
@@ -575,3 +586,31 @@ attrKeys = {
 	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = PLAYER_FIELD_CONTROL_ENHANCE_RATE,	--控制增强
 	[EQUIP_ATTR_CONTROL_RESIST_RATE] = PLAYER_FIELD_CONTROL_RESIST_RATE,	--控制减免
 }
+
+-- 得到属性对应的区间所所表示的颜色
+function GetAttrQuality(val, a, b)
+	local qualitySize = 6
+	local attrQuality = {a}
+	
+	local diff = (b - a) / qualitySize
+	for i = 1, qualitySize-1 do
+		table.insert(attrQuality, attrQuality[ i ] + diff)
+	end
+	
+	-- 取整
+	for i = 1, #attrQuality do
+		attrQuality[ i ] = math.round(attrQuality[ i ])
+	end
+	
+	-- 选择
+	local ret = 0
+	for i = #attrQuality, 1, -1 do
+		local vv = attrQuality[ i ]
+		if val >= vv then
+			ret = i - 1
+			break
+		end
+	end
+	
+	return ret
+end

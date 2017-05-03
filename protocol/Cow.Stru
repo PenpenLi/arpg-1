@@ -23,6 +23,7 @@ char_create_info,/*玩家角色创建选择信息*/
 	head_id,uint32,0,/*头像*/
 	hair_id,uint32,0,/*发型ID*/
 	race,uint8,0,/*种族，猛男美女萝莉那些*/
+	inviteGuid,String,50,/*邀请的帮派id*/
 
 #任务菜单
 quest_option,/*任务菜单*/

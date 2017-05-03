@@ -264,3 +264,16 @@ function call_opt_cent_destory_conn( fd, is_force )
 	app:sendToCentd(pkt)
 	pkt:delete()
 end
+
+-- 通知登录服登录
+function call_opt_login_teleport(guid, factionId, mapId, x, y, generalId)
+	local pkt = Packet.new(INTERNAL_OPT_INVITE_RET)
+	pkt:writeUTF(guid)
+	pkt:writeUTF(factionId)
+	pkt:writeU32(mapId)
+	pkt:writeU32(x)
+	pkt:writeU32(y)
+	pkt:writeUTF(generalId)
+	app:sendToLogind(pkt)
+	pkt:delete()
+end

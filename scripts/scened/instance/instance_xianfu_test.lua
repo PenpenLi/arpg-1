@@ -60,7 +60,12 @@ function InstanceXianfuTest:GetDummyCount()
 	return self:GetUInt32(XIANFU_TEST_DUMMY_COUNT)
 end
 
-
+function InstanceXianfuTest:DoIsMate(killer_ptr, target_ptr)
+	if killer_ptr == target_ptr and killer_ptr then
+		return true
+	end
+	return false
+end
 
 function InstanceXianfuTest:GetBoxid()
 	local hard = self:GetHard()
@@ -365,20 +370,9 @@ function InstanceXianfuTest:OnAfterJoinPlayer(player)
 	InstanceInstBase.OnAfterJoinPlayer(self, player)
 end
 
-function InstanceXianfuTest:DoIsFriendly(killer_ptr, target_ptr)
-	if unitLib.HasBuff(killer_ptr, BUFF_INVINCIBLE) then
-		return 1
-	end
+-- 仙府夺宝不加宠物
+function InstanceXianfuTest:OnAddPet(player)
 	
-	if unitLib.HasBuff(target_ptr, BUFF_INVINCIBLE) then
-		return 1
-	end
-	
-	-- 当前地图还在倒计时中 或者 不是开始状态
-	if self:GetMapStartTime() > os.time() or self:GetMapState() ~= self.STATE_START then
-		return 1
-	end
-	return 0
 end
 
 --当玩家死亡后触发()
@@ -598,7 +592,7 @@ function InstanceXianfuTest:OnUseGameObject(user, go, go_entryid, posX, posY)
 				local buffId = effect[ 1 ]
 				local lv = effect[ 2 ]
 				local duration = tb_buff_template[buffId].duration
-				SpelladdBuff(user, buffId, user, lv, duration)
+				--SpelladdBuff(user, buffId, user, lv, duration)
 			end
 			break
 		end
@@ -784,7 +778,9 @@ function AI_XianfuTestBoss:JustDied( map_ptr,owner,killer_ptr )
 		dummy_ptr = dummys[ 1 ]
 	end
 	
-	instanceInfo:OnCheckIfSendToAppdAfterLootSelect(dummy_ptr, loot_entry, dummyPick)
+	if dummy_ptr then
+		instanceInfo:OnCheckIfSendToAppdAfterLootSelect(dummy_ptr, loot_entry, dummyPick)
+	end
 	
 	return 0
 end

@@ -287,18 +287,6 @@ function InstanceKuafuXianfu:OnAfterJoinPlayer(player)
 	InstanceInstBase.OnAfterJoinPlayer(self, player)
 end
 
-function InstanceKuafuXianfu:DoIsFriendly(killer_ptr, target_ptr)
-	local killerInfo = UnitInfo:new{ptr = killer_ptr}
-	local targetInfo = UnitInfo:new{ptr = target_ptr}
-	
-	-- 只有怪物不能攻击怪物
-	local ret =  targetInfo:GetTypeID() == TYPEID_UNIT and killerInfo:GetTypeID() == TYPEID_UNIT
-	if ret then
-		return 1
-	end
-	return 0
-end
-
 --当玩家死亡后触发()
 function InstanceKuafuXianfu:OnPlayerDeath(player)
 	-- 如果状态已经改变, 即使死了也不再更新时间
@@ -559,7 +547,7 @@ function InstanceKuafuXianfu:OnUseGameObject(user, go, go_entryid, posX, posY)
 				local buffId = effect[ 1 ]
 				local lv = effect[ 2 ]
 				local duration = tb_buff_template[buffId].duration
-				SpelladdBuff(user, buffId, user, lv, duration)
+				--SpelladdBuff(user, buffId, user, lv, duration)
 			end
 			break
 		end

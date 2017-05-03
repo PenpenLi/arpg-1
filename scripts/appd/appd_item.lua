@@ -135,12 +135,12 @@ function AppItem:setAddAttr(key,val)
 	 self.item:SetAttr(key, val)
 end
 --设置基础属性
-function AppItem:setBaseAttr(pos,key,val)
-	self.item:SetBaseAttr(pos,key,val)
+function AppItem:setBaseAttr(pos,key,val,qua)
+	self.item:SetBaseAttr(pos,key,val,qua)
 end
 --添加基础属性
-function AppItem:addBaseAttr(key,val)
-	self.item:AddBaseAttr(key,val)
+function AppItem:addBaseAttr(key,val,qua)
+	self.item:AddBaseAttr(key,val,qua)
 end
 --清空基础属性
 function AppItem:clearBaseAttr()

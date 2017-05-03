@@ -24,5 +24,5 @@ tb_kuafu3v3_base = {
 	--  limlev:int	进入限制等级
 	--  limforce:int	进入限制战力
 	--  activetime:array	活动时间
-	[1] = {id = 1,buffPos = {{19,91},{19,41}},bornPos = {{19,116},{19,16}},interval = 30,times = 2,seconds = 5,cd = 10,last = 300,damageScore = {3,2,1},resultScore = {10,5},scorePerKill = 1,winStreakScore = 2,bestScore = 2,resultHonor = {200,100},daytimes = 10,daybuytimes = 10,daybuycost = {{0,10}},limlev = 5,limforce = 2000,activetime = {{13,0,14,30},{1,0,23,50}},},
+	[1] = {id = 1,buffPos = {{19,91},{19,41}},bornPos = {{19,116},{19,16}},interval = 30,times = 2,seconds = 5,cd = 10,last = 300,damageScore = {3,2,1},resultScore = {10,5},scorePerKill = 1,winStreakScore = 2,bestScore = 2,resultHonor = {200,100},daytimes = 10,daybuytimes = 10,daybuycost = {{0,10}},limlev = 50,limforce = 2000,activetime = {{13,0,14,30},{1,0,23,50}},},
 }

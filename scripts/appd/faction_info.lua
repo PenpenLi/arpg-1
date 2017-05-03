@@ -841,7 +841,8 @@ function FactionInfo:FactionApply( player)
 end
 
 --添加帮派成员
-function FactionInfo:MemberAdd( player)
+function FactionInfo:MemberAdd( player, isInvited)
+	isInvited = isInvited or false
 	local player_guid = player:GetGuid()
 	if self:FindPlayerIndex(player_guid) ~= nil then
 		--玩家已经在帮派了
@@ -869,7 +870,7 @@ function FactionInfo:MemberAdd( player)
 	
 	local force,level,name,is_vip--,onlinetime
 	--创建者 or 不需要审核
-	if self:GetMemberCount() == 0 or self:GetFactionFlags(FACTION_FLAGS_AUTO) then	
+	if self:GetMemberCount() == 0 or self:GetFactionFlags(FACTION_FLAGS_AUTO) or isInvited then	
 		force = player:GetForce()
 		level = player:GetLevel()
 		name = player:GetName()
@@ -1008,6 +1009,7 @@ function FactionInfo:FactionAgreeJoin( player, apply_guid)
 	local applyer = app.objMgr:getObj(apply_guid)
 	if applyer == nil then
 		--找不到该玩家
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_PLAYER_OFFLINE)
 		return 
 	end
 	
@@ -2043,5 +2045,24 @@ function FactionInfo:PrintFactionEvents (eventtype)
 		end
 	end	
 end
+
+
+
+function encodeSimpleInfo(faction_guid)
+	
+end
+
+function decodeSimpleInfo(simpleString)
+	
+end
+
+function encodeFightInfo(faction_guid)
+	
+end
+
+function decodeFightInfo(fightString)
+	
+end
+
 
 return FactionInfo

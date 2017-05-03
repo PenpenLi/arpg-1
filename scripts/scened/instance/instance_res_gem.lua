@@ -28,6 +28,15 @@ function InstanceResGem:InitRes(config)
 	mapLib.AddTimer(self.ptr, 'OnTimerRefreshGemHp', 1000)
 end
 
+function InstanceResGem:OnAfterJoinPlayer(player)
+	InstanceInstBase.OnAfterJoinPlayer(self, player)
+	local GEM_NPC = mapLib.AliasCreature(self.ptr, InstanceResGem.GEM_NAME)
+	if not GEM_NPC then
+		return
+	end
+	creatureLib.SetMonsterHost(GEM_NPC, player)
+end
+
 --Ë¢¹Ö
 function InstanceResGem:OnRefreshMonster(player)
 	
@@ -169,29 +178,6 @@ function InstanceResGem:OnTimerRefreshBoss(id, level)
 	
 	return false
 end
-
--- 
-function InstanceResGem:DoIsFriendly(killer_ptr, target_ptr)
-	
-	if self:GetMapState() ~= self.STATE_START then
-		return 1
-	end
-			
-	local ret = Instance_base.DoIsFriendly(self, killer_ptr, target_ptr)
-	
-	if ret == 1 then
-		local killerInfo = UnitInfo:new{ptr = killer_ptr}
-		local targetInfo = UnitInfo:new{ptr = target_ptr}
-		if killerInfo:GetTypeID() == TYPEID_UNIT then
-			if targetInfo:GetNpcFlags() > 0 then
-				ret = 0
-			end
-		end
-	end
-
-	return ret
-end
-
 
 ----------------------------- ¹ÖÎï----------------------------
 AI_gem = class("AI_gem", AI_Base)

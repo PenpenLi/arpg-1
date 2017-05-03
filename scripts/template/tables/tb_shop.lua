@@ -12,10 +12,10 @@ tb_shop = {
 	--  costResource:array	消耗
 	--  time:array	上架时间
 	--  count:int	道具数量
-	--  limit:int	一次购买最大数量
+	--  limit:int	一次购买最大打数
 	--  timeCostResource:array	时效消耗
-	[1] = {id = 1,itemId = 1201,limtype = 0,limdata = 0,discount = 9,costResource = {{0, 1}},time = {},count = 1,limit = 99,timeCostResource = {},},
-	[2] = {id = 2,itemId = 1202,limtype = 1,limdata = 0,discount = 10,costResource = {{0, 10}},time = {},count = 1,limit = 99,timeCostResource = {},},
+	[1] = {id = 1,itemId = 1201,limtype = 0,limdata = 0,discount = 9,costResource = {{0, 1}},time = {},count = 99,limit = 99,timeCostResource = {},},
+	[2] = {id = 2,itemId = 1202,limtype = 1,limdata = 0,discount = 10,costResource = {{0, 10}},time = {},count = 99,limit = 99,timeCostResource = {},},
 	[3] = {id = 3,itemId = 1301,limtype = 0,limdata = 0,discount = 8,costResource = {{0, 50}},time = {},count = 1,limit = 99,timeCostResource = {},},
 	[4] = {id = 4,itemId = 201,limtype = 1,limdata = 10,discount = 10,costResource = {{0, 200}},time = {},count = 1,limit = 20,timeCostResource = {},},
 	[5] = {id = 5,itemId = 202,limtype = 1,limdata = 10,discount = 8,costResource = {{0, 500}},time = {},count = 1,limit = 20,timeCostResource = {},},
