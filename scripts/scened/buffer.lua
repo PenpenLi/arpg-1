@@ -255,6 +255,11 @@ function SpelladdBuff(unit, buff_id, buff_giver, buffEffectId, bonus_time, reser
 		end
 	end
 	
+	-- 判断是不是被吼中了
+	if GetUnitTypeID(unit) == TYPEID_UNIT and buff_id == BUFF_ROAR then
+		creatureLib.ModifyThreat(unit, buff_giver, 9999999)
+	end
+	
 	OnPassiveEffect(unit, buff_giver, nil, PASSIVE_DISPATCH_TYPE_ON_BUFF, 0, {buff_id})
 end
 

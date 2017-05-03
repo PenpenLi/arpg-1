@@ -24,4 +24,5 @@ tb_learn_spell = {
 	[13113] = {id = 13113,playerLevel = 2,item = {},resource = {},},
 	[13114] = {id = 13114,playerLevel = 2,item = {},resource = {},},
 	[13115] = {id = 13115,playerLevel = 3,item = {},resource = {},},
+	[13116] = {id = 13116,playerLevel = 3,item = {},resource = {},},
 }

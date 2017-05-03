@@ -231,7 +231,10 @@ function DoSpellCastScript(caster, target, dst_x, dst_y, spell_id, spell_lv, uni
 		-- 如果是 自己加血, 别人扣血的给自己扣
 		elseif upLevelConfig.skillEffectType == SKILL_EFFECT_TYPE_HUIXUE1 then
 			DoSpellCastHuiXue1(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
-
+			
+		elseif upLevelConfig.skillEffectType == SKILL_EFFECT_TYPE_ROAR then -- 吼叫
+			handle_cast_spell_roar(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+			
 		elseif upLevelConfig.skillEffectType == SKILL_EFFECT_TYPE_BLADE_STORM or upLevelConfig.skillEffectType == SKILL_EFFECT_TYPE_SNOW_STORM then	--剑刃风暴
 			if(unit == nil)then
 				handle_cast_add_unit_effect_blade_storm(caster, target, spell_id, spell_lv,dst_x,dst_y, allTargets,unit, data)
@@ -385,7 +388,8 @@ function handle_cast_add_unit_effect_heal(caster, target, spell_id, spell_lv,dst
 	if creature then
 		creatureLib.MonsterMove(creature, DEADLINE_MOTION_TYPE, 0, loadedTime)
 		creatureLib.SetMonsterHost(creature, caster)
-		unitLib.AddBuff(creature, BUFF_INVINCIBLE, creature, 0, loadedTime)
+		local sec = math.floor(loadedTime / 1000) + 1
+		unitLib.AddBuff(creature, BUFF_INVINCIBLE, creature, 0, sec)
 	end
 	unitLib.AddSpellTrigger(creature, "", dst_x, dst_y, spell_id, spell_lv, diff, count, "")
 end
@@ -446,6 +450,45 @@ function DoSpellCastHuiXue1(caster,target,spell_id,spell_lv,dst_x,dst_y, allTarg
 	-- 敌方扣血
 	SpellTargetType(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 end
+
+-- 吼叫
+function handle_cast_spell_roar(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
+	local casterInfo = UnitInfo:new{ptr = caster}
+	local cast_x , cast_y  = unitLib.GetPos(caster)
+	local shifa_x, shifa_y = cast_x, cast_y
+	
+	local index = tb_skill_base[spell_id].uplevel_id[ 1 ] + spell_lv - 1
+	local upLevelConfig = tb_skill_uplevel[index]
+	local loadTime = upLevelConfig.skillEffectParams[ 1 ]
+	
+	local _m_count = 0
+	local max_count = tb_skill_uplevel[index].num	--施放数量
+	local attack_mast = {0,0}
+	for k = 1,#tb_skill_base[spell_id].attack_mast do
+		attack_mast[k+2] = tb_skill_base[spell_id].attack_mast[k]
+	end
+	local radius = 10
+	local targets = mapLib.GetCircleTargets(cast_x, cast_y, radius, caster, TARGET_TYPE_ENEMY, true)
+	for _, attack_target in pairs(targets) do
+		if attack_target then
+			--目标点
+			local tar_x, tar_y = unitLib.GetPos(attack_target)
+			local pos = GetHitAreaPostion({cast_x,cast_y,shifa_x,shifa_y,tar_x,tar_y,0})
+			attack_mast[ 1 ] = pos[ 1 ]
+			attack_mast[ 2 ] = pos[ 2 ]
+			if CalHitTest(attack_mast)[ 1 ] then
+				-- 给目标加buff
+				onAddBuff(upLevelConfig.to_target_buffs, caster, attack_target)
+				_m_count = _m_count + 1
+				if(_m_count >= max_count)then
+					break
+				end
+			end
+		end
+	end
+end
+
+
 
 -- 受到伤害前需要进行的操作
 function DoSpellCastBefore(caster)

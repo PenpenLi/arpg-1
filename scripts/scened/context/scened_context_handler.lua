@@ -619,8 +619,7 @@ function ScenedContext:Hanlde_Enter_Trial_Instance(pkt)
 		return
 	end
 	
-	--发到应用服进行进入判断
-	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_TRIAL_INSTANCE, 0)
+	playerLib.Teleport(self.ptr, FREEMAN_MAP_ID, FREEMAN_FUHUO_X, FREEMAN_FUHUO_Y, 0, self:GetGuid())
 end
 
 --进入资源副本

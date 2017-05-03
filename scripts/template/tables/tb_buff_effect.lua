@@ -15,7 +15,5 @@ tb_buff_effect = {
 	[5] = {id = 5,value = 20,duration = 10,frequency = 0,},
 	[6] = {id = 6,value = 20,duration = 10,frequency = 0,},
 	[7] = {id = 7,value = 20,duration = 10,frequency = 0,},
-	[8] = {id = 8,value = 0,duration = 5,frequency = 0,},
 	[9] = {id = 9,value = 0,duration = 5,frequency = 0,},
-	[10] = {id = 10,value = 0,duration = 5,frequency = 0,},
 }
