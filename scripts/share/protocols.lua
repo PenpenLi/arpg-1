@@ -295,6 +295,8 @@ CMSG_FINISH_OPTIONAL_GUIDE_STEP		= 301	-- /*完成非强制引导的步骤*/
 CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED		= 302	-- /*执行接到任务以后的命令*/	
 SMSG_SHOW_UNIT_ATTRIBUTE		= 310	-- /*通知客户端显示属性*/	
 CMSG_BACK_TO_FAMITY		= 320	-- /*返回家族*/	
+SMSG_FACTION_BOSS_SEND_RESULT		= 321	-- /*返回家族boss结果*/	
+CMSG_CHALLANGE_BOSS		= 322	-- /*挑战boss*/	
 
 
 ---------------------------------------------------------------------
@@ -10312,6 +10314,70 @@ function Protocols.unpack_back_to_famity (pkt)
 end
 
 
+-- /*返回家族boss结果*/	
+function Protocols.pack_faction_boss_send_result ( result ,boss_id ,money)
+	local output = Packet.new(SMSG_FACTION_BOSS_SEND_RESULT)
+	output:writeU32(result)
+	output:writeU32(boss_id)
+	output:writeU32(money)
+	return output
+end
+
+-- /*返回家族boss结果*/	
+function Protocols.call_faction_boss_send_result ( playerInfo, result ,boss_id ,money)
+	local output = Protocols.	pack_faction_boss_send_result ( result ,boss_id ,money)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回家族boss结果*/	
+function Protocols.unpack_faction_boss_send_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.result = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.boss_id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.money = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*挑战boss*/	
+function Protocols.pack_challange_boss (  )
+	local output = Packet.new(CMSG_CHALLANGE_BOSS)
+	return output
+end
+
+-- /*挑战boss*/	
+function Protocols.call_challange_boss ( playerInfo )
+	local output = Protocols.	pack_challange_boss (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*挑战boss*/	
+function Protocols.unpack_challange_boss (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -10599,6 +10665,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_execute_quest_cmd_after_accepted = self.call_execute_quest_cmd_after_accepted
 	playerInfo.call_show_unit_attribute = self.call_show_unit_attribute
 	playerInfo.call_back_to_famity = self.call_back_to_famity
+	playerInfo.call_faction_boss_send_result = self.call_faction_boss_send_result
+	playerInfo.call_challange_boss = self.call_challange_boss
 end
 
 local unpack_handler = {
@@ -10883,6 +10951,8 @@ local unpack_handler = {
 [CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED] =  Protocols.unpack_execute_quest_cmd_after_accepted,
 [SMSG_SHOW_UNIT_ATTRIBUTE] =  Protocols.unpack_show_unit_attribute,
 [CMSG_BACK_TO_FAMITY] =  Protocols.unpack_back_to_famity,
+[SMSG_FACTION_BOSS_SEND_RESULT] =  Protocols.unpack_faction_boss_send_result,
+[CMSG_CHALLANGE_BOSS] =  Protocols.unpack_challange_boss,
 
 }
 

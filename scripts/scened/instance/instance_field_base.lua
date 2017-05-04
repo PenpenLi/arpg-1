@@ -99,7 +99,7 @@ function InstanceFieldBase:OnTimer_CheckRefresh()
 			if creature then
 				local creatureInfo = UnitInfo:new{ptr = creature}
 				-- ±êÊ¶Îªboss¹Ö
-				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
+				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
 			end
 			app:CallOptResult(self.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_BOSS_BORN, {config.name, tb_map[mapid].name})
 		end

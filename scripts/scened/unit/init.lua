@@ -134,7 +134,6 @@ function UnitInfo:CallCastSpellStart( caster_guid, target_guid, spellid, data, i
 	if GetUnitTypeID(self.ptr) ~= TYPEID_PLAYER 
 		--and not self:GetUnitFlags(UNIT_FIELD_FLAGS_IS_ROBOT) 
 		and not self:GetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
-		and not self:GetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
 		--and not self:GetUnitFlags(UNIT_FIELD_FLAGS_IS_XIALV) 
 		then 
 		outFmtError("UnitInfo:CallCastSpellStart not player cant send packet")
@@ -1331,6 +1330,12 @@ function GetFactionGuid(player_ptr)
 	return binLogLib.GetStr(player_data_ptr, PLAYER_STRING_FIELD_FACTION_GUID)
 end
 
+function OnGetAailableSectionid(player_ptr)
+	local player_data_ptr = playerLib.GetSession(player_ptr)
+	local passSectionId = binLogLib.GetUInt32(player_data_ptr, PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
+	return getAvailableSectionId(passSectionId)
+end
+
 -- 获得vip等级
 function UnitInfo:GetVIP()
 	local vipLevel = self:GetUInt32(PLAYER_FIELD_VIP_LEVEL)
@@ -2229,6 +2234,42 @@ function UnitInfo:SetCurrCastVampiric(val)
 end
 
 
+-------------------------------试炼塔------------------------------
+function UnitInfo:getLastPassedSectionId()
+	return self:GetPlayerUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
+end
+
+function UnitInfo:SetRiskMonsterCount(count)
+	self:SetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0, 0)
+	self:SetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1, count)
+end
+
+function UnitInfo:AddRiskMonsterKilledCount()
+	if not self:isCanChallengeRiskBoss() then
+		self:AddPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0, 1)
+		local showname = '小怪'
+		local process	= self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0)
+		local dest		= self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1)
+		if process >= dest then
+			showname = "[00FF00]"..showname
+		end
+		
+		-- 提示客户端
+		self:CallOptResult(OPERTE_TYPE_QUEST, QUEST_TYPE_PROCESS,{showname, process, dest})
+	end
+end
+
+function UnitInfo:isCanChallengeRiskBoss()
+	return self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0) >= self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1)
+end
+
+function UnitInfo:passSection(sectionId)
+	if self:getAvailableSectionId() == sectionId then
+		self:SetPlayerUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID, sectionId)
+	end
+end
+
+
 -- 打断持续动作
 function terminalContinuousAction(player_ptr)
 	-- 野外boss开宝箱
@@ -2240,6 +2281,15 @@ function terminalContinuousAction(player_ptr)
 	
 	-- 持续技能
 	terminalSpell(player_ptr)
+end
+
+
+function ScenedGetRiskTeleportInfo(player_ptr)
+	local player_data_ptr = playerLib.GetSession(player_ptr)
+	local playerGuid = binLogLib.GetStr(player_data_ptr, BINLOG_STRING_FIELD_GUID)
+	local passedSectionId = binLogLib.GetUInt32(player_data_ptr, PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
+	local mapid, x, y, generalId = onGetRiskTeleportInfo(playerGuid, passedSectionId)
+	return mapid, x, y, generalId
 end
 
 

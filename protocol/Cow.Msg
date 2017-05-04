@@ -1249,4 +1249,12 @@ show_unit_attribute,s2c,310,/*通知客户端显示属性*/,STATUS_NEVER,False
 	
 #
 back_to_famity,c2s,320,/*返回家族*/,STATUS_NEVER,False
-	
+
+#
+faction_boss_send_result,s2c,321,/*返回家族boss结果*/,STATUS_NEVER,False
+	result,uint32,False,/*结果标识*/
+	boss_id,uint32,False,/*bossId*/
+	money,uint32,False,/*家族资金变化量*/
+
+#
+challange_boss,c2s,322,/*挑战boss*/,STATUS_NEVER,False

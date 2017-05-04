@@ -187,6 +187,72 @@ local function on_scened_send_char_info( pkt )
 	player:SendChat(c_type, content, to_guid, to_name)
 end
 
+local function on_scened_send_faction_challenge_boss_win( pkt )
+	local ret,faction_guid = unpack_scened_send_faction_challenge_boss_win(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_challenge_boss_win: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:ChallengeBossWin()
+end
+
+local function on_scened_send_faction_challenge_boss_fail( pkt )
+	local ret, faction_guid, fail_type= unpack_scened_send_faction_challenge_boss_fail(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_challenge_boss_fail: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:ChallengedBossFail(fail_type)
+end
+
+local function on_scened_send_faction_add_points( pkt )
+	local ret,faction_guid, player_guid, points = unpack_scened_send_faction_add_points(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_add_points: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:AddTokenPoints(player_guid, points)
+end
+
+local function on_scened_send_faction_challenge_boss_damaged( pkt )
+	local ret, faction_guid, player_guid, damage = unpack_scened_send_faction_challenge_boss_damaged(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_challenge_boss_damaged: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:BossDamaged(player_guid, damage)
+end
+
+local function on_scened_send_faction_update_boss_info( pkt )
+	local ret, faction_guid, hp_rate, x, y = unpack_scened_send_faction_update_boss_info(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_update_boss_info: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:UpdateBossInfo(hp_rate, x, y)
+end
+
+local function on_scened_send_faction_update_target_info( pkt )
+	local ret, faction_guid, hp_rate, x, y = unpack_scened_send_faction_update_target_info(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_update_target_info: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:UpdateTargetInfo(hp_rate, x, y)
+end
+
 
 local appdInsternalHanlders = {}
 appdInsternalHanlders[INTERNAL_OPT_USER_ITEM_RESULT] = on_scened_use_item_result
@@ -201,6 +267,15 @@ appdInsternalHanlders[INTERNAL_OPT_USER_KILLED] = on_player_killed
 appdInsternalHanlders[INTERNAL_OPT_SEND_TO_APPD_DO_SOMETHING] = on_scened_send_to_appd_do_something
 appdInsternalHanlders[INTERNAL_OPT_NOTICE] = on_scened_send_ontice
 appdInsternalHanlders[INTERNAL_OPT_CHAT] = on_scened_send_char_info
+
+appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSS_WIN] = on_scened_send_faction_challenge_boss_win
+appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSS_FAIL] = on_scened_send_faction_challenge_boss_fail
+appdInsternalHanlders[INTERNAL_OPT_FACTION_ADD_TOKEN_POINTS] = on_scened_send_faction_add_points
+appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSS_DAMAGED] = on_scened_send_faction_challenge_boss_damaged
+appdInsternalHanlders[INTERNAL_OPT_FACTION_UPDATE_BOSS_INFO] = on_scened_send_faction_update_boss_info
+appdInsternalHanlders[INTERNAL_OPT_FACTION_UPDATE_TARGET_INFO] = on_scened_send_faction_update_target_info
+
+
 
 --网络包处理方法
 packet.register_on_internal_packet(function ( cid, pkt )

@@ -141,6 +141,9 @@ function BinLogObject:SetStr (index,value)
 end
 
 function BinLogObject:GetStr (index)
+	if not index then
+		outFmtDebug("")
+	end
 	return binLogLib.GetStr(self.ptr, index)
 end
 

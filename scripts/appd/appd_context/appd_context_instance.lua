@@ -65,25 +65,13 @@ end
 ---------------------------试炼塔-----------------------------
 -- 检测能否进入试炼塔副本
 function PlayerInfo:checkTrialMapTeleport()
-	-- 系统未激活
-	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TRIAL)) then
-		return
-	end
 	local instMgr = self:getInstanceMgr()
 	instMgr:checkIfCanEnterTrial()
 end
 
 -- 通关关卡
 function PlayerInfo:passTrialInstance(id)
-	local instMgr = self:getInstanceMgr()
-	instMgr:passInstance(id)
 	
-	-- 设置试炼塔通关层数
-	if self:GetUInt32(PLAYER_FIELD_TRIAL_LAYERS) < id then
-		self:SetUInt32(PLAYER_FIELD_TRIAL_LAYERS, id)
-	end
-	-- 更新排名
-	rankInsertTask(self:GetGuid(), RANK_TYPE_TRIAL)
 end
 
 -- 通关关卡
@@ -96,12 +84,7 @@ end
 
 -- 一键扫荡
 function PlayerInfo:sweepTrial()
-	-- 系统未激活
-	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TRIAL)) then
-		return
-	end
-	local instMgr = self:getInstanceMgr()
-	instMgr:sweepTrialInstance()
+	
 end
 
 function PlayerInfo:sweepResInstance(id)

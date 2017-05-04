@@ -107,3 +107,15 @@ require("template.tables.tb_item_quality_color")
 require("template.tables.tb_char_info")
 
 require("template.tables.tb_item_illusion")
+
+--家族Boss
+
+require("template.tables.tb_faction_boss")
+require("template.tables.tb_faction_boss_reward")
+require("template.tables.tb_faction_monster")
+
+
+
+-- 世界冒险
+require("template.tables.tb_risk_base")
+require("template.tables.tb_risk_data")

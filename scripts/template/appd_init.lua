@@ -49,11 +49,17 @@ require("template.tables.tb_social_shop")
 require("template.tables.tb_social_familiay")
 require("template.tables.tb_social_num")
 --帮派
-require("template.tables.tb_faction_creat")
 require("template.tables.tb_faction_base")
-require("template.tables.tb_faction_zhiwei")
+require("template.tables.tb_faction_boss")
+require("template.tables.tb_faction_boss_reward")
+require("template.tables.tb_faction_creat")
 require("template.tables.tb_faction_donation")
+require("template.tables.tb_faction_icon")
+require("template.tables.tb_faction_monster")
 require("template.tables.tb_faction_shop")
+require("template.tables.tb_faction_zhiwei")
+
+
 
 --vip
 require("template.tables.tb_vip_base")
@@ -149,6 +155,10 @@ require("template.tables.tb_gameobject_template")
 require("template.tables.tb_system_base")
 
 require("template.tables.tb_item_quality_color")
+
+-- 世界冒险
+require("template.tables.tb_risk_base")
+require("template.tables.tb_risk_data")
 
 --- 数据预处理
 require("template.tabset")

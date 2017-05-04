@@ -143,36 +143,6 @@ function AppInstanceMgr:checkIfCanEnterResInstance(id)
 end
 
 
-
-
--------------------------------试炼塔------------------------------
-function AppInstanceMgr:checkIfCanEnterTrial()
-	--[[INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT	= INSTANCE_INT_FIELD_VIP_END,					//(0:今日可扫荡层数,1:历史通关层数)
-	INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT	= INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT + 1,	//(0:扫荡次数,1:可购买扫荡次数)--]]
-	
-	local passed = self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 1)
-	if passed == #tb_map_trial then
-		outFmtError("reach top layer")
-		return
-	end
-	
-	local nextId = passed + 1
-	local player = self:getOwner()
-	local config = tb_map_trial[nextId]
-	
-	local gerneralId = string.format("%d:%d:%s", nextId, getMsTime(), player:GetGuid())
-	
-	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), config.x, config.y, config.mapid, gerneralId)
-	
-	local questMgr = player:getQuestMgr()
-	questMgr:OnUpdate(QUEST_TARGET_TYPE_TRIAL_INSTANCE)
-end
-
-
--- 通关层数
-function AppInstanceMgr:passInstance(id)
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 1, id)
-end
 -- 通关资源副本
 function AppInstanceMgr:passResInstance(id)
 	--outFmtDebug("ton guan zi yuan fu ben %d *************************************",id)
@@ -183,43 +153,6 @@ function AppInstanceMgr:passResInstance(id)
 	end
 end
 
-
--- 一键扫荡试炼塔
-function AppInstanceMgr:sweepTrialInstance()
-	local prevSweepTimes = self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0)
-	if prevSweepTimes == 0 then
-		outFmtError("no times to sweepTrialInstance")
-		return
-	end
-	
-	local layers = self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 0)
-	-- 都没通关没必要扫荡
-	if layers == 0 then
-		outFmtError("please pass the 1st layer first")
-		return
-	end
-	
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0, prevSweepTimes - 1)
-	local player = self:getOwner()
-	
-	local dict = {}
-	for i = 1, layers do
-		local dropIdTable = tb_map_trial[ i ].reward
-		DoRandomDropTable(dropIdTable, dict)
-	end
-	
-	local itemDict = {}
-	for entry, count in pairs(dict) do
-		table.insert(itemDict, {entry, count})
-	end
-	
-	local playerInfo = self:getOwner()
-	playerInfo:AppdAddItems(itemDict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD)
-	
-	-- 扫荡的结果发送
-	local list = Change_To_Item_Reward_Info(dict, true)
-	playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_TRIAL, 0, 0, 0, list)
-end
 -- 扫荡资源副本
 function AppInstanceMgr:sweepResInstance(id)
 	--print("AppInstanceMgr:sweepResInstance")
@@ -281,44 +214,7 @@ end
 
 -- 重置试炼塔
 function AppInstanceMgr:resetTrialInstance()
-	local prevSweepTimes	= self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0)
-	local prevBuyTimes		= self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 1)
 	
-	if prevSweepTimes > 0 then
-		outFmtError("not need to resetTrialInstance")
-		return
-	end
-	
-	local passed = self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 1)
-	if passed == 0 then
-		outFmtError("you can resetTrialInstance after pass the 1st layer")
-		return
-	end
-	
-	if prevBuyTimes == 0 then
-		outFmtError("no time to buy to resetTrialInstance")
-		return
-	end
-	
-	-- 判断能否花元宝
-	local gold = tb_map_trial[passed].resetgold
-	local player = self:getOwner()
-	if not player:checkMoneyEnough(MONEY_TYPE_GOLD_INGOT, gold) then
-		outFmtError("gold is not enough")
-		return
-	end
-	
-	-- 扣钱
-	player:SubMoney(MONEY_TYPE_GOLD_INGOT, MONEY_CHANGE_RESET_TRIAL, gold)
-	
-	-- 扣购买次数
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 1, prevBuyTimes - 1)
-	
-	-- 加次数
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0, 1)
-	
-	-- 修改今日可扫荡层数
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 0, passed)
 end
 
 -- 副本每日重置
@@ -329,12 +225,6 @@ function AppInstanceMgr:instanceDailyReset()
 		self:SetByte(i, 2, 0)
 		self:SetByte(i, 3, 0)
 	end
-	
-	-- 重置试炼塔
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 1, 1)
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_SWEEP_SHORT, 0, 1)
-	local passed = self:GetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 1)
-	self:SetUInt16(INSTANCE_INT_FIELD_TRIAL_PASSED_SHORT, 0, passed)
 	
 	-- 重置资源副本
 	for i = INSTANCE_INT_FIELD_RES_START,INSTANCE_INT_FIELD_RES_END-1 do

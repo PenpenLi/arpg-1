@@ -11,3 +11,7 @@ require("template.tables.tb_map")
 -- 跨服
 require("template.tables.tb_kuafu3v3_base")
 require("template.tables.tb_kuafu_xianfu_base")
+
+-- 世界冒险
+require("template.tables.tb_risk_base")
+require("template.tables.tb_risk_data")

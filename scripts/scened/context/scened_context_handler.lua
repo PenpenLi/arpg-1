@@ -618,8 +618,11 @@ function ScenedContext:Hanlde_Enter_Trial_Instance(pkt)
 		self:CallOptResult(OPRATE_TYPE_TELEPORT, TELEPORT_OPRATE_PVP_STATE)
 		return
 	end
+
+	local passedSectionId = self:getLastPassedSectionId()
+	local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetPlayerGuid(), passedSectionId)
 	
-	playerLib.Teleport(self.ptr, FREEMAN_MAP_ID, FREEMAN_FUHUO_X, FREEMAN_FUHUO_Y, 0, self:GetGuid())
+	playerLib.Teleport(self.ptr, mapid, x, y, 0, generalId)
 end
 
 --进入资源副本
@@ -748,6 +751,32 @@ function ScenedContext:Handle_Back_To_Family(pkt)
 	playerLib.Teleport(self.ptr, FACTION_MAP_ID, x+FACTION_FUHUO_X, y+FACTION_FUHUO_Y, 0, factionGuid)
 end
 
+function ScenedContext:Handle_Challange_Boss(pkt)
+	local mapid = unitLib.GetMapID(self.ptr)
+	local passedSectionId = self:getLastPassedSectionId()
+	local sectionId = getAvailableSectionId(passedSectionId)
+	
+	-- 只有在小怪关卡才能挑战boss
+	if mapid ~= tb_risk_data[sectionId].mapid then
+		return
+	end
+	
+	-- 判断是否能挑战boss
+	if not self:isCanChallengeRiskBoss() then
+		return
+	end
+	
+	local bossSectionId = tb_risk_data[sectionId].relateId
+	
+	if bossSectionId > 0 then
+		local config = tb_risk_data[bossSectionId]
+		local bossMapid = config.mapid
+		local x		= config.born[ 1 ]
+		local y		= config.born[ 2 ]
+		local generalId = string.format("%s#%d", self:GetPlayerGuid(), bossSectionId)
+		playerLib.Teleport(self.ptr, bossMapid, x, y, 0, generalId)
+	end
+end
 
 -- 使用需要广播的
 function ScenedContext:Handle_Use_Broadcast_gameobject(pkt)

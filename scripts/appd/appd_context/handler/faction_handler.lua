@@ -395,6 +395,13 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	--
 	elseif opt_type == FACTION_MANAGER_TYPE_SHOP then
 		faction:ShopItem(self,reserve_int1,reserve_int2)
+	--购买令牌
+	elseif opt_type == FACTION_MANAGER_TYPE_BUY_TOKEN then
+		faction:BuyToken(self,reserve_int1)
+	--挑战家族boss
+	elseif opt_type == FACTION_MANAGER_TYPE_CHALLENGE_BOSS then
+		faction:ChallengeBoss(self,reserve_int1)
+		
 	end
 	
 	

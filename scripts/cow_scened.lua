@@ -149,6 +149,7 @@ config = {
 		MSG_USE_JUMP_POINT,		-- 使用跳点
 		CMSG_XIANFU_RANDOM_RESPAWN,	--随机复活
 		CMSG_BACK_TO_FAMITY,		-- 返回家族
+		CMSG_CHALLANGE_BOSS,		-- 挑战boss
 		--CMSG_CHANGE_LINE,
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
@@ -267,6 +268,7 @@ function load_lua_scripts()
 		{'跨服仙府夺宝'			,'scened/instance/instance_kuafu_xianfu'},
 		{'修炼场'				,'scened/instance/instance_xiulianchang'},
 		{'原地副本0'			,'scened/instance/instance_remind_0'},
+		{'家族场景'				,'scened/instance/instance_faction'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -312,6 +314,8 @@ INSTANCE_SCRIPT_TABLE = {
 	[4003] = InstanceRemind0,
 	[4004] = InstanceRemind0,
 	[4005] = InstanceRemind0,
+	
+	[5001] = InstanceFaction,
 }
 
 -- 复活点坐标

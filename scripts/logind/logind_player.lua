@@ -48,6 +48,12 @@ function LogindPlayer:SetTeleportInfo(mapid, posx, posy, general_id)
 	end
 end
 
+function LogindPlayer:GetRiskTeleportInfo()
+	local passedSectionId = self:GetUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
+	local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetGuid(), passedSectionId)
+	return mapid, x, y, generalId
+end
+
 KUAFU_FENGLIUZHEN_MAPID = 3002
 KUAFU_XIANFU_MAPID = 3003
 

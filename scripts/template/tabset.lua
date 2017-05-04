@@ -72,3 +72,16 @@ for id,info in pairs(tb_item_template) do
 		tb_money_type_list[info.money_type - 1] = id
 	end
 end
+
+
+tb_faction_boss_reward_list = {}
+
+for id,info in pairs(tb_faction_boss_reward) do
+	if not tb_faction_boss_reward_list[info.monster_id] then
+		tb_faction_boss_reward_list[info.monster_id] = {}
+	end
+	for i = info.rank[1],info.rank[2] do
+		tb_faction_boss_reward_list[info.monster_id][i] = {reward = info.reward,mail_name = info.mail_name,mail_desc = info.mail_desc,fail_reward = info.fail_reward,fail_mail_name = info.fail_mail_name,fail_mail_desc = info.fail_mail_desc}
+	end
+	
+end

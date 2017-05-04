@@ -396,9 +396,17 @@ function PlayerInfo:GmCommand(str)
 		print("left count: ",self:GetCultivationLeftPlunderCount())
 		--self:RefreshCultivationRivals()
 		--]]
-		outFmtDebug('totalday = : %d',self:GetLoginActivityTotalDays())
-		self:GetLoginActivityReward(3)
-		
+		--outFmtDebug('totalday = : %d',self:GetLoginActivityTotalDays())
+		--self:GetLoginActivityReward(3)
+		--
+		local pkt1 = {}
+		pkt1.opt_type = FACTION_MANAGER_TYPE_BUY_TOKEN			--操作类型
+		pkt1.reserve_int1 = 1   --预留int值1*/
+		self:Handle_Faction_People( pkt1 )
+		local pkt2 = {}
+		pkt2.opt_type = FACTION_MANAGER_TYPE_CHALLENGE_BOSS			--操作类型
+		pkt2.reserve_int1 = 1   --预留int值1*/
+		self:Handle_Faction_People( pkt2 )
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

@@ -153,7 +153,7 @@ function InstanceWorldBoss:OnTimer_RefreshBoss()
 			if creature then
 				local creatureInfo = UnitInfo:new{ptr = creature}
 				-- ±êÊ¶Îªboss¹Ö
-				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_FIELD_BOSS_CREATURE)
+				creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
 			end
 		end
 	end

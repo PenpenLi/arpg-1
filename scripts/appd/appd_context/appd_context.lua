@@ -656,10 +656,7 @@ function PlayerInfo:Login()
 	local inviteFactionGuid = self:GetStr(PLAYER_STRING_FIELD_INVITE_FACTION_GUID)
 	if string.len(inviteFactionGuid) > 0 then
 		self:SetStr(PLAYER_STRING_FIELD_INVITE_FACTION_GUID, '')
-		local mapid = FREEMAN_MAP_ID
-		local x		= FREEMAN_FUHUO_X
-		local y		= FREEMAN_FUHUO_Y
-		local generalId = self:GetGuid()
+		local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetGuid(), 0)
 		
 		--进行加帮派操作
 		if app.objMgr:IsFactionGuid(inviteFactionGuid) then

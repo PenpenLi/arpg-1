@@ -355,4 +355,31 @@ function AppdApp:Broadcast(pkt)
 	end)
 end
 
+
+--全家族发送通知包
+function AppdApp:SendFactionNotice(faction_guid,typ, reason, data)
+	if type(data) == 'table' then
+		data = string.join('|', data)
+	else
+		data = tostring(data) or ''
+	end	
+	local pkt = protocols.pack_operation_failed(typ, reason, data)
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then
+		return
+	end
+	for pos = 0, MAX_FACTION_APLLY_MAMBER_COUNT -1 do
+		local guid = faction:GetFactionMemberGuid(pos)
+		if guid ~= '' then
+			local player = app.objMgr:getObj(guid)
+			if player then
+				player:SendPacket(pkt)
+			end
+		
+		end
+	end
+	pkt:delete()
+end
+
+
 return AppdApp

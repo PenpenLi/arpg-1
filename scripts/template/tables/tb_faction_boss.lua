@@ -16,9 +16,10 @@ tb_faction_boss = {
 	--  win_money:int	击杀奖励帮派资金
 	--  lose_money:int	失败扣除帮派资金
 	--  born_pos:array	出生位置
+	--  target_entry:int	保护目标模板
 	--  target_pos:array	目标生成位置
-	[1] = {id = 1,entry = 7001,faction_zhiwei_limit = {1},faction_lv_limit = 1,wait_time = 5,time = 300,token_cost = 1,difficult = 1,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_pos = {0,0},},
-	[2] = {id = 2,entry = 7001,faction_zhiwei_limit = {1},faction_lv_limit = 1,wait_time = 5,time = 300,token_cost = 1,difficult = 2,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_pos = {0,0},},
-	[3] = {id = 3,entry = 7001,faction_zhiwei_limit = {1},faction_lv_limit = 2,wait_time = 5,time = 300,token_cost = 1,difficult = 3,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_pos = {0,0},},
-	[4] = {id = 4,entry = 7001,faction_zhiwei_limit = {1},faction_lv_limit = 3,wait_time = 5,time = 300,token_cost = 1,difficult = 4,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_pos = {0,0},},
+	[1] = {id = 1,entry = 7501,faction_zhiwei_limit = {1},faction_lv_limit = 1,wait_time = 10,time = 300,token_cost = 1,difficult = 1,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_entry = 6301,target_pos = {142,83},},
+	[2] = {id = 2,entry = 7501,faction_zhiwei_limit = {1},faction_lv_limit = 1,wait_time = 10,time = 300,token_cost = 1,difficult = 2,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_entry = 6301,target_pos = {142,83},},
+	[3] = {id = 3,entry = 7501,faction_zhiwei_limit = {1},faction_lv_limit = 2,wait_time = 10,time = 300,token_cost = 1,difficult = 3,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_entry = 6301,target_pos = {142,83},},
+	[4] = {id = 4,entry = 7501,faction_zhiwei_limit = {1},faction_lv_limit = 3,wait_time = 10,time = 300,token_cost = 1,difficult = 4,all_rewards = {{2001,1},{2002,1}},win_money = 100,lose_money = 100,born_pos = {130,92},target_entry = 6301,target_pos = {142,83},},
 }

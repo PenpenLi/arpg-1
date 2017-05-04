@@ -39,6 +39,61 @@ function call_appd_add_items(guid, itemDict, logtype)
 end
 
 
+function call_appd_faction_challenge_boss_win(faction_guid)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_BOSS_WIN)
+	pkt:writeUTF(faction_guid)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
+
+function call_appd_faction_challenge_boss_fail(faction_guid,fail_type)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_BOSS_FAIL)
+	pkt:writeUTF(faction_guid)
+	pkt:writeU32(fail_type)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
+
+function call_appd_faction_add_token_points(faction_guid,player_guid,points)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_ADD_TOKEN_POINTS)
+	pkt:writeUTF(faction_guid)
+	pkt:writeUTF(player_guid)
+	pkt:writeU32(points)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
+
+function call_appd_faction_challenge_boss_damaged(faction_guid,player_guid,damage)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_BOSS_DAMAGED)
+	pkt:writeUTF(faction_guid)
+	pkt:writeUTF(player_guid)
+	pkt:writeU32(damage)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
+
+function call_appd_faction_update_boss_info(faction_guid,hp_rate,x,y)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_UPDATE_BOSS_INFO)
+	pkt:writeUTF(faction_guid)
+	pkt:writeU32(hp_rate)
+	pkt:writeU32(x)
+	pkt:writeU32(y)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
+
+function call_appd_faction_update_target_info(faction_guid,hp_rate,x,y)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_UPDATE_TARGET_INFO)
+	pkt:writeUTF(faction_guid)
+	pkt:writeU32(hp_rate)
+	pkt:writeU32(x)
+	pkt:writeU32(y)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
+
+
+
 -- 通知登录服 跨服数据
 function call_scene_login_to_kuafu_back(login_fd, guid)
 	local pkt = Packet.new(INTERNAL_OPT_KUAFU_BACK)

@@ -174,6 +174,78 @@ function unpack_scened_send_char_info( pkt )
 	return true, c_type, guid, content, to_guid, to_name
 end
 
+
+function unpack_scened_send_faction_challenge_boss_win( pkt )
+	local ret, faction_guid
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	return true, faction_guid
+end
+
+function unpack_scened_send_faction_challenge_boss_fail( pkt )
+	local ret, faction_guid, fail_type
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, fail_type = pkt:readU32()
+	if not ret then return false end
+	return true, faction_guid, fail_type
+end
+
+function unpack_scened_send_faction_add_points( pkt )
+	local ret,faction_guid, player_guid, points
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, player_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, points = pkt:readU32()
+	if not ret then return false end
+	
+	return true, faction_guid, player_guid, points
+end
+
+function unpack_scened_send_faction_challenge_boss_damaged( pkt )
+	local ret, faction_guid, player_guid, damage
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, player_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, damage = pkt:readU32()
+	if not ret then return false end
+	
+	return true, faction_guid, player_guid, damage
+end
+
+function unpack_scened_send_faction_update_boss_info( pkt )
+	local ret, faction_guid, hp_rate, x, y
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, hp_rate = pkt:readU32()
+	if not ret then return false end
+	ret, x = pkt:readU32()
+	if not ret then return false end
+	ret, y = pkt:readU32()
+	if not ret then return false end
+	return true, faction_guid, hp_rate, x, y
+end
+
+function unpack_scened_send_faction_update_target_info( pkt )
+	local ret, faction_guid, hp_rate, x, y
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, hp_rate = pkt:readU32()
+	if not ret then return false end
+	ret, x = pkt:readU32()
+	if not ret then return false end
+	ret, y = pkt:readU32()
+	if not ret then return false end
+	return true, faction_guid, hp_rate, x, y
+end
+
+
+
+
+
+
 --通知场景服给玩家加经验
 --@scened_fd 场景服连接id
 --@guid 需要增加经验的玩家

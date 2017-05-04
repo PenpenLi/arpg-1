@@ -39,5 +39,6 @@ OpcodeHandlerFuncTable[MSG_USE_JUMP_POINT] = ScenedContext.Hanlde_Use_Jump_Point
 
 OpcodeHandlerFuncTable[CMSG_BACK_TO_FAMITY] = ScenedContext.Handle_Back_To_Family
 
+OpcodeHandlerFuncTable[CMSG_CHALLANGE_BOSS] = ScenedContext.Handle_Challange_Boss
 
 return OpcodeHandlerFuncTable

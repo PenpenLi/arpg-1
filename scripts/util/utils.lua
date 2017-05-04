@@ -614,3 +614,33 @@ function GetAttrQuality(val, a, b)
 	
 	return ret
 end
+
+
+function getAvailableSectionId(passedSectionId)
+	local sectionId = passedSectionId
+	if sectionId == 0 then
+		sectionId = tb_risk_base[ 1 ].firstSection
+	else
+		local nextId = tb_risk_data[sectionId].nextId
+		if nextId > 0 then
+			sectionId = nextId
+		end
+	end
+	return sectionId
+end
+
+function onGetRiskTeleportInfo(playerGuid, passedSectionId)
+	local sectionId = getAvailableSectionId(passedSectionId)
+	local config = tb_risk_data[sectionId]
+	local mapid = config.mapid
+	local x		= config.born[ 1 ]
+	local y		= config.born[ 2 ]
+	local generalId = string.format("%s#%d", playerGuid, sectionId)
+	
+	return mapid, x, y, generalId
+end
+
+
+function isRiskMap(mapId)
+	return tb_map[mapId].is_risk
+end

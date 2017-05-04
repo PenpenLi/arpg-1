@@ -946,6 +946,8 @@ function FactionInfo:FactionQuit( player,is_merge)
 
 	--app.objMgr:callDelWatch(player:GetSessionId(),self:getFactionEventsGuid())
 	--成员离开后的处理
+	self:RemoveChallengeBossDamageRankByGuid(player_guid)
+	self:RemoveChallengeBossTotalRankByGuid(player_guid)
 	self:DoChangeMemberOpt(index)
 	if is_merge == nil then
 		--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_SUB_MEMBER)
@@ -958,6 +960,9 @@ function FactionInfo:FactionOutlineQuit(guid)
 	if index == nil then
 		return
 	end
+	
+	self:RemoveChallengeBossDamageRankByGuid(guid)
+	self:RemoveChallengeBossTotalRankByGuid(guid)
 	self:DoChangeMemberOpt(index)
 end
 --帮派解散
@@ -1781,6 +1786,9 @@ function FactionInfo:ResetFaction()
 	--end
 	
 	self:RefreshShop()
+	
+	self:SetTokenBuyCount(0)
+	self:SetTokenPointsCount(0)
 end
 --帮派重置成员每日信息
 function FactionInfo:ResetMember(player)
@@ -2045,6 +2053,510 @@ function FactionInfo:PrintFactionEvents (eventtype)
 		end
 	end	
 end
+
+
+--帮派BOSS相关
+
+
+--获取帮派令牌数
+function FactionInfo:GetTokenNum()
+	return self:GetUInt32(FACTION_INT_FIELD_TOKEN_NUM)
+end
+
+--设置帮派令牌数
+function FactionInfo:SetTokenNum(val)
+	self:SetUInt32(FACTION_INT_FIELD_TOKEN_NUM, val)
+end
+
+--获取帮派令牌积分进度
+function FactionInfo:GetTokenPoints()
+	return self:GetUInt32(FACTION_INT_FIELD_TOKEN_POINTS)
+end
+
+--设置帮派令牌积分进度
+function FactionInfo:SetTokenPoints(val)
+	self:SetUInt32(FACTION_INT_FIELD_TOKEN_POINTS, val)
+end
+
+--获取帮派令牌积分完成次数
+function FactionInfo:GetTokenPointsCount()
+	return self:GetUInt32(FACTION_INT_FIELD_TOKEN_POINTS_COUNT)
+end
+
+--设置帮派令牌积分完成次数
+function FactionInfo:SetTokenPointsCount(val)
+	self:SetUInt32(FACTION_INT_FIELD_TOKEN_POINTS_COUNT, val)
+end
+
+
+--获取帮派今日令牌购买次数
+function FactionInfo:GetTokenBuyCount()
+	return self:GetUInt32(FACTION_INT_FIELD_TOKEN_TODAY_BUY_COUNT)
+end
+
+--设置帮派今日令牌购买次数
+function FactionInfo:SetTokenBuyCount(val)
+	self:SetUInt32(FACTION_INT_FIELD_TOKEN_TODAY_BUY_COUNT, val)
+end
+
+--获取帮派已挑战最大boss id
+function FactionInfo:GetChallengeBossIdMax()
+	return self:GetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_ID_MAX)
+end
+
+--设置帮派已挑战最大boss id
+function FactionInfo:SetChallengeBossIdMax(val)
+	self:SetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_ID_MAX, val)
+end
+
+--获取帮派当前挑战boss id
+function FactionInfo:GetChallengeBossId()
+	return self:GetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_ID)
+end
+
+--设置帮派当前挑战boss id
+function FactionInfo:SetChallengeBossId(val)
+	self:SetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_ID, val)
+end
+
+--获取帮派当前挑战开始时间
+function FactionInfo:GetChallengeBossStartTime()
+	return self:GetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_START_TIME)
+end
+
+--设置帮派当前挑战开始时间
+function FactionInfo:SetChallengeBossStartTime(val)
+	self:SetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_START_TIME, val)
+end
+
+--获取帮派当前boss血量万分比
+function FactionInfo:GetChallengeBossHpRate()
+	return self:GetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_HP_RATE)
+end
+
+--设置帮派当前boss血量万分比
+function FactionInfo:SetChallengeBossHpRate(val)
+	self:SetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_HP_RATE, val)
+end
+
+--获取帮派当前boss pos
+function FactionInfo:GetChallengeBossPos()
+	return self:GetUInt16(FACTION_INT_FIELD_CHALLENGE_BOSS_POS,0),self:GetUInt16(FACTION_INT_FIELD_CHALLENGE_BOSS_POS,1)
+end
+
+--设置帮派当前boss pos
+function FactionInfo:SetChallengeBossPos(x,y)
+	self:SetUInt16(FACTION_INT_FIELD_CHALLENGE_BOSS_POS,0, x)
+	self:SetUInt16(FACTION_INT_FIELD_CHALLENGE_BOSS_POS,1, y)
+
+end
+
+--获取帮派保护目标血量万分比
+function FactionInfo:GetProtectTargetHpRate()
+	return self:GetUInt32(FACTION_INT_FIELD_PROTECT_TARGET_HP_RATE)
+end
+
+--设置帮派保护目标血量万分比
+function FactionInfo:SetProtectTargetHpRate(val)
+	self:SetUInt32(FACTION_INT_FIELD_PROTECT_TARGET_HP_RATE, val)
+end
+
+--获取帮派当前boss pos
+function FactionInfo:GetProtectTargetPos()
+	return self:GetUInt16(FACTION_INT_FIELD_PROTECT_TARGET_POS,0),self:GetUInt16(FACTION_INT_FIELD_PROTECT_TARGET_POS,1)
+end
+
+--设置帮派当前boss pos
+function FactionInfo:SetProtectTargetPos(x,y)
+	self:SetUInt16(FACTION_INT_FIELD_PROTECT_TARGET_POS,0, x)
+	self:SetUInt16(FACTION_INT_FIELD_PROTECT_TARGET_POS,1, y)
+
+end
+
+--获取当前boss输出榜 index位置 输出值和guid
+function FactionInfo:GetChallengeBossDamageRankByIndex(index)
+	local damage = self:GetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_DAMAGE_RANK_START + index)
+	local guid = self:GetStr(FACTION_STRING_FIELD_CHALLENGE_BOSS_DAMAGE_RANK_START + index)
+	
+	return damage,guid
+end
+
+--设置当前boss输出榜 index位置 输出值和guid
+function FactionInfo:SetChallengeBossDamageRankByIndex(index,damage,guid)
+	self:SetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_DAMAGE_RANK_START + index,damage)
+	self:SetStr(FACTION_STRING_FIELD_CHALLENGE_BOSS_DAMAGE_RANK_START + index,guid)
+	
+end
+
+--当前boss输出榜 增加guid 对应的输出值,guid不存在则添加记录
+function FactionInfo:AddChallengeBossDamageRankDamage(damage,guid)
+	local empty_pos = {}
+	for i = 0 ,MAX_FACTION_MAMBER_COUNT -1  do
+		local temp_damage,temp_guid = self:GetChallengeBossDamageRankByIndex(i)
+		if guid == temp_guid then
+			self:SetChallengeBossDamageRankByIndex(i,temp_damage + damage,guid)
+			return
+		end
+		if temp_guid == '' then
+			table.insert(empty_pos,i)
+		end
+	end
+	if empty_pos[1] then
+		self:SetChallengeBossDamageRankByIndex(empty_pos[1],damage,guid)
+	end
+end
+
+--当前boss输出榜 根据guid 删除记录
+function FactionInfo:RemoveChallengeBossDamageRankByGuid(guid)
+	for i = 0 ,MAX_FACTION_MAMBER_COUNT -1  do
+		local temp_damage,temp_guid = self:GetChallengeBossDamageRankByIndex(i)
+		if guid == temp_guid then
+			self:SetChallengeBossDamageRankByIndex(i,0,'')
+			return
+		end
+	end
+end
+
+--清理当前输出榜
+function FactionInfo:ClearChallengeBossDamageRank()
+	for i = 0 ,MAX_FACTION_MAMBER_COUNT -1  do
+		self:SetChallengeBossDamageRankByIndex(i,0,'')
+	end
+end
+
+
+--当前boss输出榜 遍历返回递减的排行
+function FactionInfo:GetChallengeBossDamageRankList()
+	local list = {}
+	for i = 0 ,MAX_FACTION_MAMBER_COUNT -1  do
+		local temp_damage,temp_guid = self:GetChallengeBossDamageRankByIndex(i)
+		if temp_guid ~= '' then
+			table.insert(list,{guid = temp_guid,damage = temp_damage})
+		end
+	end
+	table.sort(list,function (a,b)
+		return a.damage > b.damage
+	end)
+	return list
+end
+
+
+--获取总输出榜 index位置 输出值和guid
+function FactionInfo:GetChallengeBossTotalRankByIndex(index)
+	local damage = self:GetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_TOTAL_RANK_START + index)
+	local guid = self:GetStr(FACTION_STRING_FIELD_CHALLENGE_BOSS_TOTAL_RANK_START + index)
+	
+	return damage,guid
+end
+
+--设置总输出榜 index位置 输出值和guid
+function FactionInfo:SetChallengeBossTotalRankByIndex(index,damage,guid)
+	self:SetUInt32(FACTION_INT_FIELD_CHALLENGE_BOSS_TOTAL_RANK_START + index,damage)
+	self:SetStr(FACTION_STRING_FIELD_CHALLENGE_BOSS_TOTAL_RANK_START + index,guid)
+	
+end
+
+--总输出榜 增加guid 对应的输出值,guid不存在则添加记录
+function FactionInfo:AddChallengeBossTotalRankDamage(damage,guid)
+	local empty_pos = {}
+	for i = 0 ,MAX_FACTION_MAMBER_COUNT -1  do
+		local temp_damage,temp_guid = self:GetChallengeBossTotalRankByIndex(i)
+		if guid == temp_guid then
+			self:SetChallengeBossTotalRankByIndex(i,temp_damage + damage,guid)
+			return
+		end
+		if guid == '' then
+			table.insert(empty_pos,i)
+		end
+	end
+	if empty_pos[1] then
+		self:SetChallengeBossTotalRankByIndex(empty_pos[1],damage,guid)
+	end
+end
+
+--总输出榜 根据guid 删除记录
+function FactionInfo:RemoveChallengeBossTotalRankByGuid(guid)
+	for i = 0 ,MAX_FACTION_MAMBER_COUNT -1  do
+		local temp_damage,temp_guid = self:GetChallengeBossTotalRankByIndex(i)
+		if guid == temp_guid then
+			self:SetChallengeBossTotalRankByIndex(i,0,'')
+			return
+		end
+	end
+end
+
+
+--客户端调用接口
+--购买令牌
+function FactionInfo:BuyToken(player,num)
+	local level = self:GetFactionLevel()
+	local count = self:GetTokenBuyCount()
+	local token_num = self:GetTokenNum()
+	
+	outFmtDebug('-----------------before buy token nums = %d, count = %d', token_num,count)
+
+	if count >= tb_faction_base[level].token_max_buy or count + num > tb_faction_base[level].token_max_buy or token_num + num > tb_faction_base[level].token_max_keep then
+		--return  --测试后 需要还原!!!!!!!!
+	end
+	local costTable = {}
+	local temp = {}
+	for i = count + 1,count + num do
+		local price = tb_faction_base[level].token_buy_price[i]
+		if price then
+			if temp[price[1]] == nil then
+				temp[price[1]] = price[2]
+			else
+				temp[price[1]] = temp[price[1]] + price[2]
+			end
+		end
+		
+	end
+	for id,price in pairs(temp) do
+		table.insert(costTable,{id,price})
+	end
+	
+	if not player:costMoneys(MONEY_CHANGE_TYPE_MALL_BUY, costTable, 1) then
+		player:CallOptResult(OPERTE_TYPE_NPCBUY, NPC_BUY_MONEY_NO_ENOUGH)
+		return
+	end
+
+	self:SetTokenBuyCount(count + num)
+	self:SetTokenNum(token_num + num)
+	
+	outFmtDebug('------------------after buy token nums = %d, count = %d', self:GetTokenNum(),self:GetTokenBuyCount())
+end
+
+--进行召唤boss		修改当前bossid  场景服每秒检测
+function FactionInfo:ChallengeBoss(player,boss_id)
+	if self:GetChallengeBossId() > 0 then
+		--已经处于挑战中了 无效包
+		return
+	end
+	local config = tb_faction_boss[boss_id]
+	local token_num = self:GetTokenNum()
+	local level = self:GetFactionLevel()
+	local id_max = self:GetChallengeBossIdMax()
+	local pos = self:FindPlayerIndex(player:GetGuid())
+	local identity = 0 
+	if pos then
+		identity = self:GetFactionMemberIdentity(pos)
+	end
+	local flag = false
+	for i,j in pairs(config.faction_zhiwei_limit) do
+		if identity == j then
+			flag = true
+		end
+	end
+	if not flag then
+		--权限不足
+		return
+	end
+	
+	if level < config.faction_lv_limit then
+		--家族等级不足
+		return
+	end
+	
+	if token_num < config.token_cost then
+		--令牌不足
+		return
+	end
+	
+	if boss_id > id_max + 1 then
+		--前置boss未挑战成功
+		return
+	end
+	
+	self:SetTokenNum(token_num - config.token_cost)
+	self:SetChallengeBossStartTime(os.time())
+	self:SetChallengeBossId(boss_id)
+	self:SetChallengeBossHpRate(10000)
+	self:SetChallengeBossPos(config.born_pos[1],config.born_pos[2])
+	--保护目标
+	self:SetProtectTargetHpRate(10000)
+	self:SetProtectTargetPos(config.target_pos[1],config.target_pos[2])
+	
+	self:ClearChallengeBossDamageRank()
+	
+	outFmtDebug('-----------ChallengeBoss:bossid = %d', boss_id)
+	
+	--广播
+	app:SendFactionNotice(self:GetGuid(), OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_BOSS_START, {tb_creature_template[config.entry].name})
+	--app:SendFactionNotice(self:GetGuid(), 23, 3, {})
+end
+
+
+--					scened_internal_pack 添加 发包
+--场景服调用接口 appdInsternalHanlders 添加 消息处理
+--击杀野区 积分变化 (playerguid,point)
+function FactionInfo:AddTokenPoints(player_guid,points)
+	local currPoints = self:GetTokenPoints()
+	local currPointsCount = self:GetTokenPointsCount()
+	local tokenNum = self:GetTokenNum()
+	local config = tb_faction_base[self:GetFactionLevel()]
+	if currPoints + points < config.token_points then
+		self:SetTokenPoints(currPoints + points)
+	else
+		local temp = currPoints + points
+		local count = 0
+		while( temp >= config.token_points) do
+			if currPointsCount < config.token_daily and tokenNum < config.token_max_keep then
+				count = count + 1
+				temp = temp - config.token_points
+			
+			else
+				temp = config.token_points - 1
+			end
+		end
+		self:SetTokenPoints(temp)
+		self:SetTokenPointsCount(currPointsCount + count)
+		self:SetTokenNum(tokenNum + count)
+		
+	end
+	
+end
+
+--对boss造成伤害 (playerguid,damage)
+function FactionInfo:BossDamaged(player_guid,damage)
+	self:AddChallengeBossDamageRankDamage(damage,player_guid)
+end
+--同步boss hp pos (hp,x,y)
+function FactionInfo:UpdateBossInfo(hp_rate,x,y)
+	--outFmtDebug('=========================UpdateBossInfo')
+	local boss_id = self:GetChallengeBossId()
+	if boss_id <= 0 then
+		return
+	end
+	self:SetChallengeBossHpRate(hp_rate)
+	self:SetChallengeBossPos(x,y)
+end
+--同步target hp pos (hp,x,y)
+function FactionInfo:UpdateTargetInfo(hp_rate,x,y)
+	local boss_id = self:GetChallengeBossId()
+	if boss_id <= 0 then
+		return
+	end
+	self:SetProtectTargetHpRate(hp_rate)
+	self:SetProtectTargetPos(x,y)
+end
+--挑战成功 ()
+function FactionInfo:ChallengeBossWin()
+	local boss_id = self:GetChallengeBossId()
+	if boss_id <= 0 then
+		return
+	end
+	local config = tb_faction_boss[boss_id]
+	self:AddFactionMoney(config.win_money)
+	
+	--成员奖励
+	local damage_rank = self:GetChallengeBossDamageRankList()
+	for index,info in ipairs(damage_rank) do
+		local player_guid = info.guid
+		local damage = info.damage
+		self:AddChallengeBossTotalRankDamage(damage,player_guid)
+		local reward = nil
+		local mail_name = ''
+		local mail_desc = ''
+		if tb_faction_boss_reward_list[boss_id] and tb_faction_boss_reward_list[boss_id][index] then
+			reward = tb_faction_boss_reward_list[boss_id][index].reward
+			mail_name = tb_faction_boss_reward_list[boss_id][index].mail_name
+			mail_desc = tb_faction_boss_reward_list[boss_id][index].mail_desc
+		else
+			reward = nil
+		end
+		
+		local player = app.objMgr:getObj(player_guid)
+		
+		if reward then
+			--player:AppdAddItems(reward,MONEY_CHANGE_FACTION_BOSS,LOG_ITEM_OPER_TYPE_FACTION_BOSS)
+			
+			local rewardStr = ""
+			for s,d in ipairs(reward) do
+				if s > 1 then
+					rewardStr = rewardStr .. ","
+				end
+				rewardStr = rewardStr..d[1]..","..d[2]
+			end
+			
+			AddGiftPacksData(player_guid,0,GIFT_PACKS_TYPE_FACTION_BOSS,os.time(),os.time() + 86400*30, mail_name, mail_desc, rewardStr, SYSTEM_NAME)
+		end
+		
+		if player then
+			--smsg  胜利消息
+			player:call_faction_boss_send_result(1,boss_id,config.win_money)
+		end
+		
+	end
+	
+	
+	local boss_id_max = self:GetChallengeBossIdMax()
+	if boss_id > boss_id_max then
+		self:SetChallengeBossIdMax(boss_id)
+	end
+	
+	
+	
+	self:SetChallengeBossId(0)
+	
+end
+--挑战失败 (type:1目标失守 / 2超时)
+function FactionInfo:ChallengedBossFail(fail_type)
+	--outFmtDebug('=========================ChallengedBossFail %d',fail_type)
+	local boss_id = self:GetChallengeBossId()
+	if boss_id <= 0 then
+		return
+	end
+	local config = tb_faction_boss[boss_id]
+	local lose_money = config.lose_money
+	if self:GetFactionMoney() < lose_money then
+		lose_money = self:GetFactionMoney()
+		self:SetFactionMoney(0)
+	else
+		self:SetFactionMoney(self:GetFactionMoney() - config.lose_money )
+	end
+	
+	--成员奖励
+	local damage_rank = self:GetChallengeBossDamageRankList()
+	for index,info in ipairs(damage_rank) do
+		local player_guid = info.guid
+		local damage = info.damage
+		self:AddChallengeBossTotalRankDamage(damage,player_guid)
+		local reward = nil
+		local mail_name = ''
+		local mail_desc = ''
+		if tb_faction_boss_reward_list[boss_id] and tb_faction_boss_reward_list[boss_id][index] then
+			reward = tb_faction_boss_reward_list[boss_id][index].fail_reward
+			mail_name = tb_faction_boss_reward_list[boss_id][index].fail_mail_name
+			mail_desc = tb_faction_boss_reward_list[boss_id][index].fail_mail_desc
+		else
+			reward = nil
+		end
+		local player = app.objMgr:getObj(player_guid)
+		
+		if reward then
+			--player:AppdAddItems(reward,MONEY_CHANGE_FACTION_BOSS,LOG_ITEM_OPER_TYPE_FACTION_BOSS)
+			
+			local rewardStr = ""
+			for s,d in ipairs(reward) do
+				if s > 1 then
+					rewardStr = rewardStr .. ","
+				end
+				rewardStr = rewardStr..d[1]..","..d[2]
+			end
+			
+			AddGiftPacksData(player_guid,0,GIFT_PACKS_TYPE_FACTION_BOSS,os.time(),os.time() + 86400*30, mail_name, mail_desc, rewardStr, SYSTEM_NAME)
+		end
+		if player then
+			--smsg  失败消息 type_fail, boss_id, money
+			player:call_faction_boss_send_result(2,boss_id,lose_money)
+		end
+		
+	end
+	
+	self:SetChallengeBossId(0)
+	
+end
+
 
 
 
