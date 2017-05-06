@@ -1258,3 +1258,15 @@ faction_boss_send_result,s2c,321,/*返回家族boss结果*/,STATUS_NEVER,False
 
 #
 challange_boss,c2s,322,/*挑战boss*/,STATUS_NEVER,False
+
+#
+pick_offline_reward,c2s,325,/*领取离线奖励*/,STATUS_NEVER,False
+	
+#
+offline_reward_result,s2c,326,/*离线奖励结果*/,STATUS_NEVER,False
+	reserve,uint32,False,/*备用*/
+	list,item_reward_info,True,/奖励道具列表/
+	
+#
+smelting_equip,c2s,327,/*熔炼装备*/,STATUS_NEVER,False
+	pos_str,String,False,/*装备pos 用竖线隔开*/

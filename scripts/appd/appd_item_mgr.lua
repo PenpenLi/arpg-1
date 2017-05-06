@@ -80,7 +80,7 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 			return false
 		end
 	elseif src_bag == BAG_TYPE_EQUIP_BAG then
-		if dst_bag ~= BAG_TYPE_EQUIP then
+		if dst_bag ~= BAG_TYPE_EQUIP and dst_bag ~= BAG_TYPE_EQUIP_BAG then
 			outFmtError("exchangePos4:cant exchange to dst_bag %d src_bag %d",dst_bag, src_bag)
 			return false
 		end		
@@ -469,6 +469,46 @@ function AppItemMgr:useMulItem(costItemTable,multiple)
 	end
 
 	return true
+end
+
+
+--熔炼装备
+function AppItemMgr:smeltingEquip(pos_str)
+	local owner = self:getOwner()
+	if not owner then
+		outFmtError("exchangePos:not find %s owner!", self.itemMgr:GetGuid())
+		return false
+	end
+	
+	local values =  string.split(pos_str, "|")
+	
+	for i, str in pairs(values) do
+		local pos = tonumber(str)
+		if pos then
+			local item = self:getBagItemByPos(BAG_TYPE_EQUIP_BAG, pos)
+			if item then
+				local entry = item:getEntry()
+				if (entry) then
+					local config = tb_item_template[entry]
+					if config then
+						local drop_id = config.drop_id
+						if drop_id and drop_id ~= 0 then
+							local dict = {}
+							DoRandomDrop(drop_id, dict)
+							local rewardDict = {}
+							for itemId, value in pairs(dict) do
+								table.insert(rewardDict, {itemId, value})
+							end
+							self:delItemObj(item,1)
+							owner:AppdAddItems(rewardDict, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
+							
+						end
+					end
+				end
+			end
+		end
+	end
+	SortItem(owner,true)--强制整理
 end
 
 return AppItemMgr

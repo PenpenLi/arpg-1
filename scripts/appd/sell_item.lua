@@ -35,12 +35,14 @@ function SellItem(player, item_guid, count)
 		return
 	end
 	
-		local price = tb_item_template[item:getEntry()].price
+	local sell_reward = tb_item_template[item:getEntry()].sell_reward
+	local all_rewards = {}
+	for _,reward in pairs(sell_reward) do
+		table.insert(all_rewards,{reward[1],reward[2]*count})
+	end
 	
 	if itemMgr:delItemObj(item,count) then
-		local item_id = tb_money_type_list[MONEY_TYPE_SILVER]
-		local reward = {{item_id,price*count}}
-		player:AppdAddItems(reward,MONEY_CHANGE_NPC_SELL,nil)
+		player:AppdAddItems(all_rewards,MONEY_CHANGE_NPC_SELL,nil)
 --		player:AddMoney(MONEY_TYPE_SILVER, MONEY_CHANGE_NPC_SELL, price*count)
 		--print("")
 	end
@@ -50,84 +52,88 @@ end
 --整理主背包物品入口
 --[[
 @player:玩家对象
-
+@flag:强制整理
 ]]
-function SortItem(player)
+function SortItem(player,flag)
 	local nowtime = os.time()
 	local lasttime = player:GetBagSortTime()
-	if  nowtime - lasttime < tb_item_sort_cd[1].cd then
+	if  nowtime - lasttime < tb_item_sort_cd[1].cd or not flag then
 		--outFmtError("SortItem: less than 10s from last sort!")
 		return
 	end
-	player:SetBagSortTime(nowtime)
-	
-	local itemMgr = player:getItemMgr()
-	local items = itemMgr:getBagAllItem(BAG_TYPE_MAIN_BAG)
-	local index = 0
-	for pos, item in pairsByKeys(items) do      
-		--outFmtInfo("pos:%d item:%s",pos,item) 
-		if pos == index then
-			index = index + 1
-		else
-			itemMgr:exchangePos(BAG_TYPE_MAIN_BAG,pos,BAG_TYPE_MAIN_BAG,index)
-			index = index + 1
-		end
+	if not flag then
+		player:SetBagSortTime(nowtime)
 	end
-	local items = itemMgr:getBagAllItem(BAG_TYPE_MAIN_BAG)
-	local tempTable = {}
-	for pos, item in pairsByKeys(items) do
+	
+	for _,bag_type in pairs({BAG_TYPE_MAIN_BAG,BAG_TYPE_EQUIP_BAG}) do
 		
-		local value1 = tb_item_template[item:getEntry()].rank --等级(降序) 品质(降序)  类型(升序)  战力(降序)  获取时间(降序)  entry(升序)
-		local value2 = tb_item_template[item:getEntry()].quality
-		local value3 = tb_item_template[item:getEntry()].type_c
-		local value4 = item:getForce()
-		local value5 = 0
-		local value6 = item:getEntry()
-		table.insert(tempTable,{pos=pos,value1=value1,value2=value2,value3=value3,value4=value4,value5=value5,value6=value6})
-	end
+		local itemMgr = player:getItemMgr()
+		local items = itemMgr:getBagAllItem(bag_type)
+		local index = 0
+		for pos, item in pairsByKeys(items) do      
+			--outFmtInfo("pos:%d item:%s",pos,item) 
+			if pos == index then
+				index = index + 1
+			else
+				itemMgr:exchangePos(bag_type,pos,bag_type,index)
+				index = index + 1
+			end
+		end
+		local items = itemMgr:getBagAllItem(bag_type)
+		local tempTable = {}
+		for pos, item in pairsByKeys(items) do
+			
+			local value1 = tb_item_template[item:getEntry()].rank --等级(降序) 品质(降序)  类型(升序)  战力(降序)  获取时间(降序)  entry(升序)
+			local value2 = tb_item_template[item:getEntry()].quality
+			local value3 = tb_item_template[item:getEntry()].type_c
+			local value4 = item:getForce()
+			local value5 = 0
+			local value6 = item:getEntry()
+			table.insert(tempTable,{pos=pos,value1=value1,value2=value2,value3=value3,value4=value4,value5=value5,value6=value6})
+		end
 
-	--print("------------------------------")	
-	--printTable(tempTable)
-	
-	--quickSort(itemMgr,tempTable,function(a,b)
-	mi_sort(tempTable, function(a,b)
-		--print("================")
-		--printTable(a)
-		--printTable(b)
-		local r = false
-		if a.value1 == b.value1 then
-			if a.value2 == b.value2 then
-				if a.value3 == b.value3 then
-					if a.value4 == b.value4 then
-						if a.value5 == b.value5 then
-							r =  a.value6 < b.value6
+		--print("------------------------------")	
+		--printTable(tempTable)
+		
+		--quickSort(itemMgr,tempTable,function(a,b)
+		mi_sort(tempTable, function(a,b)
+			--print("================")
+			--printTable(a)
+			--printTable(b)
+			local r = false
+			if a.value1 == b.value1 then
+				if a.value2 == b.value2 then
+					if a.value3 == b.value3 then
+						if a.value4 == b.value4 then
+							if a.value5 == b.value5 then
+								r =  a.value6 < b.value6
+							else
+							
+							
+							r =  a.value5 > b.value5
+							end
 						else
-						
-						
-						r =  a.value5 > b.value5
+							r =  a.value4 > b.value4
 						end
 					else
-						r =  a.value4 > b.value4
+						r =  a.value3 < b.value3
 					end
 				else
-					r =  a.value3 < b.value3
+					r =  a.value2 > b.value2
 				end
 			else
-				r =  a.value2 > b.value2
+				r =  a.value1 > b.value1
 			end
-		else
-			r =  a.value1 > b.value1
-		end
-		
-		
-		return r
-	end,function(a,b)
-		itemMgr:exchangePos(BAG_TYPE_MAIN_BAG,a.pos,BAG_TYPE_MAIN_BAG,b.pos)
-		local temp = a.pos
-		a.pos = b.pos
-		b.pos = temp
-	end)
-	
+			
+			
+			return r
+		end,function(a,b)
+			itemMgr:exchangePos(bag_type,a.pos,bag_type,b.pos)
+			local temp = a.pos
+			a.pos = b.pos
+			b.pos = temp
+		end)
+	end
 
 	
 end

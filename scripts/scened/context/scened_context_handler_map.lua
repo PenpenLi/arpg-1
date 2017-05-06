@@ -41,4 +41,6 @@ OpcodeHandlerFuncTable[CMSG_BACK_TO_FAMITY] = ScenedContext.Handle_Back_To_Famil
 
 OpcodeHandlerFuncTable[CMSG_CHALLANGE_BOSS] = ScenedContext.Handle_Challange_Boss
 
+OpcodeHandlerFuncTable[CMSG_PICK_OFFLINE_REWARD] = ScenedContext.Handle_Pick_Offline_Reward
+
 return OpcodeHandlerFuncTable

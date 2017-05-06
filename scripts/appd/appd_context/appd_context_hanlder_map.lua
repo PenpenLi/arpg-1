@@ -175,4 +175,6 @@ hanlders[CMSG_FINISH_OPTIONAL_GUIDE_STEP] = PlayerInfo.Handle_Optional_Guide_Ste
 
 hanlders[CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED] = PlayerInfo.Handle_Execute_Quest_Cmd_After_Accepted
 
+hanlders[CMSG_SMELTING_EQUIP] = PlayerInfo.Handle_Smelting_Equip
+
 return hanlders

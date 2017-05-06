@@ -20,6 +20,7 @@ function InstanceTrial:OnInitScript(  )
 
 	-- 加结束时间
 	local timestamp = os.time() + 180
+	self:SetMapQuestEndTime(timestamp)
 	self:SetMapEndTime(timestamp)
 end
 
@@ -60,13 +61,21 @@ function InstanceTrial:OnJoinPlayer(player)
 	end
 
 	-- 刷新怪物
-	self:OnRefreshMonsterInit(player)
+	local seciontId = self:getSectionId()
+	if tb_risk_data[seciontId].is_boss_section == 0 then
+		self:OnRefreshMonsterInit(player)
+	else
+		self:refreshBoss()
+	end
 end
 
 function InstanceTrial:hasNextMonster()
 	local seciontId = self:getSectionId()
 	local count = #tb_risk_data[seciontId].monsters
-	return self:getRefreshCount() < count
+	if self:getRefreshCount() >= count then
+		self:resetRefreshCursor()
+	end
+	return true
 end
 
 function InstanceTrial:nextMonsterInfoIndx()
@@ -79,12 +88,12 @@ function InstanceTrial:oneRefreshed()
 	self:AddUInt32(TRIAL_INSTANCE_FIELD_CURSOR, 1)
 end
 
-function InstanceTrial:getRefreshCount()
-	return self:GetUInt32(TRIAL_INSTANCE_FIELD_CURSOR)
+function InstanceTrial:resetRefreshCursor()
+	self:SetUInt32(TRIAL_INSTANCE_FIELD_CURSOR, 0)
 end
 
-function InstanceTrial:oneRefreshed()
-	self:AddUInt32(TRIAL_INSTANCE_FIELD_CURSOR, 1)
+function InstanceTrial:getRefreshCount()
+	return self:GetUInt32(TRIAL_INSTANCE_FIELD_CURSOR)
 end
 
 function InstanceTrial:isSettedOrder()
@@ -100,8 +109,8 @@ function InstanceTrial:onSetOrder(player_ptr)
 			self:SetByte(TRIAL_INSTANCE_FIELD_ORDER, i-1, order[ i ])
 		end
 		
-		if tb_risk_data[seciontId].is_boss_section == 0 then
-			local playerInfo = UnitInfo:new {ptr = player_ptr}
+		local playerInfo = UnitInfo:new {ptr = player_ptr}
+		if tb_risk_data[seciontId].is_boss_section == 0 and playerInfo:GetRiskMonsterCount() == 0 then
 			playerInfo:SetRiskMonsterCount(tb_risk_data[seciontId].count)
 		end
 	end
@@ -111,6 +120,26 @@ end
 function InstanceTrial:OnRefreshMonsterInit(player)
 	self:onSetOrder(player)
 	self:refresh()
+end
+
+function InstanceTrial:refreshBoss()
+	if self:GetUInt32(TRIAL_INSTANCE_FIELD_BOSS_REFRESHED) > 0 then
+		return
+	end
+	self:SetUInt32(TRIAL_INSTANCE_FIELD_BOSS_REFRESHED, 1)
+	
+	local seciontId = self:getSectionId()
+	local monsters = tb_risk_data[seciontId].monsters
+	local info = monsters[ 1 ]
+	
+	local cx = info[ 3 ]
+	local cy = info[ 4 ]
+	local entry = info[ 1 ]
+	
+	local creature = mapLib.AddCreature(self.ptr, {
+		templateid = entry, x = cx, y = cy,
+		active_grid = true, ainame = 'AI_trialboss', npcflag = {}
+	})
 end
 
 function InstanceTrial:refresh()
@@ -155,9 +184,13 @@ function InstanceTrial:refresh()
 	end
 end
 
-function InstanceTrial:oneMonsterKilled(player_ptr)
+function InstanceTrial:oneTrialMonsterKilled(player_ptr)
 	local playerInfo = UnitInfo:new {ptr = player_ptr}
-	playerInfo:AddRiskMonsterKilledCount()
+	if playerInfo:GetTypeID() == TYPEID_PLAYER then
+		playerInfo:AddRiskMonsterKilledCount()
+	else
+		outFmtInfo("##### entry %d kill one monster", playerInfo:GetEntry())
+	end
 	-- 判断是否需要刷下一波
 	self:refresh()
 end
@@ -167,11 +200,16 @@ function InstanceTrial:onBossLoot(player_ptr, dict)
 	local seciontId = self:getSectionId()
 	playerInfo:passSection(seciontId)
 
-	PlayerAddRewards(player_ptr, dict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD)
+	PlayerAddRewards(player_ptr, dict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD, 1)
 
-	-- 扫荡的结果发送
-	local list = Change_To_Item_Reward_Info(dict, true)
-	playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_TRIAL, 0, 0, 0, list)
+	-- 压成字符串
+	local reward = {}
+	for itemId, count in pairs(dict) do
+		table.insert(reward, itemId..":"..count)
+	end
+	local data = string.join(",", reward)
+	
+	self:SetMapReward(data)
 	
 	-- 设置完成
 	self:SetMapState(self.STATE_FINISH)
@@ -192,6 +230,7 @@ function InstanceTrial:OnLeavePlayer( player, is_offline)
 	if not is_offline then
 		self:RemoveTimeOutCallback(self.Leave_Callback)
 	end
+	self:SetMapEndTime(os.time())
 end
 
 --当玩家死亡后触发()
@@ -223,9 +262,9 @@ end
 
 --生成战利品
 function AI_trialboss:LootAllot(owner, player, killer, drop_rate_multiples, boss_type, fcm)
-	local mapid = mapLib.GetMapID(map_ptr)
 	local map_ptr = unitLib.GetMap(owner)
-	local instanceInfo = InstanceKuafuXianfu:new{ptr = map_ptr}
+	local mapid = mapLib.GetMapID(map_ptr)
+	local instanceInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
 	
 	local entry = binLogLib.GetUInt16(owner, UNIT_FIELD_UINT16_0, 0)
 	local info = tb_creature_template[entry]
@@ -252,16 +291,16 @@ function AI_trial:JustDied( map_ptr,owner,killer_ptr )
 	
 	local mapid = mapLib.GetMapID(map_ptr)
 	local instanceInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
-	instanceInfo:oneMonsterKilled(killer_ptr)
+	instanceInfo:oneTrialMonsterKilled(killer_ptr)
 	
 	return 0
 end
 
 --生成战利品
 function AI_trial:LootAllot(owner, player, killer, drop_rate_multiples, boss_type, fcm)
-	local mapid = mapLib.GetMapID(map_ptr)
 	local map_ptr = unitLib.GetMap(owner)
-	local instanceInfo = InstanceKuafuXianfu:new{ptr = map_ptr}
+	local mapid = mapLib.GetMapID(map_ptr)
+	local instanceInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
 	
 	local entry = binLogLib.GetUInt16(owner, UNIT_FIELD_UINT16_0, 0)
 	local info = tb_creature_template[entry]
@@ -274,7 +313,7 @@ function AI_trial:LootAllot(owner, player, killer, drop_rate_multiples, boss_typ
 		end	
 	end
 	
-	PlayerAddRewards(player, dict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD)
+	PlayerAddRewards(player, dict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD, 1)
 end
 
 return InstanceTrial

@@ -606,12 +606,14 @@ function ScenedContext:Hanlde_Enter_Trial_Instance(pkt)
 		return
 	end
 	
+	--[[
 	local mapid = unitLib.GetMapID(self.ptr)
 	-- 是否允许传送
 	if mapid ~= toMapId and not self:makeEnterTest(toMapId) then
 --		outFmtError("Hanlde_Enter_VIP_Instance player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
 		return
 	end
+	--]]
 	
 	--pvp状态下一律不准进
 	if self:GetPVPState() then
@@ -754,7 +756,7 @@ end
 function ScenedContext:Handle_Challange_Boss(pkt)
 	local mapid = unitLib.GetMapID(self.ptr)
 	local passedSectionId = self:getLastPassedSectionId()
-	local sectionId = getAvailableSectionId(passedSectionId)
+	local sectionId = onGetAvailableSectionId(passedSectionId)
 	
 	-- 只有在小怪关卡才能挑战boss
 	if mapid ~= tb_risk_data[sectionId].mapid then
@@ -886,6 +888,51 @@ end--]]
 function ScenedContext:Handle_Roll_WorldBoss_Treasure(pkt)
 	Roll_Treasure(self)
 end
+
+function ScenedContext:Handle_Pick_Offline_Reward(pkt)
+	--[[
+	local passedSectionId = self:GetPlayerUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
+	local sectionId = onGetAvailableSectionId(passedSectionId)
+	
+	-- 已经领取的就不领了
+	if self:GetPlayerUInt32(PLAYER_INT_FILED_LEAVE_RISK_PICKED) == 1 then
+		return
+	end
+	
+	local mapid = unitLib.GetMapID(self.ptr)
+	-- 不在冒险世界的就不可以领取
+	if not isRiskMap(mapid) then
+		return
+	end
+	
+	self:SetPlayerUInt32(PLAYER_INT_FILED_LEAVE_RISK_PICKED, 1)
+	
+	local limit = 1440
+	local last = self:GetPlayerUInt32(PLAYER_INT_FILED_LEAVE_RISK_TIME)
+	
+	self:SetPlayerUInt32(PLAYER_INT_FILED_LEAVE_RISK_TIME, os.time())
+	
+	local diff = math.floor((os.time() - last) / 60)
+	if diff > limit then diff = limit end
+	
+	local config = tb_risk_data[sectionId]
+	local dict = {}
+	
+	-- 随机装备
+	local suitCount = math.floor(diff / config.suitCount)
+	local dropid = config.dropid
+
+	for i = 1, suitCount do
+		DoRandomDrop(dropid, dict)
+	end
+	
+	PlayerAddRewards(self.ptr, dict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE)
+	
+	local list = Change_To_Item_Reward_Info(dict)
+	self:call_offline_reward_result (0, list)
+	--]]
+end
+
 
 
 local OpcodeHandlerFuncTable = require 'scened.context.scened_context_handler_map'

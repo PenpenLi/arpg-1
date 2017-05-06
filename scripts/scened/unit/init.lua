@@ -1330,10 +1330,10 @@ function GetFactionGuid(player_ptr)
 	return binLogLib.GetStr(player_data_ptr, PLAYER_STRING_FIELD_FACTION_GUID)
 end
 
-function OnGetAailableSectionid(player_ptr)
+function GetAailableSectionid(player_ptr)
 	local player_data_ptr = playerLib.GetSession(player_ptr)
 	local passSectionId = binLogLib.GetUInt32(player_data_ptr, PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
-	return getAvailableSectionId(passSectionId)
+	return onGetAvailableSectionId(passSectionId)
 end
 
 -- 获得vip等级
@@ -2244,6 +2244,10 @@ function UnitInfo:SetRiskMonsterCount(count)
 	self:SetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1, count)
 end
 
+function UnitInfo:GetRiskMonsterCount()
+	return self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1)
+end
+
 function UnitInfo:AddRiskMonsterKilledCount()
 	if not self:isCanChallengeRiskBoss() then
 		self:AddPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0, 1)
@@ -2260,15 +2264,66 @@ function UnitInfo:AddRiskMonsterKilledCount()
 end
 
 function UnitInfo:isCanChallengeRiskBoss()
-	return self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0) >= self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1)
+	local limit = self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1)
+	return self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0) >= limit and limit > 0
 end
 
 function UnitInfo:passSection(sectionId)
-	if self:getAvailableSectionId() == sectionId then
-		self:SetPlayerUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID, sectionId)
+	local passedSectionId = tb_risk_data[sectionId].relateId
+	if GetAailableSectionid(self.ptr) == passedSectionId then
+		self:SetPlayerUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID, passedSectionId)
+		self:SetRiskMonsterCount(0)
 	end
 end
 
+function UnitInfo:onPickRiskReward()
+	local passedSectionId = self:getLastPassedSectionId()
+	local sectionId = onGetAvailableSectionId(passedSectionId)
+	
+	local limit = 1440
+	local last = self:GetPlayerUInt32(PLAYER_INT_FILED_LEAVE_RISK_TIME)
+	-- 首次登录不给经验
+	if last == 0 then
+		return
+	end
+	
+	local diff = math.floor((os.time() - last) / 60)
+	if diff > limit then diff = limit end
+	-- 时间间隔太短了
+	if diff == 0 then
+		return
+	end
+	
+	local config = tb_risk_data[sectionId]
+	local dict = {}
+	for _, info in ipairs(config.itemReward) do
+		dict[info[ 1 ]] = info[ 2 ] * diff
+	end
+	
+	-- 随机装备
+	local suitCount = math.floor(diff / config.suitCount)
+	local dropid = config.dropid
+
+	for i = 1, suitCount do
+		DoRandomDrop(dropid, dict)
+	end
+	
+	
+	local rewards = {}
+	for entry, count in pairs(dict) do
+		table.insert(rewards, entry..","..count)
+	end
+	
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ADD_OFFLINE_RISK_REWARD, 0, string.join("|", rewards))
+	
+	--[[
+	-- 传到应用服去算
+	PlayerAddRewards(self.ptr, dict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE, 3)
+	
+	local list = Change_To_Item_Reward_Info(dict)
+	self:call_offline_reward_result (0, list)
+	--]]
+end
 
 -- 打断持续动作
 function terminalContinuousAction(player_ptr)

@@ -70,5 +70,44 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		self:PlunderFinish(data, str)
 	elseif SCENED_APPD_XIANFU_PRACTISE == ntype then
 		self:AppdAddItems({{data, tonumber(str)}}, nil, LOG_ITEM_OPER_TYPE_XIANFU_PRACTISE)
+	elseif SCENED_APPD_ADD_OFFLINE_RISK_REWARD == ntype then
+		local items = string.split(str, "|")
+		local sell = 0
+		local itemMgr = self:getItemMgr()
+		local empty_count = itemMgr:getEmptyCount(BAG_TYPE_EQUIP_BAG)	--取出剩余位置个数
+		local rewardDict = {}
+		local dict = {}
+		for _, item in ipairs(items) do
+			local itemInfo = string.split(item, ',')
+			local entry = tonumber(itemInfo[ 1 ])
+			local count = tonumber(itemInfo[ 2 ])
+			dict[entry] = count
+			if tb_item_template[entry].pos > 0 then
+				-- 已经满了
+				if empty_count <= 0 then
+					dict[entry] = nil
+				end
+				-- 当前会超过
+				if empty_count > 0 and empty_count < count then
+					dict[entry] = empty_count
+				end
+
+				empty_count = empty_count - count
+				for k = 1, count do
+					table.insert(rewardDict, {entry, 1})
+				end
+			else
+				table.insert(rewardDict, {entry, count})
+			end
+		end
+		
+		if empty_count < 0 then
+			sell = -empty_count
+		end
+		
+		self:AppdAddItems(rewardDict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE, nil, nil, nil, 3)
+		
+		local list = Change_To_Item_Reward_Info(dict)
+		self:call_offline_reward_result (sell, list)
 	end
 end

@@ -50,7 +50,7 @@ local function on_scened_quest_add_item( pkt )
 end
 
 local function on_scened_add_items(pkt)
-	local ret, player_guid, itemDict, logtype = unpack_add_items(pkt)
+	local ret, player_guid, itemDict, logtype, bagFullCategory = unpack_add_items(pkt)
 	if not ret then
 		return
 	end
@@ -60,7 +60,9 @@ local function on_scened_add_items(pkt)
 		outFmtDebug("on_scened_quest_add_item:player %s not online", player_guid)
 		return
 	end
-	player:AppdAddItems(itemDict, nil, logtype)
+	-- 场景服发送过来的走这里
+	player:AppdAddItems(itemDict, nil, item_oper_type, nil, nil, nil, bagFullCategory)
+	-- player:AppdAddItems(itemDict, nil, logtype, bagFullCategory)
 end
 
 --场景服通知应用服玩家升级了

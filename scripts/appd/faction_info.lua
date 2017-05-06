@@ -953,6 +953,15 @@ function FactionInfo:FactionQuit( player,is_merge)
 		--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_SUB_MEMBER)
 	end
 	player:ClearBuyedFactionShopItem()
+	
+	-- 成员退出
+	-- 如果在帮派场景的强制传送到冒险世界
+	if player:GetMapId() == FACTION_MAP_ID then
+		local passedSectionId = player:GetUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
+		local mapid, x, y, generalId = onGetRiskTeleportInfo(player:GetGuid(), passedSectionId)
+		call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, generalId)
+	end
+	
 end
 --离线成员移除
 function FactionInfo:FactionOutlineQuit(guid)
@@ -2296,7 +2305,7 @@ function FactionInfo:BuyToken(player,num)
 	outFmtDebug('-----------------before buy token nums = %d, count = %d', token_num,count)
 
 	if count >= tb_faction_base[level].token_max_buy or count + num > tb_faction_base[level].token_max_buy or token_num + num > tb_faction_base[level].token_max_keep then
-		--return  --测试后 需要还原!!!!!!!!
+		return  --不能购买次数
 	end
 	local costTable = {}
 	local temp = {}
@@ -2395,7 +2404,14 @@ function FactionInfo:AddTokenPoints(player_guid,points)
 	local tokenNum = self:GetTokenNum()
 	local config = tb_faction_base[self:GetFactionLevel()]
 	if currPoints + points < config.token_points then
-		self:SetTokenPoints(currPoints + points)
+		if currPointsCount >= config.token_daily then
+			self:SetTokenPoints(0)
+		elseif tokenNum >= config.token_max_keep then
+			--令牌满了 不再加积分
+		else
+			self:SetTokenPoints(currPoints + points)
+		end
+		
 	else
 		local temp = currPoints + points
 		local count = 0
@@ -2404,10 +2420,17 @@ function FactionInfo:AddTokenPoints(player_guid,points)
 				count = count + 1
 				temp = temp - config.token_points
 			
-			else
-				temp = config.token_points - 1
+			elseif currPointsCount + count >= config.token_daily then
+				temp = 0
+			elseif tokenNum + count >= config.token_max_keep then
+				if count == 0 then
+					temp = currPoints
+				else
+					temp = config.token_points - 1
+				end
 			end
 		end
+
 		self:SetTokenPoints(temp)
 		self:SetTokenPointsCount(currPointsCount + count)
 		self:SetTokenNum(tokenNum + count)

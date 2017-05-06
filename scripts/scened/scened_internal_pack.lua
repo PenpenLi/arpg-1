@@ -24,7 +24,7 @@ end
 
 
 -- 通知应用服加道具
-function call_appd_add_items(guid, itemDict, logtype)
+function call_appd_add_items(guid, itemDict, logtype, bagFullCategory)
 	local pkt = Packet.new(INTERNAL_OPT_ADD_ITEMS)
 	pkt:writeUTF(guid)
 	pkt:writeU16(#itemDict)
@@ -34,6 +34,7 @@ function call_appd_add_items(guid, itemDict, logtype)
 		pkt:writeU32(config[ 2 ])
 	end
 	pkt:writeByte(logtype)
+	pkt:writeByte(bagFullCategory)
 	app:sendToAppd(pkt)
 	pkt:delete()
 end

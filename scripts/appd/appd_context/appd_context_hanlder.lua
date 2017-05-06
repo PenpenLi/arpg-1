@@ -192,7 +192,7 @@ end
 
 -- 整理背包物品
 function PlayerInfo:Hanlde_Bag_Item_Sort(pkt)
-	SortItem(self)
+	SortItem(self,false)
 end
 
 
@@ -231,6 +231,14 @@ function PlayerInfo:Handle_Hang_Up_Setting(pkt)
 	self:SetUInt32(PLAYER_FIELD_HOOK_BYTE3, pkt.value3)
 end
 
+--熔炼装备
+function PlayerInfo:Handle_Smelting_Equip(pkt)
+	local pos_str = pkt.pos_str
+	
+	local itemMgr = self:getItemMgr()
+	itemMgr:smeltingEquip(pos_str)
+
+end
 
 --函数包路由表
 local OpcodeHandlerFuncTable = require 'appd.appd_context.appd_context_hanlder_map'

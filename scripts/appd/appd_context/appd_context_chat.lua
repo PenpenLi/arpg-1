@@ -362,51 +362,12 @@ function PlayerInfo:GmCommand(str)
 		outFmtInfo("test sort: ")
 		SortItem(self)
 	elseif(gm_key == 999)then		-- @测试接口
-		--[[itemsell
-		if(tokens[2] == nil or tokens[3] == nil)then
-			return
+		local hours = 1
+		if tokens[2] then
+			hours = tonumber(tokens[2])
 		end
-		outFmtInfo("test sell: %s %s %s",tokens[1],tokens[2], tokens[3])
-		SellItem(self, tokens[2], tonumber(tokens[3]))
-		--]]
-		--itemsort
-		--[[
-		outFmtInfo("test sort: ")
-		SortItem(self)
-		--]]
-		--[[
-		if tokens[2] == nil and  tokens[3] == nil then
-			return
-		end
-		self:UnlockModuleByLevel(tonumber(tokens[2]),tonumber(tokens[3]))
-		--]]
+		self:SubUInt32(PLAYER_INT_FILED_LEAVE_RISK_TIME, hours * 3600)
 		
-		--call_appd_teleport(self:GetScenedFD(), self:GetGuid(), 32, 27, 3004, ''..os.time())
-		
-		--[[
-		print("left count: ",self:GetCultivationLeftPlunderCount())
-		print("total buy count: ",self:GetCultivationTodayPurchaseCount())
-		self:AddCultivationLeftPlunderCount(1)
-		--self:BuyCultivationLeftPlunderCount(1)
-		--self:SetCultivationStartTime(1)
-		--self:GetCultivationReward()
-		--self:PlunderCultivationRival(0)
-		
-		print("total buy count: ",self:GetCultivationTodayPurchaseCount())
-		print("left count: ",self:GetCultivationLeftPlunderCount())
-		--self:RefreshCultivationRivals()
-		--]]
-		--outFmtDebug('totalday = : %d',self:GetLoginActivityTotalDays())
-		--self:GetLoginActivityReward(3)
-		--
-		local pkt1 = {}
-		pkt1.opt_type = FACTION_MANAGER_TYPE_BUY_TOKEN			--操作类型
-		pkt1.reserve_int1 = 1   --预留int值1*/
-		self:Handle_Faction_People( pkt1 )
-		local pkt2 = {}
-		pkt2.opt_type = FACTION_MANAGER_TYPE_CHALLENGE_BOSS			--操作类型
-		pkt2.reserve_int1 = 1   --预留int值1*/
-		self:Handle_Faction_People( pkt2 )
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

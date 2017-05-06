@@ -735,6 +735,12 @@ Instance_base = {
 		function (self, killer_ptr, target_ptr)
 			local host1 = creatureLib.GetMonsterHost(killer_ptr)
 			local host2 = creatureLib.GetMonsterHost(target_ptr)
+			if host1 then
+				outFmtInfo("host1 %d => %d", GetUnitTypeID(host1), binLogLib.GetUInt16(host1, UNIT_FIELD_UINT16_0, 0))
+			end
+			if host2 then
+				outFmtInfo("host2 %d => %d", GetUnitTypeID(host2), binLogLib.GetUInt16(host2, UNIT_FIELD_UINT16_0, 0))
+			end
 			return self:DoIsMate(host1, host2)
 		end,
 

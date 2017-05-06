@@ -43,12 +43,21 @@ function InstanceFaction:OnInitScript(  )
 	
 	self:OnRefreshMonster()
 	
+	-- 加结束时间
+	local timestamp = os.time() + 180
+	self:SetMapQuestEndTime(timestamp)
+	self:SetMapEndTime(timestamp)
 end
 
 function InstanceFaction:parseGeneralId()
 	local guid	= self:GetMapGeneralId()
 	--outFmtInfo('============================= %s', tostring(guid))
 	self:SetFactionGuid(guid)
+end
+
+-- 判断是否能退出副本
+function InstanceFaction:DoPlayerExitInstance(player)
+	return 0
 end
 
 --当副本状态发生变化时间触发

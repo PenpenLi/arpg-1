@@ -297,6 +297,9 @@ SMSG_SHOW_UNIT_ATTRIBUTE		= 310	-- /*通知客户端显示属性*/
 CMSG_BACK_TO_FAMITY		= 320	-- /*返回家族*/	
 SMSG_FACTION_BOSS_SEND_RESULT		= 321	-- /*返回家族boss结果*/	
 CMSG_CHALLANGE_BOSS		= 322	-- /*挑战boss*/	
+CMSG_PICK_OFFLINE_REWARD		= 325	-- /*领取离线奖励*/	
+SMSG_OFFLINE_REWARD_RESULT		= 326	-- /*离线奖励结果*/	
+CMSG_SMELTING_EQUIP		= 327	-- /*熔炼装备*/	
 
 
 ---------------------------------------------------------------------
@@ -10378,6 +10381,107 @@ function Protocols.unpack_challange_boss (pkt)
 end
 
 
+-- /*领取离线奖励*/	
+function Protocols.pack_pick_offline_reward (  )
+	local output = Packet.new(CMSG_PICK_OFFLINE_REWARD)
+	return output
+end
+
+-- /*领取离线奖励*/	
+function Protocols.call_pick_offline_reward ( playerInfo )
+	local output = Protocols.	pack_pick_offline_reward (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取离线奖励*/	
+function Protocols.unpack_pick_offline_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*离线奖励结果*/	
+function Protocols.pack_offline_reward_result ( reserve ,list)
+	local output = Packet.new(SMSG_OFFLINE_REWARD_RESULT)
+	output:writeU32(reserve)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*离线奖励结果*/	
+function Protocols.call_offline_reward_result ( playerInfo, reserve ,list)
+	local output = Protocols.	pack_offline_reward_result ( reserve ,list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*离线奖励结果*/	
+function Protocols.unpack_offline_reward_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.reserve = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*熔炼装备*/	
+function Protocols.pack_smelting_equip ( pos_str)
+	local output = Packet.new(CMSG_SMELTING_EQUIP)
+	output:writeUTF(pos_str)
+	return output
+end
+
+-- /*熔炼装备*/	
+function Protocols.call_smelting_equip ( playerInfo, pos_str)
+	local output = Protocols.	pack_smelting_equip ( pos_str)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*熔炼装备*/	
+function Protocols.unpack_smelting_equip (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.pos_str = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -10667,6 +10771,9 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_back_to_famity = self.call_back_to_famity
 	playerInfo.call_faction_boss_send_result = self.call_faction_boss_send_result
 	playerInfo.call_challange_boss = self.call_challange_boss
+	playerInfo.call_pick_offline_reward = self.call_pick_offline_reward
+	playerInfo.call_offline_reward_result = self.call_offline_reward_result
+	playerInfo.call_smelting_equip = self.call_smelting_equip
 end
 
 local unpack_handler = {
@@ -10953,6 +11060,9 @@ local unpack_handler = {
 [CMSG_BACK_TO_FAMITY] =  Protocols.unpack_back_to_famity,
 [SMSG_FACTION_BOSS_SEND_RESULT] =  Protocols.unpack_faction_boss_send_result,
 [CMSG_CHALLANGE_BOSS] =  Protocols.unpack_challange_boss,
+[CMSG_PICK_OFFLINE_REWARD] =  Protocols.unpack_pick_offline_reward,
+[SMSG_OFFLINE_REWARD_RESULT] =  Protocols.unpack_offline_reward_result,
+[CMSG_SMELTING_EQUIP] =  Protocols.unpack_smelting_equip,
 
 }
 

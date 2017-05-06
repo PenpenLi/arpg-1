@@ -150,6 +150,8 @@ config = {
 		CMSG_XIANFU_RANDOM_RESPAWN,	--随机复活
 		CMSG_BACK_TO_FAMITY,		-- 返回家族
 		CMSG_CHALLANGE_BOSS,		-- 挑战boss
+		CMSG_PICK_OFFLINE_REWARD,
+
 		--CMSG_CHANGE_LINE,
 		--[[
 		CMSG_START_HUNG_UP,--开始挂机*/
@@ -347,5 +349,6 @@ function IsFubenMap(mapid)
 	end
 	return tb_map_info[mapid].is_instance
 end
+
 
 require 'scened.context.init'

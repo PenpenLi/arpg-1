@@ -85,7 +85,7 @@ end
 --[[
 有可能场景服发来的增加道具的接口也是这个
 rewardDict :  {{itemId, count},{itemId1, count1}}
-@param : bagFullCategory 0:满了存邮件, 1:满了丢弃, 2: 满了提示背包已满 (外面必须判断是否可以放下, 处理过程和1一样)
+@param : bagFullCategory 0:满了存邮件, 1:满了丢弃, 2: 满了提示背包已满 (外面必须判断是否可以放下, 处理过程和1一样),3:满了自动出售
 --]]
 function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, bagFullCategory)
 	times = times or 1
@@ -152,6 +152,31 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 			local name = tb_mail[data].name
 			local giftType = tb_mail[data].source
 			AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, itemConfig, SYSTEM_NAME)
+		end
+		
+		-- 出售
+		if bagFullCategory == 3 and indx > 0 then
+			local selled = {}
+			for i = indx, #itemDict do
+				local entry = itemDict[ i ][ 1 ]
+				local count = itemDict[ i ][ 2 ]
+				local sellReward = tb_item_template[entry].sell_reward
+				for _, rewardInfo in ipairs(sellReward) do
+					if not selled[rewardInfo[ 1 ]] then
+						selled[rewardInfo[ 1 ]] = 0
+					end
+					selled[rewardInfo[ 1 ]] = selled[rewardInfo[ 1 ]] + rewardInfo[ 2 ] * count
+				end
+			end
+			
+			local sellRewardDict = {}
+			for entry, count in pairs(selled) do
+				table.insert(sellRewardDict, {entry, count})
+			end
+			
+			if #sellRewardDict > 0 then
+				self:AppdAddItems(sellRewardDict, MONEY_CHANGE_NPC_SELL, nil, nil, nil, nil, 1)
+			end
 		end
 	end
 end

@@ -294,7 +294,8 @@ enum Money_Type
 
 -- 玩家获得奖励
 -- rewardDict:  {itemId1 = count1}
-function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
+function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType, bagFullCategory)
+	bagFullCategory = bagFullCategory or 0
 	moneyOperType = moneyOperType or MONEY_CHANGE_SELECT_LOOT
 	itemOperType  = itemOperType  or LOG_ITEM_OPER_TYPE_LOOT
 	
@@ -321,7 +322,7 @@ function PlayerAddRewards(player, rewardDict, moneyOperType, itemOperType)
 	
 	if #itemDict > 0 then
 		outFmtDebug("call_appd_add_items")
-		call_appd_add_items(playerInfo:GetPlayerGuid(), itemDict, itemOperType)
+		call_appd_add_items(playerInfo:GetPlayerGuid(), itemDict, itemOperType, bagFullCategory)
 	end
 	
 	-- 获得提示
