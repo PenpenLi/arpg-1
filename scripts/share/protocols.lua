@@ -300,6 +300,9 @@ CMSG_CHALLANGE_BOSS		= 322	-- /*挑战boss*/
 CMSG_PICK_OFFLINE_REWARD		= 325	-- /*领取离线奖励*/	
 SMSG_OFFLINE_REWARD_RESULT		= 326	-- /*离线奖励结果*/	
 CMSG_SMELTING_EQUIP		= 327	-- /*熔炼装备*/	
+CMSG_STOREHOUSE_HAND_IN		= 328	-- /*上交装备*/	
+CMSG_STOREHOUSE_EXCHANGE		= 329	-- /*兑换装备*/	
+CMSG_STOREHOUSE_DESTROY		= 330	-- /*销毁装备*/	
 
 
 ---------------------------------------------------------------------
@@ -10482,6 +10485,93 @@ function Protocols.unpack_smelting_equip (pkt)
 end
 
 
+-- /*上交装备*/	
+function Protocols.pack_storehouse_hand_in ( pos_str)
+	local output = Packet.new(CMSG_STOREHOUSE_HAND_IN)
+	output:writeUTF(pos_str)
+	return output
+end
+
+-- /*上交装备*/	
+function Protocols.call_storehouse_hand_in ( playerInfo, pos_str)
+	local output = Protocols.	pack_storehouse_hand_in ( pos_str)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*上交装备*/	
+function Protocols.unpack_storehouse_hand_in (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.pos_str = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*兑换装备*/	
+function Protocols.pack_storehouse_exchange ( pos)
+	local output = Packet.new(CMSG_STOREHOUSE_EXCHANGE)
+	output:writeU32(pos)
+	return output
+end
+
+-- /*兑换装备*/	
+function Protocols.call_storehouse_exchange ( playerInfo, pos)
+	local output = Protocols.	pack_storehouse_exchange ( pos)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*兑换装备*/	
+function Protocols.unpack_storehouse_exchange (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.pos = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*销毁装备*/	
+function Protocols.pack_storehouse_destroy ( pos)
+	local output = Packet.new(CMSG_STOREHOUSE_DESTROY)
+	output:writeU32(pos)
+	return output
+end
+
+-- /*销毁装备*/	
+function Protocols.call_storehouse_destroy ( playerInfo, pos)
+	local output = Protocols.	pack_storehouse_destroy ( pos)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*销毁装备*/	
+function Protocols.unpack_storehouse_destroy (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.pos = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -10774,6 +10864,9 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_pick_offline_reward = self.call_pick_offline_reward
 	playerInfo.call_offline_reward_result = self.call_offline_reward_result
 	playerInfo.call_smelting_equip = self.call_smelting_equip
+	playerInfo.call_storehouse_hand_in = self.call_storehouse_hand_in
+	playerInfo.call_storehouse_exchange = self.call_storehouse_exchange
+	playerInfo.call_storehouse_destroy = self.call_storehouse_destroy
 end
 
 local unpack_handler = {
@@ -11063,6 +11156,9 @@ local unpack_handler = {
 [CMSG_PICK_OFFLINE_REWARD] =  Protocols.unpack_pick_offline_reward,
 [SMSG_OFFLINE_REWARD_RESULT] =  Protocols.unpack_offline_reward_result,
 [CMSG_SMELTING_EQUIP] =  Protocols.unpack_smelting_equip,
+[CMSG_STOREHOUSE_HAND_IN] =  Protocols.unpack_storehouse_hand_in,
+[CMSG_STOREHOUSE_EXCHANGE] =  Protocols.unpack_storehouse_exchange,
+[CMSG_STOREHOUSE_DESTROY] =  Protocols.unpack_storehouse_destroy,
 
 }
 

@@ -105,4 +105,7 @@ function PlayerInfo:onRealReset()
 	
 	self:DailyResetCultivation()
 	self:DailyResetLoginActivity()
+	
+	self:DailyResetFactionBuildingSpeedUpDailyCount()
+	self:DailyResetFactionDonateGiftExchangeDailyCount()
 end

@@ -175,7 +175,9 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 		return
 	end
 	
+	faction:OnMainHallLvUp(1) -- 创建1级主殿
 	faction:RefreshShop()
+	
 	
 	--登录服也监听下
 	app.objMgr:callAddWatch(serverConnList:getLogindFD(), new_guid)
@@ -402,8 +404,52 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	elseif opt_type == FACTION_MANAGER_TYPE_CHALLENGE_BOSS then
 		faction:ChallengeBoss(self,reserve_int1)
 		
+	--升级建筑
+	elseif opt_type == FACTION_MANAGER_TYPE_BUILDING_UPGRADE then
+		faction:UpgradeBuilding(self,reserve_int1)
+	--加速升级建筑
+	elseif opt_type == FACTION_MANAGER_TYPE_BUILDING_UPGRADE_SPEEDUP then
+		faction:UpgradeBuildingSpeedUp(self,reserve_int1)
+		
+	--贡献礼包兑换
+	elseif opt_type == FACTION_MANAGER_TYPE_DONATE_GIFT_EXCHANGE then
+		faction:FactionDonateGiftExchange(self,reserve_int1)
+		
 	end
 	
 	
 end
 
+
+function PlayerInfo:Handle_Storehouse_Hand_In(pkt)
+	local pos_str = pkt.pos_str
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			faction:HandInReward(self, pos_str)
+		end
+	end
+end
+
+function PlayerInfo:Handle_Storehouse_Exchange(pkt)
+	local pos = pkt.pos
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			faction:ExchangeSoreHouseItem(self, pos)
+		end
+	end
+end
+
+function PlayerInfo:Handle_Storehouse_Destroy(pkt)
+	local pos = pkt.pos
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			faction:DestroySoreHouseItem(self, pos)
+		end
+	end
+end

@@ -1270,3 +1270,15 @@ offline_reward_result,s2c,326,/*离线奖励结果*/,STATUS_NEVER,False
 #
 smelting_equip,c2s,327,/*熔炼装备*/,STATUS_NEVER,False
 	pos_str,String,False,/*装备pos 用竖线隔开*/
+	
+#
+storehouse_hand_in,c2s,328,/*上交装备*/,STATUS_NEVER,False
+	pos_str,String,False,/*装备pos 用竖线隔开*/
+	
+#
+storehouse_exchange,c2s,329,/*兑换装备*/,STATUS_NEVER,False
+	pos,uint32,False,/*宝库的pos*/
+
+#
+storehouse_destroy,c2s,330,/*销毁装备*/,STATUS_NEVER,False
+	pos,uint32,False,/*宝库的pos*/

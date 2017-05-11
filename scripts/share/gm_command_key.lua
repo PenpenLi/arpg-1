@@ -149,6 +149,8 @@ function GetGmCommandKey(gm_str)
 		return GM_COMMAND_UNSET_OTHER_TAG
 	elseif(gm_str == '@分线' or gm_str == '@subline')then
 		return GM_COMMAND_SUBLINE
+	elseif(gm_str == '@家族商店' or gm_str == '@jzsd')then
+		return 997
 	elseif(gm_str == '@整理' or gm_str == '@zlbb')then
 		return 998
 	elseif(gm_str == '@测试' or gm_str == '@test')then

@@ -358,16 +358,46 @@ function PlayerInfo:GmCommand(str)
 			temp = temp..','..tokens[i]
 		end
 		call_opt_command(0, 0, temp)
+	elseif(gm_key == 997)then		-- @家族商店刷新
+		local faction_guid = self:GetFactionId()
+		if faction_guid == "" then
+			return
+		end
+		
+		if not app.objMgr:IsFactionGuid(faction_guid) then
+			return
+		end
+		
+		local faction = app.objMgr:getObj(faction_guid)
+		if faction == nil then
+			return
+		end
+		faction:RefreshShop()
 	elseif(gm_key == 998)then		-- @整理接口
 		outFmtInfo("test sort: ")
 		SortItem(self)
 	elseif(gm_key == 999)then		-- @测试接口
+		--[[
 		local hours = 1
 		if tokens[2] then
 			hours = tonumber(tokens[2])
 		end
 		self:SubUInt32(PLAYER_INT_FILED_LEAVE_RISK_TIME, hours * 3600)
+		--]]
 		
+		local pkt = {}
+		pkt.opt_type = FACTION_MANAGER_TYPE_BUILDING_UPGRADE
+		pkt.reserve_int1 = tonumber(tokens[2])
+		self:Handle_Faction_People(pkt)
+		local pkt2 = {}
+		pkt2.opt_type = FACTION_MANAGER_TYPE_BUILDING_UPGRADE_SPEEDUP
+		pkt2.reserve_int1 = 1
+		--self:Handle_Faction_People(pkt2)
+		
+		local pkt3 = {}
+		pkt3.opt_type = FACTION_MANAGER_TYPE_DONATE_GIFT_EXCHANGE
+		pkt3.reserve_int1 = 1
+		self:Handle_Faction_People(pkt3)
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

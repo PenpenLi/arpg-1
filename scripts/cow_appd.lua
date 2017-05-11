@@ -197,6 +197,10 @@ config = {
 		
 		CMSG_FINISH_OPTIONAL_GUIDE_STEP,
 		CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED,
+		
+		CMSG_STOREHOUSE_HAND_IN,	--/*上交装备*/
+		CMSG_STOREHOUSE_EXCHANGE,	--/*兑换装备*/
+		CMSG_STOREHOUSE_DESTROY,	--/*销毁装备*/
 	},
 	--pk服命令表
 	pk_external_router_map = {

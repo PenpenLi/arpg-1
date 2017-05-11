@@ -1530,6 +1530,37 @@ end
 
 
 
+--家族建筑升级每日次数限制
+function PlayerInfo:SetFactionBuildingSpeedUpDailyCount(value)
+	self:SetUInt32(PLAYER_INT_FILED_FACTION_BUILDING_SPEEDUP_DAILY_COUNT,value)
+end
+function PlayerInfo:GetFactionBuildingSpeedUpDailyCount()
+	return self:GetUInt32(PLAYER_INT_FILED_FACTION_BUILDING_SPEEDUP_DAILY_COUNT)
+end
+function PlayerInfo:AddFactionBuildingSpeedUpDailyCount(value)
+	self:AddUInt32(PLAYER_INT_FILED_FACTION_BUILDING_SPEEDUP_DAILY_COUNT,value)
+end
+
+function PlayerInfo:DailyResetFactionBuildingSpeedUpDailyCount()
+	self:SetFactionBuildingSpeedUpDailyCount(0)
+end
+
+
+--家族贡献礼物兑换每日次数限制
+function PlayerInfo:SetFactionDonateGiftExchangeDailyCount(value)
+	self:SetUInt32(PLAYER_INT_FILED_FACTION_DONATE_GIFT_EXCHANGE_DAILY_COUNT,value)
+end
+function PlayerInfo:GetFactionDonateGiftExchangeDailyCount()
+	return self:GetUInt32(PLAYER_INT_FILED_FACTION_DONATE_GIFT_EXCHANGE_DAILY_COUNT)
+end
+function PlayerInfo:AddFactionDonateGiftExchangeDailyCount(value)
+	self:AddUInt32(PLAYER_INT_FILED_FACTION_DONATE_GIFT_EXCHANGE_DAILY_COUNT,value)
+end
+
+function PlayerInfo:DailyResetFactionDonateGiftExchangeDailyCount()
+	self:SetFactionDonateGiftExchangeDailyCount(0)
+end
+
 
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()

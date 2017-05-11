@@ -121,6 +121,15 @@ function AppdApp:InitCorn()
 		end)		
 	end)
 	
+	
+	--每隔1s检测下修家族建筑升级进度
+	self.cron:every("家族建筑升级进度",1,function()
+		self.objMgr:foreachAllFaction(function(faction)
+			faction:UpdateBuildingProcess()
+		end)
+	end)
+	
+	
 	--每隔5s检测下失效物品
 	self.cron:every("失效物品检测",5,function()
 		self.objMgr:foreachAllPlayer(function(player)	

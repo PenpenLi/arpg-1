@@ -769,31 +769,28 @@ function FactionInfo:GetBangZhuGuid()
 	end
 		
 	return ''
-end		
+end
+
+-- priv越小权限越大
+-- 检测权限是否足够
+function FactionInfo:CheckEnoughPrivilege(guid, priv)
+	local pos = self:FindPlayerIndex(guid)
+	if pos then
+		local minePriv = self:GetFactionMemberIdentity(pos)
+		return minePriv > 0 and minePriv <= priv
+	end
+	return false
+end
 
 --获得是否管理员
 function FactionInfo:IsManager(guid)
-	local pos = self:FindPlayerIndex(guid)
-	if pos then
-		if self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_BANGZHU
-			or self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_FU_BANGZHU 
-			or self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_TANGZHU then
-			return true
-		end
-	end
-	return false
-end	
+	return self:CheckEnoughPrivilege(guid, tb_faction_privilege[ 1 ].manager)
+end
+
 --获得是否核心管理员
 function FactionInfo:IsCoreManager(guid)
-	local pos = self:FindPlayerIndex(guid)
-	if pos then
-		if self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_BANGZHU
-			or self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_FU_BANGZHU then
-			return true
-		end
-	end
-	return false
-end	
+	return self:CheckEnoughPrivilege(guid, tb_faction_privilege[ 1 ].coreManager)
+end
 
 --获得位置人数
 function FactionInfo:GetZhiWeiCount(zhiwei)
@@ -1285,8 +1282,9 @@ function FactionInfo:FactionChangeFlags(player ,index)
 	local player_guid = player:GetGuid()
 	local pos = self:FindPlayerIndex(player_guid)
 	if pos == nil then return end
-	if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU then
-		--不是帮主
+	
+	-- 核对权限
+	if not self:CheckEnoughPrivilege(player_guid, tb_faction_privilege[ 1 ].replaceFlag) then
 		player:CallOptResult(OPRATE_TYPE_FACTION, OPRATE_TYPE_FACTION_NO_MANAGER)
 		return
 	end
@@ -1356,10 +1354,8 @@ function FactionInfo:FactionNotice(player,notice)
 		return
 	end
 	--if #tab
-	
-	if self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_BANGZHU 
-		and self:GetFactionMemberIdentity(pos) ~= FACTION_MEMBER_IDENTITY_FU_BANGZHU then
-		--不是帮主 or 副帮主
+	-- 核对权限
+	if not self:CheckEnoughPrivilege(player_guid, tb_faction_privilege[ 1 ].notice) then
 		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOT_MANAGER)
 		return
 	end
@@ -1500,6 +1496,44 @@ function FactionInfo:RefreshShop()
 	local num = config.shop
 	
 	local list = tb_faction_shop_list[lev]
+	
+	local item_list = {}
+	for _,group_info in pairs(num) do
+		local group_id = group_info[1]
+		local group_num = group_info[2]
+		if group_num > #list[group_id] then
+			group_num = #list[group_id]
+		end
+		local idxTab = GetRandomIndexTable(#list[group_id],group_num)
+		
+		for _,index in pairs(idxTab) do
+			local randomResult = randIntD(1,100)
+			for _,info in ipairs(list[group_id][index]) do
+				if info.total_weight >= randomResult then
+					table.insert(item_list,info.config)
+					break
+				end
+			end
+		end
+		
+	end
+	
+	for i=FACTION_INT_FIELD_SHOP,FACTION_INT_FIELD_SHOP_END-1 do
+		local idx = i - FACTION_INT_FIELD_SHOP + 1
+		
+		if item_list[idx] then
+			local item = item_list[idx]
+			if item then
+				self:SetUInt16(i,0,item.id)
+				self:SetUInt16(i,1,item.num)
+			else 
+				self:SetUInt16(i,0,0)
+				self:SetUInt16(i,1,0)
+			end
+		end
+	end
+	
+	--[[
 	if num > #list then
 		num = #list
 	end
@@ -1512,6 +1546,7 @@ function FactionInfo:RefreshShop()
 		
 		if idxTab[idx] then
 			local item = list[idxTab[idx]]
+	--[[
 			if item then
 				self:SetUInt16(i,0,item.id)
 				self:SetUInt16(i,1,item.num)
@@ -1524,6 +1559,7 @@ function FactionInfo:RefreshShop()
 			self:SetUInt16(i,1,0)
 		end
 	end
+	--]]
 end
 --帮派自身心跳
 function FactionInfo:SelfUpdate()
@@ -2581,6 +2617,515 @@ function FactionInfo:ChallengedBossFail(fail_type)
 end
 
 
+
+
+-----------------------------------------家族宝库-----------------------------------------------
+-- 获得当前宝库的上限
+function FactionInfo:GetStoreHouseLimit()
+	local house_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_STOREHOUSE)
+	if house_lv <= 0 then
+		return 0
+	end
+	local config = tb_faction_building[FACTION_BUILDING_TYPE_STOREHOUSE*100 + house_lv]
+	if not config then
+		return 0
+	end
+	return config.params[1]
+end
+
+function FactionInfo:GetStoreHouseCount()
+	return self:GetUInt32(FACTION_INT_FIELD_STOREHOUSE_ITEM_COUNT)
+end
+
+function FactionInfo:AddStoreHouseCount()
+	self:AddUInt32(FACTION_INT_FIELD_STOREHOUSE_ITEM_COUNT, 1)
+end
+
+function FactionInfo:SubStoreHouseCount()
+	self:SubUInt32(FACTION_INT_FIELD_STOREHOUSE_ITEM_COUNT, 1)
+end
+
+function FactionInfo:GetStoreHouseRecordCursor()
+	return self:GetUInt32(FACTION_INT_FIELD_STOREHOUSE_RECORD_CURSOR)
+end
+
+function FactionInfo:SetStoreHouseRecordCursor(val)
+	self:SetUInt32(FACTION_INT_FIELD_STOREHOUSE_RECORD_CURSOR, val)
+end
+
+function FactionInfo:AddStoreHouseRecord(record)
+	local cursor = self:GetStoreHouseRecordCursor()
+	self:SetStr(cursor + FACTION_STRING_FIELD_STOREHOUSE_RECORD_START, record)
+	cursor = cursor + 1
+	if cursor >= MAX_FACTION_STOREHOUSE_RECORD_COUNT then
+		cursor = 0
+	end
+	self:SetStoreHouseRecordCursor(cursor)
+end
+
+function FactionInfo:IsExeceeded(added)
+	return self:GetStoreHouseCount() + added > self:GetStoreHouseLimit()
+end
+
+--[[
+·玩家将道具放入仓库，显示：【玩家名称】将【装备名称】放入仓库					0|playerName|entry
+·玩家将道具从仓库取出，显示：【玩家名称】将【道具名称】从仓库取出				1|playerName|entry
+·系统将道具放入仓库，显示：系统奖励 【道具名称】								2|entry
+·装备销毁，显示：【玩家名称】将【道具名称】销毁 获得家族资金【N】				3|playerName|entry|resource
+
+--]]
+
+function FactionInfo:AddSystemReward(rewards)
+	local pattern = "0;%d;1;4;{};"
+	for _, info in ipairs() do
+		local entry = info[ 1 ]
+		local count = info[ 2 ]
+		local record = string.format("2|%d", entry)
+		-- 是宝箱的才让加入
+		if tb_box[entry] then
+			local itemStr = string.format(pattern, entry)
+			for i = 1, count do
+				self:AddStoreHouseItem(itemStr)
+				self:AddStoreHouseRecord(record)
+			end
+		end
+	end
+end
+
+-- 上交
+function FactionInfo:HandInReward(owner, pos_str)
+	local values =  string.split(pos_str, "|")
+	
+	-- 宝库满了
+	if self:IsExeceeded(#values) then
+		return
+	end
+	
+	local rewards = {}
+	local itemMgr = owner:getItemMgr()
+	for _, str in pairs(values) do
+		local pos = tonumber(str)
+		if pos then
+			local item = itemMgr:getBagItemByPos(BAG_TYPE_EQUIP_BAG, pos)
+			if item then
+				local itemStr = item:toString()
+				local entry = item:getEntry()
+				
+				itemMgr:delItemObj(item, 1)
+				self:AddStoreHouseItem(itemStr)
+				
+				-- 奖励整合				
+				local reward = tb_item_template[entry].handInReward
+				for _, info in ipairs(reward) do
+					if not rewards[info[ 1 ]] then
+						rewards[info[ 1 ]] = 0
+					end
+					rewards[info[ 1 ]] = rewards[info[ 1 ]] + info[ 2 ]
+				end
+				local record = string.format("0|%s|%d", owner:GetName(), entry)
+				self:AddStoreHouseRecord(record)
+			end
+		end
+	end
+	
+	local rewardDict = {}
+	for entry, count in pairs(rewards) do
+		table.insert(rewardDict, {entry, count})
+	end
+	owner:AppdAddItems(rewardDict, MONEY_CHANGE_STOREHOUSE, LOG_ITEM_OPER_TYPE_STOREHOUSE)
+end
+
+-- 兑换装备
+function FactionInfo:ExchangeSoreHouseItem(owner, pos)
+	if pos < 0 or pos >= self:GetStoreHouseLimit() then
+		return
+	end
+	
+	local binlogIndx = pos + FACTION_STRING_FIELD_STOREHOUSE_START
+	local info = self:GetStr(binlogIndx)
+	if string.len(info) == 0 then
+		return
+	end
+	
+	local params = string.split(info, ';')
+	local entry = tonumber(params[ 2 ])
+	local cost = tb_item_template[entry].exchangeCost
+	
+	-- 花费是否满足
+	if not owner:checkMoneyEnoughs(cost) then
+		return
+	end
+	
+	local itemMgr = owner:getItemMgr()
+	-- 判断有没有空位
+	if itemMgr:getEmptyCount(BAG_TYPE_EQUIP_BAG) == 0 then
+		return
+	end
+	
+	-- 看看增加是否成功
+	if not itemMgr:addItemByStr(BAG_TYPE_EQUIP_BAG, info) then
+		return
+	end
+	self:DelStoreHouseItem(binlogIndx)
+	
+	local record = string.format("1|%s|%d", owner:GetName(), entry)
+	self:AddStoreHouseRecord(record)
+end
+
+-- 销毁装备
+function FactionInfo:DestroySoreHouseItem(owner, pos)
+	if pos < 0 or pos >= self:GetStoreHouseLimit() then
+		return
+	end
+	
+	local binlogIndx = pos + FACTION_STRING_FIELD_STOREHOUSE_START
+	local info = self:GetStr(binlogIndx)
+	if string.len(info) == 0 then
+		return
+	end
+	
+	-- 判断有无权限
+	local priv = tb_faction_privilege[ 1 ].destroyItem
+	if not self:CheckEnoughPrivilege(owner:GetGuid(), priv) then
+		return
+	end
+	
+	-- 看看能加多少
+	local params = string.split(info, ';')
+	local entry = tonumber(params[ 2 ])
+	local added = tb_item_template[entry].destroyReward
+	self:AddFactionMoney(added)
+	
+	self:DelStoreHouseItem(binlogIndx)
+	
+	local record = string.format("3|%s|%d|%d", owner:GetName(), entry, added)
+	self:AddStoreHouseRecord(record)
+end
+
+-- 增加宝库道具
+function FactionInfo:AddStoreHouseItem(itemStr)
+	for i = FACTION_STRING_FIELD_STOREHOUSE_START, FACTION_STRING_FIELD_STOREHOUSE_END-1 do
+		local info = self:GetStr(i)
+		if string.len(info) == 0 then
+			self:SetStr(i, itemStr)
+			self:AddStoreHouseCount()
+			break
+		end
+	end
+end
+
+-- 删除宝库道具
+function FactionInfo:DelStoreHouseItem(binlogIndx)
+	if binlogIndx < FACTION_STRING_FIELD_STOREHOUSE_START or binlogIndx >= FACTION_STRING_FIELD_STOREHOUSE_END then
+		return
+	end
+	
+	local info = self:GetStr(binlogIndx)
+	if string.len(info) > 0 then
+		self:SetStr(binlogIndx, '')
+		self:SubStoreHouseCount()
+	end
+end
+
+-----------------------------------------家族宝库-----------------------------------------------
+
+--家族贡献礼包兑换
+function FactionInfo:FactionDonateGiftExchange(player,sum)
+	local house_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_STOREHOUSE)
+	if house_lv <= 0 then
+		return
+	end
+	
+	local build_info = tb_faction_building[FACTION_BUILDING_TYPE_STOREHOUSE*100+house_lv]
+	if not build_info then
+		return
+	end
+	local gift_max_count = build_info.params[2]
+	local gift_item_id = build_info.params[3]
+	local gift_item_donate_cost = build_info.params[4]
+	
+	if player:GetFactionDonateGiftExchangeDailyCount() > gift_max_count or player:GetFactionDonateGiftExchangeDailyCount()+ sum > gift_max_count then
+		return
+	end
+	
+	if player:costMoneys(MONEY_CHANGE_STOREHOUSE,{{MONEY_TYPE_FACTION,gift_item_donate_cost}},sum) then
+		player:AppdAddItems({{gift_item_id,1}}, nil, nil, sum, nil, nil, 1)
+		player:AddFactionDonateGiftExchangeDailyCount(sum)
+	end
+	return
+end
+
+
+
+-----------------------------------------家族建筑-----------------------------------------------
+function FactionInfo:GetBuildingId(pos)
+	return self:GetUInt32(FACTION_INT_FIELD_BUILDING_ID_START + pos)
+end
+
+function FactionInfo:SetBuildingId(pos,value)
+	self:SetUInt32(FACTION_INT_FIELD_BUILDING_ID_START + pos,value)
+end
+
+function FactionInfo:GetBuildingLvUpId()
+	return self:GetUInt32(FACTION_INT_FIELD_BUILDING_LVUP_ID)
+end
+
+function FactionInfo:SetBuildingLvUpId(value)
+	self:SetUInt32(FACTION_INT_FIELD_BUILDING_LVUP_ID,value)
+end
+
+function FactionInfo:GetBuildingLvUpFinishTime()
+	return self:GetUInt32(FACTION_INT_FIELD_BUILDING_LVUP_FINISH_TIME)
+end
+
+function FactionInfo:SetBuildingLvUpFinishTime(value)
+	self:SetUInt32(FACTION_INT_FIELD_BUILDING_LVUP_FINISH_TIME,value)
+end
+
+function FactionInfo:SubBuildingLvUpFinishTime(value)
+	self:SubUInt32(FACTION_INT_FIELD_BUILDING_LVUP_FINISH_TIME,value)
+end
+
+function FactionInfo:AddBuildingId(id)
+	for pos = 0,MAX_FACTION_BUILDING_COUNT - 1  do
+		if self:GetBuildingId(pos) == 0 then
+			self:SetBuildingId(pos,id)
+			return true
+		end
+	end
+	return false
+end
+
+function FactionInfo:ReplaceBuildingId(from_id,to_id)
+	for pos = 0,MAX_FACTION_BUILDING_COUNT - 1  do
+		if self:GetBuildingId(pos) == from_id then
+			self:SetBuildingId(pos,to_id)
+			return true
+		end
+	end
+	return false
+end
+
+function FactionInfo:GetBuildingLvByType(building_type)
+	for pos = 0,MAX_FACTION_BUILDING_COUNT - 1  do
+		local id = self:GetBuildingId(pos)
+		if id - id % 100 == building_type * 100 then
+			return id % 100
+		end
+	end
+	return 0
+	
+end
+
+function FactionInfo:GetBuildingPos(id)
+	for pos = 0,MAX_FACTION_BUILDING_COUNT - 1  do
+		if self:GetBuildingId(pos) == id then
+			return pos
+		end
+	end
+	return -1
+	
+end
+
+function FactionInfo:GetBuildingMainHallType()
+	return FACTION_BUILDING_TYPE_MAINHALL
+end
+
+function FactionInfo:GetDefaultBuildingMainHallId()
+	return FACTION_BUILDING_TYPE_MAINHALL *100 + 1
+end
+
+function FactionInfo:GetBuildingMainHallLv()
+	return self:GetBuildingLvByType(self:GetBuildingMainHallType())
+end
+
+function FactionInfo:PrintAllBuildings()
+	for pos = 0,MAX_FACTION_BUILDING_COUNT - 1  do
+		if self:GetBuildingId(pos) ~= 0 then
+			outFmtDebug('PrintAllBuildings==========id: %d', self:GetBuildingId(pos))
+		end
+	end
+end
+
+
+
+--升级建筑
+function FactionInfo:UpgradeBuilding(player, id)
+	--self:PrintAllBuildings()
+	--检测权限
+	local baseconfig = tb_faction_building_base[1]
+	local index = self:FindPlayerIndex(player:GetGuid())
+	if not index then
+		return
+	end
+	local player_zhiwei =  self:GetFactionMemberIdentity(index)
+	local flag = false
+	for _,zhiwei in pairs(baseconfig.zhiwei_limit) do
+		if zhiwei == player_zhiwei then
+			flag = true
+		end
+	end
+	
+	if not flag then
+		return
+	end
+	
+	--检测升级条件
+	local building_info = tb_faction_building[id]
+	if not building_info then
+		return
+	end
+	
+	if self:GetBuildingLvUpId() ~= 0 then
+		return
+	end
+	
+	local pos = self:GetBuildingPos(id)
+	if pos == -1 then
+		return
+	end
+	
+	if building_info.can_lvup == 0 then
+		return
+	end
+	
+	for _,info in pairs(building_info.need_buildinglv) do
+		if self:GetBuildingLvByType(info[1]) < info[2] then
+			return
+		end
+	end
+	
+	--扣除资金
+	if self:GetFactionMoney() < building_info.cost then
+		outFmtDebug('=====================UpgradeBuilding money not enough!!')
+		return
+	end
+	self:SetFactionMoney(self:GetFactionMoney() - building_info.cost)
+	
+	--设置升级id 结束时间
+	self:SetBuildingLvUpId(id)
+	self:SetBuildingLvUpFinishTime(os.time() + building_info.time * 60)
+	
+	outFmtDebug('==============================UpgradeBuilding buildid: %d',id)
+	self:PrintAllBuildings()
+	--家族广播
+end
+
+
+
+--加速升级建筑
+function FactionInfo:UpgradeBuildingSpeedUp(player, count)
+	--检测玩家剩余次数
+	local pos = self:FindPlayerIndex(player:GetGuid())
+	if pos == nil then return end
+	
+	local curr_count = player:GetFactionBuildingSpeedUpDailyCount()
+	
+	--检测建筑可升级次数
+	local baseconfig = tb_faction_building_base[1]
+	
+	if curr_count + count > baseconfig.speedup_limit then
+		return
+	end
+	
+	local max_count = math.ceil((self:GetBuildingLvUpFinishTime() - os.time())/(baseconfig.speedup_time*60))
+	
+	if max_count <= 0 or max_count <count then
+		return
+	end
+
+	
+	--检测消耗足够 扣除消耗
+	if not player:costMoneys(MONEY_CHANGE_FACTION_DONATION,baseconfig.speedup_cost,count) then
+		return
+	end
+	
+	player:AddFactionBuildingSpeedUpDailyCount(count)
+	
+	--设置结束时间
+	self:SubBuildingLvUpFinishTime(baseconfig.speedup_time*60*count)
+	
+	
+	--发放奖励
+	self:AddFactionMemberDayGongXian(pos,baseconfig.speedup_donate * count)
+	for index = curr_count + 1,curr_count + count do
+		local reward_id = baseconfig.speedup_reward[index]
+		if reward_id and reward_id ~= 0 then
+			local reward = tb_faction_building_reward[reward_id]
+			if #reward > 0 then
+				player:AppdAddItems(reward, nil, nil, count, nil, nil, 1)
+			end
+		end
+	end
+	outFmtDebug('=====================================UpgradeBuildingSpeedUp guid: %s count: %d',player:GetGuid(),count)
+	--添加家族日志
+end
+
+
+
+--每秒检测是否到达完成时间,处理建筑升级
+function FactionInfo:UpdateBuildingProcess()
+	
+	--检测id 结束时间
+	if self:GetBuildingLvUpFinishTime() > os.time() then
+		return
+	end
+	
+	local building_id = self:GetBuildingLvUpId()
+	if building_id == 0 then
+		return
+	end
+	--可完成 修改建筑列表对应建筑id  lv部分+1 
+	local building_info = tb_faction_building[building_id]
+	if not building_info or building_info.can_lvup == 0 then
+		self:SetBuildingLvUpId(0)
+		self:SetBuildingLvUpFinishTime(0)
+	end
+	
+	self:ReplaceBuildingId(building_id,building_id + 1)
+	
+	
+	local building_lv =  (building_id + 1) % 100
+	local building_type = (building_id + 1 - building_lv)/100
+	
+	--主殿升级处理
+	if building_type == self:GetBuildingMainHallType() then
+		self:OnMainHallLvUp(building_lv)
+		self:SetFactionLevel(building_lv)
+		self:RefreshShop()
+		rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
+	end
+	
+	--其他...
+	
+	----清理id = 0 time = 0
+	self:SetBuildingLvUpId(0)
+	self:SetBuildingLvUpFinishTime(0)
+	
+	outFmtDebug('============================OnUpdateBuildingProcess from_id: %d, to_id:%d',building_id,building_id+1)
+	self:PrintAllBuildings()
+	--家族通知
+	
+	
+end
+
+
+--主殿升级后解锁新建筑
+function FactionInfo:OnMainHallLvUp(level)
+	--遍历是否有新建筑解锁
+	for id,info in pairsByKeys(tb_faction_building) do
+		if info.unlock == level then
+			self:AddBuildingId(id)
+		end
+	end
+	
+	
+end
+
+
+
+
+-----------------------------------------家族建筑-----------------------------------------------
 
 
 function encodeSimpleInfo(faction_guid)

@@ -2,10 +2,28 @@ tb_faction_shop_list = {}
 
 for id,config in ipairs(tb_faction_shop) do
 	local lev = config.lev
+	local group_id = config.group_id
+	local discount_id = config.discount_id
+	local discount_ratio = config.discount_ratio
+
 	if not tb_faction_shop_list[lev] then
 		tb_faction_shop_list[lev] = {}
 	end
-	table.insert(tb_faction_shop_list[lev],config)
+	
+	if not tb_faction_shop_list[lev][group_id] then
+		tb_faction_shop_list[lev][group_id] = {}
+	end
+	
+	if not tb_faction_shop_list[lev][group_id][discount_id] then
+		tb_faction_shop_list[lev][group_id][discount_id] = {}
+	end
+	
+	local total_weight = 0
+	for index,info in ipairs(tb_faction_shop_list[lev][group_id][discount_id]) do
+		total_weight = info.total_weight
+	end
+	
+	table.insert(tb_faction_shop_list[lev][group_id][discount_id],{config = config,total_weight = total_weight + discount_ratio})
 end
 
 

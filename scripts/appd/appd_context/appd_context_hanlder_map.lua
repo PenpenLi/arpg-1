@@ -177,4 +177,10 @@ hanlders[CMSG_EXECUTE_QUEST_CMD_AFTER_ACCEPTED] = PlayerInfo.Handle_Execute_Ques
 
 hanlders[CMSG_SMELTING_EQUIP] = PlayerInfo.Handle_Smelting_Equip
 
+hanlders[CMSG_STOREHOUSE_HAND_IN] = PlayerInfo.Handle_Storehouse_Hand_In
+
+hanlders[CMSG_STOREHOUSE_EXCHANGE] = PlayerInfo.Handle_Storehouse_Exchange
+
+hanlders[CMSG_STOREHOUSE_DESTROY] = PlayerInfo.Handle_Storehouse_Destroy
+
 return hanlders
