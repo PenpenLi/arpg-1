@@ -114,13 +114,14 @@ function AppdApp:InitCorn()
 	local wbconfig = tb_worldboss_time[ 1 ]
 	self:InitWorldBossCorn(wbconfig.time[ 1 ], wbconfig.time[ 2 ], wbconfig.enrolllast, wbconfig.time_last, wbconfig.notice)
 	
+	--[[
 	--每隔1s检测下修炼场次数回复
 	self.cron:every("修炼场次数回复",1,function()
 		self.objMgr:foreachAllPlayer(function(player)	
 			player:UpdateCultivation()
 		end)		
 	end)
-	
+	--]]
 	
 	--每隔1s检测下修家族建筑升级进度
 	self.cron:every("家族建筑升级进度",1,function()
@@ -143,6 +144,7 @@ function AppdApp:InitCorn()
 			player:RefreshFriendInfo()
 		end)
 	end)
+
 
 	--每隔6s检测下失效幻化
 	self.cron:every("失效幻化检测", 6,function()
@@ -177,16 +179,20 @@ function AppdApp:InitCorn()
 		end)
 	end)
 	
+	--[[
 	--每隔3600s更新跨服排行榜
 	self.cron:every("更新跨服排行", 3600, function()
 		UpdateKuafuRank()
 	end)
+	--]]
 	
+	--[[
 	--10分钟存储一次修炼记录
 	self.cron:every("10分钟存储一次修炼记录", 600, function()
 		-- C++中处理
 		SaveXiulianData()
 	end)
+	--]]
 end
 
 -- 全服野外BOSS定时器初始化
