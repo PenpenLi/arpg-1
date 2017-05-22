@@ -2749,10 +2749,10 @@ function FactionInfo:ExchangeSoreHouseItem(owner, pos)
 	
 	local params = string.split(info, ';')
 	local entry = tonumber(params[ 2 ])
-	local cost = tb_item_template[entry].exchangeCost
+	local costTable = tb_item_template[entry].exchangeCost
 	
 	-- 花费是否满足
-	if not owner:checkMoneyEnoughs(cost) then
+	if not owner:checkMoneyEnoughs(costTable) then
 		return
 	end
 	
@@ -2766,6 +2766,8 @@ function FactionInfo:ExchangeSoreHouseItem(owner, pos)
 	if not itemMgr:addItemByStr(BAG_TYPE_EQUIP_BAG, info) then
 		return
 	end
+	
+	owner:costMoneys(MONEY_CHANGE_STOREHOUSE, costTable)
 	self:DelStoreHouseItem(binlogIndx)
 	
 	local record = string.format("1|%s|%d", owner:GetName(), entry)

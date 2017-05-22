@@ -159,7 +159,14 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	if(not faction)then
 		return
 	end
-
+	
+	-- 获取帮派数据的guid
+	local data_guid = guidMgr.replace(new_guid, guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:newAndCallPut(data_guid, FACTION_DATA_OWNER_STRING)
+	if(not factionData)then
+		return
+	end
+	
 	local faction_lv = 1
 
 	faction:SetName(faction_name)
@@ -181,6 +188,8 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	
 	--登录服也监听下
 	app.objMgr:callAddWatch(serverConnList:getLogindFD(), new_guid)
+	app.objMgr:callAddWatch(serverConnList:getLogindFD(), data_guid)
+	
 	--通知场景服监听
 	serverConnList:forEachScenedFD(function (fd)
 		app.objMgr:callAddWatch(fd, new_guid)

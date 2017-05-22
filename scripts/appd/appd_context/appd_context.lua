@@ -707,13 +707,13 @@ function PlayerInfo:Login()
 	globalSystemMail:checkIfHasSystemMail(self)
 	
 	-- 检查奖励
-	self:CheckMatchReward()	
+	-- self:CheckMatchReward()	
 	
 	-- 同步斗剑台信息
-	globalCounter:Login(self)
+	-- globalCounter:Login(self)
 	
 	--同步修炼信息
-	self:LoginRestoreCultivation()
+	-- self:LoginRestoreCultivation()
 	
 	--初始化登陆大礼
 	self:InitLoginActivity()

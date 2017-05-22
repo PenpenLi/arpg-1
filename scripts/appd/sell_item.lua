@@ -57,7 +57,8 @@ end
 function SortItem(player,flag)
 	local nowtime = os.time()
 	local lasttime = player:GetBagSortTime()
-	if  nowtime - lasttime < tb_item_sort_cd[1].cd or not flag then
+	
+	if not flag and nowtime - lasttime < tb_item_sort_cd[1].cd then
 		--outFmtError("SortItem: less than 10s from last sort!")
 		return
 	end

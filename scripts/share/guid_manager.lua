@@ -13,6 +13,7 @@ GuidManager.ObjectTypeItemMgr				= 'I'	--//物品
 GuidManager.ObjectTypeQuest 				= 'Q'	--//任务
 GuidManager.ObjectTypeInstance				= 'C'	--//副本
 GuidManager.ObjectTypeFaction				= 'L'	--//帮派
+GuidManager.ObjectTypeFactionData 			= 'D'	--//帮派数据
 GuidManager.ObjectTypeSpell					= 'X'	--//技能
 GuidManager.ObjectTypeLimit					= 'l'	--//限时活动对象
 GuidManager.ObjectTypeSocial				= 's'	--//社交

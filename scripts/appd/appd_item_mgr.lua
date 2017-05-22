@@ -183,8 +183,8 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 			end
 			
 			--校验性别
-			if owner:GetGender() ~= src_temp.sex and src_temp.sex ~= 0 then
-				outFmtError("exchangePos: player gender %d ~= %d", owner:GetGender(), src_temp.sex)
+			if not table.find(src_temp.availableGender, owner:GetGender()) then
+				outFmtError("exchangePos: player gender %d not fit", owner:GetGender())
 				return false
 			end
 			
