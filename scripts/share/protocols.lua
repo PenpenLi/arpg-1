@@ -303,6 +303,13 @@ CMSG_SMELTING_EQUIP		= 327	-- /*熔炼装备*/
 CMSG_STOREHOUSE_HAND_IN		= 328	-- /*上交装备*/	
 CMSG_STOREHOUSE_EXCHANGE		= 329	-- /*兑换装备*/	
 CMSG_STOREHOUSE_DESTROY		= 330	-- /*销毁装备*/	
+CMSG_SEND_FACTION_GIFT		= 331	-- /*赠送礼物*/	
+CMSG_GET_FACTION_GIFT_EXREWARD		= 332	-- /*领取额外奖励*/	
+CMSG_GET_ALL_FACTION_GIFT_EXREWARD		= 333	-- /*领取所有额外奖励*/	
+SMSG_SHOW_FACTION_GIFT_PAGE		= 334	-- /*返回礼物列表*/	
+SMSG_SHOW_FACTION_GIFT_INFO		= 335	-- /*返回礼物信息*/	
+SMSG_SHOW_FACTION_GIFT_UNTHANK_PAGE		= 336	-- /*返回女王未感谢礼物*/	
+SMSG_SHOW_FACTION_GIFT_HISTORY_PAGE		= 337	-- /*返回女王历史记录*/	
 
 
 ---------------------------------------------------------------------
@@ -1249,6 +1256,148 @@ function cultivation_rivals_info_t:write( output )
 		self.gender = 0
 	end
 	output:writeU32(self.gender)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*家族礼物信息*/
+
+faction_gift_info_t = class('faction_gift_info_t')
+
+function faction_gift_info_t:read( input )
+
+	local ret
+	ret,self.rank = input:readU32() --/*排行*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.id = input:readU32() --/*id*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.point = input:readU32() --/*魅力值*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.thank = input:readU32() --/*感谢标识*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.reply = input:readU32() --/*女王回复标识*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.time = input:readU32() --/*时间*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.count_id = input:readU32() --/*count_id*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.guid = input:readUTFByLen(50)  --/*赠送者guid*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.msg = input:readUTFByLen(50)  --/*赠送者留言*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.item_list = input:readUTFByLen(150)  --/*赠送道具信息*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.reply_list = input:readUTFByLen(100)  --/*回复信息*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function faction_gift_info_t:write( output )
+	if(self.rank == nil)then
+		self.rank = 0
+	end
+	output:writeU32(self.rank)
+	
+	if(self.id == nil)then
+		self.id = 0
+	end
+	output:writeU32(self.id)
+	
+	if(self.point == nil)then
+		self.point = 0
+	end
+	output:writeU32(self.point)
+	
+	if(self.thank == nil)then
+		self.thank = 0
+	end
+	output:writeU32(self.thank)
+	
+	if(self.reply == nil)then
+		self.reply = 0
+	end
+	output:writeU32(self.reply)
+	
+	if(self.time == nil)then
+		self.time = 0
+	end
+	output:writeU32(self.time)
+	
+	if(self.count_id == nil)then
+		self.count_id = 0
+	end
+	output:writeU32(self.count_id)
+	
+	if(self.guid == nil)then
+		self.guid = ''
+	end
+	output:writeUTFByLen(self.guid , 50 ) 
+	
+	if(self.msg == nil)then
+		self.msg = ''
+	end
+	output:writeUTFByLen(self.msg , 50 ) 
+	
+	if(self.item_list == nil)then
+		self.item_list = ''
+	end
+	output:writeUTFByLen(self.item_list , 150 ) 
+	
+	if(self.reply_list == nil)then
+		self.reply_list = ''
+	end
+	output:writeUTFByLen(self.reply_list , 100 ) 
 	
 	return output
 end
@@ -10410,9 +10559,12 @@ end
 
 
 -- /*离线奖励结果*/	
-function Protocols.pack_offline_reward_result ( reserve ,list)
+function Protocols.pack_offline_reward_result ( reserve ,reserve2 ,reserve3 ,reserve4 ,list)
 	local output = Packet.new(SMSG_OFFLINE_REWARD_RESULT)
 	output:writeU32(reserve)
+	output:writeU32(reserve2)
+	output:writeU32(reserve3)
+	output:writeU32(reserve4)
 	output:writeI16(#list)
 	for i = 1,#list,1
 	do
@@ -10422,8 +10574,8 @@ function Protocols.pack_offline_reward_result ( reserve ,list)
 end
 
 -- /*离线奖励结果*/	
-function Protocols.call_offline_reward_result ( playerInfo, reserve ,list)
-	local output = Protocols.	pack_offline_reward_result ( reserve ,list)
+function Protocols.call_offline_reward_result ( playerInfo, reserve ,reserve2 ,reserve3 ,reserve4 ,list)
+	local output = Protocols.	pack_offline_reward_result ( reserve ,reserve2 ,reserve3 ,reserve4 ,list)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -10434,6 +10586,18 @@ function Protocols.unpack_offline_reward_result (pkt)
 	local param_table = {}
 	local ret
 	ret,param_table.reserve = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.reserve2 = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.reserve3 = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.reserve4 = input:readU32()
 	if not ret then
 		return false
 	end	
@@ -10568,6 +10732,212 @@ function Protocols.unpack_storehouse_destroy (pkt)
 	end	
 
 	return true,param_table	
+
+end
+
+
+-- /*赠送礼物*/	
+function Protocols.pack_send_faction_gift ( list ,msg ,msg_type)
+	local output = Packet.new(CMSG_SEND_FACTION_GIFT)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	output:writeUTF(msg)
+	output:writeU32(msg_type)
+	return output
+end
+
+-- /*赠送礼物*/	
+function Protocols.call_send_faction_gift ( playerInfo, list ,msg ,msg_type)
+	local output = Protocols.	pack_send_faction_gift ( list ,msg ,msg_type)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*赠送礼物*/	
+function Protocols.unpack_send_faction_gift (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+	ret,param_table.msg = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.msg_type = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*领取额外奖励*/	
+function Protocols.pack_get_faction_gift_exreward ( count_id)
+	local output = Packet.new(CMSG_GET_FACTION_GIFT_EXREWARD)
+	output:writeU32(count_id)
+	return output
+end
+
+-- /*领取额外奖励*/	
+function Protocols.call_get_faction_gift_exreward ( playerInfo, count_id)
+	local output = Protocols.	pack_get_faction_gift_exreward ( count_id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取额外奖励*/	
+function Protocols.unpack_get_faction_gift_exreward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.count_id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*领取所有额外奖励*/	
+function Protocols.pack_get_all_faction_gift_exreward (  )
+	local output = Packet.new(CMSG_GET_ALL_FACTION_GIFT_EXREWARD)
+	return output
+end
+
+-- /*领取所有额外奖励*/	
+function Protocols.call_get_all_faction_gift_exreward ( playerInfo )
+	local output = Protocols.	pack_get_all_faction_gift_exreward (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取所有额外奖励*/	
+function Protocols.unpack_get_all_faction_gift_exreward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回礼物列表*/	
+function Protocols.pack_show_faction_gift_page (  )
+	local output = Packet.new(SMSG_SHOW_FACTION_GIFT_PAGE)
+	return output
+end
+
+-- /*返回礼物列表*/	
+function Protocols.call_show_faction_gift_page ( playerInfo )
+	local output = Protocols.	pack_show_faction_gift_page (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回礼物列表*/	
+function Protocols.unpack_show_faction_gift_page (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回礼物信息*/	
+function Protocols.pack_show_faction_gift_info (  )
+	local output = Packet.new(SMSG_SHOW_FACTION_GIFT_INFO)
+	return output
+end
+
+-- /*返回礼物信息*/	
+function Protocols.call_show_faction_gift_info ( playerInfo )
+	local output = Protocols.	pack_show_faction_gift_info (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回礼物信息*/	
+function Protocols.unpack_show_faction_gift_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回女王未感谢礼物*/	
+function Protocols.pack_show_faction_gift_unthank_page (  )
+	local output = Packet.new(SMSG_SHOW_FACTION_GIFT_UNTHANK_PAGE)
+	return output
+end
+
+-- /*返回女王未感谢礼物*/	
+function Protocols.call_show_faction_gift_unthank_page ( playerInfo )
+	local output = Protocols.	pack_show_faction_gift_unthank_page (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回女王未感谢礼物*/	
+function Protocols.unpack_show_faction_gift_unthank_page (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*返回女王历史记录*/	
+function Protocols.pack_show_faction_gift_history_page (  )
+	local output = Packet.new(SMSG_SHOW_FACTION_GIFT_HISTORY_PAGE)
+	return output
+end
+
+-- /*返回女王历史记录*/	
+function Protocols.call_show_faction_gift_history_page ( playerInfo )
+	local output = Protocols.	pack_show_faction_gift_history_page (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回女王历史记录*/	
+function Protocols.unpack_show_faction_gift_history_page (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
 
 end
 
@@ -10867,6 +11237,13 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_storehouse_hand_in = self.call_storehouse_hand_in
 	playerInfo.call_storehouse_exchange = self.call_storehouse_exchange
 	playerInfo.call_storehouse_destroy = self.call_storehouse_destroy
+	playerInfo.call_send_faction_gift = self.call_send_faction_gift
+	playerInfo.call_get_faction_gift_exreward = self.call_get_faction_gift_exreward
+	playerInfo.call_get_all_faction_gift_exreward = self.call_get_all_faction_gift_exreward
+	playerInfo.call_show_faction_gift_page = self.call_show_faction_gift_page
+	playerInfo.call_show_faction_gift_info = self.call_show_faction_gift_info
+	playerInfo.call_show_faction_gift_unthank_page = self.call_show_faction_gift_unthank_page
+	playerInfo.call_show_faction_gift_history_page = self.call_show_faction_gift_history_page
 end
 
 local unpack_handler = {
@@ -11159,6 +11536,13 @@ local unpack_handler = {
 [CMSG_STOREHOUSE_HAND_IN] =  Protocols.unpack_storehouse_hand_in,
 [CMSG_STOREHOUSE_EXCHANGE] =  Protocols.unpack_storehouse_exchange,
 [CMSG_STOREHOUSE_DESTROY] =  Protocols.unpack_storehouse_destroy,
+[CMSG_SEND_FACTION_GIFT] =  Protocols.unpack_send_faction_gift,
+[CMSG_GET_FACTION_GIFT_EXREWARD] =  Protocols.unpack_get_faction_gift_exreward,
+[CMSG_GET_ALL_FACTION_GIFT_EXREWARD] =  Protocols.unpack_get_all_faction_gift_exreward,
+[SMSG_SHOW_FACTION_GIFT_PAGE] =  Protocols.unpack_show_faction_gift_page,
+[SMSG_SHOW_FACTION_GIFT_INFO] =  Protocols.unpack_show_faction_gift_info,
+[SMSG_SHOW_FACTION_GIFT_UNTHANK_PAGE] =  Protocols.unpack_show_faction_gift_unthank_page,
+[SMSG_SHOW_FACTION_GIFT_HISTORY_PAGE] =  Protocols.unpack_show_faction_gift_history_page,
 
 }
 

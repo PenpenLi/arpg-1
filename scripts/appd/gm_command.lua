@@ -1084,7 +1084,6 @@ function  DoGMScripts(player_ptr, gm_commands)
 		end
 
 		--outFmtDebug("zhiao2")
-
 		local count = paras[3] or 1
 		local bind = paras[4] or false
 		local strong = paras[5] or 0
@@ -1092,7 +1091,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 		local itemMgr = player:getItemMgr()
 		local bagType = tb_item_template[id].belong_bag
 		if bagType >= 0 then
-			itemMgr:addItem(id,count,bind,true,true,strong,fail_time, bagType)
+			player:AppdAddItems({{id, count}}, MONEY_CHANGE_GM_COMMAND, LOG_ITEM_OPER_TYPE_GM_COMMAND)
 		end
 	elseif(tokens[1] == "@清理")then
 		local bag_id = paras[2] or BAG_TYPE_MAIN_BAG
@@ -1295,7 +1294,13 @@ function  DoGMScripts(player_ptr, gm_commands)
 		end
 		
 		player:AddAchieve(paras[2],paras[3])
-		
+	
+	elseif tokens[ 1 ] == '@冒险时间' then
+		local hours = 1
+		if tokens[2] then
+			hours = tonumber(tokens[2])
+		end
+		player:SubUInt32(PLAYER_INT_FILED_LEAVE_RISK_TIME, hours * 3600)
 	end
 	
 	return result

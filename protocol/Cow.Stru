@@ -109,3 +109,18 @@ cultivation_rivals_info,/*修炼场对手信息*/
 	chest,uint32,0,/*宝箱*/
 	gender,uint32,0,/*性别*/
 	
+#家族礼物信息
+faction_gift_info,/*家族礼物信息*/
+	rank,uint32,0,/*排行*/
+	id,uint32,0,/*id*/
+	point,uint32,0,/*魅力值*/
+	thank,uint32,0,/*感谢标识*/
+	reply,uint32,0,/*女王回复标识*/
+	time,uint32,0,/*时间*/
+	count_id,uint32,0,/*count_id*/
+	guid,String,50,/*赠送者guid*/
+	msg,String,50,/*赠送者留言*/
+	item_list,String,150,/*赠送道具信息*/
+	reply_list,String,100,/*回复信息*/
+	
+	

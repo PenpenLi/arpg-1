@@ -183,4 +183,10 @@ hanlders[CMSG_STOREHOUSE_EXCHANGE] = PlayerInfo.Handle_Storehouse_Exchange
 
 hanlders[CMSG_STOREHOUSE_DESTROY] = PlayerInfo.Handle_Storehouse_Destroy
 
+
+hanlders[CMSG_SEND_FACTION_GIFT] = PlayerInfo.Handle_Send_Faction_Gift
+hanlders[CMSG_GET_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_Faction_Gift_Exreward
+hanlders[CMSG_GET_ALL_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_All_Faction_Gift_Exreward
+
+
 return hanlders

@@ -98,6 +98,10 @@ function AppdApp:InitCorn()
 	-- 每周重置
 	self.cron:addCron("每周重置",'0 0 * * 1',function() 
 		Rank3v3kuafuWeek()
+		
+		self.objMgr:foreachAllFaction(function(faction)
+			faction:ResetFactionWeek()
+		end)
 	end)
 	
 	-- 野外boss马上刷新通知

@@ -4,6 +4,9 @@ PlayerInfo = class('PlayerInfo', BinLogObject)
 
 local guidMgr = require 'share.guid_manager'
 
+local SPLIT_THINGS = "\1"	--分割多条物品
+local SPLIT_THING_DETAIL = "\2"	--分割物品详细信息
+
 --将所有的发包及解包功能附加到该类
 require('share.protocols'):extend(PlayerInfo)
 
@@ -706,6 +709,10 @@ function PlayerInfo:Login()
 	self:GetOfflineMail()
 	globalSystemMail:checkIfHasSystemMail(self)
 	
+	--检查礼物离线更新
+	self:LoginUpdateGiftInfo()
+	--同步魅力值
+	self:LoginUpdateCharmPoint()
 	-- 检查奖励
 	-- self:CheckMatchReward()	
 	
@@ -1561,6 +1568,321 @@ function PlayerInfo:DailyResetFactionDonateGiftExchangeDailyCount()
 	self:SetFactionDonateGiftExchangeDailyCount(0)
 end
 
+
+--玩家魅力值
+function PlayerInfo:SetPlayerCharmPoint(value)
+	self:SetDouble(PLAYER_INT_FILED_CHARM_POINT,value)
+end
+
+function PlayerInfo:AddPlayerCharmPoint(value)
+	self:AddDouble(PLAYER_INT_FILED_CHARM_POINT,value)
+end
+
+function PlayerInfo:GetPlayerCharmPoint()
+	return self:GetDouble(PLAYER_INT_FILED_CHARM_POINT)
+end
+
+--玩家礼物历史记录
+--礼物count_id
+function PlayerInfo:SetPlayerGiftCountID(value)
+	self:SetUInt32(PLAYER_INT_FILED_FACTION_GIFT_NEXT_COUNT_ID,value)
+end
+
+function PlayerInfo:AddPlayerGiftCountID(value)
+	self:AddUInt32(PLAYER_INT_FILED_FACTION_GIFT_NEXT_COUNT_ID,value)
+end
+
+function PlayerInfo:GetPlayerGiftCountID()
+	return self:GetUInt32(PLAYER_INT_FILED_FACTION_GIFT_NEXT_COUNT_ID)
+end
+
+
+-- 礼物ID 
+function PlayerInfo:SetGiftID(index,value)
+	self:SetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_ID,value)
+end
+
+function PlayerInfo:GetGiftID(index)
+	return self:GetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_ID)
+end
+
+-- 本次礼物总魅力值
+function PlayerInfo:SetGiftPoint(index,value)
+	self:SetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_POINT,value)
+end
+
+function PlayerInfo:GetGiftPoint(index)
+	return self:GetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_POINT)
+end
+
+-- 感谢标识信息
+function PlayerInfo:SetGiftFlagThank(index,value)
+	if value == 1 then
+		self:SetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,1)
+	elseif value == 0 then
+		self:UnSetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,1)
+	end
+end
+
+function PlayerInfo:GetGiftFlagThank(index)
+	local result = self:GetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,1)
+	if result then
+		return 1
+	else
+		return 0
+	end
+end
+
+-- 女王回复标识信息
+function PlayerInfo:SetGiftFlagReply(index,value)
+	if value == 1 then
+		self:SetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,2)
+	elseif value == 0 then
+		self:UnSetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,2)
+	end
+end
+
+function PlayerInfo:GetGiftFlagReply(index)
+	local result = self:GetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,2)
+	if result then
+		return 1
+	else
+		return 0
+	end
+end
+
+-- 奖励领取标识信息
+function PlayerInfo:SetGiftFlagReward(index,value)
+	if value == 1 then
+		self:SetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,3)
+	elseif value == 0 then
+		self:UnSetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,3)
+	end
+end
+
+function PlayerInfo:GetGiftFlagReward(index)
+	local result = self:GetBit(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_FLAG_THANK,3)
+	if result then
+		return 1
+	else
+		return 0
+	end
+end
+
+-- 赠送时间
+function PlayerInfo:SetGiftTime(index,value)
+	self:SetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_TIME,value)
+end
+
+function PlayerInfo:GetGiftTime(index)
+	return self:GetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_TIME)
+end
+
+-- 赠送者生成的礼物序号
+function PlayerInfo:SetGiftCountID(index,value)
+	self:SetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_COUNT_ID,value)
+end
+
+function PlayerInfo:GetGiftCountID(index)
+	return self:GetUInt32(PLAYER_INT_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_INT_GIFT * index + FACTION_DATA_INT_GIFT_COUNT_ID)
+end
+
+-- 赠送者guid
+function PlayerInfo:SetGiftGuid(index,value)
+	self:SetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_GUID,value)
+end
+
+function PlayerInfo:GetGiftGuid(index)
+	return self:GetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_GUID)
+end
+
+-- 赠送者留言
+function PlayerInfo:SetGiftMsg(index,value)
+	self:SetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_MSG,value)
+end
+
+function PlayerInfo:GetGiftMsg(index)
+	return self:GetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_MSG)
+end
+
+-- 礼物列表详情	物品1 \2 数量1 \1 物品2 \2 数量2
+function PlayerInfo:SetGiftItemList(index,value)
+	self:SetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_ITEM_LIST,value)
+end
+
+function PlayerInfo:GetGiftItemList(index)
+	return self:GetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_ITEM_LIST)
+end
+
+-- 回复信息列表		玩家guid \2 信息 \2 回复类型 \2 时间 \1 玩家guid \2 信息 \2 回复类型 \2 时间
+function PlayerInfo:SetGiftReplyList(index,value)
+	self:SetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_REPLY_LIST,value)
+end
+
+function PlayerInfo:GetGiftReplyList(index)
+	return self:GetStr(PLAYER_STRING_FILED_FACTION_GIFT_START + MAX_FACTION_DATA_STRING_GIFT * index + FACTION_DATA_STRING_GIFT_REPLY_LIST)
+end
+
+
+function PlayerInfo:GetGiftEmptyIndex()
+	local oldest_time = os.time()
+	local oldest_index = 0
+	
+	for index = 0, MAX_FACTION_DATA_GIFT_COUNT - 1 do
+		if self:GetGiftGuid(index) == "" or string.len (self:GetGiftGuid(index)) == 0 then
+			return index
+		elseif self:GetGiftTime(index) < oldest_time then
+			oldest_time = self:GetGiftTime(index)
+			oldest_index = index
+		end
+	end
+	return oldest_index
+end
+
+function PlayerInfo:GetGiftIndexByCountID(count_id)
+	for index = 0, MAX_FACTION_DATA_GIFT_COUNT - 1 do
+		if self:GetGiftCountID(index) == count_id then
+			return index
+		end
+	end
+	return nil
+end
+
+
+--添加记录
+function PlayerInfo:AddGiftInfo(id,point,item_list,count_id,msg)
+	local index = self:GetGiftEmptyIndex()
+	
+	self:SetGiftGuid(index,self:GetGuid())
+	self:SetGiftMsg(index,msg)
+	self:SetGiftItemList(index,item_list)
+	self:SetGiftReplyList(index,"")
+	self:SetGiftID(index,id)
+	self:SetGiftPoint(index,point)
+	self:SetGiftFlagThank(index,0)
+	self:SetGiftFlagReply(index,0)
+	self:SetGiftFlagReward(index,0)
+	self:SetGiftTime(index,os.time())
+	self:SetGiftCountID(index,count_id)
+end
+
+
+
+--上线更新记录
+
+function PlayerInfo:LoginUpdateGiftInfo()
+	local faction = app.objMgr:getObj(self:GetFactionId())
+	if faction == nil then
+		return
+	end
+	
+	-- 获取帮派数据的guid
+	local data_guid = guidMgr.replace(self:GetFactionId(), guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:getObj(data_guid, FACTION_DATA_OWNER_STRING)
+	if(not factionData)then
+		return
+	end
+	
+	local gift_table = factionData:GetGiftCacheByGuid(self:GetGuid())
+	for _,info in ipairs(gift_table) do
+		local index = self:GetGiftIndexByCountID(info.count_id)
+		if index then
+			self:SetGiftFlagThank(index,info.thank)
+			self:SetGiftReplyList(index,info.msg)
+		end
+	end
+	
+end
+
+--领取奖励
+
+function PlayerInfo:GetFactionGiftExreward(count_id)
+	local index = self:GetGiftIndexByCountID(count_id)
+	if not index then
+		outFmtError("find GetFactionGiftExreward fail")
+		return
+	end
+	
+	if self:GetGiftFlagThank(index) == 0 then
+		outFmtError("find GetFactionGiftExreward gift not thank!!")
+		return
+	end
+	
+	if self:GetGiftFlagReward(index) == 1 then
+		
+		outFmtError("find GetFactionGiftExreward gift reward already get ")
+		return
+	end
+	
+	--修改礼包奖励标识
+	self:SetGiftFlagReward(index,1)
+	
+	
+	--取得道具列表 获得奖励结果
+	local item_list = self:GetGiftItemList(index)
+	local item_table = {}
+	local tokens = string.split(item_list,SPLIT_THINGS)
+	for _,token in pairs(tokens) do
+		local info_tokens = string.split(token,SPLIT_THING_DETAIL)
+		table.insert(item_table,{tonumber(info_tokens[1]),tonumber(info_tokens[2])})
+	end
+	
+	local reward_table = {}
+	for _,v in pairs(item_table) do
+		if tb_faction_gift[v[1]] then
+			for _,reward_info in pairs(tb_faction_gift[v[1]].ex_reward) do
+				table.insert(reward_table, {tonumber(reward_info[1]),reward_info[2]*v[2]})
+			end
+		end
+	end
+	
+	
+	--发送奖励
+	self:AppdAddItems(reward_table,MONEY_CHANGE_FACTION_GIFT,LOG_ITEM_OPER_TYPE_FACTION_GIFT)
+	
+	--修改统计数值  未领取数量
+	local faction = app.objMgr:getObj(self:GetFactionId())
+	if faction == nil then
+		return
+	end
+	
+	local index_sender = faction:GetGiftPlayerGuidIndex(self:GetGuid())
+	if not index_sender  then 
+		outFmtError("get index_sender GetGiftPlayerGuidIndex fail")
+		return
+	end
+	
+	faction:SubGiftUncheckCount(index_sender,1)
+	
+	if self:GetGuid() ~= self:GetGiftGuid(index) then
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_GET_EXREWARD)
+	end
+	outFmtInfo("============GetFactionGiftExreward finish ")
+end
+
+--领取所有额外奖励
+function PlayerInfo:GetAllFactionGiftExreward(factionData,player)
+	for index=0, MAX_FACTION_DATA_GIFT_COUNT-1 do
+		local count_id = self:GetGiftCountID(index)
+		self:GetFactionGiftExreward(count_id)
+	end
+	
+	outFmtInfo("============GetAllFactionGiftExreward finish ")
+	
+end
+
+--上线同步魅力值
+function PlayerInfo:LoginUpdateCharmPoint()
+	local faction = app.objMgr:getObj(self:GetFactionId())
+	if not faction then
+		return
+	end
+	
+	if self:GetGuid() == faction:GetBangZhuGuid() then
+		self:SetPlayerCharmPoint(faction:GetFactionCharmPoint())
+	end
+
+end
 
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()

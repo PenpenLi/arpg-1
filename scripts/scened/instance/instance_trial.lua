@@ -222,7 +222,7 @@ end
 
 -- 获得单人的复活时间
 function InstanceTrial:GetSingleRespawnTime(player)
-	return 5
+	return 1
 end
 
 --当玩家离开时触发

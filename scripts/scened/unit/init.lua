@@ -2314,7 +2314,7 @@ function UnitInfo:onPickRiskReward()
 		table.insert(rewards, entry..","..count)
 	end
 	
-	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ADD_OFFLINE_RISK_REWARD, 0, string.join("|", rewards))
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ADD_OFFLINE_RISK_REWARD, diff, string.join("|", rewards))
 	
 	--[[
 	-- 传到应用服去算

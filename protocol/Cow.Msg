@@ -1265,6 +1265,9 @@ pick_offline_reward,c2s,325,/*领取离线奖励*/,STATUS_NEVER,False
 #
 offline_reward_result,s2c,326,/*离线奖励结果*/,STATUS_NEVER,False
 	reserve,uint32,False,/*备用*/
+	reserve2,uint32,False,/*备用2*/
+	reserve3,uint32,False,/*备用3*/
+	reserve4,uint32,False,/*备用4*/
 	list,item_reward_info,True,/奖励道具列表/
 	
 #
@@ -1282,3 +1285,31 @@ storehouse_exchange,c2s,329,/*兑换装备*/,STATUS_NEVER,False
 #
 storehouse_destroy,c2s,330,/*销毁装备*/,STATUS_NEVER,False
 	pos,uint32,False,/*宝库的pos*/
+
+#
+send_faction_gift,c2s,331,/*赠送礼物*/,STATUS_NEVER,False
+	list,item_reward_info,True,/*礼物list*/
+	msg,String,False,/*留言*/
+	msg_type,uint32,False,/*留言类型*/
+
+#
+get_faction_gift_exreward,c2s,332,/*领取额外奖励*/,STATUS_NEVER,False
+	count_id,uint32,False,/*礼物的count_id*/
+
+#
+get_all_faction_gift_exreward,c2s,333,/*领取所有额外奖励*/,STATUS_NEVER,False
+
+#
+show_faction_gift_page,s2c,334,/*返回礼物列表*/,STATUS_NEVER,False
+
+#
+show_faction_gift_info,s2c,335,/*返回礼物信息*/,STATUS_NEVER,False
+
+#
+show_faction_gift_unthank_page,s2c,336,/*返回女王未感谢礼物*/,STATUS_NEVER,False
+
+#
+show_faction_gift_history_page,s2c,337,/*返回女王历史记录*/,STATUS_NEVER,False
+
+
+

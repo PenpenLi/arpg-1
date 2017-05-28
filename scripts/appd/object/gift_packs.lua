@@ -292,6 +292,57 @@ function GiftPacksInfo:removeMail(indx)
 	
 	-- 设置删除标志
 	self:SetByte(intIndex + GIFTPACKS_INFO_INT_BYTE, 3, 1)
+	
+	-- 如果本条是最后挑数据, 清空本条数据
+	local cursor = self:GetAttackStrutCount()
+	-- 最后的位置
+	local lastPos = (cursor - 1 + MAX_GIFTPACKS_INFO_COUNT) % MAX_GIFTPACKS_INFO_COUNT
+	
+	-- 领取的就是最后一条
+	if indx == lastPos then
+		-- 直接清掉
+		self:reset(indx)
+	else
+		self.movable = true
+		self:MoveDataAndReset(lastPos, indx)
+	end
+	
+	-- 游标移动到上面
+	self:SetAttackStrutCount(lastPos)
+end
+
+function GiftPacksInfo:reset(indx)
+	local intIndex = GIFTPACKS_INT_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_INT
+	for i = 0, MAX_GIFTPACKS_INFO_INT-1 do
+		self:SetUInt32(intIndex + i, 0)
+	end
+	
+	local strIndex = GIFTPACKS_STRING_FIELD_BEGIN + indx * MAX_GIFTPACKS_INFO_STRING
+	for i = 0, MAX_GIFTPACKS_INFO_STRING-1 do
+		self:SetStr(strIndex + i, '')
+	end
+end
+
+function GiftPacksInfo:MoveDataAndReset(indx1, indx2)
+	-- 只有标记的才能move
+	if not self.movable or indx1 == indx2 then
+		return
+	end
+	self.movable = nil
+	
+	local intIndex1 = GIFTPACKS_INT_FIELD_BEGIN + indx1 * MAX_GIFTPACKS_INFO_INT
+	local intIndex2 = GIFTPACKS_INT_FIELD_BEGIN + indx2 * MAX_GIFTPACKS_INFO_INT
+	for i = 0, MAX_GIFTPACKS_INFO_INT-1 do
+		self:SetUInt32(intIndex2 + i, self:GetUInt32(intIndex1 + i))
+		self:SetUInt32(intIndex1 + i, 0)
+	end
+	
+	local strIndex1 = GIFTPACKS_STRING_FIELD_BEGIN + indx1 * MAX_GIFTPACKS_INFO_STRING
+	local strIndex2 = GIFTPACKS_STRING_FIELD_BEGIN + indx2 * MAX_GIFTPACKS_INFO_STRING
+	for i = 0, MAX_GIFTPACKS_INFO_STRING-1 do
+		self:SetStr(strIndex2 + i, self:GetStr(strIndex1 + i))
+		self:SetStr(strIndex1 + i, '')
+	end
 end
 
 -- 一键领取
@@ -303,9 +354,15 @@ end
 
 -- 一键删除
 function GiftPacksInfo:removeMailOneStep()
-	local intIndex = GIFTPACKS_INT_FIELD_BEGIN
-	for i = 0, MAX_GIFTPACKS_INFO_COUNT-1 do
-		self:removeMail(i)
+	
+	-- 如果本条是最后挑数据, 清空本条数据
+	local cursor = self:GetAttackStrutCount()
+	-- 最后的位置
+	local real = cursor - 1 + MAX_GIFTPACKS_INFO_COUNT
+	
+	for i = real, cursor, -1 do
+		local indx = i % MAX_GIFTPACKS_INFO_COUNT
+		self:removeMail(indx)
 	end
 end
 

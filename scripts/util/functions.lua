@@ -554,6 +554,19 @@ function string.toQueryString( map )
     return data
 end
 
+function string.charCount(str, ascii)
+	local len = string.len(str)
+	local count = 0
+	
+	for i = 1, len do
+		if string.byte(str, i) == ascii then
+			count = count + 1
+		end
+	end
+	
+	return count
+end
+
 -- cclog
 cclog = function(...)
     print(string.format(...))

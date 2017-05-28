@@ -14,9 +14,10 @@ end
 
 -- 删除邮件
 function PlayerInfo:Remove_Mail(indx)
-
+	--[[
 	local giftPacksInfo = self:getGiftPacksInfo()
 	giftPacksInfo:removeMail(indx)
+	--]]
 end
 
 -- 一键领取邮件

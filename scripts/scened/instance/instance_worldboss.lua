@@ -382,7 +382,7 @@ function AI_WorldBoss:DamageTaken(owner, unit, damage)
 	if rollId > 0 then
 		-- 未死亡 加无敌buff
 		if currHealth > 0 then
-			unitLib.AddBuff(owner, BUFF_INVINCIBLE, owner, 1, config.world_boss_invincible_time)
+			unitLib.AddBuff(owner, BUFF_INVINCIBLE, owner, 0, config.world_boss_invincible_time)
 			-- 通知进入无敌模式
 		end
 		

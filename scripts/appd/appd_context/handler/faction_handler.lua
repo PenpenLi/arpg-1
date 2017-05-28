@@ -377,6 +377,8 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	if faction == nil then
 		return
 	end
+	local data_guid = guidMgr.replace(faction_guid, guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:getObj(data_guid, FACTION_DATA_OWNER_STRING)
 	
 	local pos = faction:FindPlayerIndex(self:GetGuid())
 	if pos == nil then return end
@@ -424,6 +426,71 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	elseif opt_type == FACTION_MANAGER_TYPE_DONATE_GIFT_EXCHANGE then
 		faction:FactionDonateGiftExchange(self,reserve_int1)
 		
+	--查看礼物列表
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_PAGE then
+		if(not factionData)then
+			return
+		end
+		faction:ShowFactionGiftPage(factionData,self,reserve_int1)
+	--查看礼物信息
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_INFO then
+		if(not factionData)then
+			return
+		end
+		faction:ShowFactionGiftInfo(factionData,self,reserve_int1)
+	--女王查看未感谢礼物
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_UNTHANK_PAGE then
+		if self:GetGuid() ~= faction:GetBangZhuGuid() then
+			return
+		end
+		if(not factionData)then
+			return
+		end
+		faction:ShowFactionGiftUnthankPage(factionData,self,reserve_int1,true)
+	--女王查看历史记录
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_HISTORY_PAGE then
+		if self:GetGuid() ~= faction:GetBangZhuGuid() then
+			return
+		end
+		if(not factionData)then
+			return
+		end
+		faction:ShowFactionGiftHistoryPage(factionData,self,reserve_int1)
+	--女王感谢
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_THANK then
+		if self:GetGuid() ~= faction:GetBangZhuGuid() then
+			return
+		end
+		if(not factionData)then
+			return
+		end
+		faction:ThankFactionGift(factionData,self,reserve_int1,true)
+	--女王全部感谢
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_THANK_ALL then
+		if self:GetGuid() ~= faction:GetBangZhuGuid() then
+			return
+		end
+		if(not factionData)then
+			return
+		end
+		faction:ThankAllFactionGift(factionData,self)
+	--女王感谢并回复
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_THANK_AND_REPLY then
+		if self:GetGuid() ~= faction:GetBangZhuGuid() then
+			return
+		end
+		if(not factionData)then
+			return
+		end
+		faction:ThankAndReplyFactionGift(factionData,self,reserve_int1,reserve_int2,reserve_str1)
+	--所有人回复
+	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_REPLY then
+		if(not factionData)then
+			return
+		end
+		faction:ReplyFactionGift(factionData,self,reserve_int1,reserve_int2,reserve_str1)
+		
+		
 	end
 	
 	
@@ -462,3 +529,87 @@ function PlayerInfo:Handle_Storehouse_Destroy(pkt)
 		end
 	end
 end
+
+
+
+
+--帮派部分
+--赠送礼物 (item_table)
+--send_faction_gift  --增加未感谢计数 1
+function PlayerInfo:Handle_Send_Faction_Gift(pkt)
+	local faction_guid = self:GetFactionId()
+	if faction_guid == "" then
+		return
+	end
+	
+	if not app.objMgr:IsFactionGuid(faction_guid) then
+		return
+	end
+	
+	local faction = app.objMgr:getObj(faction_guid)
+	if faction == nil then
+		return
+	end
+	local data_guid = guidMgr.replace(faction_guid, guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:getObj(data_guid, FACTION_DATA_OWNER_STRING)
+	if not factionData then
+		return
+	end
+	
+	local pos = faction:FindPlayerIndex(self:GetGuid())
+	if pos == nil then return end
+	
+	local list = pkt.list			--道具list
+	local item_table = {}
+	for _,info in ipairs(list) do
+		table.insert(item_table,{info.item_id,info.num})
+	end
+	local msg = pkt.msg
+	local msg_type = pkt.msg_type
+	
+	faction:SendFactionGift(factionData,self,item_table,msg,msg_type)
+	
+	
+end
+
+--玩家部分
+--领取额外奖励 (count_id)
+--get_faction_gift_exreward
+function PlayerInfo:Handle_Get_Faction_Gift_Exreward(pkt)
+	local count_id = pkt.count_id
+	self:GetFactionGiftExreward(count_id)
+end
+
+--领取所有额外奖励 ()
+--get_all_faction_gift_exreward
+function PlayerInfo:Handle_Get_All_Faction_Gift_Exreward(pkt)
+	self:GetAllFactionGiftExreward()
+end
+
+
+--查看礼物列表 (page)
+--show_faction_gift_page --依据魅力排行全部
+
+--查看礼物信息 (id)
+--show_faction_gift_info
+
+--女王查看未感谢礼物 (page)
+--show_faction_gift_unthank_page --只显示未感谢的 
+
+--女王查看历史记录 (page)
+--show_faction_gift_history_page --已感谢的在后,未感谢的在前
+
+--女王感谢 (id)
+--thank_faction_gift  --增加未领取计数 1
+
+--女王全部感谢 ()
+--thank_all_faction_gift
+
+--女王感谢并回复 (id,msg_type,msg)
+--thank_and_reply_faction_gift
+
+--所有人回复 (id,msg_type,msg)
+--reply_faction_gift
+
+
+

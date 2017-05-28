@@ -233,6 +233,8 @@ end
 function InstanceFieldBase:DoAfterRespawn(unit_ptr)
 	local unitInfo = UnitInfo:new{ptr = unit_ptr}
 	if unitInfo:GetTypeID() == TYPEID_PLAYER then
+		-- µ÷ÓÃ¸¸Àà
+		Instance_base.DoAfterRespawn(self, unit_ptr)
 		if unitInfo:GetUseRespawnMapId() ~= self:GetMapId() then
 			mapLib.ExitInstance(self.ptr, unit_ptr)
 		end

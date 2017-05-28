@@ -777,6 +777,8 @@ Instance_base = {
 	--复活后干点啥
 	DoAfterRespawn = 
 		function(self, unit_ptr)
+			-- 加无敌buff
+			unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 0, 5)
 		end,
 		
 	--当玩家被玩家杀掉时触发
@@ -1099,7 +1101,10 @@ Instance_base = {
 	end,
 	
 	OnRandomRespawn = function (self, unitInfo)
-
+		if not unitInfo:IsAlive() then
+			unitInfo:SetUseRespawnMapId(0)
+			unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+		end
 	end,
 	
 	-- 指定人物会传送到的地方

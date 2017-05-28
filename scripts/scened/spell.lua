@@ -149,6 +149,25 @@ function DoHandleSpellStart(caster, map_ptr, spell_slot, tar_x, tar_y, target, n
 		end
 	end
 	
+	-- 锁定技能一定要有目标
+	if tb_skill_base[current_id].lock_type == 1 then
+		if not target then
+			return false, 0
+		end
+		-- 如果效率太低就去掉
+		local tar_x, tar_y = unitLib.GetPos(target)
+		local dis = casterInfo:GetDistance(tar_x,tar_y)
+		local spell_lv = casterInfo:GetSpellLevel(current_id)
+		local index = tb_skill_base[current_id].uplevel_id[1] + spell_lv - 1
+		local spell_dis = tb_skill_uplevel[index].distance 	--获得技能施放距离
+		if dis > spell_dis + 3 then	--允许3码误差
+			return false, 0
+		end
+	end
+	
+	-- 判断施法距离
+
+	
 	if(unitLib.HasUnitState(caster, UNIT_STAT_CAST_SPELL) or unitLib.HasUnitState(caster, UNIT_STAT_SPELL_PROCESS))then
 		--已经在施法，则停止施法
 		unitLib.SpellStop(caster)

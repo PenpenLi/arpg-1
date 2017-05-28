@@ -373,6 +373,8 @@ function PlayerInfo:GmCommand(str)
 			return
 		end
 		faction:RefreshShop()
+		faction:DailyResetGift()
+		--self:DailyReset()
 	elseif(gm_key == 998)then		-- @整理接口
 		outFmtInfo("test sort: ")
 		SortItem(self)
@@ -385,10 +387,11 @@ function PlayerInfo:GmCommand(str)
 		self:SubUInt32(PLAYER_INT_FILED_LEAVE_RISK_TIME, hours * 3600)
 		--]]
 		
-		local pkt = {}
-		pkt.opt_type = FACTION_MANAGER_TYPE_BUILDING_UPGRADE
-		pkt.reserve_int1 = tonumber(tokens[2])
-		self:Handle_Faction_People(pkt)
+		--local pkt = {}
+		--pkt.opt_type = FACTION_MANAGER_TYPE_BUILDING_UPGRADE
+		--pkt.reserve_int1 = tonumber(tokens[2])
+		--self:Handle_Faction_People(pkt)
+		--[[
 		local pkt2 = {}
 		pkt2.opt_type = FACTION_MANAGER_TYPE_BUILDING_UPGRADE_SPEEDUP
 		pkt2.reserve_int1 = 1
@@ -397,7 +400,49 @@ function PlayerInfo:GmCommand(str)
 		local pkt3 = {}
 		pkt3.opt_type = FACTION_MANAGER_TYPE_DONATE_GIFT_EXCHANGE
 		pkt3.reserve_int1 = 1
-		self:Handle_Faction_People(pkt3)
+		--self:Handle_Faction_People(pkt3)
+		
+		local pkt4 = {}
+		pkt4.opt_type = FACTION_MANAGER_TYPE_JUANXIAN
+		pkt4.reserve_int1 = 1
+		pkt4.reserve_int2 = 1
+		self:Handle_Faction_People(pkt4)
+		--]]
+		local pkt= {}
+		pkt.list = {{1201,4}}			--道具list
+		pkt.msg = "aaa"
+		pkt.msg_type  = 0
+		--self:Handle_Send_Faction_Gift(pkt)
+		
+		local pkt3 = {}
+		pkt3.opt_type = FACTION_MANAGER_TYPE_GIFT_THANK
+		pkt3.reserve_int1 = 5
+		--self:Handle_Faction_People(pkt3)
+		
+		local pkt5 = {}
+		pkt5.count_id = 4
+		--self:Handle_Get_Faction_Gift_Exreward(pkt5)
+		
+		local pkt6 = {}
+		pkt6.opt_type = FACTION_MANAGER_TYPE_GIFT_REPLY
+		pkt6.reserve_int1 = 1
+		pkt6.reserve_int2 = 0
+		pkt6.reserve_str1 = "asdasdad"
+		--self:Handle_Faction_People(pkt6)
+		
+		local pkt7 = {}
+		pkt7.opt_type = FACTION_MANAGER_TYPE_GIFT_THANK_AND_REPLY
+		pkt7.reserve_int1 = 6
+		pkt7.reserve_int2 = 0
+		pkt7.reserve_str1 = "wwwwww"
+		--self:Handle_Faction_People(pkt7)
+		
+		
+		local pkt4 = {}
+		pkt4.opt_type = FACTION_MANAGER_TYPE_GIFT_SHOW_PAGE
+		pkt4.reserve_int1 = 1
+		--self:Handle_Faction_People(pkt4)
+		
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

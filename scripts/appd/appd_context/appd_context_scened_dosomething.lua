@@ -108,6 +108,6 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		self:AppdAddItems(rewardDict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE, nil, nil, nil, 3)
 		
 		local list = Change_To_Item_Reward_Info(dict)
-		self:call_offline_reward_result (sell, list)
+		self:call_offline_reward_result (sell, data, 0, 0, list)
 	end
 end

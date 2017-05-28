@@ -993,164 +993,179 @@ function OperationFailedToString(type, reason, data)
 		return "未知错误1  OPRATE_TYPE_TELEPORT " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_UPGRADE)then
-		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_HAS_SEND好友请求信息已发送 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_GIFT_THANK)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_FACTION_GIFT_THANK感谢完成 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_NOT_FIND)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_NOT_FIND角色不存在或者角色不在线 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_GIFT_THANK_ALL)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_FACTION_GIFT_THANK_ALL全部感谢完成 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_SELF_FULL)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_SELF_FULL自己好友列表已满 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_GIFT_GET_EXREWARD)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_FACTION_GIFT_GET_EXREWARD领取成功 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_TARGET_FULL)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_TARGET_FULL对方好友列表已满 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_GIFT_GET_EXREWARD_ALL)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_FACTION_GIFT_GET_EXREWARD_ALL全部领取成功 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_ALREADY_FRIEND对方已经是你的好友 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_GIFT_SEND)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_FACTION_GIFT_SEND赠送成功 - " .. data 
 		end
-		if (reason ==OPERTE_TYPE_SOCIAL_ADD_MYSELF)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_ADD_MYSELF不能自己添加自己为好友 - " .. data 
-		end
-		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND_ADD)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_HAS_SEND_ADD已经发送申请 - " .. data 
-		end
-		if (reason ==OPERTE_TYPE_SOCIAL_NO_MONEY)then
-			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_SOCIAL_NO_MONEY元宝或者金币不足 - " .. data 
+		if (reason ==OPERTE_TYPE_FACTION_GIFT_SEND_FAIL)then
+			return "ShowOperationFailed OPRATE_TYPE_UPGRADE游戏中的升级操作 - OPERTE_TYPE_FACTION_GIFT_SEND_FAIL赠送成功 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_UPGRADE " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_ACTIVITY)then
-		if (reason ==HOSTING_OPERTE_IS_SELF)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_IS_SELF无法对自己操作 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_HAS_SEND好友请求信息已发送 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_LEVEL_NOT)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_LEVEL_NOT等级不足 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_NOT_FIND)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_NOT_FIND角色不存在或者角色不在线 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_IS_HOSTING)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_IS_HOSTING托管中 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_SELF_FULL)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_SELF_FULL自己好友列表已满 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_IS_HOSTING_APPLY)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_IS_HOSTING_APPLY托管申请 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_TARGET_FULL)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_TARGET_FULL对方好友列表已满 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_FRIEND_NOT)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_FRIEND_NOT好友不存在 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_ALREADY_FRIEND对方已经是你的好友 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_HAS_NOT_24H)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_HAS_NOT_24H还没到24小时 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_ADD_MYSELF)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_ADD_MYSELF不能自己添加自己为好友 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_FRIEND_OUTLINE)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_FRIEND_OUTLINE好友不在线 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_HAS_SEND_ADD)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_HAS_SEND_ADD已经发送申请 - " .. data 
 		end
-		if (reason ==HOSTING_OPERTE_FRIEND_ERR)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_FRIEND_ERR托管好友错误 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_NOT_HOSTING)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_NOT_HOSTING不在托管中 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_ONLINE)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_FRIEND_ONLINE好友在线 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_LOGIN_HOSTING)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_LOGIN_HOSTING托管登录中 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_APPLY)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_FRIEND_APPLY申请发送 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_LOGIN)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_LOGIN登录 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_SUCCESS)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_SUCCESS托管申请成功 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_CANCEL)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_CANCEL取消托管 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_REFUSED)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_REFUSED拒绝托管 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_NOT_DUE_TO)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_NOT_DUE_TO托管未到期 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_HOSTING_LOGIN)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_FRIEND_HOSTING_LOGIN对方托管登录中，无法操作 - " .. data 
-		end
-		if (reason ==HOSTING_OPERTE_FRIEND_NOT_HAS_YOU)then
-			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - HOSTING_OPERTE_FRIEND_NOT_HAS_YOU对方好友列表没有你 - " .. data 
+		if (reason ==OPERTE_TYPE_SOCIAL_NO_MONEY)then
+			return "ShowOperationFailed OPRATE_TYPE_ACTIVITY活动 - OPERTE_TYPE_SOCIAL_NO_MONEY元宝或者金币不足 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_ACTIVITY " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_ACHIEVE)then
-		if (reason ==STRENGTH_OPERTE_FAIL)then
-			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
+		if (reason ==HOSTING_OPERTE_IS_SELF)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_IS_SELF无法对自己操作 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LEVEL_NOT)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_LEVEL_NOT等级不足 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_IS_HOSTING)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_IS_HOSTING托管中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_IS_HOSTING_APPLY)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_IS_HOSTING_APPLY托管申请 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_NOT)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_FRIEND_NOT好友不存在 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_HAS_NOT_24H)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_HAS_NOT_24H还没到24小时 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_OUTLINE)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_FRIEND_OUTLINE好友不在线 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_ERR)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_FRIEND_ERR托管好友错误 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_NOT_HOSTING)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_NOT_HOSTING不在托管中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_ONLINE)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_FRIEND_ONLINE好友在线 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LOGIN_HOSTING)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_LOGIN_HOSTING托管登录中 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_APPLY)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_FRIEND_APPLY申请发送 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_LOGIN)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_LOGIN登录 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_SUCCESS)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_SUCCESS托管申请成功 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_CANCEL)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_CANCEL取消托管 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_REFUSED)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_REFUSED拒绝托管 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_NOT_DUE_TO)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_NOT_DUE_TO托管未到期 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_HOSTING_LOGIN)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_FRIEND_HOSTING_LOGIN对方托管登录中，无法操作 - " .. data 
+		end
+		if (reason ==HOSTING_OPERTE_FRIEND_NOT_HAS_YOU)then
+			return "ShowOperationFailed OPRATE_TYPE_ACHIEVE成就 - HOSTING_OPERTE_FRIEND_NOT_HAS_YOU对方好友列表没有你 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_ACHIEVE " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_ATHLETICS)then
-		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_DENY)then
-			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - BATTLE_MODE_OPERTE_PEACE_MODE_DENY战斗中不能切换和平模式 - " .. data 
-		end
-		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)then
-			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD和平模式在CD中 - " .. data 
+		if (reason ==STRENGTH_OPERTE_FAIL)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - STRENGTH_OPERTE_FAIL强化失败 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_ATHLETICS " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_XIANFU)then
-		if (reason ==FIELD_BOSS_OPERTE_WILL_START)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_WILL_START野外BOSS即将在{1}分钟后开启, 请大家安排好时间 - " .. data 
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_DENY)then
+			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - BATTLE_MODE_OPERTE_PEACE_MODE_DENY战斗中不能切换和平模式 - " .. data 
 		end
-		if (reason ==FIELD_BOSS_OPERTE_WILL_OCCUR)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_WILL_OCCUR野外boss即将出现，请各位大侠做好准备 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_OCCUR)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_OCCUR野外boss已经在各个地图刷新，请各位大侠火速前往击杀 查看详情 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_BOSS_BORN)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_BOSS_BORN{1}已出现在{2}，请各位大侠火速前往击杀 立即前往 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_BOSS_KILL)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_BOSS_KILL{1}已被成功击杀！恭喜{2}获得{3}1分钟的优先开启权利 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_PROTECT)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_PROTECT九龙宝箱保护时间结束，静待各位大侠开启 - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_PICKED)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_PICKED恭喜{1}最终开启九龙宝箱，获得XXXX - " .. data 
-		end
-		if (reason ==FIELD_BOSS_OPERTE_TOO_FAR)then
-			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - FIELD_BOSS_OPERTE_TOO_FAR太远了，你不可能开启这个宝箱 - " .. data 
+		if (reason ==BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)then
+			return "ShowOperationFailed OPRATE_TYPE_XIANFU仙府夺宝 - BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD和平模式在CD中 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_XIANFU " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_REWARD)then
-		if (reason ==WORLD_BOSS_OPERTE_NOT_ENROLL)then
-			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - WORLD_BOSS_OPERTE_NOT_ENROLL本次活动您未报名，无法参加 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_WILL_START)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_WILL_START野外BOSS即将在{1}分钟后开启, 请大家安排好时间 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_WILL_START)then
-			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - WORLD_BOSS_OPERTE_WILL_START世界boss即将开启，请各位大侠做好准备 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_WILL_OCCUR)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_WILL_OCCUR野外boss即将出现，请各位大侠做好准备 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL1)then
-			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - WORLD_BOSS_OPERTE_WILL_ROLL1恭喜{1}赢得本次拼点奖励，BOSS在3秒后恢复正常 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_OCCUR)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_OCCUR野外boss已经在各个地图刷新，请各位大侠火速前往击杀 查看详情 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL2)then
-			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - WORLD_BOSS_OPERTE_WILL_ROLL2恭喜{1}赢得本次拼点奖励，现在可自由离开战场 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_BOSS_BORN)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_BOSS_BORN{1}已出现在{2}，请各位大侠火速前往击杀 立即前往 - " .. data 
 		end
-		if (reason ==WORLD_BOSS_OPERTE_ENROLL)then
-			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - WORLD_BOSS_OPERTE_ENROLL世界BOSS开始报名 - " .. data 
+		if (reason ==FIELD_BOSS_OPERTE_BOSS_KILL)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_BOSS_KILL{1}已被成功击杀！恭喜{2}获得{3}1分钟的优先开启权利 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_PROTECT)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_PROTECT九龙宝箱保护时间结束，静待各位大侠开启 - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_PICKED)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_PICKED恭喜{1}最终开启九龙宝箱，获得XXXX - " .. data 
+		end
+		if (reason ==FIELD_BOSS_OPERTE_TOO_FAR)then
+			return "ShowOperationFailed OPRATE_TYPE_REWARD获得物品 - FIELD_BOSS_OPERTE_TOO_FAR太远了，你不可能开启这个宝箱 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_REWARD " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_DOUJIAN)then
-		if (reason ==MOUNT_QICHENG_FIGHT)then
-			return "ShowOperationFailed OPRATE_TYPE_DOUJIAN斗剑台 - MOUNT_QICHENG_FIGHT战斗状态不能骑乘 - " .. data 
+		if (reason ==WORLD_BOSS_OPERTE_NOT_ENROLL)then
+			return "ShowOperationFailed OPRATE_TYPE_DOUJIAN斗剑台 - WORLD_BOSS_OPERTE_NOT_ENROLL本次活动您未报名，无法参加 - " .. data 
 		end
-		if (reason ==MOUNT_QICHENG_JUMP)then
-			return "ShowOperationFailed OPRATE_TYPE_DOUJIAN斗剑台 - MOUNT_QICHENG_JUMP跳跃状态不能骑乘 - " .. data 
+		if (reason ==WORLD_BOSS_OPERTE_WILL_START)then
+			return "ShowOperationFailed OPRATE_TYPE_DOUJIAN斗剑台 - WORLD_BOSS_OPERTE_WILL_START世界boss即将开启，请各位大侠做好准备 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL1)then
+			return "ShowOperationFailed OPRATE_TYPE_DOUJIAN斗剑台 - WORLD_BOSS_OPERTE_WILL_ROLL1恭喜{1}赢得本次拼点奖励，BOSS在3秒后恢复正常 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_WILL_ROLL2)then
+			return "ShowOperationFailed OPRATE_TYPE_DOUJIAN斗剑台 - WORLD_BOSS_OPERTE_WILL_ROLL2恭喜{1}赢得本次拼点奖励，现在可自由离开战场 - " .. data 
+		end
+		if (reason ==WORLD_BOSS_OPERTE_ENROLL)then
+			return "ShowOperationFailed OPRATE_TYPE_DOUJIAN斗剑台 - WORLD_BOSS_OPERTE_ENROLL世界BOSS开始报名 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_DOUJIAN " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_GEM)then
-		if (reason ==TELEPORT_OPRATE_PVP_STATE)then
-			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - TELEPORT_OPRATE_PVP_STATEpvp状态不能传送 - " .. data 
+		if (reason ==MOUNT_QICHENG_FIGHT)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - MOUNT_QICHENG_FIGHT战斗状态不能骑乘 - " .. data 
+		end
+		if (reason ==MOUNT_QICHENG_JUMP)then
+			return "ShowOperationFailed OPRATE_TYPE_GEM宝石 - MOUNT_QICHENG_JUMP跳跃状态不能骑乘 - " .. data 
 		end
 		return "未知错误1  OPRATE_TYPE_GEM " .. reason .. "    "  .. data
 	end

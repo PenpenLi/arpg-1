@@ -61,6 +61,7 @@ require("template.tables.tb_faction_zhiwei")
 require("template.tables.tb_faction_building_base")
 require("template.tables.tb_faction_building")
 require("template.tables.tb_faction_building_reward")
+require("template.tables.tb_faction_gift")
 -----------帮派权限------------
 require("template.tables.tb_faction_privilege")
 

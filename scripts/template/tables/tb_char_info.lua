@@ -8,4 +8,8 @@ tb_char_info = {
 	--  dummy_entry:int	假人生物ID
 	[1] = {id = 1,dummy_entry = 6303,},
 	[2] = {id = 2,dummy_entry = 6304,},
+	[3] = {id = 3,dummy_entry = 6303,},
+	[4] = {id = 4,dummy_entry = 6304,},
+	[5] = {id = 5,dummy_entry = 6303,},
+	[6] = {id = 6,dummy_entry = 6304,},
 }
