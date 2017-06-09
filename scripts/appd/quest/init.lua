@@ -35,5 +35,13 @@ require("appd.quest.QuestJoinXianfu")
 require("appd.quest.QuestKillMonsterCollect")
 require("appd.quest.QuestTurnItemIn")
 
+require("appd.quest.QuestWorldRisk")
+require("appd.quest.QuestSmelt")
+require("appd.quest.QuestContributeTimes")
+require("appd.quest.QuestContributeTotalTimes")
+require("appd.quest.QuestContributeCharm")
+require("appd.quest.QuestContributeItem")
+require("appd.quest.QuestLootItem")
+
 -- 这个一定要放到最后
 require("appd.quest.QuestManager")

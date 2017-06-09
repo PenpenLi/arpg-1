@@ -18,6 +18,7 @@ require("share/tick_name")
 
 
 globalCounter:InitDoujiantaiRank()
+globalValue:UpdateFactionGiftRank()
 -------------------------------------------------------------------------------
 --配置文件信息
 config = {
@@ -87,6 +88,7 @@ config = {
 		CMSG_SEND_FACTION_GIFT,
 		CMSG_GET_FACTION_GIFT_EXREWARD,
 		CMSG_GET_ALL_FACTION_GIFT_EXREWARD,
+		CMSG_GET_FACTION_GIFT_RANK_PAGE,
 		--CMSG_EXCHANGE_ITEM,
 		--CMSG_BAG_EXTENSION,
 		--CMSG_NPC_REPURCHASE,
@@ -304,3 +306,233 @@ function DoSetWaBaoTime()
 	--发送公告
 	onSendNotice(18)	
 end
+
+local appd_faction_rank = {}
+--{queen_guid queen_name faction_guid faction_name guard_guid guard_name point icon}
+--机器人 guid = ""
+
+--update(faction) 赠送时更新point  调整名次  名次上升的帮派进行帮派广播 更新
+
+local max_faction_rank = 2000
+
+function UpdateFactionRank(point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+	if #appd_faction_rank == max_faction_rank and appd_faction_rank[max_faction_rank].point > point then
+		--未上榜 不广播
+		-- 0, 0
+		return 0,0
+	end
+	
+	if #appd_faction_rank == 0 then
+		local prev_index = InsertFactionRank(1,point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+		return 0,1
+
+	end
+	
+	if #appd_faction_rank < max_faction_rank and appd_faction_rank[#appd_faction_rank].point > point then
+		local index = #appd_faction_rank + 1
+		local prev_index = InsertFactionRank(index,point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+		return 0, index
+	end
+	
+	if #appd_faction_rank < max_faction_rank and appd_faction_rank[#appd_faction_rank].point == point and (time == 0 or time >= appd_faction_rank[#appd_faction_rank].time) then
+		local index = #appd_faction_rank + 1
+		local prev_index = InsertFactionRank(index,point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+		return 0, index
+	end
+	
+	for index = 1,#appd_faction_rank do
+		if point > appd_faction_rank[index].point then
+			--插入数据
+			local prev_index = InsertFactionRank(index,point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+			
+			if prev_index == 0 then
+				--进入排名 广播
+				return 0, index
+			else
+				--排名上升 广播
+				return prev_index,index
+			end
+			break
+		elseif point == appd_faction_rank[index].point and time ~= 0 and time < appd_faction_rank[index].time then
+			--插入数据
+			local prev_index = InsertFactionRank(index,point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+			
+			if prev_index == 0 then
+				--进入排名 广播
+				return 0, index
+			else
+				--排名上升 广播
+				return prev_index,index
+			end
+			break
+		end
+	end
+	
+	
+	
+	return 0,0
+end
+
+function InsertFactionRank(index,point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+	local info = {}
+	info.point = point
+	info.queen_guid = queen_guid
+	info.queen_name = queen_name
+	info.faction_guid = faction_guid
+	info.faction_name = faction_name
+	info.faction_icon = faction_icon
+	info.time = time
+	info.guard_guid = guard_guid
+	info.guard_name = guard_name
+	info.queen_vip = queen_vip
+	info.guard_vip = guard_vip
+	
+	local temp = {}
+	while index <= max_faction_rank do
+		if appd_faction_rank[index] == nil then
+			appd_faction_rank[index] = info
+			return 0
+		end
+		
+		if appd_faction_rank[index].faction_guid ~= "" and appd_faction_rank[index].faction_guid == faction_guid then
+			appd_faction_rank[index] = info
+			return index
+		end
+		
+		temp = appd_faction_rank[index]
+		appd_faction_rank[index] = info
+		info = temp
+		index = index + 1
+	end
+	return 0
+end
+
+--remove(info) 家族解散时 移除记录
+function RemoveFactionRank(faction_guid)
+	for index = 1,#appd_faction_rank do
+		if appd_faction_rank[index].faction_guid ~= "" and appd_faction_rank[index].faction_guid == faction_guid then
+			while index <= max_faction_rank do
+				if appd_faction_rank[index+1] == nil then
+					appd_faction_rank[index] = nil
+					break
+				end
+				appd_faction_rank[index] = appd_faction_rank[index+1]
+				index = index + 1
+			end
+			break
+		end
+	end
+end
+
+--getranklist 取得排名范围内的数据
+function GetFactionRankInfoPage(from, to)
+	local result = {}
+	for index = from,to do
+		if appd_faction_rank[index] ~= nil then
+			local info = appd_faction_rank[index]
+			info.rank = index
+			table.insert(result,info)
+		end
+	end
+	
+	return result
+end
+
+function GetFactionRankInfoByGuid(guid)
+	if guid == "" then
+		return nil
+	end
+	for index = 1,#appd_faction_rank do
+		if appd_faction_rank[index].faction_guid == guid then
+			local info = appd_faction_rank[index]
+			info.rank = index
+			return info
+		end
+	end
+	return nil
+end
+
+--家族魅力排行 每轮奖励 记录第一名信息
+function SendFactionGiftRankReward()
+	local cur_round = globalValue:GetFactionGiftRankCurRound()
+	if os.time() < globalValue:GetFactionGiftRankNextUpdateTime() or cur_round > tb_faction_gift_rank_base[1].max_round then
+		return
+	end
+	
+	
+	--奖励发放
+	for index = cur_round * 100 + 1,cur_round * 100 + 100 do
+		local v = tb_faction_gift_rank_reward[index]
+		if v == nil then
+			break
+		end
+		local mailItem = {}
+		for i = indx, #v.reward do
+			table.insert(mailItem, v.reward[ i ][ 1 ])
+			table.insert(mailItem, v.reward[ i ][ 2 ])
+		end
+		local itemConfig = string.join(",", mailItem)
+		for i = v.rank[1],v.rank[2] do
+			if appd_faction_rank[i] ~= nil and appd_faction_rank[i].queen_guid ~= "" then
+				AddGiftPacksData(appd_faction_rank[i].queen_guid,0,GIFT_PACKS_TYPE_FACTION_GIFT_RANK,os.time(),os.time() + 86400*30, v.mail_name, v.mail_desc, itemConfig, SYSTEM_NAME)
+			end
+		end
+	end
+	
+	if appd_faction_rank[1] ~= nil then
+		globalValue:SetGiftRankWinerFactionFlag(appd_faction_rank[1].icon)
+		globalValue:SetGiftRankWinerQueenName(appd_faction_rank[1].queen_name)
+		globalValue:SetGiftRankWinerFactionName(appd_faction_rank[1].faction_name)
+		globalValue:SetGiftRankWinerGuardName(appd_faction_rank[1].guard_name)
+	end
+	
+	globalValue:UpdateFactionGiftRank()
+end
+
+function printAllFactionRank()
+	outFmtInfo("======================printAllFactionRank")
+	for index = 1,#appd_faction_rank do
+		outFmtInfo("name:%s guid:%s point:%d",appd_faction_rank[index].queen_name,appd_faction_rank[index].queen_guid,appd_faction_rank[index].point)
+	end
+end
+
+function loadFactionInfo()
+	app.objMgr:foreachAllFaction(function(faction)
+		local point = faction:GetFactionCharmPoint()
+		local queen_guid = faction:GetBangZhuGuid()
+		local queen_name = faction:GetBangZhuName()
+		local faction_guid = faction:GetGuid()
+		local faction_name = faction:GetName()
+		local faction_icon = faction:GetFactionCurFlagId()
+		local time = faction:GetFactionGiftLastSendTime()
+		local guard_guid = ""
+		local guard_name = ""
+		local guard_vip = 0
+		guard_guid,guard_name,guard_vip = faction:GetWeekGuardInfo()
+		local queen_vip = faction:GetFactionMemberVipLevel( faction:FindPlayerIndex(faction:GetBangZhuGuid()))
+		if point > 0 then
+			UpdateFactionRank(point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name)
+		end
+	end)
+	
+	for index = 1,#tb_faction_gift_robot_rank do
+		local point = tb_faction_gift_robot_rank[index].point
+		local queen_guid = ""
+		local queen_name = tb_faction_gift_robot_rank[index].queen_name
+		local faction_guid = ""
+		local faction_name = tb_faction_gift_robot_rank[index].queen_name
+		local faction_icon = tb_faction_gift_robot_rank[index].icon
+		local time = 0
+		local guard_guid = ""
+		local guard_name = tb_faction_gift_robot_rank[index].guard_name
+		local queen_vip = 0
+		local guard_vip = 0
+		
+		UpdateFactionRank(point,queen_guid,queen_name,faction_guid,faction_name,faction_icon,time,guard_guid,guard_name,queen_vip,guard_vip)
+	end
+	
+	--printAllFactionRank()
+end
+
+loadFactionInfo()
+

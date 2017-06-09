@@ -11,12 +11,13 @@ function PlayerInfo:OnDoujiantaiFight(indx)
 		return
 	end
 	
+	--[[
 	if self:GetMapId() ~= ZHUCHENG_DITU_ID then
 		self:CallOptResult(OPRATE_TYPE_DOUJIAN, DOUJIAN_OPERATE_ZHUCHENG)
 		--只能在主城中参加活动
 		return 
 	end
-
+	--]]
 	local instMgr = self:getInstanceMgr()
 	
 	local curtime = instMgr:getDoujianEnterTimes()

@@ -67,6 +67,9 @@ get_chars_list,c2s,15,/*获取角色列表*/,STATUS_AUTHED,False
 #
 chars_list,s2c,16,/*角色列表*/,STATUS_AUTHED,False
 	list,char_create_info,True,/*角色列表*/
+	faction_name,String,False,/*家族名称*/
+	queen_name,String,False,/*女王名称*/
+	icon,uint8,False,/*图标*/
 
 #
 check_name,c2s,17,/*检查名字是否可以使用*/,STATUS_AUTHED,False
@@ -1311,5 +1314,18 @@ show_faction_gift_unthank_page,s2c,336,/*返回女王未感谢礼物*/,STATUS_NEVER,False
 #
 show_faction_gift_history_page,s2c,337,/*返回女王历史记录*/,STATUS_NEVER,False
 
+#
+get_faction_gift_rank_page,c2s,338,/*请求家族魅力排行*/,STATUS_NEVER,False
+	page,uint32,False,/*页数*/
 
+#
+show_faction_gift_rank_result_list,s2c,339,/*返回家族魅力排行*/,STATUS_NEVER,False
+	list,faction_gift_rank_info,True,/*排行列表*/
+	info,faction_gift_rank_info,False,/*本帮派排行信息*/
+	page,uint32,False,/*页数*/
 
+#
+show_faction_gift_rank_change,s2c,340,/*返回家族魅力排行变化*/,STATUS_NEVER,False
+	old_rank,uint32,False,/*原排行*/
+	new_rank,uint32,False,/*新排行*/
+	info,faction_gift_rank_info,False,/*本帮派排行信息*/

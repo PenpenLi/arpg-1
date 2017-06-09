@@ -17,6 +17,7 @@ globalMgr.GLOBAL_OFFLINE_MAIL			= "G.offlineMail"		--//离线邮件
 globalMgr.GLOBAL_NOTICE_MESSAGE			= "G.noticemessage"		--//公告消息
 globalMgr.GLOBAL_COUNTER				= "G.counter"			--//计数器，各种世界数量计数
 globalMgr.GLOBAL_SAVE_TO_DB				= "G.SaveToDbGuidList"	--//本轮要保存到数据库的所有玩家
+globalMgr.GLOBAL_FACTION_RANK			= "G.factionRank"		--//帮派排名
 
 outString('load share.serverconnlist script')
 ServerConnList = require("share.serverconnlist")
@@ -62,6 +63,11 @@ outString('load share.guidmanager script')
 GuidManager = require("share.guid_manager")
 guidMgr = GuidManager:new {ptr = objects.get(globalMgr.GLOBAL_GUID_MANAGER_GUID)}
 
+--帮派排名管理器
+outString('load share.global_faction_rank script')
+GlobalFactionRank = require("share.global_faction_rank")
+factionRankMgr = GlobalFactionRank:new {ptr = objects.get(globalMgr.GLOBAL_FACTION_RANK)}
+
 
 --用于對象管理器引用
 globalMgr[globalMgr.GLOBAL_SERVER_CONNN_LIST_GUID] = serverConnList
@@ -73,6 +79,6 @@ globalMgr[globalMgr.GLOBAL_SYSTEM_MAIL] = globalSystemMail
 globalMgr[globalMgr.GLOBAL_OFFLINE_MAIL] = globalOfflineMail
 globalMgr[globalMgr.GLOBAL_RIGHT_FLOAT_GUID] = globalRightFloat
 globalMgr[globalMgr.GLOBAL_GUID_MANAGER_GUID] = guidMgr
-
+globalMgr[globalMgr.GLOBAL_FACTION_RANK] = factionRankMgr
 
 return globalMgr

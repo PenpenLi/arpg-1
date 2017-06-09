@@ -58,13 +58,14 @@ end
 function AbstractQuest:OnUpdateModeTimes(playerInfo, start, offset, params)
 	local questMgr = playerInfo:getQuestMgr()
 	local quest_ptr = questMgr.ptr
+	local cnt = params[ 1 ] or 1
 	
 	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
 	local qtIndx = GetOneQuestTargetStartIndx(start, offset)
 	local dest = binLogLib.GetUInt16(quest_ptr, qtIndx + QUEST_TARGET_INFO_SHORT0, 1)
 	local process = binLogLib.GetUInt32(quest_ptr, qtIndx + QUEST_TARGET_INFO_PROCESS)
 	
-	process = process + 1
+	process = math.min(process + cnt, dest)
 	binLogLib.SetUInt32(quest_ptr, qtIndx + QUEST_TARGET_INFO_PROCESS, process)
 	if process >= dest then
 		binLogLib.SetUInt16(quest_ptr, qtIndx + QUEST_TARGET_INFO_SHORT0, 0, 1)

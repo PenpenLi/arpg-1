@@ -56,6 +56,12 @@ function  DoGMScripts(player_ptr, gm_commands)
 		end
 		player:DoResetDaily()
 	
+	elseif (tokens[1] == "@重置帮派")then
+		local factionGuid = player:GetFactionId()
+		if string.len(factionGuid) > 0 then
+			local faction = app.objMgr:getObj(factionGuid)
+			faction:ResetFaction()
+		end
 	elseif(tokens[1] == "@选择主线")then
 		if tokens[2] then
 			local id = tonumber(tokens[ 2 ])

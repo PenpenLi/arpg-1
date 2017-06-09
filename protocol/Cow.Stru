@@ -24,6 +24,8 @@ char_create_info,/*玩家角色创建选择信息*/
 	hair_id,uint32,0,/*发型ID*/
 	race,uint8,0,/*种族，猛男美女萝莉那些*/
 	inviteGuid,String,50,/*邀请的帮派id*/
+	faction_name,String,50,/*创建的帮派名称*/
+	icon,uint8,0,/*创建的帮派标志*/
 
 #任务菜单
 quest_option,/*任务菜单*/
@@ -123,4 +125,14 @@ faction_gift_info,/*家族礼物信息*/
 	item_list,String,150,/*赠送道具信息*/
 	reply_list,String,100,/*回复信息*/
 	
+#家族魅力排行信息
+faction_gift_rank_info,/*家族魅力排行信息*/
+	rank,uint32,0,/*排行*/
+	point,uint32,0,/*魅力值*/
+	queen_name,String,50,/*女王名称*/
+	faction_name,String,50,/*家族名称*/
+	guard_name,String,50,/*骑士名称*/
+	faction_flag,uint32,0,/*家族旗子*/
+	queen_vip,uint32,0,/*女王vip等级*/
+	guard_vip,uint32,0,/*骑士vip等级*/
 	

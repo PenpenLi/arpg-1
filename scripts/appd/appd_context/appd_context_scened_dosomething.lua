@@ -14,6 +14,8 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 	elseif SCENED_APPD_PASS_RES_INSTANCE == ntype then
 		--通关资源副本
 		self:passResInstance(data)
+	elseif SCENED_APPD_PASS_WORLD_RISK == ntype then
+		self:passWorldRiskInstance(data)
 	elseif SCENED_APPD_PASS_TRIAL_INSTANCE == ntype then
 		self:passTrialInstance(data)
 	elseif SCENED_APPD_PASS_VIP_INSTANCE == ntype then

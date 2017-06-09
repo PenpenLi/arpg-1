@@ -372,8 +372,9 @@ function PlayerInfo:GmCommand(str)
 		if faction == nil then
 			return
 		end
-		faction:RefreshShop()
-		faction:DailyResetGift()
+		--faction:RefreshShop()
+		--faction:DailyResetGift()
+		faction:ResetFaction()
 		--self:DailyReset()
 	elseif(gm_key == 998)then		-- @整理接口
 		outFmtInfo("test sort: ")

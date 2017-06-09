@@ -5,6 +5,7 @@ InstanceInstBase.Name = "InstanceInstBase"
 InstanceInstBase.Time_Out_Fail_Callback = "instanceFail"
 
 InstanceInstBase.Leave_Callback = "prepareToLeave"
+InstanceInstBase.player_auto_respan = 9
 
 function InstanceInstBase:ctor(  )
 	

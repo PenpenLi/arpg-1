@@ -107,7 +107,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	
 	--帮派名称不能为空 帮派名称不能超过6个中文字符
 
-	if name == "" or string.len(name) > 18 then
+	if name == "" or string.utf8len(name) > 7 then
 		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NAME_ERR)
 		return
 	end
@@ -124,18 +124,12 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	local name_tab = lua_string_split(self:GetName(), ',')
 	local faction_name = string.format("%s,%s,%s", name_tab[1], name_tab[2], name)
 	local server_name = string.format("%s_%s", name_tab[1], name_tab[2])
-	local bRepeat = false
-	app.objMgr:foreachAllFaction(function(faction)
-		if faction:GetName() == faction_name then
-			bRepeat = true
-			return true
-		end
-	end)
-
-	if bRepeat then
+	
+	if not checkFactionNameAvailable (factionName) then
 		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NAME_REPEAT)
 		return
 	end
+	
 	--判断帮派数量上限
 	local faction_num = 0
 	app.objMgr:foreachAllFaction(function(faction)
@@ -148,11 +142,85 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	
 
 	--扣除相应资源 + 祝福值
-	 if not self:costMoneys(MONEY_CHANGE_CREATE_FACTION,config.cost) then
+	if not self:costMoneys(MONEY_CHANGE_CREATE_FACTION,config.cost) then
 	 	self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_CREATE_COST)
 		return
-	 end
+	end
+	
+	self:CreateFaction(server_name, faction_name, icon)
+end
 
+function PlayerInfo:NewPlayerCreateFaction(name, icon)
+	
+	local config = tb_faction_creat[1]
+
+	-- 玩家名字不能是空的
+	if self:GetName() == "" then
+		outFmtInfo("user name null")
+		return
+	end
+	
+	
+	--判断是否有屏蔽词
+	local name_tab = string.split(self:GetName(), ',')
+	
+	local common = "的后宫"
+	--帮派名称不能为空 帮派名称不能超过6个中文字符
+	if name == "" or string.utf8len(name) > 7 or name ~= fuckPingBi(name) then
+		name = string.format("%s%s", name_tab[ 3 ], common)
+	end
+			
+	--判断帮派名字是否重复
+	local faction_name = string.format("%s,%s,%s", name_tab[1], name_tab[2], name)
+	local server_name = string.format("%s_%s", name_tab[1], name_tab[2])
+	
+	local dict = GetFactionNameDict()
+	if not dict[factionName] then
+		for i = 0, 3000 do
+			factionName = string.format("%s,%s,%s%sd", name_tab[1], name_tab[2], name_tab[ 3 ], common, i)
+			if checkFactionNameAvailable (factionName) then
+				break
+			end
+		end
+	end
+	
+	--判断帮派数量上限
+	local faction_num = 0
+	app.objMgr:foreachAllFaction(function(faction)
+		faction_num = faction_num + 1
+	end)
+	if faction_num >= config.maxnum then
+		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_CREATE_MAX)
+		return
+	end
+
+	return self:CreateFaction(server_name, faction_name, icon)
+end
+
+function checkFactionNameAvailable (factionName)
+	local bRepeat = false
+	app.objMgr:foreachAllFaction(function(faction)
+		if faction:GetName() == faction_name then
+			bRepeat = true
+			return true
+		end
+	end)
+	
+	return not bRepeat
+end
+
+function GetFactionNameDict()
+	local dict = {}
+	app.objMgr:foreachAllFaction(function(faction)
+		dict[faction:GetName()] = 1
+		return true
+	end)
+	
+	return dict
+end
+
+-- 实际创建帮派
+function PlayerInfo:CreateFaction(server_name, faction_name, icon)
 	-- 获取guid
 	local new_guid = guidMgr:Make_New_Guid(guidMgr.ObjectTypeFaction, guidMgr:NewIndex(guidMgr.ObjectTypeFaction), server_name)
 	local faction = app.objMgr:newAndCallPut(new_guid, FACTION_BINLOG_OWNER_STRING)
@@ -196,9 +264,9 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	end)
 	
 	rankInsertTask(faction:GetGuid(), RANK_TYPE_FACTION)
+	
+	return true
 end
-
-
 
 -- 升级
 function PlayerInfo:Handle_Faction_Upgrade(pkt)
@@ -378,7 +446,7 @@ function PlayerInfo:Handle_Faction_People( pkt )
 		return
 	end
 	local data_guid = guidMgr.replace(faction_guid, guidMgr.ObjectTypeFactionData)
-	local factionData = app.objMgr:getObj(data_guid, FACTION_DATA_OWNER_STRING)
+	local factionData = app.objMgr:getObj(data_guid)
 	
 	local pos = faction:FindPlayerIndex(self:GetGuid())
 	if pos == nil then return end
@@ -551,7 +619,7 @@ function PlayerInfo:Handle_Send_Faction_Gift(pkt)
 		return
 	end
 	local data_guid = guidMgr.replace(faction_guid, guidMgr.ObjectTypeFactionData)
-	local factionData = app.objMgr:getObj(data_guid, FACTION_DATA_OWNER_STRING)
+	local factionData = app.objMgr:getObj(data_guid)
 	if not factionData then
 		return
 	end
@@ -587,29 +655,81 @@ function PlayerInfo:Handle_Get_All_Faction_Gift_Exreward(pkt)
 end
 
 
---查看礼物列表 (page)
---show_faction_gift_page --依据魅力排行全部
-
---查看礼物信息 (id)
---show_faction_gift_info
-
---女王查看未感谢礼物 (page)
---show_faction_gift_unthank_page --只显示未感谢的 
-
---女王查看历史记录 (page)
---show_faction_gift_history_page --已感谢的在后,未感谢的在前
-
---女王感谢 (id)
---thank_faction_gift  --增加未领取计数 1
-
---女王全部感谢 ()
---thank_all_faction_gift
-
---女王感谢并回复 (id,msg_type,msg)
---thank_and_reply_faction_gift
-
---所有人回复 (id,msg_type,msg)
---reply_faction_gift
+--查询排行页数
+function PlayerInfo:Handle_Get_Faction_Gift_Rank_Page(pkt)
+	local page = pkt.page
+	local result = {}
+	if page > 0 then
+		local from = page * 10 - 10 + 1
+		local to = page * 10
+		result = GetFactionRankInfoPage(from,to)
+	end
+	
+	local info = GetFactionRankInfoByGuid(self:GetFactionId())
+	
+	--发送结果
+	local list = {}
+	for _,v in ipairs(result) do
+	--奖励通知
+		local stru = faction_gift_rank_info_t .new()
+		stru.rank = v.rank
+		stru.point = v.point
+		stru.queen_name = v.queen_name
+		stru.faction_name = v.faction_name
+		stru.guard_name = v.guard_name
+		stru.faction_flag = v.faction_flag
+		stru.queen_vip = v.queen_vip
+		stru.guard_vip = v.guard_vip
+		table.insert(list, stru)
+	end
+	
+	local faction_info = faction_gift_rank_info_t .new()
+	if info == nil then
+		if self:GetFactionId() == "" then
+			faction_info.rank = 0
+			faction_info.point = 0
+			faction_info.queen_name = ""
+			faction_info.faction_name = ""
+			faction_info.guard_name = ""
+			faction_info.faction_flag = 0
+			faction_info.queen_vip = 0
+			faction_info.guard_vip = 0
+		else
+			local faction_guid = self:GetFactionId()
+			if not app.objMgr:IsFactionGuid(faction_guid) then
+				return
+			end
+			local faction = app.objMgr:getObj(faction_guid)
+			if faction == nil then
+				return
+			end
+			faction_info.rank = 0
+			faction_info.point = faction:GetFactionCharmPoint()
+			faction_info.queen_name = faction:GetBangZhuName()
+			faction_info.faction_name = faction:GetName()
+			local guard_guid,guard_name,guard_vip = faction:GetWeekGuardInfo()
+			faction_info.guard_name = guard_name
+			faction_info.faction_flag = faction:GetFactionCurFlagId()
+			faction_info.queen_vip = faction:GetFactionMemberVipLevel( faction:FindPlayerIndex(faction:GetBangZhuGuid()))
+			faction_info.guard_vip = guard_vip
+		end
+	else
+		faction_info.rank = info.rank
+		faction_info.point = info.point
+		faction_info.queen_name = info.queen_name
+		faction_info.faction_name = info.faction_name
+		faction_info.guard_name = info.guard_name
+		faction_info.faction_flag = info.faction_flag
+		faction_info.queen_vip = info.queen_vip
+		faction_info.guard_vip = info.guard_vip
+	end
+	
+	outFmtDebug("==========before send")
+	outFmtDebug("==========before send len:%d",#list)
+	self:call_show_faction_gift_rank_result_list(list,faction_info,page)
+	
+	outFmtDebug("==========after send")
+end
 
 
 

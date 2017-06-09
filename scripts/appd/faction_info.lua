@@ -265,6 +265,16 @@ function FactionInfo:AddFactionMemberTotalGongXian(pos,val)
 	self:AddUInt32(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_TOTAL_CONTRIBUTION,val)
 end
 
+--获取成员魅力
+function FactionInfo:GetFactionMemberCharm(pos)
+	return self:GetDouble(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_CHARM)
+end
+
+--设置成员魅力
+function FactionInfo:SetFactionMemberCharm(pos,val)
+	self:SetDouble(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_CHARM,val)
+end
+
 
 --获取成员总魅力贡献
 function FactionInfo:GetFactionMemberTotalSendCharm(pos)
@@ -919,6 +929,8 @@ function FactionInfo:MemberAdd( player, isInvited)
 	self:SetFactionMemberVipLevel(pos,is_vip)
 	--self:SetFactionMemberOnlineTime(pos,onlinetime)
 	self:SetFactionMemberIsOnline(pos,1)
+	self:SetFactionMemberCharm(pos,player:GetPlayerCharmPoint())
+	
 	self:AddMemberCount(1)
 	player:SetFactionId(self:GetGuid())
 	player:SetFactionName(self:GetName())
@@ -1226,9 +1238,49 @@ function FactionInfo:FactionAppoint( player, member_id,zhiwei)
 	--如果是替换帮主
 	if zhiwei == FACTION_MEMBER_IDENTITY_BANGZHU  then
 		if self:GetFactionMemberIdentity(pos) == FACTION_MEMBER_IDENTITY_BANGZHU then--帮主自己才能转让
+			local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
+			local factionData = app.objMgr:getObj(data_guid)
+			self:ThankAndReplyAllFactionGift(factionData,player)
+			
 			self:SetFactionMemberIdentity(pos,FACTION_MEMBER_IDENTITY_QUNZHONG)
 			self:SetBangZhuName(self:GetFactionMemberName(member_pos))
 			self:SetBangZhuGuid(self:GetFactionMemberGuid(member_pos))
+			
+			--修改魅力排行
+			local pos = self:FindPlayerIndex(member_id)
+			
+			self:SetFactionCharmPoint(self:GetFactionMemberCharm(pos))
+			
+			if self:GetFactionCharmPoint() > 0 then
+			
+				local queen_vip = self:GetFactionMemberVipLevel( self:FindPlayerIndex(self:GetBangZhuGuid()))
+				local guard_guid,guard_name,guard_vip = self:GetWeekGuardInfo()
+				local prev_rank, new_rank = UpdateFactionRank(self:GetFactionCharmPoint(),self:GetBangZhuGuid(),self:GetBangZhuName(),self:GetGuid(),self:GetName(),self:GetFactionCurFlagId(),os.time(),guard_guid,guard_name,queen_vip,guard_vip)
+				
+				if new_rank ~= 0 and (new_rank < prev_rank or prev_rank == 0) then
+					--帮派广播排行变化
+					local stru = faction_gift_rank_info_t .new()
+					stru.rank = new_rank
+					stru.point = self:GetFactionCharmPoint()
+					stru.queen_name =  self:GetBangZhuName()
+					stru.faction_name = self:GetName()
+					stru.guard_name = guard_name
+					stru.faction_flag = self:GetFactionCurFlagId()
+					stru.queen_vip = queen_vip
+					stru.guard_vip = guard_vip
+					for pos = 0, MAX_FACTION_APLLY_MAMBER_COUNT -1 do
+						local guid = self:GetFactionMemberGuid(pos)
+						if guid ~= '' then
+							local player = app.objMgr:getObj(guid)
+							if player then
+								player:call_show_faction_gift_rank_change(prev_rank,new_rank,stru)
+							end
+						
+						end
+					end
+				end
+			end
+			
 		else
 			--print("aaaa")
 			return
@@ -1388,7 +1440,7 @@ function FactionInfo:FactionNotice(player,notice)
 	end
 	
 	--帮派公告不能超过144个中文字符
-	if string.len(notice) > 400 then
+	if string.utf8len(notice) > 144 then
 		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOTICE_ERR)
 		return
 	end
@@ -3088,7 +3140,8 @@ function FactionInfo:UpgradeBuildingSpeedUp(player, count)
 	
 	
 	--发放奖励
-	self:AddFactionMemberDayGongXian(pos,baseconfig.speedup_donate * count)
+	--self:AddFactionMemberDayGongXian(pos,baseconfig.speedup_donate * count)
+	self:AddFactionMemberTotalGongXian(pos,baseconfig.speedup_donate * count)
 	for index = curr_count + 1,curr_count + count do
 		local reward_id = baseconfig.speedup_reward[index]
 		if reward_id and reward_id ~= 0 then
@@ -3247,6 +3300,15 @@ function FactionInfo:GetFactionCharmPoint()
 	return self:GetDouble(FACTION_INT_FIELD_CHARM_POINT)
 end
 
+--最后赠送时间
+function FactionInfo:SetFactionGiftLastSendTime(value)
+	self:SetDouble(FACTION_INT_FIELD_GIFT_LAST_SEND_TIME,value)
+end
+
+function FactionInfo:GetFactionGiftLastSendTime()
+	return self:GetDouble(FACTION_INT_FIELD_GIFT_LAST_SEND_TIME)
+end
+
 --取得guid对应下标,不存在则创建
 function FactionInfo:GetGiftPlayerGuidIndex(guid)
 	for index = 0 , MAX_FACTION_MAMBER_COUNT -1 do
@@ -3266,6 +3328,28 @@ function FactionInfo:GetGiftPlayerGuidIndex(guid)
 	end
 	
 	return nil
+end
+
+function FactionInfo:GetWeekGuardInfo()
+	local guard_point = 0
+	local guard_guid = ""
+	local guard_name = ""
+	local queen_guid = self:GetBangZhuGuid()
+	for index = 0 , MAX_FACTION_MAMBER_COUNT -1 do
+		local point = self:GetGiftWeekPoint(index)
+		local guid = self:GetGiftPlayerGuid(index)
+		if point > guard_point and guid ~= queen_guid then
+			guard_point = point
+			guard_guid = guid
+		end
+	end
+
+	local Faction_Pos = self:FindPlayerIndex(guard_guid)
+	if Faction_Pos == nil then
+		return "","",""
+	end		
+	
+	return guard_guid,self:GetFactionMemberName(Faction_Pos),self:GetFactionMemberVipLevel(Faction_Pos)
 end
 
 --清理周榜
@@ -3291,7 +3375,7 @@ function FactionInfo:DelGiftInfo(guid)
 	for index = 0 , MAX_FACTION_MAMBER_COUNT -1 do
 		if self:GetGiftPlayerGuid(index) == guid and string.len(self:GetGiftPlayerGuid(index)) ~= 0 then
 			local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
-			local factionData = app.objMgr:newAndCallPut(data_guid, FACTION_DATA_OWNER_STRING)
+			local factionData = app.objMgr:getObj(data_guid)
 			if factionData then
 				local unthank_count = factionData:DelGiftByGuid(guid)
 				if unthank_count > 0 then
@@ -3308,7 +3392,7 @@ end
 
 function FactionInfo:DailyResetGift()
 	local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
-	local factionData = app.objMgr:newAndCallPut(data_guid, FACTION_DATA_OWNER_STRING)
+	local factionData = app.objMgr:getObj(data_guid)
 	if factionData then
 		factionData:DailyClearAllGift()
 	end
@@ -3366,6 +3450,10 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 				
 			end
 		end
+		
+		-- 贡献道具个数
+		local questMgr = player:getQuestMgr()
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_CONTRIBUTE_ITEM, {v[ 1 ], v[ 2 ]})
 	end
 	
 	local count_id = player:GetPlayerGiftCountID() + 1 --从1开始
@@ -3382,6 +3470,9 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 	player:AddGiftInfo(id,point,item_list,count_id,msg)
 	player:AddPlayerGiftCountID(1) -- 计数+1
 	
+	player:AddFactionGiftSendCount(1)
+	player:AddFactionGiftPointCount(point)
+	
 	--修改统计数值 女王 家族 魅力值 周榜 未感谢计数
 	local index_sender = self:GetGiftPlayerGuidIndex(player:GetGuid())
 	local index_queen = self:GetGiftPlayerGuidIndex(self:GetBangZhuGuid())
@@ -3396,12 +3487,15 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 	end
 	
 	self:AddFactionCharmPoint(point)
+	local pos = self:FindPlayerIndex(self:GetBangZhuGuid())
+	self:SetFactionMemberCharm(pos,self:GetFactionCharmPoint())
+	self:SetFactionGiftLastSendTime(os.time())
 	local queen = app.objMgr:getObj(self:GetBangZhuGuid())
 	if queen then
 		queen:SetPlayerCharmPoint(self:GetFactionCharmPoint())
 	end
 	outFmtDebug("========SendFactionGift CharmPoint: %d",self:GetFactionCharmPoint())
-	rankInsertTask(self:GetGuid(), RANK_TYPE_CHARM)
+	--rankInsertTask(self:GetGuid(), RANK_TYPE_CHARM)
 	self:AddGiftUncheckCount(index_queen,1)
 	self:AddGiftWeekPoint(index_sender,point)
 	self:AddGiftSendCount(index_sender,1)
@@ -3421,12 +3515,51 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 	
 	outFmtInfo("============SendFactionGift finish ")
 	
-	--返回确认消息 smsg 0??
+	--返回确认消息
 	player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_SEND)
+	
+	
 	--跑马灯
+	for _,v in pairs(item_table) do
+		if tb_faction_gift[v[1]] then
+			if tb_faction_gift[v[1]].notice_type == 1 then
+				player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_NOTICE,{player:GetName(),self:GetBangZhuName(),tb_item_template[v[1]].name,v[2]})
+			end
+		end
+	end
+	
+	--更新排行
+	local queen_vip = self:GetFactionMemberVipLevel( self:FindPlayerIndex(self:GetBangZhuGuid()))
+	local guard_guid,guard_name,guard_vip = self:GetWeekGuardInfo()
+	local prev_rank, new_rank = UpdateFactionRank(self:GetFactionCharmPoint(),self:GetBangZhuGuid(),self:GetBangZhuName(),self:GetGuid(),self:GetName(),self:GetFactionCurFlagId(),os.time(),guard_guid,guard_name,queen_vip,guard_vip)
+	
+	if new_rank ~= 0 and (new_rank < prev_rank or prev_rank == 0) then
+		--帮派广播排行变化
+		local stru = faction_gift_rank_info_t .new()
+		stru.rank = new_rank
+		stru.point = self:GetFactionCharmPoint()
+		stru.queen_name =  self:GetBangZhuName()
+		stru.faction_name = self:GetName()
+		stru.guard_name = guard_name
+		stru.faction_flag = self:GetFactionCurFlagId()
+		stru.queen_vip = queen_vip
+		stru.guard_vip = guard_vip
+		for pos = 0, MAX_FACTION_APLLY_MAMBER_COUNT -1 do
+			local guid = self:GetFactionMemberGuid(pos)
+			if guid ~= '' then
+				local player = app.objMgr:getObj(guid)
+				if player then
+					player:call_show_faction_gift_rank_change(prev_rank,new_rank,stru)
+				end
+			
+			end
+		end
+	end
+	
+	printAllFactionRank()
 end
 
-function FactionInfo:SendGiftRankPacket(player,rank_table,op_type)
+function FactionInfo:SendGiftRankPacket(player,rank_table,op_type,page)
 	local output = {}
 	if op_type == 1 then
 		output = protocols.pack_show_faction_gift_page ()
@@ -3438,7 +3571,7 @@ function FactionInfo:SendGiftRankPacket(player,rank_table,op_type)
 		output = protocols.pack_show_faction_gift_history_page ()
 	end
 	local size = #rank_table
-	
+	output:writeU16(page)
 	output:writeU16(size)
 	for _,info in ipairs(rank_table) do
 		output:writeU32(info.rank)
@@ -3477,7 +3610,7 @@ function FactionInfo:ShowFactionGiftPage(factionData,player,page)
 	local rank_table = factionData:GetGiftRankList(begin,tail)
 	
 	--打包发回客户端 smsg 1
-	self:SendGiftRankPacket(player,rank_table,1)
+	self:SendGiftRankPacket(player,rank_table,1,page)
 end
 
 --查看礼物信息
@@ -3494,7 +3627,7 @@ function FactionInfo:ShowFactionGiftInfo(factionData,player,id)
 		return
 	end
 	--打包发回客户端 smsg 2
-	self:SendGiftRankPacket(player,{rank_info},2)
+	self:SendGiftRankPacket(player,{rank_info},2,1)
 end
 
 --女王查看未感谢礼物
@@ -3515,7 +3648,7 @@ function FactionInfo:ShowFactionGiftUnthankPage(factionData,player,page)
 	
 	--打包发回客户端 smsg 3
 	
-	self:SendGiftRankPacket(player,rank_table,3)
+	self:SendGiftRankPacket(player,rank_table,3,page)
 end
 
 --女王查看历史记录
@@ -3534,7 +3667,7 @@ function FactionInfo:ShowFactionGiftHistoryPage(factionData,player,page)
 	
 	--打包发回客户端 smsg 4
 	
-	self:SendGiftRankPacket(player,rank_table,4)
+	self:SendGiftRankPacket(player,rank_table,4,page)
 	
 end
 
@@ -3617,6 +3750,17 @@ function FactionInfo:ThankAllFactionGift(factionData,player)
 	self:ShowFactionGiftUnthankPage(factionData,player,1)
 end
 
+--女王全部感谢并回复空
+function FactionInfo:ThankAndReplyAllFactionGift(factionData,player)
+	for id=0, MAX_FACTION_DATA_GIFT_COUNT * MAX_FACTION_MAMBER_COUNT-1 do
+		self:ThankAndReplyFactionGift(factionData,player,id,FACTION_DATA_REPLY_TYPE_TEXT,"")
+	end
+	
+	outFmtInfo("============ThankAndReplyAllFactionGift finish ")
+	--添加提示
+	--player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_THANK_ALL)
+	--self:ShowFactionGiftUnthankPage(factionData,player,1)
+end
 
 --女王感谢并回复
 function FactionInfo:ThankAndReplyFactionGift(factionData,player,id,reply_type,reply)
@@ -3642,6 +3786,15 @@ function FactionInfo:ThankAndReplyFactionGift(factionData,player,id,reply_type,r
 		return
 	end
 	
+	
+	if rank_info.guid == self:GetBangZhuGuid() then --女王自己礼物处理
+		local index = player:GetGiftIndexByCountID(rank_info.count_id)
+		if index then
+			player:SetGiftReplyList(index,"")
+			player:SetGiftFlagThank(index,1)
+		end
+		return
+	end
 	
 	if factionData:AddReply(id,player:GetGuid(),reply_type,reply) then
 		outFmtInfo("find ThankFactionGift AddReply: %d success",id)
@@ -3682,9 +3835,9 @@ function FactionInfo:ThankAndReplyFactionGift(factionData,player,id,reply_type,r
 	
 	outFmtInfo("============ThankAndReplyFactionGift finish ")
 	
-	if self:GetBangZhuGuid() ~= rank_info.guid then
-		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_THANK)
-	end
+	
+	player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_THANK)
+	
 	self:ShowFactionGiftUnthankPage(factionData,player,1)
 end
 

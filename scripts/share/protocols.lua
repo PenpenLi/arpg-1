@@ -310,6 +310,9 @@ SMSG_SHOW_FACTION_GIFT_PAGE		= 334	-- /*返回礼物列表*/
 SMSG_SHOW_FACTION_GIFT_INFO		= 335	-- /*返回礼物信息*/	
 SMSG_SHOW_FACTION_GIFT_UNTHANK_PAGE		= 336	-- /*返回女王未感谢礼物*/	
 SMSG_SHOW_FACTION_GIFT_HISTORY_PAGE		= 337	-- /*返回女王历史记录*/	
+CMSG_GET_FACTION_GIFT_RANK_PAGE		= 338	-- /*请求家族魅力排行*/	
+SMSG_SHOW_FACTION_GIFT_RANK_RESULT_LIST		= 339	-- /*返回家族魅力排行*/	
+SMSG_SHOW_FACTION_GIFT_RANK_CHANGE		= 340	-- /*返回家族魅力排行变化*/	
 
 
 ---------------------------------------------------------------------
@@ -483,6 +486,20 @@ function char_create_info_t:read( input )
 	if not ret then
 		return ret
 	end
+	ret,self.faction_name = input:readUTFByLen(50)  --/*创建的帮派名称*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.icon = input:readByte() --/*创建的帮派标志*/
+
+	if not ret then
+		return ret
+	end
 
 	return input
 end
@@ -532,6 +549,16 @@ function char_create_info_t:write( output )
 		self.inviteGuid = ''
 	end
 	output:writeUTFByLen(self.inviteGuid , 50 ) 
+	
+	if(self.faction_name == nil)then
+		self.faction_name = ''
+	end
+	output:writeUTFByLen(self.faction_name , 50 ) 
+	
+	if(self.icon == nil)then
+		self.icon = 0
+	end
+	output:writeByte(self.icon)
 	
 	return output
 end
@@ -1402,6 +1429,114 @@ function faction_gift_info_t:write( output )
 	return output
 end
 
+---------------------------------------------------------------------
+--/*家族魅力排行信息*/
+
+faction_gift_rank_info_t = class('faction_gift_rank_info_t')
+
+function faction_gift_rank_info_t:read( input )
+
+	local ret
+	ret,self.rank = input:readU32() --/*排行*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.point = input:readU32() --/*魅力值*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.queen_name = input:readUTFByLen(50)  --/*女王名称*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.faction_name = input:readUTFByLen(50)  --/*家族名称*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.guard_name = input:readUTFByLen(50)  --/*骑士名称*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.faction_flag = input:readU32() --/*家族旗子*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.queen_vip = input:readU32() --/*女王vip等级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.guard_vip = input:readU32() --/*骑士vip等级*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function faction_gift_rank_info_t:write( output )
+	if(self.rank == nil)then
+		self.rank = 0
+	end
+	output:writeU32(self.rank)
+	
+	if(self.point == nil)then
+		self.point = 0
+	end
+	output:writeU32(self.point)
+	
+	if(self.queen_name == nil)then
+		self.queen_name = ''
+	end
+	output:writeUTFByLen(self.queen_name , 50 ) 
+	
+	if(self.faction_name == nil)then
+		self.faction_name = ''
+	end
+	output:writeUTFByLen(self.faction_name , 50 ) 
+	
+	if(self.guard_name == nil)then
+		self.guard_name = ''
+	end
+	output:writeUTFByLen(self.guard_name , 50 ) 
+	
+	if(self.faction_flag == nil)then
+		self.faction_flag = 0
+	end
+	output:writeU32(self.faction_flag)
+	
+	if(self.queen_vip == nil)then
+		self.queen_vip = 0
+	end
+	output:writeU32(self.queen_vip)
+	
+	if(self.guard_vip == nil)then
+		self.guard_vip = 0
+	end
+	output:writeU32(self.guard_vip)
+	
+	return output
+end
+
 
 ---------------------------------------------
 --协议打、解包
@@ -1880,19 +2015,22 @@ end
 
 
 -- /*角色列表*/	
-function Protocols.pack_chars_list ( list)
+function Protocols.pack_chars_list ( list ,faction_name ,queen_name ,icon)
 	local output = Packet.new(SMSG_CHARS_LIST)
 	output:writeI16(#list)
 	for i = 1,#list,1
 	do
 		list[i]:write(output)
 	end
+	output:writeUTF(faction_name)
+	output:writeUTF(queen_name)
+	output:writeByte(icon)
 	return output
 end
 
 -- /*角色列表*/	
-function Protocols.call_chars_list ( playerInfo, list)
-	local output = Protocols.	pack_chars_list ( list)
+function Protocols.call_chars_list ( playerInfo, list ,faction_name ,queen_name ,icon)
+	local output = Protocols.	pack_chars_list ( list ,faction_name ,queen_name ,icon)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -1914,6 +2052,18 @@ function Protocols.unpack_chars_list (pkt)
 			return false
 		end
 		table.insert(param_table.list,stru)
+	end
+	ret,param_table.faction_name = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.queen_name = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.icon = input:readByte()
+	if not ret then
+		return false
 	end
 
 	return true,param_table	
@@ -10942,6 +11092,126 @@ function Protocols.unpack_show_faction_gift_history_page (pkt)
 end
 
 
+-- /*请求家族魅力排行*/	
+function Protocols.pack_get_faction_gift_rank_page ( page)
+	local output = Packet.new(CMSG_GET_FACTION_GIFT_RANK_PAGE)
+	output:writeU32(page)
+	return output
+end
+
+-- /*请求家族魅力排行*/	
+function Protocols.call_get_faction_gift_rank_page ( playerInfo, page)
+	local output = Protocols.	pack_get_faction_gift_rank_page ( page)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求家族魅力排行*/	
+function Protocols.unpack_get_faction_gift_rank_page (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.page = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*返回家族魅力排行*/	
+function Protocols.pack_show_faction_gift_rank_result_list ( list ,info ,page)
+	local output = Packet.new(SMSG_SHOW_FACTION_GIFT_RANK_RESULT_LIST)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	info :write(output)
+	output:writeU32(page)
+	return output
+end
+
+-- /*返回家族魅力排行*/	
+function Protocols.call_show_faction_gift_rank_result_list ( playerInfo, list ,info ,page)
+	local output = Protocols.	pack_show_faction_gift_rank_result_list ( list ,info ,page)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回家族魅力排行*/	
+function Protocols.unpack_show_faction_gift_rank_result_list (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = faction_gift_rank_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+	param_table.info = faction_gift_rank_info_t .new()
+	if(param_table.info :read(input)==false)then
+		return false
+	end
+	ret,param_table.page = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*返回家族魅力排行变化*/	
+function Protocols.pack_show_faction_gift_rank_change ( old_rank ,new_rank ,info)
+	local output = Packet.new(SMSG_SHOW_FACTION_GIFT_RANK_CHANGE)
+	output:writeU32(old_rank)
+	output:writeU32(new_rank)
+	info :write(output)
+	return output
+end
+
+-- /*返回家族魅力排行变化*/	
+function Protocols.call_show_faction_gift_rank_change ( playerInfo, old_rank ,new_rank ,info)
+	local output = Protocols.	pack_show_faction_gift_rank_change ( old_rank ,new_rank ,info)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回家族魅力排行变化*/	
+function Protocols.unpack_show_faction_gift_rank_change (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.old_rank = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.new_rank = input:readU32()
+	if not ret then
+		return false
+	end	
+	param_table.info = faction_gift_rank_info_t .new()
+	if(param_table.info :read(input)==false)then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -11244,6 +11514,9 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_show_faction_gift_info = self.call_show_faction_gift_info
 	playerInfo.call_show_faction_gift_unthank_page = self.call_show_faction_gift_unthank_page
 	playerInfo.call_show_faction_gift_history_page = self.call_show_faction_gift_history_page
+	playerInfo.call_get_faction_gift_rank_page = self.call_get_faction_gift_rank_page
+	playerInfo.call_show_faction_gift_rank_result_list = self.call_show_faction_gift_rank_result_list
+	playerInfo.call_show_faction_gift_rank_change = self.call_show_faction_gift_rank_change
 end
 
 local unpack_handler = {
@@ -11543,6 +11816,9 @@ local unpack_handler = {
 [SMSG_SHOW_FACTION_GIFT_INFO] =  Protocols.unpack_show_faction_gift_info,
 [SMSG_SHOW_FACTION_GIFT_UNTHANK_PAGE] =  Protocols.unpack_show_faction_gift_unthank_page,
 [SMSG_SHOW_FACTION_GIFT_HISTORY_PAGE] =  Protocols.unpack_show_faction_gift_history_page,
+[CMSG_GET_FACTION_GIFT_RANK_PAGE] =  Protocols.unpack_get_faction_gift_rank_page,
+[SMSG_SHOW_FACTION_GIFT_RANK_RESULT_LIST] =  Protocols.unpack_show_faction_gift_rank_result_list,
+[SMSG_SHOW_FACTION_GIFT_RANK_CHANGE] =  Protocols.unpack_show_faction_gift_rank_change,
 
 }
 

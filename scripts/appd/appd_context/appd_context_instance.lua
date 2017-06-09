@@ -66,7 +66,7 @@ end
 -- 检测能否进入试炼塔副本
 function PlayerInfo:checkTrialMapTeleport()
 	local instMgr = self:getInstanceMgr()
-	instMgr:checkIfCanEnterTrial()
+	--instMgr:checkIfCanEnterTrial()
 end
 
 -- 通关关卡
@@ -79,6 +79,12 @@ function PlayerInfo:passResInstance(id)
 	local instMgr = self:getInstanceMgr()
 	instMgr:passResInstance(id)
 	
+end
+
+-----------通关世界冒险-----------
+function PlayerInfo:passWorldRiskInstance(id)
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_PASS_WORLD_RISK, {id})
 end
 
 

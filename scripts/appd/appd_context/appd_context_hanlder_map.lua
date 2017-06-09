@@ -188,5 +188,7 @@ hanlders[CMSG_SEND_FACTION_GIFT] = PlayerInfo.Handle_Send_Faction_Gift
 hanlders[CMSG_GET_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_Faction_Gift_Exreward
 hanlders[CMSG_GET_ALL_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_All_Faction_Gift_Exreward
 
+hanlders[CMSG_GET_FACTION_GIFT_RANK_PAGE] = PlayerInfo.Handle_Get_Faction_Gift_Rank_Page
+
 
 return hanlders

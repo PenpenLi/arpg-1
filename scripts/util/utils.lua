@@ -173,13 +173,15 @@ function DoRandomDrop(dropId, dict)
 			local packConfig = tb_drop_packet[packetId]
 			
 			local indx = GetRandomIndex(packConfig.items)
-			local itemId = packConfig.items[indx][ 1 ]
-			local count = GetRandomExp(packConfig.counts[indx])
-			
-			if dict[itemId] == nil then
-				dict[itemId] = 0
+			if indx > 0 then
+				local itemId = packConfig.items[indx][ 1 ]
+				local count = GetRandomExp(packConfig.counts[indx])
+				
+				if dict[itemId] == nil then
+					dict[itemId] = 0
+				end
+				dict[itemId] = dict[itemId] + count
 			end
-			dict[itemId] = dict[itemId] + count
 		end
 	end
 end
@@ -289,6 +291,7 @@ end
 
 -- 获得今天刚开始的时间戳
 function GetTodayStartTimestamp(days)
+	days = days or 0
 	local cur_date = os.date('*t', os.time())
 	cur_date.hour = 0
 	cur_date.sec = 0

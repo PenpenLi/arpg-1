@@ -93,6 +93,7 @@ function AppdApp:InitCorn()
 		self.objMgr:foreachAllFaction(function(faction)
 			faction:ResetFaction()
 		end)
+		SendFactionGiftRankReward()
 	end)
 	
 	-- 每周重置

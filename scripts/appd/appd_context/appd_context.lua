@@ -119,6 +119,14 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 
 	-- 加道具的时候判断是否背包满了
 	if #itemDict > 0 then
+		-- 贡献道具个数
+		local questMgr = self:getQuestMgr()
+		for i = 1, #itemDict do
+			local entry = itemDict[ i ][ 1 ]
+			local count = itemDict[ i ][ 2 ]
+			questMgr:OnUpdate(QUEST_TARGET_TYPE_LOOT_ITEM, {entry, count})
+		end
+		
 		local indx = -1
 		local itemMgr = self:getItemMgr()
 		-- 放得下的先放
@@ -701,8 +709,31 @@ function PlayerInfo:Login()
 		end
 		--TODO: 发送
 		call_opt_login_teleport(self:GetGuid(), inviteFactionGuid, mapid, x, y, generalId)
+	else
+		-- 判断是否需要新建帮派
+		local faction_name = self:GetStr(PLAYER_STRING_FIELD_CREATE_FACTION_NAME)
+		if string.len(faction_name) > 0 then
+			local icon = self:GetUInt32(PLAYER_INT_FIELD_CREATE_ICON)
+			self:SetStr(PLAYER_STRING_FIELD_CREATE_FACTION_NAME, '')
+			self:SetUInt32(PLAYER_INT_FIELD_CREATE_ICON, 0)
+			
+			local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetGuid(), 0)
+			local faction_guid = ''
+			--进行加帮派操作
+			if self:NewPlayerCreateFaction(faction_name, icon) then
+				--[[TODO:
+				faction_guid = self:GetFactionId()
+				mapid = FACTION_MAP_ID
+				x = FACTION_FUHUO_X
+				y = FACTION_FUHUO_Y
+				generalId = faction_guid
+				--]]
+			end
+			--TODO: 发送
+			call_opt_login_teleport(self:GetGuid(), faction_guid, mapid, x, y, generalId)
+		end
 	end
-
+	
 	self:socialLogIn()
 	self:factionLogin()
 	
@@ -1778,7 +1809,7 @@ function PlayerInfo:LoginUpdateGiftInfo()
 	
 	-- 获取帮派数据的guid
 	local data_guid = guidMgr.replace(self:GetFactionId(), guidMgr.ObjectTypeFactionData)
-	local factionData = app.objMgr:getObj(data_guid, FACTION_DATA_OWNER_STRING)
+	local factionData = app.objMgr:getObj(data_guid)
 	if(not factionData)then
 		return
 	end
@@ -1880,9 +1911,43 @@ function PlayerInfo:LoginUpdateCharmPoint()
 	
 	if self:GetGuid() == faction:GetBangZhuGuid() then
 		self:SetPlayerCharmPoint(faction:GetFactionCharmPoint())
+	else
+		local pos = faction:FindPlayerIndex(self:GetGuid())
+		if pos then
+			self:SetPlayerCharmPoint(faction:GetFactionMemberCharm(pos))
+		end
 	end
 
 end
+
+--魅力值礼物赠送次数统计
+function PlayerInfo:GetFactionGiftSendCount()
+	return self:GetUInt32(PLAYER_INT_FIELD_FACTION_GIFT_SEND_COUNT)
+end
+
+function PlayerInfo:AddFactionGiftSendCount(value)
+	self:AddUInt32(PLAYER_INT_FIELD_FACTION_GIFT_SEND_COUNT,value)
+	-- 加任务
+	local questMgr = self:getQuestMgr()
+	-- 贡献次数
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_CONTRIBUTE_TIMES, {value})
+	-- 总贡献次数
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_CONTRIBUTE_TOTAL_TIMES, {value})
+end
+
+--魅力值礼物赠送魅力统计
+function PlayerInfo:GetFactionGiftPointCount()
+	return self:GetDouble(PLAYER_INT_FIELD_FACTION_GIFT_POINT_COUNT)
+end
+
+function PlayerInfo:AddFactionGiftPointCount(value)
+	self:AddDouble(PLAYER_INT_FIELD_FACTION_GIFT_POINT_COUNT,value)
+	local questMgr = self:getQuestMgr()
+	-- 总贡献魅力
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_CONTRIBUTE_CHARM, {value})
+end
+
+
 
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()

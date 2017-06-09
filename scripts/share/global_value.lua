@@ -989,4 +989,78 @@ function GetNextActiveStartTimeEveryDay(config, durTime)
 	return  nFirstTime, nIndex
 end
 
+------------------------------------------------------------------------
+--魅力排行记录信息
+
+--上周魅力排行第一家族旗子
+function GlobalValue:SetGiftRankWinerFactionFlag(value)
+	self:SetUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_WINER_FACTION_FLAG ,value)
+end
+
+function GlobalValue:GetGiftRankWinerFactionFlag()
+	return self:GetUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_WINER_FACTION_FLAG)
+end
+
+--上周魅力排行第一女王名称
+function GlobalValue:SetGiftRankWinerQueenName(value)
+	self:SetStr(GLOBALVALUE_STRING_FIELD_GIFT_RANK_WINER_QUEEN_NAME ,value)
+end
+
+function GlobalValue:GetGiftRankWinerQueenName()
+	return self:GetStr(GLOBALVALUE_STRING_FIELD_GIFT_RANK_WINER_QUEEN_NAME)
+end
+
+--上周魅力排行第一家族名称
+function GlobalValue:SetGiftRankWinerFactionName(value)
+	self:SetStr(GLOBALVALUE_STRING_FIELD_GIFT_RANK_WINER_FACTION_NAME,value)
+end
+
+function GlobalValue:GetGiftRankWinerFactionName()
+	return self:GetStr(GLOBALVALUE_STRING_FIELD_GIFT_RANK_WINER_FACTION_NAME)
+end
+
+--上周魅力排行第一骑士名称
+function GlobalValue:SetGiftRankWinerGuardName(value)
+	self:SetStr(GLOBALVALUE_STRING_FIELD_GIFT_RANK_WINER_GUARD_NAME,value)
+end
+
+function GlobalValue:GetGiftRankWinerGuardName()
+	return self:GetStr(GLOBALVALUE_STRING_FIELD_GIFT_RANK_WINER_GUARD_NAME)
+end
+
+
+--帮派魅力排行奖励下一结算时间
+function GlobalValue:GetFactionGiftRankNextUpdateTime()
+	return self:GetUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_NEXT_UPDATE_TIME)
+end
+
+function GlobalValue:SetFactionGiftRankNextUpdateTime(value)
+	self:SetUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_NEXT_UPDATE_TIME,value)
+end
+
+--帮派魅力排行当前轮数
+function GlobalValue:GetFactionGiftRankCurRound()
+	return self:GetUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_CUR_ROUND)
+end
+
+function GlobalValue:SetFactionGiftRankCurRound(value)
+	self:SetUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_CUR_ROUND,value)
+end
+
+function GlobalValue:AddFactionGiftRankCurRound(value)
+	self:AddUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_CUR_ROUND,value)
+end
+
+
+
+
+--帮派魅力排行奖励下一结算时间重置
+function GlobalValue:UpdateFactionGiftRank()
+	if os.time() >= self:GetFactionGiftRankNextUpdateTime() then
+		local update_cycle = tb_faction_gift_rank_base[1].update_cycle
+		self:SetFactionGiftRankNextUpdateTime(GetTodayStartTimestamp() + update_cycle * 86400)
+		self:AddFactionGiftRankCurRound(1)
+	end
+end
+
 return GlobalValue

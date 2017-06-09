@@ -254,7 +254,7 @@ function load_lua_scripts()
 		
 		
 		{'地图VIP副本脚本'		,'scened/instance/instance_vip'},
-		{'地图试炼塔副本脚本'	,'scened/instance/instance_trial'},
+		{'地图世界冒险副本脚本'	,'scened/instance/instance_worldrisk'},
 		
 		{'地图世界BOSS等待脚本'	,'scened/instance/instance_worldboss_prepare'},
 		{'地图世界BOSS脚本'		,'scened/instance/instance_worldboss'},
@@ -295,7 +295,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[2001] = InstanceInstBase,
 	[2002] = InstanceInstBase,
 	[2003] = InstanceVIP,
-	[2004] = InstanceTrial,
+	[2004] = InstanceWorldRisk,
 	
 	[2016] = InstanceWorldBossP,
 	[2017] = InstanceWorldBoss,
@@ -349,6 +349,5 @@ function IsFubenMap(mapid)
 	end
 	return tb_map_info[mapid].is_instance
 end
-
 
 require 'scened.context.init'

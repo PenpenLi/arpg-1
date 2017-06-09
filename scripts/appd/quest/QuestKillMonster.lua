@@ -10,15 +10,21 @@ function QuestKillMonster:OnInit(playerInfo, start, offset)
 	
 end
 
--- »ñµÃÄ¿±êÖµ
+-- è·å¾—ç›®æ ‡å€¼
 function QuestKillMonster:GetTargetValue(targetInfo)
 	return targetInfo[ 3 ]
 end
 
--- ¸üĞÂ½ø¶È, Èç¹ûÄ¿±êÍê³É·µ»Øtrue
+-- æ›´æ–°è¿›åº¦, å¦‚æœç›®æ ‡å®Œæˆè¿”å›true
 function QuestKillMonster:OnUpdate(playerInfo, start, offset, params)
-	local showname = nil
-	if tb_creature_template[params[ 1 ]] then
+	local showname = ''
+	local questMgr = playerInfo:getQuestMgr()
+	local quest_ptr = questMgr.ptr
+	local questId = binLogLib.GetUInt16(quest_ptr, start + QUEST_INFO_ID, 0)
+	local mode = tb_quest[questId].targets[offset+1][ 2 ]
+	if mode == 0 then
+		showname = 'å°æ€ª'
+	elseif tb_creature_template[params[ 1 ]] then
 		showname = tb_creature_template[params[ 1 ]].name
 	end
 	return self:OnUpdateModeObjectTimes(playerInfo, start, offset, params, showname)

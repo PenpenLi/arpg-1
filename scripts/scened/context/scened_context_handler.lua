@@ -758,10 +758,12 @@ function ScenedContext:Handle_Challange_Boss(pkt)
 	local passedSectionId = self:getLastPassedSectionId()
 	local sectionId = onGetAvailableSectionId(passedSectionId)
 	
+	--[[
 	-- 只有在小怪关卡才能挑战boss
 	if mapid ~= tb_risk_data[sectionId].mapid then
 		return
 	end
+	--]]
 	
 	-- 判断是否能挑战boss
 	if not self:isCanChallengeRiskBoss() then

@@ -2251,6 +2251,8 @@ end
 function UnitInfo:AddRiskMonsterKilledCount()
 	if not self:isCanChallengeRiskBoss() then
 		self:AddPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0, 1)
+		
+		--[[ 暂时不提示
 		local showname = '小怪'
 		local process	= self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 0)
 		local dest		= self:GetPlayerUInt16(PLAYER_INT_FIELD_TRIAL_PROCESS, 1)
@@ -2260,6 +2262,7 @@ function UnitInfo:AddRiskMonsterKilledCount()
 		
 		-- 提示客户端
 		self:CallOptResult(OPERTE_TYPE_QUEST, QUEST_TYPE_PROCESS,{showname, process, dest})
+		--]]
 	end
 end
 
@@ -2272,6 +2275,8 @@ function UnitInfo:passSection(sectionId)
 	local passedSectionId = tb_risk_data[sectionId].relateId
 	if GetAailableSectionid(self.ptr) == passedSectionId then
 		self:SetPlayerUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID, passedSectionId)
+		--发到应用服进行进入判断
+		playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_PASS_WORLD_RISK, passedSectionId)
 		self:SetRiskMonsterCount(0)
 	end
 end

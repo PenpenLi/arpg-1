@@ -182,11 +182,13 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 				return false
 			end
 			
+			--[[
 			--校验性别
 			if not table.find(src_temp.availableGender, owner:GetGender()) then
 				outFmtError("exchangePos: player gender %d not fit", owner:GetGender())
 				return false
 			end
+			--]]
 			
 			--[[ 无负重相关属性
 			if not self:isCanBear(src_item, dst_item) then
@@ -481,7 +483,8 @@ function AppItemMgr:smeltingEquip(pos_str)
 	end
 	
 	local values =  string.split(pos_str, "|")
-	
+	local cnt = 0
+	local rewardList = {}
 	for i, str in pairs(values) do
 		local pos = tonumber(str)
 		if pos then
@@ -495,20 +498,34 @@ function AppItemMgr:smeltingEquip(pos_str)
 						if drop_id and drop_id ~= 0 then
 							local dict = {}
 							DoRandomDrop(drop_id, dict)
-							local rewardDict = {}
+							
+							--local rewardDict = {}
 							for itemId, value in pairs(dict) do
-								table.insert(rewardDict, {itemId, value})
+								if rewardList[itemId] then
+									rewardList[itemId] = rewardList[itemId] + value
+								else
+									rewardList[itemId] = value
+								end
 							end
 							self:delItemObj(item,1)
-							owner:AppdAddItems(rewardDict, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
-							
+							--owner:AppdAddItems(rewardDict, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
+							cnt = cnt + 1
 						end
 					end
 				end
 			end
 		end
 	end
+	
+	local rewardDict = {}
+	for itemId, value in pairs(rewardList) do
+		table.insert(rewardDict, {itemId, value})
+	end
+	owner:AppdAddItems(rewardDict, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
 	SortItem(owner,true)--强制整理
+	-- 加任务
+	local questMgr = owner:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_SMELT, {cnt})
 end
 
 return AppItemMgr

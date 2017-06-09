@@ -93,7 +93,7 @@ end
 
 
 function InstanceResBase:GetIndex()
-	return self:GetUInt32(TRIAL_INSTANCE_FIELD_ID)
+	return self:GetUInt32(RES_INSTANCE_FIELD_ID)
 end
 
 function InstanceResBase:parseGeneralId()
@@ -103,7 +103,7 @@ function InstanceResBase:parseGeneralId()
 	local params = string.split(generalId, ':')
 	local indx = tonumber(params[ 1 ])
 	
-	self:SetUInt32(TRIAL_INSTANCE_FIELD_ID, indx)
+	self:SetUInt32(RES_INSTANCE_FIELD_ID, indx)
 end
 
 
