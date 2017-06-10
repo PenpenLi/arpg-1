@@ -700,10 +700,12 @@ function PlayerInfo:Login()
 			if faction then
 				-- 发送给logind数据不同
 				if faction:MemberAdd(self, true) then
+					--[[
 					mapid = FACTION_MAP_ID
 					x = FACTION_FUHUO_X
 					y = FACTION_FUHUO_Y
 					generalId = inviteFactionGuid
+					--]]
 				end
 			end
 		end
@@ -1885,6 +1887,8 @@ function PlayerInfo:GetFactionGiftExreward(count_id)
 	
 	faction:SubGiftUncheckCount(index_sender,1)
 	
+	self:AddFactionGiftBeenThankCount(1)
+	
 	if self:GetGuid() ~= self:GetGiftGuid(index) then
 		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_GET_EXREWARD)
 	end
@@ -1945,6 +1949,20 @@ function PlayerInfo:AddFactionGiftPointCount(value)
 	local questMgr = self:getQuestMgr()
 	-- 总贡献魅力
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_CONTRIBUTE_CHARM, {value})
+end
+
+--魅力值礼物赠送被女王感谢统计
+function PlayerInfo:GetFactionGiftBeenThankCount()
+	return self:GetUInt32(PLAYER_INT_FIELD_FACTION_GIFT_BEEN_THANK_COUNT)
+end
+
+function PlayerInfo:AddFactionGiftBeenThankCount(value)
+	-- 加任务
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_SINGLE_THX_TIMES, {value})
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_TOTAL_THX_TIMES, {value})
+	
+	self:AddUInt32(PLAYER_INT_FIELD_FACTION_GIFT_BEEN_THANK_COUNT,value)
 end
 
 

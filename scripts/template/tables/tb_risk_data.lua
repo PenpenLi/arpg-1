@@ -16,7 +16,7 @@ tb_risk_data = {
 	--  itemReward:array	道具数量(金币和经验)/分钟
 	--  suitCount:int	分钟/件
 	--  dropid:int	装备掉落包id
-	[1001001] = {id = 1001001,mapid = 2004,name = "青螺山1",born = {22,22},monsters = {{30001,3,28,39},{30002,3,41,26},{30003,3,27,11},{30004,3,9,26},{30005,3,14,39}},count = 1,is_boss_section = 0,relateId = 2001001,nextId = 1001002,itemReward = {{3,1000},{104,100}},suitCount = 10,dropid = 2,},
+	[1001001] = {id = 1001001,mapid = 2004,name = "青螺山1",born = {22,22},monsters = {{30001,3,28,39},{30002,3,41,26},{30003,3,27,11},{30004,3,9,26},{30005,3,14,39}},count = 5,is_boss_section = 0,relateId = 2001001,nextId = 1001002,itemReward = {{3,1000},{104,100}},suitCount = 10,dropid = 2,},
 	[1001002] = {id = 1001002,mapid = 2004,name = "青螺山2",born = {22,22},monsters = {{30006,3,28,39},{30007,3,41,26},{30008,3,27,11},{30009,3,9,26},{30010,3,14,39}},count = 5,is_boss_section = 0,relateId = 2001002,nextId = 1001003,itemReward = {{3,1100},{104,110}},suitCount = 11,dropid = 2,},
 	[1001003] = {id = 1001003,mapid = 2004,name = "青螺山3",born = {22,22},monsters = {{30011,3,28,39},{30012,3,41,26},{30013,3,27,11},{30014,3,9,26},{30015,3,14,39}},count = 5,is_boss_section = 0,relateId = 2001003,nextId = 1001004,itemReward = {{3,1200},{104,120}},suitCount = 12,dropid = 2,},
 	[1001004] = {id = 1001004,mapid = 2004,name = "青螺山4",born = {22,22},monsters = {{30016,3,28,39},{30017,3,41,26},{30018,3,27,11},{30019,3,9,26},{30020,3,14,39}},count = 5,is_boss_section = 0,relateId = 2001004,nextId = 1001005,itemReward = {{3,1300},{104,130}},suitCount = 13,dropid = 2,},

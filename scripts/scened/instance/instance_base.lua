@@ -152,6 +152,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetBit(self,%d,%d)",index,offset))
 		end
+		checkNil(index)
+		checkNil(offset)
 		binLogLib.SetBit(mapLib.GetParentPtr(self.ptr), index, offset)
 	end,
 	
@@ -160,6 +162,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_UNSET,string.format("UnSetBit(self,%d,%d)",index,offset))
 		end
+		checkNil(index)
+		checkNil(offset)
 		binLogLib.UnSetBit(mapLib.GetParentPtr(self.ptr), index, offset)
 	end,
 
@@ -168,6 +172,9 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_ADD,string.format("AddByte(self,%d,%d,%d)",index,offset,value))
 		end
+		checkNil(index)
+		checkNil(offset)
+		checkNil(value)
 		binLogLib.AddByte(mapLib.GetParentPtr(self.ptr), index, offset, value)
 	end,
 	
@@ -175,6 +182,9 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SUB,string.format("SubByte(self,%d,%d,%d)",index,offset,value))
 		end
+		checkNil(index)
+		checkNil(offset)
+		checkNil(value)
 		binLogLib.SubByte(mapLib.GetParentPtr(self.ptr), index, offset, value)
 	end,
 	
@@ -183,6 +193,9 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetByte(self,%d,%d,%d)",index,offset,value))
 		end
+		checkNil(index)
+		checkNil(offset)
+		checkNil(value)
 		binLogLib.SetByte(mapLib.GetParentPtr(self.ptr), index, offset, value)
 	end,
 	
@@ -191,6 +204,9 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_ADD,string.format("AddUInt16(self,%d,%d,%d)",index,offset,value))
 		end
+		checkNil(index)
+		checkNil(offset)
+		checkNil(value)
 		binLogLib.AddUInt16(mapLib.GetParentPtr(self.ptr), index, offset, value)
 	end,
 	
@@ -199,6 +215,9 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SUB,string.format("SubUInt16(self,%d,%d,%d)",index,offset,value))
 		end
+		checkNil(index)
+		checkNil(offset)
+		checkNil(value)
 		binLogLib.SubUInt16(mapLib.GetParentPtr(self.ptr), index, offset, value)
 	end,
 
@@ -207,6 +226,9 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetUInt16(self,%d,%d,%d)",index,offset,value))
 		end
+		checkNil(index)
+		checkNil(offset)
+		checkNil(value)
 		binLogLib.SetUInt16(mapLib.GetParentPtr(self.ptr), index, offset, value)
 	end,
 	
@@ -215,6 +237,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetUInt32(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SetUInt32(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 
@@ -223,6 +247,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_ADD,string.format("AddUInt32(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.AddUInt32(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 	
@@ -231,6 +257,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SUB,string.format("SubUInt32(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SubUInt32(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 	
@@ -239,6 +267,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetInt32(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SetInt32(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 
@@ -247,6 +277,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_ADD,string.format("AddInt32(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.AddInt32(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 	
@@ -255,6 +287,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SUB,string.format("SubInt32(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SubInt32(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 	
@@ -263,6 +297,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetDouble(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SetDouble(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 
@@ -271,6 +307,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_ADD,string.format("AddDouble(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.AddDouble(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 	
@@ -279,6 +317,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SUB,string.format("SubDouble(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SubDouble(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 	
@@ -287,6 +327,8 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetFloat(self,%d,%d)",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SetFloat(mapLib.GetParentPtr(self.ptr), index, value)
 	end,
 	
@@ -295,38 +337,51 @@ Instance_base = {
 		if(b)then
 			self:SaveDataToHdd(name,OPT_SET,string.format("SetStr(self,%d,\"%s\")",index,value))
 		end
+		checkNil(index)
+		checkNil(value)
 		binLogLib.SetStr(mapLib.GetParentPtr(self.ptr), index,value)
 	end,
 		
 	GetBit = function(self, index, offset)
+		checkNil(index)
+		checkNil(offset)
 		return binLogLib.GetBit(mapLib.GetParentPtr(self.ptr), index, offset)
 	end,
 	
 	GetByte = function(self, index, offset)
+		checkNil(index)
+		checkNil(offset)
 		return binLogLib.GetByte(mapLib.GetParentPtr(self.ptr), index, offset)
 	end,
 	
 	GetUInt16 = function(self, index, offset)
+		checkNil(index)
+		checkNil(offset)
 		return binLogLib.GetUInt16(mapLib.GetParentPtr(self.ptr), index, offset)
 	end,
 	
 	GetUInt32 = function(self, index)
+		checkNil(index)
 		return binLogLib.GetUInt32(mapLib.GetParentPtr(self.ptr), index)
 	end,
 	
 	GetInt32 = function(self, index)
+	checkNil(index)
 		return binLogLib.GetInt32(mapLib.GetParentPtr(self.ptr), index)
 	end,
 	
 	GetDouble = function(self, index)
+		checkNil(index)
 		return binLogLib.GetDouble(mapLib.GetParentPtr(self.ptr), index)
 	end,
 	
 	GetFloat = function(self, index)
+		checkNil(index)
 		return binLogLib.GetFloat(mapLib.GetParentPtr(self.ptr), index)
 	end,
 	
 	GetStr = function(self, index)
+		checkNil(index)
 		return binLogLib.GetStr(mapLib.GetParentPtr(self.ptr), index)
 	end,
 	

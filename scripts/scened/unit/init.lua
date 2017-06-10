@@ -175,131 +175,183 @@ end
 
 function UnitInfo:GetPlayerInt32(index)
 	self:CheckPlayer(string.format("GetPlayerInt32-- index = %d", index))
+	checkNil(index)
 	return binLogLib.GetInt32(self.ptr_player_data, index)
 end
 
 function UnitInfo:AddPlayerInt32(index, value)
 	self:CheckPlayer(string.format("AddPlayerInt32-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.AddInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:SubPlayerInt32(index, value)
 	self:CheckPlayer(string.format("SubPlayerInt32-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SubInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:SetPlayerInt32(index, value)
 	self:CheckPlayer(string.format("SetPlayerInt32-- index = %d ", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SetInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:GetPlayerBit(index, offset)
 	self:CheckPlayer(string.format("GetPlayerBit index = %d offset = %d ", index, offset))
+	checkNil(index)
+	checkNil(offset)
 	return binLogLib.GetBit(self.ptr_player_data, index, offset)
 end
 
 function UnitInfo:GetPlayerByte(index, offset)
 	self:CheckPlayer(string.format("GetPlayerByte-- index = %d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
 	return binLogLib.GetByte(self.ptr_player_data, index, offset)
 end
 
 function UnitInfo:GetPlayerUInt16(index, offset)
 	self:CheckPlayer(string.format("GetPlayerUInt16-- index = %d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
 	return binLogLib.GetUInt16(self.ptr_player_data, index, offset)
 end
 
 function UnitInfo:GetPlayerUInt32(index)
 	self:CheckPlayer(string.format("GetPlayerUInt32-- index = %d", index))
+	checkNil(index)
 	return binLogLib.GetUInt32(self.ptr_player_data, index)
 end
 
 function UnitInfo:SetPlayerBit(index, offset)
 	self:CheckPlayer(string.format("SetPlayerBit index = %d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
 	binLogLib.SetBit(self.ptr_player_data, index, offset)
 end
 
 function UnitInfo:UnSetPlayerBit(index, offset)
 	self:CheckPlayer(string.format("UnSetPlayerBit-- index =%d offset = %d ", index, offset))
+	checkNil(index)
+	checkNil(offset)
 	binLogLib.UnSetBit(self.ptr_player_data, index, offset)
 end
 
 function UnitInfo:SetPlayerByte(index, offset, value)
 	self:CheckPlayer(string.format("SetPlayerByte-- index = %d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
+	checkNil(value)
 	binLogLib.SetByte(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SetPlayerUInt16(index, offset, value)
 	self:CheckPlayer(string.format("SetPlayerUInt16-- index = %d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
+	checkNil(value)
 	binLogLib.SetUInt16(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SubPlayerUInt16(index, offset, value)
 	self:CheckPlayer(string.format("SubPlayerUInt16-- index = %d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
+	checkNil(value)
 	binLogLib.SubUInt16(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:AddPlayerUInt16(index, offset, value)
 	self:CheckPlayer(string.format("SubPlayerUInt16-- index = %d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
+	checkNil(value)
 	binLogLib.AddUInt16(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SetPlayerUInt32(index, value)
 	self:CheckPlayer(string.format("SetPlayerUInt32-- index = %d ", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SetUInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:AddPlayerUInt32(index, value)
 	self:CheckPlayer(string.format("AddPlayerUInt32-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.AddUInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:SubPlayerUInt32(index, value)
 	self:CheckPlayer(string.format("SubPlayerUInt32-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SubUInt32(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:GetPlayerDouble(index)
 	self:CheckPlayer(string.format("GetPlayerDouble-- index = %d", index))
+	checkNil(index)
 	return binLogLib.GetDouble(self.ptr_player_data, index)
 end
 
 function UnitInfo:SetPlayerDouble(index, value)
 	self:CheckPlayer(string.format("SetPlayerDouble-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SetDouble(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:AddPlayerDouble(index, value)
 	self:CheckPlayer(string.format("AddPlayerDouble-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.AddDouble(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:SubPlayerDouble(index, value)
 	self:CheckPlayer(string.format("SubPlayerDouble-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SubDouble(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:AddPlayerByte(index, offset, value)
 	self:CheckPlayer(string.format("AddPlayerByte-- index = % d offset = %d", index, offset))
+	checkNil(index)
+	checkNil(offset)
+	checkNil(value)
 	binLogLib.AddByte(self.ptr_player_data, index, offset, value)
 end
 
 function UnitInfo:SetPlayerStr(index, value)
 	self:CheckPlayer(string.format("SetPlayerStr-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SetStr(self.ptr_player_data, index,value)
 end
 
 function UnitInfo:SetPlayerFloat(index, value)
 	self:CheckPlayer(string.format("SetPlayerFloat-- index = %d", index))
+	checkNil(index)
+	checkNil(value)
 	binLogLib.SetFloat(self.ptr_player_data, index, value)
 end
 
 function UnitInfo:GetPlayerFloat(index)
 	self:CheckPlayer(string.format("GetPlayerFloat-- index = %d", index))
+	checkNil(index)
 	return binLogLib.GetFloat(self.ptr_player_data, index)
 end
 
 function UnitInfo:GetPlayerStr(index)
 	self:CheckPlayer(string.format("GetPlayerStr-- index = %d", index))
+	checkNil(index)
 	return binLogLib.GetStr(self.ptr_player_data, index)
 end
 

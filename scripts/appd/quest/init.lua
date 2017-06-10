@@ -42,6 +42,8 @@ require("appd.quest.QuestContributeTotalTimes")
 require("appd.quest.QuestContributeCharm")
 require("appd.quest.QuestContributeItem")
 require("appd.quest.QuestLootItem")
+require("appd.quest.QuestSingleThxTimes")
+require("appd.quest.QuestTotalThxTimes")
 
 -- 这个一定要放到最后
 require("appd.quest.QuestManager")

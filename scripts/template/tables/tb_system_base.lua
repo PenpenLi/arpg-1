@@ -48,6 +48,8 @@ tb_system_base = {
 	[3024] = {id = 3024,level = 1,questId = 0,guide_id = 0,optional_guide_id = 0,},
 	[3025] = {id = 3025,level = 1,questId = 0,guide_id = 0,optional_guide_id = 0,},
 	[3026] = {id = 3026,level = 1,questId = 0,guide_id = 0,optional_guide_id = 0,},
+	[3027] = {id = 3027,level = 1,questId = 0,guide_id = 0,optional_guide_id = 0,},
+	[3028] = {id = 3028,level = 1,questId = 0,guide_id = 0,optional_guide_id = 0,},
 	[3031] = {id = 3031,level = 0,questId = 0,guide_id = 0,optional_guide_id = 0,},
 	[3041] = {id = 3041,level = 25,questId = 0,guide_id = 0,optional_guide_id = 0,},
 	[3042] = {id = 3042,level = 101,questId = 0,guide_id = 0,optional_guide_id = 0,},

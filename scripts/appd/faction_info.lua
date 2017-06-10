@@ -3236,6 +3236,27 @@ function FactionInfo:GetGiftWeekPoint(index)
 	return self:GetUInt32(FACTION_INT_FIELD_GIFT_WEEK_POINT_START + index)
 end
 
+--女王未处理礼物计数
+function FactionInfo:SetGiftQueenUncheckCount(value)
+	self:SetUInt32(FACTION_INT_FIELD_GIFT_QUEEN_UNCHECK_COUNT,value)
+end
+
+function FactionInfo:AddGiftQueenUncheckCount(value)
+	self:AddUInt32(FACTION_INT_FIELD_GIFT_QUEEN_UNCHECK_COUNT,value)
+end
+
+function FactionInfo:SubGiftQueenUncheckCount(value)
+	if self:GetGiftQueenUncheckCount() > value then
+		self:SubUInt32(FACTION_INT_FIELD_GIFT_QUEEN_UNCHECK_COUNT,value)
+	else
+		self:SetGiftQueenUncheckCount(0)
+	end
+end
+
+function FactionInfo:GetGiftQueenUncheckCount()
+	return self:GetUInt32(FACTION_INT_FIELD_GIFT_QUEEN_UNCHECK_COUNT)
+end
+
 --未处理礼物计数
 function FactionInfo:SetGiftUncheckCount(index,value)
 	self:SetUInt32(FACTION_INT_FIELD_GIFT_UNCHECK_COUNT_START + index,value)
@@ -3367,7 +3388,7 @@ function FactionInfo:ClearGiftDayCount()
 		self:SetGiftUncheckCount(index,0)
 		self:SetGiftSendCount(index,0)
 	end
-	
+	self:SetGiftQueenUncheckCount(0)
 end
 
 --删除记录
@@ -3379,7 +3400,7 @@ function FactionInfo:DelGiftInfo(guid)
 			if factionData then
 				local unthank_count = factionData:DelGiftByGuid(guid)
 				if unthank_count > 0 then
-					self:SubGiftUncheckCount( self:GetGiftPlayerGuidIndex(self:GetBangZhuGuid()),unthank_count)
+					self:SubGiftQueenUncheckCount(unthank_count)
 				end
 			end
 			self:SetGiftPlayerGuid(index,"")
@@ -3496,7 +3517,9 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 	end
 	outFmtDebug("========SendFactionGift CharmPoint: %d",self:GetFactionCharmPoint())
 	--rankInsertTask(self:GetGuid(), RANK_TYPE_CHARM)
-	self:AddGiftUncheckCount(index_queen,1)
+	--self:AddGiftUncheckCount(index_queen,1)
+	self:AddGiftQueenUncheckCount(1)
+	--outFmtDebug("=============count: %d",self:GetGiftQueenUncheckCount())
 	self:AddGiftWeekPoint(index_sender,point)
 	self:AddGiftSendCount(index_sender,1)
 	
@@ -3556,7 +3579,7 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 		end
 	end
 	
-	printAllFactionRank()
+	--printAllFactionRank()
 end
 
 function FactionInfo:SendGiftRankPacket(player,rank_table,op_type,page)
@@ -3726,7 +3749,8 @@ function FactionInfo:ThankFactionGift(factionData,player,id,refresh_page )
 		return
 	end
 	
-	self:SubGiftUncheckCount(index_queen,1)
+	--self:SubGiftUncheckCount(index_queen,1)
+	self:SubGiftQueenUncheckCount(1)
 	self:AddGiftUncheckCount(index_sender,1)
 	
 	outFmtInfo("============ThankFactionGift finish ")
@@ -3830,7 +3854,8 @@ function FactionInfo:ThankAndReplyFactionGift(factionData,player,id,reply_type,r
 		return
 	end
 	
-	self:SubGiftUncheckCount(index_queen,1)
+	--self:SubGiftUncheckCount(index_queen,1)
+	self:SubGiftQueenUncheckCount(1)
 	self:AddGiftUncheckCount(index_sender,1)
 	
 	outFmtInfo("============ThankAndReplyFactionGift finish ")

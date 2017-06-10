@@ -205,6 +205,11 @@ function GlobalCounter:BattleFinish(playerInfo, fightRank, battleResult)
 	-- 连胜信息
 	playerInfo:DoujianCombatWin(battleResult == GlobalCounter.WIN)
 
+	-- 任务
+	local questMgr = playerInfo:getQuestMgr()
+	-- 参加斗剑台
+	questMgr:OnUpdate(QUEST_TARGET_TYPE_JOIN_DOUJIANTAI, {})		
+	
 	-- 如果赢了且能够提升排名的
 	if battleResult == GlobalCounter.WIN then		
 		-- 加首胜信息
@@ -213,9 +218,8 @@ function GlobalCounter:BattleFinish(playerInfo, fightRank, battleResult)
 		-- 成就
 		playerInfo:AddAchieve(QUEST_TARGET_TYPE_DOUJIANTAI, 1)
 		
-		-- 任务
-		local questMgr = playerInfo:getQuestMgr()
-		questMgr:OnUpdate(QUEST_TARGET_TYPE_DOUJIANTAI)
+		-- 斗剑台胜利
+		questMgr:OnUpdate(QUEST_TARGET_TYPE_DOUJIANTAI, {})
 
 		-- 没排名情况下挑战
 		if prevRank == 0 then
