@@ -144,10 +144,10 @@ function InstanceWorldRisk:refreshBoss()
 end
 
 function InstanceWorldRisk:refresh()
-	local curr = mapLib.GetCreatureEntryCount(self.ptr)
+	local curr, currEntry = mapLib.GetCreatureEntryCount(self.ptr)
 	local offs = tb_risk_base[ 1 ].pos_offset
 	
-	for i = curr + 1, 2 do
+	while (curr < 2) do
 		if self:hasNextMonster() then
 			local indx = self:nextMonsterInfoIndx()
 			local seciontId = self:getSectionId()
@@ -167,20 +167,22 @@ function InstanceWorldRisk:refresh()
 			local lx = cx - offs
 			local ly = cy - offs
 			
-			
-			local idTable = GetRandomIndexTable(grids, num)
-			for _, indx in pairs(idTable) do
-				local id = indx - 1
-				local offx = id % width
-				local offy = id / width
-				local bornX = lx + offx
-				local bornY = ly + offy
-				
-				local creature = mapLib.AddCreature(self.ptr, {
-					templateid = entry, x = bornX, y = bornY,
-					active_grid = true, ainame = "AI_worldRisk", npcflag = {}
-				})
-			end	
+			if currEntry ~= entry then
+				local idTable = GetRandomIndexTable(grids, num)
+				for _, indx in pairs(idTable) do
+					local id = indx - 1
+					local offx = id % width
+					local offy = id / width
+					local bornX = lx + offx
+					local bornY = ly + offy
+					
+					local creature = mapLib.AddCreature(self.ptr, {
+						templateid = entry, x = bornX, y = bornY,
+						active_grid = true, ainame = "AI_worldRisk", npcflag = {}
+					})
+				end
+				curr = curr + 1
+			end
 		end
 	end
 end
