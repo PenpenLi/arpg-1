@@ -1133,6 +1133,14 @@ function PlayerInfo:SetAllTalismanForce(val)
 	end
 end
 
+--设置神羽战力
+function PlayerInfo:SetWingsForce(val)
+	local old = self:GetUInt32(PLAYER_INT_FIELD_WINGS_FORCE)
+	if old ~= val then
+		self:SetUInt32(PLAYER_INT_FIELD_WINGS_FORCE,val)
+	end
+end
+
 local OFFLINE_MAIL_PATH_FORMAT = __OFFLINE_MAIL_FOLDER__.."/%s.mail"
 local OFFLINE_MAIL_INFO = "%u|%u|%u|%s|%s|%s|%s\n"
 

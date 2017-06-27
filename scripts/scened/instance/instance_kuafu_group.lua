@@ -8,8 +8,6 @@ InstanceKuafuGroup.Time_Out_Fail_Callback = "timeoutCallback"
 --InstanceKuafuGroup.broadcast_nogrid = 1
 InstanceKuafuGroup.sub = "group_instance"
 
-InstanceKuafuGroup.BOX_EXIST_TIME = 1800
-
 function InstanceKuafuGroup:ctor(  )
 	
 end
@@ -18,12 +16,12 @@ end
 function InstanceKuafuGroup:OnInitScript()
 	InstanceInstBase.OnInitScript(self) --调用基类
 	
-	self:OnTaskStart()
-	self:AddCountDown()
+	-- self:OnTaskStart()
+	-- self:AddCountDown()
 	
 	-- boss刷新定时器
-	mapLib.DelTimer(self.ptr, 'OnMonsterRefresh')
-	mapLib.AddTimer(self.ptr, 'OnMonsterRefresh', 1000)
+	-- mapLib.DelTimer(self.ptr, 'OnMonsterRefresh')
+	-- mapLib.AddTimer(self.ptr, 'OnMonsterRefresh', 1000)
 	
 	-- self:OnInitBossInfo()
 	
@@ -42,14 +40,8 @@ function InstanceKuafuGroup:SetHard(hard)
 	self:SetUInt32(KUAFU_XIANFU_FIELDS_HARD, hard)
 end
 
-
 function InstanceKuafuGroup:GetHard()
 	return self:GetUInt32(KUAFU_XIANFU_FIELDS_HARD)
-end
-
-function InstanceKuafuGroup:GetBoxid()
-	local hard = self:GetHard()
-	return tb_kuafu_xianfu_condition[hard].boxid
 end
 
 -- 初始化boss数据
@@ -125,7 +117,7 @@ end
 -- 倒计时结束
 function InstanceKuafuGroup:countdown()
 	-- 符点刷新定时器
-	mapLib.AddTimer(self.ptr, 'OnBuffRefresh', tb_kuafu_xianfu_base[ 1 ].interval * 1000)
+	-- mapLib.AddTimer(self.ptr, 'OnBuffRefresh', tb_kuafu_xianfu_base[ 1 ].interval * 1000)
 end
 
 -- 活动正式开始
@@ -262,9 +254,6 @@ function InstanceKuafuGroup:OnJoinPlayer(player)
 		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_GUID, playerInfo:GetPlayerGuid())
 
 		self:SetDouble(intstart + KUAFU_XIANFU_PLAYER_SETTLEMENT,playerInfo:GetForce())
-		
-		-- 同步钱先
-		self:OnSyncMoney(playerInfo:GetPlayerGuid(), emptyIndex)
 	end
 end
 

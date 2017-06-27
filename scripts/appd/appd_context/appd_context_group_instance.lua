@@ -60,7 +60,7 @@ function PlayerInfo:OnCheckGroupInstanceMatch()
 				local pos = enter_info.pos
 				local war_id = enter_info.war_id
 				local battle_server = enter_info.battle_server
-				outFmtInfo("$$$$ on xianfu matched guid = %s war_id = %s", self:GetGuid(), war_id)
+				outFmtInfo("$$$$ on xianfu matched guid = %s war_id = %s battle_server = %s", self:GetGuid(), war_id, battle_server)
 				call_appd_login_to_send_kuafu_info(login_fd, guid, war_id, indx, battle_server, '', KUAFU_TYPE_GROUP_INSTANCE)
 				-- 设置正在进行跨服标志
 				self:KuafuMarked(KUAFU_TYPE_GROUP_INSTANCE)

@@ -47,6 +47,10 @@ require("template.tables.tb_divine_spirit")
 require("template.tables.tb_talisman_base")
 require("template.tables.tb_talisman_spirit")
 
+--神羽表
+require("template.tables.tb_wings_base")
+require("template.tables.tb_wings_bless")
+require("template.tables.tb_wings_strength")
 
 --副本
 require("template.tables.tb_map_vip")

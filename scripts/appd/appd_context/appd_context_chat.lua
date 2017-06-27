@@ -450,7 +450,13 @@ function PlayerInfo:GmCommand(str)
 		pkt.id = 1
 		--self:Handle_Talisman_Active(pkt)
 		
-		self:Handle_Talisman_Lvup(pkt)
+		--self:Handle_Talisman_Lvup(pkt)
+		
+		--self:Handle_Wings_Active(pkt)
+		--self:Handle_Wings_Bless(pkt)
+		--self:Handle_Wings_RankUp(pkt)
+		self:Handle_Wings_Strength(pkt)
+		
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

@@ -197,9 +197,17 @@ hanlders[CMSG_DIVINE_SPIRIT] = PlayerInfo.Handle_Divine_Spirit
 
 hanlders[CMSG_BUY_MASS_BOSS_TIMES] = PlayerInfo.Handle_Buy_Mass_Boss_Times
 
+--法宝
 hanlders[CMSG_TALISMAN_ACTIVE] = PlayerInfo.Handle_Talisman_Active
 hanlders[CMSG_TALISMAN_LVUP] = PlayerInfo.Handle_Talisman_Lvup
+--
 
+--神羽
+hanlders[CMSG_WINGS_ACTIVE] = PlayerInfo.Handle_Wings_Active
+hanlders[CMSG_WINGS_BLESS] = PlayerInfo.Handle_Wings_Bless
+hanlders[CMSG_WINGS_RANKUP] = PlayerInfo.Handle_Wings_RankUp
+hanlders[CMSG_WINGS_STRENGTH] = PlayerInfo.Handle_Wings_Strength
+--
 hanlders[CMSG_GROUP_INSTANCE_MATCH] = PlayerInfo.Handle_Group_Instance_Match
 
 

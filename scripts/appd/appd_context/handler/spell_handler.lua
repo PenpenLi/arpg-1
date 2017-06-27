@@ -419,3 +419,23 @@ function PlayerInfo:Handle_Talisman_Lvup(pkt)
 	
 	self:TalismanLvUp(id)
 end
+
+--神羽激活
+function PlayerInfo:Handle_Wings_Active(pkt)
+	self:WingsActive()
+end
+
+--神羽祝福
+function PlayerInfo:Handle_Wings_Bless(pkt)
+	self:WingsBless()
+end
+
+--神羽升阶
+function PlayerInfo:Handle_Wings_RankUp(pkt)
+	self:WingsRankUp()
+end
+
+--神羽强化
+function PlayerInfo:Handle_Wings_Strength(pkt)
+	self:WingsStrength()
+end

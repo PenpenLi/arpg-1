@@ -1685,6 +1685,7 @@ PLAYER_INT_FIELD_MASS_BOSS_BUYED_TIMES = 1671	-- 已经购买次数
 PLAYER_INT_FIELD_MASS_BOSS_TIMES = 1672	-- 全民boss次数
 PLAYER_INT_FIELD_MASS_BOSS_CD = 1673	-- 全民boss回复cd(0:表示已满了, 只有次数不满的情况才有cd)
 PLAYER_INT_FIELD_TALISMAN_FORCE = 1674	-- 法宝总战力
+PLAYER_INT_FIELD_WINGS_FORCE = 1675	-- 神羽总战力
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 字符串部分
 PLAYER_STRING_FIELD_ACCOUNT = 4	-- 账号
@@ -1777,6 +1778,9 @@ SPELL_DIVINE_START = 220	-- 神兵开始
 SPELL_DIVINE_END = 325	-- 神兵结束
 SPELL_TALISMAN_START = 325	-- 法宝开始
 SPELL_TALISMAN_END = 355	-- 法宝结束
+SPELL_WINGS_ID = 355	-- 翅膀id  阶数*100 + 星数
+SPELL_WINGS_LEVEL = 356	-- 翅膀强化等级
+SPELL_WINGS_BLESS_EXP = 357	-- 翅膀当前祝福经验
 SOCIAL_FRIEND_MAX_NUM = 60	-- 好友数
 SOCIAL_APPLY_MAX_NUM = 10	--  申请数
 SOCIAL_ENEMY_MAX_NUM = 20	-- 仇人数

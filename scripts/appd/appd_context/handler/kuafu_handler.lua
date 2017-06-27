@@ -317,7 +317,7 @@ function PlayerInfo:Handle_Group_Instance_Match(pkt)
 	local config = tb_group_instance_base[indx]
 	local levelRange = config.limLev
 	local level = self:GetLevel()
-	if not (levelRange[ 1 ] <= level and level <= levelRange[ 2 ]) then
+	if not (levelRange <= level) then
 		return
 	end
 	

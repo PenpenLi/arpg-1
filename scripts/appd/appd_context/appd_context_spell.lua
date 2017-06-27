@@ -1157,6 +1157,128 @@ function PlayerInfo:TalismanLvUp(id)
 	
 end
 
+--神羽激活
+function PlayerInfo:WingsActive()
+	local spellMgr = self:getSpellMgr()
+	if spellMgr:GetWingsId() == 0 then
+		spellMgr:SetWingsId(100) --初始阶数1 星级0
+		--重算战斗力
+		self:RecalcAttrAndBattlePoint()
+	end
+end
+--神羽祝福
+function PlayerInfo:WingsBless()
+	local spellMgr = self:getSpellMgr()
+	local wings_id = spellMgr:GetWingsId()
+	if wings_id == 0 then
+		outFmtError("wings not active")
+		return
+	end
+	local config = tb_wings_bless[wings_id]
+	if not config then
+		outFmtError("wings id:%d not exist",wings_id)
+		return
+	end
+	if config.operate_type == 1 then
+		local tf,tab = self:checkMoneyEnoughIfUseGoldIngot(config.money_cost)
+		--是否有足够的道具
+		if not tf or not self:hasMulItem(config.item_cost) then
+			outFmtError("wings bless resouce not enough")
+			return
+		end
+		
+		if self:useMulItem(config.item_cost) and self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
+			local cur_exp = spellMgr:GetWingsBlessExp()
+			outFmtDebug("wings cur exp:%d",cur_exp)
+			if cur_exp + config.bless_exp >= config.need_exp then
+				spellMgr:SetWingsBlessExp(0)
+				spellMgr:SetWingsId(wings_id + 1)
+				-- 重算战斗力(当前和属性绑定在一起)
+				self:RecalcAttrAndBattlePoint()
+			else
+				spellMgr:SetWingsBlessExp(cur_exp + config.bless_exp)
+			end
+		end
+	else
+		outFmtError("wings id:%d can not bless",wings_id)
+		return
+	end
+end
+--神羽升阶
+function PlayerInfo:WingsRankUp()
+	local spellMgr = self:getSpellMgr()
+	local wings_id = spellMgr:GetWingsId()
+	if wings_id == 0 then
+		outFmtError("wings not active")
+		return
+	end
+	local config = tb_wings_bless[wings_id]
+	if not config then
+		outFmtError("wings id:%d not exist",wings_id)
+		return
+	end
+	if config.operate_type == 2 then
+		local tf,tab = self:checkMoneyEnoughIfUseGoldIngot(config.money_cost)
+		--是否有足够的道具
+		if not tf or not self:hasMulItem(config.item_cost) then
+			outFmtError("wings rank up resouce not enough")
+			return
+		end
+		
+		if self:useMulItem(config.item_cost) and self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
+			spellMgr:SetWingsId((config.rank + 1)*100)
+			-- 重算战斗力(当前和属性绑定在一起)
+			self:RecalcAttrAndBattlePoint()
+		end
+	else
+		outFmtError("wings id:%d can not rank up",wings_id)
+		return
+	end
+end
+
+--神羽强化
+function PlayerInfo:WingsStrength()
+	local spellMgr = self:getSpellMgr()
+	local wings_id = spellMgr:GetWingsId()
+	if wings_id == 0 then
+		outFmtError("wings not active")
+		return
+	end
+	if not tb_wings_bless[wings_id] then
+		outFmtError("wings id:%d not exist",wings_id)
+		return
+	end
+	
+	local wings_level = spellMgr:GetWingsLevel()
+	local config = tb_wings_strength[wings_level+1]
+	
+	if not config then
+		outFmtError("wings level:%d can not strength more",wings_level)
+		return
+	end
+	
+	local tf,tab = self:checkMoneyEnoughIfUseGoldIngot(config.money_cost)
+	--是否有足够的道具
+	if not tf or not self:hasMulItem(config.item_cost) then
+		outFmtError("wings strength resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(config.item_cost) and self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
+		local random = randInt(1,10000)
+		if random <= config.possibility then
+			spellMgr:SetWingsLevel(wings_level + 1)
+			outFmtInfo("wings strength success")
+			-- 重算战斗力(当前和属性绑定在一起)
+			self:RecalcAttrAndBattlePoint()
+		else
+			outFmtInfo("wings strength fail")
+		end
+		
+	end
+	
+end
+
 --[[
 -- 发送到场景服替换主动技能信息
 function PlayerInfo:Send2ScenedIllusion(illuId)

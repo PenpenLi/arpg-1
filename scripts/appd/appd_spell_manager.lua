@@ -378,7 +378,7 @@ end
 --获取神兵列表
 function AppSpellMgr:getDivineList()
 	local tab = {}
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		--outFmtInfo("divine %d",i)
 		local id = self:GetByte(i,0)
 		if id ~= 0  then
@@ -453,7 +453,7 @@ function AppSpellMgr:hasDivine(divineId)
 	--local count = self:GetUInt32(SPELL_DIVINE_COUNT)
 	--local size = SPELL_DIVINE_START + count * MAX_DIVINE_COUNT
 	
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		--outFmtInfo("divine %d",i)
 		if self:GetByte(i,0) == divineId then
 			return true
@@ -465,7 +465,7 @@ end
 -- 任务判断是否存在神兵
 function AppSpellMgr:hasDivineQuest(divineId)
 	
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		local div = self:GetByte(i,0)
 		if divineId ~= 0 and div == divineId then
 			return true
@@ -479,7 +479,7 @@ end
 -- 当前神兵数量
 function AppSpellMgr:getDivineNum()
 	local num = 0
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) ~= 0 then
 			num = num + 1
 		end
@@ -495,7 +495,7 @@ function AppSpellMgr:addDivine(divineId,time)
 
 	--outFmtInfo("add divine %d,%d",divineId,time)
 
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) == 0 then
 			self:SetByte(i,0,divineId)
 			self:SetUInt32(i + DIVINE_TIME,time)
@@ -507,7 +507,7 @@ function AppSpellMgr:addDivine(divineId,time)
 end
 
 function AppSpellMgr:addDivineSkill(divineId,skill,isPassive)
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) == divineId then
 			outFmtInfo("add skill %d,%d,%d",i,divineId,skill)
 			if isPassive then -- 添加被动技能
@@ -535,7 +535,7 @@ function AppSpellMgr:addDivineSkill(divineId,skill,isPassive)
 end
 --获得神兵的index、等级和祝福值
 function AppSpellMgr:getDivinIdxLevBless(divineId)
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) == divineId then
 			return i,self:GetByte(i,1),self:GetByte(i,2)
 		end
@@ -549,7 +549,7 @@ function AppSpellMgr:setDivinLevBless(index,lev,bless)
 end
 --设置神兵的初始主动饥饿ngn
 function AppSpellMgr:GetDivineInitiativeSpellInfo(divineId)
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) == divineId then
 			local sid = self:GetUInt16(i+DIVINE_SKILL,0)
 			local lev = self:GetUInt16(i+DIVINE_SKILL,1)
@@ -562,7 +562,7 @@ end
 function AppSpellMgr:GetDivinePassiveSpellInfoTable(divineId)
 	
 	local tab = {}
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) == divineId then
 			for j=0,2 do
 				local sid = self:GetUInt16(i+DIVINE_PASSIVE_SKILL+j,0)
@@ -576,7 +576,7 @@ end
 
 --设置神兵技能等级
 function AppSpellMgr:DivineSkillUpLev(skillid)
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) ~= 0 then
 			local sid = self:GetUInt16(i+DIVINE_SKILL,0)
 			local lev = self:GetUInt16(i+DIVINE_SKILL,1)
@@ -608,7 +608,7 @@ end
 --神兵培养
 --取得神兵下标
 function AppSpellMgr:GetDivineIndex(divineId)
-	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END - 1, MAX_DIVINE_COUNT do
 		if self:GetByte(i,0) == divineId then
 			return i
 		end
@@ -649,7 +649,7 @@ end
 ----------------------------------------------法宝-------------------------------------------
 
 function AppSpellMgr:GetTalismanIndex(id)
-	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END - 1, MAX_TALISMAN_COUNT do
 		if self:GetByte(i,0) == id then
 			return i
 		end
@@ -658,7 +658,7 @@ function AppSpellMgr:GetTalismanIndex(id)
 end
 
 function AppSpellMgr:AddTalisman(id)
-	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END - 1, MAX_TALISMAN_COUNT do
 		if self:GetByte(i,0) == id then
 			return
 		end
@@ -688,7 +688,7 @@ end
 --获取法宝列表
 function AppSpellMgr:getTalismanList()
 	local tab = {}
-	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END - 1, MAX_TALISMAN_COUNT do
 		local id = self:GetByte(i,0)
 		if id ~= 0  then
 			local lev = self:GetByte(i,1)
@@ -699,7 +699,7 @@ function AppSpellMgr:getTalismanList()
 end
 
 function AppSpellMgr:hasTalisman(id)
-	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END - 1, MAX_TALISMAN_COUNT do
 		if self:GetByte(i,0) == id then
 			return true
 		end
@@ -778,6 +778,77 @@ function AppSpellMgr:calculTalismanAttr(attrs)
 	--Ttab(attrs)
 end
 ----------------------------------------------法宝结束-------------------------------------------
+
+----------------------------------------------神羽开始-------------------------------------------
+--神羽id
+function AppSpellMgr:GetWingsId()
+	return self:GetUInt32(SPELL_WINGS_ID)
+end
+
+function AppSpellMgr:SetWingsId(value)
+	self:SetUInt32(SPELL_WINGS_ID,value)
+end
+--神羽强化等级
+function AppSpellMgr:GetWingsLevel()
+	return self:GetUInt32(SPELL_WINGS_LEVEL)
+end
+
+function AppSpellMgr:SetWingsLevel(value)
+	self:SetUInt32(SPELL_WINGS_LEVEL,value)
+end
+
+--神羽祝福经验
+function AppSpellMgr:GetWingsBlessExp()
+	return self:GetUInt32(SPELL_WINGS_BLESS_EXP)
+end
+
+function AppSpellMgr:SetWingsBlessExp(value)
+	self:SetUInt32(SPELL_WINGS_BLESS_EXP,value)
+end
+
+function AppSpellMgr:calculWingsAttr(attrs)
+	
+	local props_table = {}
+	
+	local id = self:GetWingsId()
+	
+	if id == 0 or not tb_wings_bless[id] then
+		outFmtDebug("wings id:%d not exist",id)
+		return
+	end
+	
+	local level = self:GetWingsLevel()
+	
+	local bless_attr_id = tb_wings_bless[id].attr_id
+	local bless_attr_value = tb_wings_bless[id].attr_value
+	local attr_scale = 0
+	if tb_wings_strength[level] then
+		attr_scale = tb_wings_strength[level].improve
+	end
+	
+	
+	for key,attr_id in pairs(bless_attr_id) do
+		props_table[attr_id] = bless_attr_value[key] * (1 + attr_scale / 10000)
+	end
+	
+	local config = {}
+	for attr_id,attr_value in pairs(props_table) do
+		table.insert(config,{attr_id,attr_value})
+		
+	end
+	
+	local baseForce = DoAnyOneCalcForceByAry(config)
+	
+	for i=1,#config do
+		attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
+	end
+	
+	local player = self:getOwner()
+	player:SetWingsForce(baseForce)
+	--Ttab(attrs)
+end
+
+----------------------------------------------神羽结束-------------------------------------------
 
 ----------------------------------------------强化宝石-----------------------------------------------
 -- 获取部位强化等级

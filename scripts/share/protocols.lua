@@ -326,6 +326,10 @@ CMSG_BUY_MASS_BOSS_TIMES		= 357	-- /*购买挑战全民boss次数*/
 CMSG_GROUP_INSTANCE_MATCH		= 358	-- /*组队副本跨服匹配*/	
 CMSG_TALISMAN_ACTIVE		= 360	-- /*法宝激活*/	
 CMSG_TALISMAN_LVUP		= 361	-- /*法宝注灵*/	
+CMSG_WINGS_ACTIVE		= 362	-- /*神羽激活*/	
+CMSG_WINGS_BLESS		= 363	-- /*神羽祝福*/	
+CMSG_WINGS_RANKUP		= 364	-- /*神羽升阶*/	
+CMSG_WINGS_STRENGTH		= 365	-- /*神羽强化*/	
 
 
 ---------------------------------------------------------------------
@@ -11751,6 +11755,106 @@ function Protocols.unpack_talisman_lvup (pkt)
 end
 
 
+-- /*神羽激活*/	
+function Protocols.pack_wings_active (  )
+	local output = Packet.new(CMSG_WINGS_ACTIVE)
+	return output
+end
+
+-- /*神羽激活*/	
+function Protocols.call_wings_active ( playerInfo )
+	local output = Protocols.	pack_wings_active (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*神羽激活*/	
+function Protocols.unpack_wings_active (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*神羽祝福*/	
+function Protocols.pack_wings_bless (  )
+	local output = Packet.new(CMSG_WINGS_BLESS)
+	return output
+end
+
+-- /*神羽祝福*/	
+function Protocols.call_wings_bless ( playerInfo )
+	local output = Protocols.	pack_wings_bless (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*神羽祝福*/	
+function Protocols.unpack_wings_bless (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*神羽升阶*/	
+function Protocols.pack_wings_rankup (  )
+	local output = Packet.new(CMSG_WINGS_RANKUP)
+	return output
+end
+
+-- /*神羽升阶*/	
+function Protocols.call_wings_rankup ( playerInfo )
+	local output = Protocols.	pack_wings_rankup (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*神羽升阶*/	
+function Protocols.unpack_wings_rankup (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*神羽强化*/	
+function Protocols.pack_wings_strength (  )
+	local output = Packet.new(CMSG_WINGS_STRENGTH)
+	return output
+end
+
+-- /*神羽强化*/	
+function Protocols.call_wings_strength ( playerInfo )
+	local output = Protocols.	pack_wings_strength (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*神羽强化*/	
+function Protocols.unpack_wings_strength (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -12069,6 +12173,10 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_group_instance_match = self.call_group_instance_match
 	playerInfo.call_talisman_active = self.call_talisman_active
 	playerInfo.call_talisman_lvup = self.call_talisman_lvup
+	playerInfo.call_wings_active = self.call_wings_active
+	playerInfo.call_wings_bless = self.call_wings_bless
+	playerInfo.call_wings_rankup = self.call_wings_rankup
+	playerInfo.call_wings_strength = self.call_wings_strength
 end
 
 local unpack_handler = {
@@ -12384,6 +12492,10 @@ local unpack_handler = {
 [CMSG_GROUP_INSTANCE_MATCH] =  Protocols.unpack_group_instance_match,
 [CMSG_TALISMAN_ACTIVE] =  Protocols.unpack_talisman_active,
 [CMSG_TALISMAN_LVUP] =  Protocols.unpack_talisman_lvup,
+[CMSG_WINGS_ACTIVE] =  Protocols.unpack_wings_active,
+[CMSG_WINGS_BLESS] =  Protocols.unpack_wings_bless,
+[CMSG_WINGS_RANKUP] =  Protocols.unpack_wings_rankup,
+[CMSG_WINGS_STRENGTH] =  Protocols.unpack_wings_strength,
 
 }
 

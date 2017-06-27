@@ -453,6 +453,11 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	printAttr("talisman ", attrs)
 	
+	--神羽
+	spellMgr:calculWingsAttr(attrs)
+	
+	printAttr("wings ", attrs)
+	
 	--称号
 	self:calculTitleAttr(attrs)
 	

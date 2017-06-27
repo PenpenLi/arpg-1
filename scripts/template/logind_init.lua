@@ -15,3 +15,5 @@ require("template.tables.tb_kuafu_xianfu_base")
 -- 世界冒险
 require("template.tables.tb_risk_base")
 require("template.tables.tb_risk_data")
+
+require("template.tables.tb_group_instance_base")

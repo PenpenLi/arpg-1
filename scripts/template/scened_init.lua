@@ -124,3 +124,6 @@ require("template.tables.tb_risk_data")
 require("template.tables.tb_mass_boss_base")
 require("template.tables.tb_mass_boss_info")
 require("template.tables.tb_mass_boss_loot")
+
+
+require("template.tables.tb_group_instance_base")
