@@ -963,6 +963,200 @@ function PlayerInfo:DivineUpLev(divineId)
 	
 end
 
+--铸造
+function PlayerInfo:DivineForgeUpLev(divineId)
+	local spellMgr = self:getSpellMgr()
+	local index = spellMgr:GetDivineIndex(divineId)
+	local curlev = spellMgr:GetDivineForgeLv(index)
+	
+	local config = tb_divine_forge[curlev + 1]
+	if config == nil then
+		outFmtError("divine forge is max lev already")
+		return
+	end
+	
+	--是否有足够的道具
+	if not self:hasMulItem(config.cost) then
+		outFmtError("divine forge up lev resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(config.cost) then
+		local nowLev = curlev + 1
+	 	spellMgr:SetDivineForgeLv(index,nowLev)
+		
+		--提示前端
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+		
+	end
+end
+
+--升阶
+function PlayerInfo:DivineAdvanceUpLev(divineId)
+	local spellMgr = self:getSpellMgr()
+	local index = spellMgr:GetDivineIndex(divineId)
+	local curlev = spellMgr:GetDivineAdvanceLv(index)
+	
+	local config = tb_divine_advance[curlev + 1 + divineId * 100]
+	if config == nil then
+		outFmtError("divine advance is max lev already")
+		return
+	end
+	
+	--是否有足够的道具
+	if not self:hasMulItem(config.cost) then
+		outFmtError("divine advance up lev resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(config.cost) then
+		local nowLev = curlev + 1
+	 	spellMgr:SetDivineAdvanceLv(index,nowLev)
+		
+		--提示前端
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+		
+	end
+end
+
+--铸魂
+function PlayerInfo:DivineSpiritUpLev(divineId,protect,improve)
+	local spellMgr = self:getSpellMgr()
+	local index = spellMgr:GetDivineIndex(divineId)
+	local curlev = spellMgr:GetDivineSpiritLv(index)
+	
+	local config = tb_divine_spirit[curlev + 1]
+	if config == nil then
+		outFmtError("divine spirit is max lev already")
+		return
+	end
+	
+	
+	
+	local cost = config.cost
+	if protect == 1 then
+		for _,v in pairs(config.protect_item) do
+			table.insert(cost,v)
+		end
+	end
+	
+	if improve == 1 then
+		for _,v in pairs(config.improve_item) do
+			table.insert(cost,v)
+		end
+	end
+	
+	--是否有足够的道具
+	if not self:hasMulItem(cost) then
+		outFmtError("divine spirit up lev resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(cost) then
+		local chance = config.chance
+		if improve == 1 then
+			chance = chance + config.improve_chance
+			if chance > 10000 then
+				chance = 10000
+			end
+		end
+		local random = randInt(1,10000)
+		if random <= chance then
+			--成功
+			local nowLev = curlev + 1
+			spellMgr:SetDivineSpiritLv(index,nowLev)
+			--提示前端
+		else
+			--失败
+			if config.fail_punish > 0 and protect == 0 then
+				local nowLev = curlev - config.fail_punish
+				spellMgr:SetDivineSpiritLv(index,nowLev)
+				--提示前端失败并掉级
+			else
+				--提示前端失败
+			end
+		end
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+		
+	end
+end
+
+
+--法宝激活
+function PlayerInfo:TalismanActive(id)
+	local config = tb_talisman_base[id]
+	if config == nil then
+		outFmtDebug("talisman id: %d not exist",id)
+		return
+	end
+	local spellMgr = self:getSpellMgr()
+	
+	if spellMgr:GetTalismanIndex(id) ~= 0 then
+		outFmtDebug("talisman id: %d already active",id)
+		return
+	end
+	
+	if config.avtivetype == 1 then --材料激活
+		if self:useMulItem(config.avtivedata) then
+			spellMgr:AddTalisman(id)
+			for _,v in pairs(config.passiveskill) do
+				self:updatePassive(v[1], v[2])
+			end
+			spellMgr:calculTalismanForce(id)
+			self:RecalcAttrAndBattlePoint()
+		else 
+			outFmtError("active talisman has not enough item");
+			return
+		end
+	end
+end
+--法宝注灵
+function PlayerInfo:TalismanLvUp(id)
+	if tb_talisman_base[id] == nil then
+		outFmtDebug("talisman id: %d not exist",id)
+		return
+	end
+	local spellMgr = self:getSpellMgr()
+	local index = spellMgr:GetTalismanIndex(id)
+	if index == 0 then
+		outFmtDebug("talisman id: %d not active",id)
+		return
+	end
+	
+	local curlev = spellMgr:GetTalismanLv(index)
+	local config = tb_talisman_spirit[curlev + 1]
+	if config == nil then
+		outFmtDebug("talisman id: %d curlev max",id)
+		return
+	end
+	
+	local tf,tab = self:checkMoneyEnoughIfUseGoldIngot(config.money_cost)
+	
+	--是否有足够的道具
+	if not tf or not self:hasMulItem(config.item_cost) then
+		outFmtError("talisman up lev resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(config.item_cost) and self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
+		local nowLev = curlev + 1
+	 	spellMgr:SetTalismanLv(index,nowLev)
+		spellMgr:calculTalismanForce(id)
+		--提示前端
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+		
+	end
+	
+end
+
 --[[
 -- 发送到场景服替换主动技能信息
 function PlayerInfo:Send2ScenedIllusion(illuId)

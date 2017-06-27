@@ -1096,12 +1096,7 @@ Instance_base = {
 				local dist = upgradeConfig.distance
 				local groupCD = skillConfig.groupCD
 				local singleCD = skillConfig.singleCD
-				if groupCD > inteval then
-					groupCD = inteval
-				end
-				if singleCD > inteval then
-					singleCD = inteval
-				end
+				
 				local targetType = skillConfig.type
 				creatureLib.MonsterAddSpell(creature_ptr, spellInfo[ 1 ], spellInfo[ 2 ], inteval, spellInfo[ 4 ], spellInfo[ 5 ], dist, groupCD, singleCD, targetType)
 			end

@@ -4,13 +4,13 @@
 
 
 tb_quest_daily2_set = {
-	--  id:int	任务集合id
-	--  questSet:array	任务
-	--  rewards:array	每类任务奖励(先不填)
-	[1] = {id = 1,questSet = {50002},rewards = {{104,30000}},},
-	[2] = {id = 2,questSet = {50003,50004},rewards = {{104,30000}},},
-	[3] = {id = 3,questSet = {50006,50005},rewards = {{104,30000}},},
-	[4] = {id = 4,questSet = {50007},rewards = {{104,60000}},},
-	[5] = {id = 5,questSet = {50008},rewards = {{104,60000}},},
-	[6] = {id = 6,questSet = {50009},rewards = {{104,90000}},},
+	--  id:int 任务集合id
+	--  questSet:array 任务
+	--  rewards:array 每类任务奖励(先不填)
+	[1] = {id = 1, questSet = {50002}, rewards = {{104,30000}}},
+	[2] = {id = 2, questSet = {50003,50004}, rewards = {{104,30000}}},
+	[3] = {id = 3, questSet = {50006,50005}, rewards = {{104,30000}}},
+	[4] = {id = 4, questSet = {50007}, rewards = {{104,60000}}},
+	[5] = {id = 5, questSet = {50008}, rewards = {{104,60000}}},
+	[6] = {id = 6, questSet = {50009}, rewards = {{104,90000}}},
 }

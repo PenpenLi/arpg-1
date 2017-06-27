@@ -4,10 +4,10 @@
 
 
 tb_login_activity_preview = {
-	--  id:int	序号
-	--  day:int	所需天数
-	[1] = {id = 1,day = 2,},
-	[2] = {id = 2,day = 3,},
-	[3] = {id = 3,day = 4,},
-	[4] = {id = 4,day = 5,},
+	--  id:int 序号
+	--  day:int 所需天数
+	[1] = {id = 1, day = 2},
+	[2] = {id = 2, day = 3},
+	[3] = {id = 3, day = 4},
+	[4] = {id = 4, day = 5},
 }

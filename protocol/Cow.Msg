@@ -933,7 +933,8 @@ roll_result,s2c,205,/*roll点结果*/,STATUS_NEVER,False
 	rollid,uint8,False,/*rollid*/
 
 #
-world_boss_rank,s2c,206,/*当前世界BOSS伤害排名*/,STATUS_NEVER,False
+boss_rank,s2c,206,/*当前BOSS伤害排名*/,STATUS_NEVER,False
+	rankType,uint8,False,/*boss类型*/
 	rankList,rank_info,True,/*排名*/
 	mine,uint8,False,/*我的排名*/
 
@@ -1107,7 +1108,8 @@ kuafu_xianfu_match,c2s,255,/*仙府夺宝跨服匹配*/,STATUS_NEVER,False
 	indx,uint8,False,/*仙府类型*/
 
 #
-kuafu_xianfu_match_wait,s2c,256,/*仙府夺宝跨服匹配等待*/,STATUS_NEVER,False
+kuafu_match_wait,s2c,256,/*单方跨服匹配等待*/,STATUS_NEVER,False
+	type,uint8,False,/*匹配类型*/
 	target,uint8,False,/*需要匹配个数*/
 	count,uint8,False,/*当前匹配个数*/
 	
@@ -1329,3 +1331,73 @@ show_faction_gift_rank_change,s2c,340,/*返回家族魅力排行变化*/,STATUS_NEVER,Fals
 	old_rank,uint32,False,/*原排行*/
 	new_rank,uint32,False,/*新排行*/
 	info,faction_gift_rank_info,False,/*本帮派排行信息*/
+	
+	
+#
+show_faction_gift_rank_info,s2c,341,/*返回本家族魅力排行*/,STATUS_NEVER,False
+	info,faction_gift_rank_info,False,/*本帮派排行信息*/
+
+#
+divine_forge,c2s,342,/*神兵强化*/,STATUS_NEVER,False
+	id,uint32,False,/*神兵id*/
+	count,uint32,False,/*次数*/
+	
+#
+divine_advance,c2s,343,/*神兵升阶*/,STATUS_NEVER,False
+	id,uint32,False,/*神兵id*/
+	
+#
+divine_spirit,c2s,344,/*神兵铸魂*/,STATUS_NEVER,False
+	id,uint32,False,/*神兵id*/
+	protect,uint32,False,/*失败保护*/
+	improve,uint32,False,/*提升概率*/
+
+#
+query_mass_boss_info,c2s,352,/*查询全民boss信息*/,STATUS_NEVER,False
+	id,uint8,False,/*全民boss编号*/
+	
+#
+mass_boss_info_ret,s2c,353,/*全民boss信息结果*/,STATUS_NEVER,False
+	count,uint32,False,/*全民boss参加人数*/
+	percent,uint8,False,/*当前boss血量*/
+
+#
+query_mass_boss_rank,c2s,354,/*查询全民boss排行榜*/,STATUS_NEVER,False
+	id,uint8,False,/*全民boss编号*/
+
+#
+mass_boss_rank_result,s2c,355,/*全民boss排行结果*/,STATUS_NEVER,False
+	info,mass_boss_rank_info,True,/*全民boss排名信息*/
+	
+#
+try_mass_boss,c2s,356,/*挑战全民boss*/,STATUS_NEVER,False
+	id,uint8,False,/*全民boss编号*/
+
+#
+buy_mass_boss_times,c2s,357,/*购买挑战全民boss次数*/,STATUS_NEVER,False
+	cnt,uint8,False,/*购买次数*/
+
+#
+group_instance_match,c2s,358,/*组队副本跨服匹配*/,STATUS_NEVER,False
+	indx,uint8,False,/*组队副本类型*/
+	
+#
+talisman_active,c2s,360,/*法宝激活*/,STATUS_NEVER,False
+	id,uint32,False,/*法宝id*/
+	
+#
+talisman_lvup,c2s,361,/*法宝注灵*/,STATUS_NEVER,False
+	id,uint32,False,/*法宝id*/
+
+#
+wings_active,c2s,362,/*神羽激活*/,STATUS_NEVER,False
+
+#
+wings_bless,c2s,363,/*神羽祝福*/,STATUS_NEVER,False
+
+#
+wings_rankup,c2s,364,/*神羽升阶*/,STATUS_NEVER,False
+
+#
+wings_strength,c2s,365,/*神羽强化*/,STATUS_NEVER,False
+

@@ -129,10 +129,26 @@ function AppdApp:InitCorn()
 	--]]
 	
 	--每隔1s检测下修家族建筑升级进度
-	self.cron:every("家族建筑升级进度",1,function()
+	self.cron:every("1秒钟检测一次的", 1, function()
 		self.objMgr:foreachAllFaction(function(faction)
 			faction:UpdateBuildingProcess()
 		end)
+		
+		-- 挑战全民boss次数检测
+		self.objMgr:foreachAllPlayer(
+			function(player)	
+				player:CheckAddMassBossTimes()
+			end
+		)
+				
+		for id = 1, #tb_mass_boss_info do
+			if not globalValue:isMassBossAlive(id) then
+				if globalValue:checkMassBossReborn(id) then
+					globalValue:doMassBossStart(id)
+					NoticeScene(APPD_SCENED_MASS_BOSS_REBORN, id)
+				end
+			end
+		end
 	end)
 	
 	

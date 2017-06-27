@@ -603,6 +603,30 @@ function AppInstanceMgr:RandomEnemy(range)
 end
 
 
+function AppInstanceMgr:checkIfCanEnterMassBoss(id)
+	local config = tb_mass_boss_info[ id ]
+	local player = self:getOwner()
+	
+	-- 判断等级是否足够
+	if player:GetLevel() < config.permitLevel then
+		outFmtError("no level to enter id = %s", id)
+		return
+	end
+	
+	-- 次数是否足够
+	if not player:costMassBossTimes() then
+		return
+	end
+
+	local x 	= config.enterPos[ 1 ]
+	local y 	= config.enterPos[ 2 ]
+	local mapid = config.mapId
+	
+	-- 发起传送
+	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, ''..id)
+end
+
+
 -- 获得玩家guid
 function AppInstanceMgr:getPlayerGuid()
 	--物品管理器guid转玩家guid

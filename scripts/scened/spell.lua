@@ -98,9 +98,8 @@ function DoHandleSpellStart(caster, map_ptr, spell_slot, tar_x, tar_y, target, n
 		return false, 0
 	end
 	
-	--[[
-	--TODO:当策划填完表的时候 把这里的注释打开
-	outFmtInfo("show GetCurSpellTime = %d, now = %d", casterInfo:GetCurSpellTime(), nowtime)
+	-- [[
+	-- outFmtInfo("show GetCurSpellTime = %d, now = %d", casterInfo:GetCurSpellTime(), nowtime)
 	-- 技能正在施法
 	if casterInfo:GetCurSpellTime() >= nowtime then
 		casterInfo:CallOptResult(OPRATE_TYPE_SPELL_LOSE, LOST_RESON_ALREADY_CAST)
@@ -315,7 +314,7 @@ function handle_cast_add_unit_effect_blade_storm(caster, target, spell_id, spell
 	creatureInfo:SetCurSpellTime(getMsTime() + loadedTime)
 	creatureInfo:SetCurSpellCount(count)
 	--加吟唱buff
-	SpelladdBuff(caster, BUFF_YINCHANG, caster, 0, math.ceil((loadedTime + tb_skill_base[spell_id].groupCD)/1000))
+	SpelladdBuff(caster, BUFF_YINCHANG, caster, 0, math.ceil((loadedTime)/1000))
 	
 	local angle = unitLib.GetOrientation(caster)
 	if target then
@@ -336,14 +335,14 @@ end
 function handle_cast_spell_blade_storm(caster,target,spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 	local casterInfo = UnitInfo:new{ptr = caster}
 	
-	if casterInfo:GetCurSpellId() == spell_id then
+	if casterInfo:GetCurSpellId() == spell_id and casterInfo:IsAlive() then
 		SpellTargetType(caster,target, spell_id,spell_lv,dst_x,dst_y, allTargets, unit, data)
 		casterInfo:SubCurSpellCount()
 		if casterInfo:GetCurSpellCount() > 0 then
 			return
 		end
-		casterInfo:CallSpellStop(true)
 	end
+	casterInfo:CallSpellStop(true)
 	casterInfo:ClearCurSpell(true)
 end
 
@@ -359,7 +358,7 @@ function handle_cast_add_unit_effect_loaded(caster, target, spell_id, spell_lv,d
 	casterInfo:SetCurSpellId(spell_id)
 	casterInfo:SetCurSpellTime(getMsTime() + loadedTime)
 	--加吟唱buff
-	SpelladdBuff(caster, BUFF_YINCHANG, caster, 0, math.ceil((loadedTime + tb_skill_base[spell_id].groupCD)/1000))
+	SpelladdBuff(caster, BUFF_YINCHANG, caster, 0, math.ceil((loadedTime)/1000))
 	
 	local angle = unitLib.GetOrientation(caster)
 	if target then

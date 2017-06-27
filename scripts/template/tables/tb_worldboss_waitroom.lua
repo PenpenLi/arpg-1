@@ -4,8 +4,8 @@
 
 
 tb_worldboss_waitroom = {
-	--  id:int	序号
-	--  mapid:int	地图id
-	--  rect:array	随机进入区域
-	[1] = {id = 1,mapid = 2016,rect = {15,12,35,32},},
+	--  id:int 序号
+	--  mapid:int 地图id
+	--  rect:array 随机进入区域
+	[1] = {id = 1, mapid = 2016, rect = {15,12,35,32}},
 }

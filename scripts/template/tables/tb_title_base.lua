@@ -4,12 +4,12 @@
 
 
 tb_title_base = {
-	--  id:int	ID
-	--  name:string	名称
-	--  getinfo:string	条件描述
-	--  limtime:int	时限
-	--  prop:array	属性
-	[1] = {id = 1,name = "萌新",getinfo = "完成成就【初入江湖】",limtime = 0,prop = {{1,162},{2,16},{3,5},{4,1},{5,1},{6,4},{7,1}},},
-	[2] = {id = 2,name = "神兵出世",getinfo = "完成成就【神兵爱好者】",limtime = 0,prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}},},
-	[3] = {id = 3,name = "神兵出世",getinfo = "完成成就【神兵爱好者1】",limtime = 0,prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}},},
+	--  id:int ID
+	--  name:string 名称
+	--  getinfo:string 条件描述
+	--  limtime:int 时限
+	--  prop:array 属性
+	[1] = {id = 1, name = "萌新", getinfo = "完成成就【初入江湖】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{5,1},{6,4},{7,1}}},
+	[2] = {id = 2, name = "神兵出世", getinfo = "完成成就【神兵爱好者】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}},
+	[3] = {id = 3, name = "神兵出世", getinfo = "完成成就【神兵爱好者1】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}},
 }

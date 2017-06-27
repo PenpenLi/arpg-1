@@ -724,11 +724,16 @@ function PlayerInfo:Handle_Get_Faction_Gift_Rank_Page(pkt)
 		faction_info.guard_vip = info.guard_vip
 	end
 	
-	outFmtDebug("==========before send")
-	outFmtDebug("==========before send len:%d",#list)
-	self:call_show_faction_gift_rank_result_list(list,faction_info,page)
+	--outFmtDebug("==========before send")
+	--outFmtDebug("==========before send len:%d",#list)
+	if page == 0 then
+		self:call_show_faction_gift_rank_info(faction_info)
+	else
+		self:call_show_faction_gift_rank_result_list(list,faction_info,page)
+	end
 	
-	outFmtDebug("==========after send")
+	
+	--outFmtDebug("==========after send")
 end
 
 

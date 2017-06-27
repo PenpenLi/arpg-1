@@ -216,7 +216,7 @@ CMSG_WORLD_BOSS_FIGHT		= 202	-- /*世界BOSS挑战*/
 CMSG_CHANGE_LINE		= 203	-- /*换线*/	
 CMSG_ROLL_WORLD_BOSS_TREASURE		= 204	-- /*roll世界BOSS箱子*/	
 SMSG_ROLL_RESULT		= 205	-- /*roll点结果*/	
-SMSG_WORLD_BOSS_RANK		= 206	-- /*当前世界BOSS伤害排名*/	
+SMSG_BOSS_RANK		= 206	-- /*当前BOSS伤害排名*/	
 CMSG_RANK_ADD_LIKE		= 207	-- /*排行榜点赞*/	
 SMSG_RANK_ADD_LIKE_RESULT		= 208	-- /*排行榜点赞结果*/	
 CMSG_RES_INSTANCE_ENTER		= 210	-- /*进入资源副本*/	
@@ -258,7 +258,7 @@ MSG_KUAFU_3V3_CANCEL_MATCH		= 252	-- /*取消匹配*/
 CMSG_KUAFU_3V3_MATCH_OPER		= 253	-- /*匹配到人&接受或者拒绝*/	
 SMSG_KUAFU_3V3_DECLINE_MATCH		= 254	-- /*拒绝比赛*/	
 CMSG_KUAFU_XIANFU_MATCH		= 255	-- /*仙府夺宝跨服匹配*/	
-SMSG_KUAFU_XIANFU_MATCH_WAIT		= 256	-- /*仙府夺宝跨服匹配等待*/	
+SMSG_KUAFU_MATCH_WAIT		= 256	-- /*单方跨服匹配等待*/	
 SMSG_KUAFU_XIANFU_MINIMAP_INFO		= 257	-- /*仙府夺宝小地图信息*/	
 CMSG_BUY_XIANFU_ITEM		= 258	-- /*购买仙府进入券*/	
 CMSG_XIANFU_RANDOM_RESPAWN		= 259	-- /*随机复活*/	
@@ -313,6 +313,19 @@ SMSG_SHOW_FACTION_GIFT_HISTORY_PAGE		= 337	-- /*返回女王历史记录*/
 CMSG_GET_FACTION_GIFT_RANK_PAGE		= 338	-- /*请求家族魅力排行*/	
 SMSG_SHOW_FACTION_GIFT_RANK_RESULT_LIST		= 339	-- /*返回家族魅力排行*/	
 SMSG_SHOW_FACTION_GIFT_RANK_CHANGE		= 340	-- /*返回家族魅力排行变化*/	
+SMSG_SHOW_FACTION_GIFT_RANK_INFO		= 341	-- /*返回本家族魅力排行*/	
+CMSG_DIVINE_FORGE		= 342	-- /*神兵强化*/	
+CMSG_DIVINE_ADVANCE		= 343	-- /*神兵升阶*/	
+CMSG_DIVINE_SPIRIT		= 344	-- /*神兵铸魂*/	
+CMSG_QUERY_MASS_BOSS_INFO		= 352	-- /*查询全民boss信息*/	
+SMSG_MASS_BOSS_INFO_RET		= 353	-- /*全民boss信息结果*/	
+CMSG_QUERY_MASS_BOSS_RANK		= 354	-- /*查询全民boss排行榜*/	
+SMSG_MASS_BOSS_RANK_RESULT		= 355	-- /*全民boss排行结果*/	
+CMSG_TRY_MASS_BOSS		= 356	-- /*挑战全民boss*/	
+CMSG_BUY_MASS_BOSS_TIMES		= 357	-- /*购买挑战全民boss次数*/	
+CMSG_GROUP_INSTANCE_MATCH		= 358	-- /*组队副本跨服匹配*/	
+CMSG_TALISMAN_ACTIVE		= 360	-- /*法宝激活*/	
+CMSG_TALISMAN_LVUP		= 361	-- /*法宝注灵*/	
 
 
 ---------------------------------------------------------------------
@@ -1533,6 +1546,112 @@ function faction_gift_rank_info_t:write( output )
 		self.guard_vip = 0
 	end
 	output:writeU32(self.guard_vip)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*全民boss信息*/
+
+mass_boss_info_t = class('mass_boss_info_t')
+
+function mass_boss_info_t:read( input )
+
+	local ret
+	ret,self.id = input:readByte() --/*全民boss编号*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.state = input:readByte() --/*全民boss状态*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.time = input:readU32() --/*全民boss刷新时间*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.percent = input:readByte() --/*boss血量*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.count = input:readU16() --/*挑战boss人数*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function mass_boss_info_t:write( output )
+	if(self.id == nil)then
+		self.id = 0
+	end
+	output:writeByte(self.id)
+	
+	if(self.state == nil)then
+		self.state = 0
+	end
+	output:writeByte(self.state)
+	
+	if(self.time == nil)then
+		self.time = 0
+	end
+	output:writeU32(self.time)
+	
+	if(self.percent == nil)then
+		self.percent = 0
+	end
+	output:writeByte(self.percent)
+	
+	if(self.count == nil)then
+		self.count = 0
+	end
+	output:writeI16(self.count)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*全民boss排名*/
+
+mass_boss_rank_info_t = class('mass_boss_rank_info_t')
+
+function mass_boss_rank_info_t:read( input )
+
+	local ret
+	ret,self.name = input:readUTFByLen(50)  --/*名称*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.dam = input:readDouble() --/*伤害*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function mass_boss_rank_info_t:write( output )
+	if(self.name == nil)then
+		self.name = ''
+	end
+	output:writeUTFByLen(self.name , 50 ) 
+	
+	if(self.dam == nil)then
+		self.dam = 0
+	end
+	output:writeDouble(self.dam)
 	
 	return output
 end
@@ -8212,9 +8331,10 @@ function Protocols.unpack_roll_result (pkt)
 end
 
 
--- /*当前世界BOSS伤害排名*/	
-function Protocols.pack_world_boss_rank ( rankList ,mine)
-	local output = Packet.new(SMSG_WORLD_BOSS_RANK)
+-- /*当前BOSS伤害排名*/	
+function Protocols.pack_boss_rank ( rankType ,rankList ,mine)
+	local output = Packet.new(SMSG_BOSS_RANK)
+	output:writeByte(rankType)
 	output:writeI16(#rankList)
 	for i = 1,#rankList,1
 	do
@@ -8224,18 +8344,22 @@ function Protocols.pack_world_boss_rank ( rankList ,mine)
 	return output
 end
 
--- /*当前世界BOSS伤害排名*/	
-function Protocols.call_world_boss_rank ( playerInfo, rankList ,mine)
-	local output = Protocols.	pack_world_boss_rank ( rankList ,mine)
+-- /*当前BOSS伤害排名*/	
+function Protocols.call_boss_rank ( playerInfo, rankType ,rankList ,mine)
+	local output = Protocols.	pack_boss_rank ( rankType ,rankList ,mine)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
--- /*当前世界BOSS伤害排名*/	
-function Protocols.unpack_world_boss_rank (pkt)
+-- /*当前BOSS伤害排名*/	
+function Protocols.unpack_boss_rank (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.rankType = input:readByte()
+	if not ret then
+		return false
+	end
 	ret,len = input:readU16()
 	if not ret then
 		return false
@@ -9519,26 +9643,31 @@ function Protocols.unpack_kuafu_xianfu_match (pkt)
 end
 
 
--- /*仙府夺宝跨服匹配等待*/	
-function Protocols.pack_kuafu_xianfu_match_wait ( target ,count)
-	local output = Packet.new(SMSG_KUAFU_XIANFU_MATCH_WAIT)
+-- /*单方跨服匹配等待*/	
+function Protocols.pack_kuafu_match_wait ( type ,target ,count)
+	local output = Packet.new(SMSG_KUAFU_MATCH_WAIT)
+	output:writeByte(type)
 	output:writeByte(target)
 	output:writeByte(count)
 	return output
 end
 
--- /*仙府夺宝跨服匹配等待*/	
-function Protocols.call_kuafu_xianfu_match_wait ( playerInfo, target ,count)
-	local output = Protocols.	pack_kuafu_xianfu_match_wait ( target ,count)
+-- /*单方跨服匹配等待*/	
+function Protocols.call_kuafu_match_wait ( playerInfo, type ,target ,count)
+	local output = Protocols.	pack_kuafu_match_wait ( type ,target ,count)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
 
--- /*仙府夺宝跨服匹配等待*/	
-function Protocols.unpack_kuafu_xianfu_match_wait (pkt)
+-- /*单方跨服匹配等待*/	
+function Protocols.unpack_kuafu_match_wait (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
+	ret,param_table.type = input:readByte()
+	if not ret then
+		return false
+	end
 	ret,param_table.target = input:readByte()
 	if not ret then
 		return false
@@ -11212,6 +11341,416 @@ function Protocols.unpack_show_faction_gift_rank_change (pkt)
 end
 
 
+-- /*返回本家族魅力排行*/	
+function Protocols.pack_show_faction_gift_rank_info ( info)
+	local output = Packet.new(SMSG_SHOW_FACTION_GIFT_RANK_INFO)
+	info :write(output)
+	return output
+end
+
+-- /*返回本家族魅力排行*/	
+function Protocols.call_show_faction_gift_rank_info ( playerInfo, info)
+	local output = Protocols.	pack_show_faction_gift_rank_info ( info)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回本家族魅力排行*/	
+function Protocols.unpack_show_faction_gift_rank_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	param_table.info = faction_gift_rank_info_t .new()
+	if(param_table.info :read(input)==false)then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*神兵强化*/	
+function Protocols.pack_divine_forge ( id ,count)
+	local output = Packet.new(CMSG_DIVINE_FORGE)
+	output:writeU32(id)
+	output:writeU32(count)
+	return output
+end
+
+-- /*神兵强化*/	
+function Protocols.call_divine_forge ( playerInfo, id ,count)
+	local output = Protocols.	pack_divine_forge ( id ,count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*神兵强化*/	
+function Protocols.unpack_divine_forge (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.count = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*神兵升阶*/	
+function Protocols.pack_divine_advance ( id)
+	local output = Packet.new(CMSG_DIVINE_ADVANCE)
+	output:writeU32(id)
+	return output
+end
+
+-- /*神兵升阶*/	
+function Protocols.call_divine_advance ( playerInfo, id)
+	local output = Protocols.	pack_divine_advance ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*神兵升阶*/	
+function Protocols.unpack_divine_advance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*神兵铸魂*/	
+function Protocols.pack_divine_spirit ( id ,protect ,improve)
+	local output = Packet.new(CMSG_DIVINE_SPIRIT)
+	output:writeU32(id)
+	output:writeU32(protect)
+	output:writeU32(improve)
+	return output
+end
+
+-- /*神兵铸魂*/	
+function Protocols.call_divine_spirit ( playerInfo, id ,protect ,improve)
+	local output = Protocols.	pack_divine_spirit ( id ,protect ,improve)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*神兵铸魂*/	
+function Protocols.unpack_divine_spirit (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.protect = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.improve = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*查询全民boss信息*/	
+function Protocols.pack_query_mass_boss_info ( id)
+	local output = Packet.new(CMSG_QUERY_MASS_BOSS_INFO)
+	output:writeByte(id)
+	return output
+end
+
+-- /*查询全民boss信息*/	
+function Protocols.call_query_mass_boss_info ( playerInfo, id)
+	local output = Protocols.	pack_query_mass_boss_info ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*查询全民boss信息*/	
+function Protocols.unpack_query_mass_boss_info (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*全民boss信息结果*/	
+function Protocols.pack_mass_boss_info_ret ( count ,percent)
+	local output = Packet.new(SMSG_MASS_BOSS_INFO_RET)
+	output:writeU32(count)
+	output:writeByte(percent)
+	return output
+end
+
+-- /*全民boss信息结果*/	
+function Protocols.call_mass_boss_info_ret ( playerInfo, count ,percent)
+	local output = Protocols.	pack_mass_boss_info_ret ( count ,percent)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*全民boss信息结果*/	
+function Protocols.unpack_mass_boss_info_ret (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.count = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.percent = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*查询全民boss排行榜*/	
+function Protocols.pack_query_mass_boss_rank ( id)
+	local output = Packet.new(CMSG_QUERY_MASS_BOSS_RANK)
+	output:writeByte(id)
+	return output
+end
+
+-- /*查询全民boss排行榜*/	
+function Protocols.call_query_mass_boss_rank ( playerInfo, id)
+	local output = Protocols.	pack_query_mass_boss_rank ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*查询全民boss排行榜*/	
+function Protocols.unpack_query_mass_boss_rank (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*全民boss排行结果*/	
+function Protocols.pack_mass_boss_rank_result ( info)
+	local output = Packet.new(SMSG_MASS_BOSS_RANK_RESULT)
+	output:writeI16(#info)
+	for i = 1,#info,1
+	do
+		info[i]:write(output)
+	end
+	return output
+end
+
+-- /*全民boss排行结果*/	
+function Protocols.call_mass_boss_rank_result ( playerInfo, info)
+	local output = Protocols.	pack_mass_boss_rank_result ( info)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*全民boss排行结果*/	
+function Protocols.unpack_mass_boss_rank_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.info = {}
+	for i = 1,len,1
+	do
+		local stru = mass_boss_rank_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.info,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*挑战全民boss*/	
+function Protocols.pack_try_mass_boss ( id)
+	local output = Packet.new(CMSG_TRY_MASS_BOSS)
+	output:writeByte(id)
+	return output
+end
+
+-- /*挑战全民boss*/	
+function Protocols.call_try_mass_boss ( playerInfo, id)
+	local output = Protocols.	pack_try_mass_boss ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*挑战全民boss*/	
+function Protocols.unpack_try_mass_boss (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*购买挑战全民boss次数*/	
+function Protocols.pack_buy_mass_boss_times ( cnt)
+	local output = Packet.new(CMSG_BUY_MASS_BOSS_TIMES)
+	output:writeByte(cnt)
+	return output
+end
+
+-- /*购买挑战全民boss次数*/	
+function Protocols.call_buy_mass_boss_times ( playerInfo, cnt)
+	local output = Protocols.	pack_buy_mass_boss_times ( cnt)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*购买挑战全民boss次数*/	
+function Protocols.unpack_buy_mass_boss_times (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.cnt = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*组队副本跨服匹配*/	
+function Protocols.pack_group_instance_match ( indx)
+	local output = Packet.new(CMSG_GROUP_INSTANCE_MATCH)
+	output:writeByte(indx)
+	return output
+end
+
+-- /*组队副本跨服匹配*/	
+function Protocols.call_group_instance_match ( playerInfo, indx)
+	local output = Protocols.	pack_group_instance_match ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*组队副本跨服匹配*/	
+function Protocols.unpack_group_instance_match (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*法宝激活*/	
+function Protocols.pack_talisman_active ( id)
+	local output = Packet.new(CMSG_TALISMAN_ACTIVE)
+	output:writeU32(id)
+	return output
+end
+
+-- /*法宝激活*/	
+function Protocols.call_talisman_active ( playerInfo, id)
+	local output = Protocols.	pack_talisman_active ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*法宝激活*/	
+function Protocols.unpack_talisman_active (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*法宝注灵*/	
+function Protocols.pack_talisman_lvup ( id)
+	local output = Packet.new(CMSG_TALISMAN_LVUP)
+	output:writeU32(id)
+	return output
+end
+
+-- /*法宝注灵*/	
+function Protocols.call_talisman_lvup ( playerInfo, id)
+	local output = Protocols.	pack_talisman_lvup ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*法宝注灵*/	
+function Protocols.unpack_talisman_lvup (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -11420,7 +11959,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_change_line = self.call_change_line
 	playerInfo.call_roll_world_boss_treasure = self.call_roll_world_boss_treasure
 	playerInfo.call_roll_result = self.call_roll_result
-	playerInfo.call_world_boss_rank = self.call_world_boss_rank
+	playerInfo.call_boss_rank = self.call_boss_rank
 	playerInfo.call_rank_add_like = self.call_rank_add_like
 	playerInfo.call_rank_add_like_result = self.call_rank_add_like_result
 	playerInfo.call_res_instance_enter = self.call_res_instance_enter
@@ -11462,7 +12001,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_kuafu_3v3_match_oper = self.call_kuafu_3v3_match_oper
 	playerInfo.call_kuafu_3v3_decline_match = self.call_kuafu_3v3_decline_match
 	playerInfo.call_kuafu_xianfu_match = self.call_kuafu_xianfu_match
-	playerInfo.call_kuafu_xianfu_match_wait = self.call_kuafu_xianfu_match_wait
+	playerInfo.call_kuafu_match_wait = self.call_kuafu_match_wait
 	playerInfo.call_kuafu_xianfu_minimap_info = self.call_kuafu_xianfu_minimap_info
 	playerInfo.call_buy_xianfu_item = self.call_buy_xianfu_item
 	playerInfo.call_xianfu_random_respawn = self.call_xianfu_random_respawn
@@ -11517,6 +12056,19 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_get_faction_gift_rank_page = self.call_get_faction_gift_rank_page
 	playerInfo.call_show_faction_gift_rank_result_list = self.call_show_faction_gift_rank_result_list
 	playerInfo.call_show_faction_gift_rank_change = self.call_show_faction_gift_rank_change
+	playerInfo.call_show_faction_gift_rank_info = self.call_show_faction_gift_rank_info
+	playerInfo.call_divine_forge = self.call_divine_forge
+	playerInfo.call_divine_advance = self.call_divine_advance
+	playerInfo.call_divine_spirit = self.call_divine_spirit
+	playerInfo.call_query_mass_boss_info = self.call_query_mass_boss_info
+	playerInfo.call_mass_boss_info_ret = self.call_mass_boss_info_ret
+	playerInfo.call_query_mass_boss_rank = self.call_query_mass_boss_rank
+	playerInfo.call_mass_boss_rank_result = self.call_mass_boss_rank_result
+	playerInfo.call_try_mass_boss = self.call_try_mass_boss
+	playerInfo.call_buy_mass_boss_times = self.call_buy_mass_boss_times
+	playerInfo.call_group_instance_match = self.call_group_instance_match
+	playerInfo.call_talisman_active = self.call_talisman_active
+	playerInfo.call_talisman_lvup = self.call_talisman_lvup
 end
 
 local unpack_handler = {
@@ -11722,7 +12274,7 @@ local unpack_handler = {
 [CMSG_CHANGE_LINE] =  Protocols.unpack_change_line,
 [CMSG_ROLL_WORLD_BOSS_TREASURE] =  Protocols.unpack_roll_world_boss_treasure,
 [SMSG_ROLL_RESULT] =  Protocols.unpack_roll_result,
-[SMSG_WORLD_BOSS_RANK] =  Protocols.unpack_world_boss_rank,
+[SMSG_BOSS_RANK] =  Protocols.unpack_boss_rank,
 [CMSG_RANK_ADD_LIKE] =  Protocols.unpack_rank_add_like,
 [SMSG_RANK_ADD_LIKE_RESULT] =  Protocols.unpack_rank_add_like_result,
 [CMSG_RES_INSTANCE_ENTER] =  Protocols.unpack_res_instance_enter,
@@ -11764,7 +12316,7 @@ local unpack_handler = {
 [CMSG_KUAFU_3V3_MATCH_OPER] =  Protocols.unpack_kuafu_3v3_match_oper,
 [SMSG_KUAFU_3V3_DECLINE_MATCH] =  Protocols.unpack_kuafu_3v3_decline_match,
 [CMSG_KUAFU_XIANFU_MATCH] =  Protocols.unpack_kuafu_xianfu_match,
-[SMSG_KUAFU_XIANFU_MATCH_WAIT] =  Protocols.unpack_kuafu_xianfu_match_wait,
+[SMSG_KUAFU_MATCH_WAIT] =  Protocols.unpack_kuafu_match_wait,
 [SMSG_KUAFU_XIANFU_MINIMAP_INFO] =  Protocols.unpack_kuafu_xianfu_minimap_info,
 [CMSG_BUY_XIANFU_ITEM] =  Protocols.unpack_buy_xianfu_item,
 [CMSG_XIANFU_RANDOM_RESPAWN] =  Protocols.unpack_xianfu_random_respawn,
@@ -11819,6 +12371,19 @@ local unpack_handler = {
 [CMSG_GET_FACTION_GIFT_RANK_PAGE] =  Protocols.unpack_get_faction_gift_rank_page,
 [SMSG_SHOW_FACTION_GIFT_RANK_RESULT_LIST] =  Protocols.unpack_show_faction_gift_rank_result_list,
 [SMSG_SHOW_FACTION_GIFT_RANK_CHANGE] =  Protocols.unpack_show_faction_gift_rank_change,
+[SMSG_SHOW_FACTION_GIFT_RANK_INFO] =  Protocols.unpack_show_faction_gift_rank_info,
+[CMSG_DIVINE_FORGE] =  Protocols.unpack_divine_forge,
+[CMSG_DIVINE_ADVANCE] =  Protocols.unpack_divine_advance,
+[CMSG_DIVINE_SPIRIT] =  Protocols.unpack_divine_spirit,
+[CMSG_QUERY_MASS_BOSS_INFO] =  Protocols.unpack_query_mass_boss_info,
+[SMSG_MASS_BOSS_INFO_RET] =  Protocols.unpack_mass_boss_info_ret,
+[CMSG_QUERY_MASS_BOSS_RANK] =  Protocols.unpack_query_mass_boss_rank,
+[SMSG_MASS_BOSS_RANK_RESULT] =  Protocols.unpack_mass_boss_rank_result,
+[CMSG_TRY_MASS_BOSS] =  Protocols.unpack_try_mass_boss,
+[CMSG_BUY_MASS_BOSS_TIMES] =  Protocols.unpack_buy_mass_boss_times,
+[CMSG_GROUP_INSTANCE_MATCH] =  Protocols.unpack_group_instance_match,
+[CMSG_TALISMAN_ACTIVE] =  Protocols.unpack_talisman_active,
+[CMSG_TALISMAN_LVUP] =  Protocols.unpack_talisman_lvup,
 
 }
 

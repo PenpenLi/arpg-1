@@ -4,10 +4,10 @@
 
 
 tb_faction_donation = {
-	--  id:int	捐献类型
-	--  cost:array	捐献消耗资源
-	--  devote:int	帮贡
-	--  money:int	帮派资金
-	[1] = {id = 1,cost = {{2,10}},devote = 10,money = 30,},
-	[2] = {id = 2,cost = {{0,10}},devote = 20,money = 40,},
+	--  id:int 捐献类型
+	--  cost:array 捐献消耗资源
+	--  devote:int 帮贡
+	--  money:int 帮派资金
+	[1] = {id = 1, cost = {{2,10}}, devote = 10, money = 30},
+	[2] = {id = 2, cost = {{0,10}}, devote = 20, money = 40},
 }

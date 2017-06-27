@@ -4,8 +4,8 @@
 
 
 tb_quest_daily2_finish_reward = {
-	--  id:int	不能等级段不同完成数的奖励id
-	--  rewards:array	奖励
-	[1] = {id = 1,rewards = {{104,200000}},},
-	[2] = {id = 2,rewards = {{104,300000}},},
+	--  id:int 不能等级段不同完成数的奖励id
+	--  rewards:array 奖励
+	[1] = {id = 1, rewards = {{104,200000}}},
+	[2] = {id = 2, rewards = {{104,300000}}},
 }

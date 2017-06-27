@@ -21,6 +21,7 @@ globalValue:RandomStepWorldBossIfNeverDoes()
 config = {
 	--以下来自原来的配置文件
 	max_player_level = 100					,--最大等级
+	
 	new_player_protected_level = 30			,--新手保护最大等级
 		
 	jump_cd = 4								,--跳cd
@@ -151,6 +152,10 @@ config = {
 		CMSG_BACK_TO_FAMITY,		-- 返回家族
 		CMSG_CHALLANGE_BOSS,		-- 挑战boss
 		CMSG_PICK_OFFLINE_REWARD,
+		
+		CMSG_TRY_MASS_BOSS,			-- 挑战全民boss
+		CMSG_QUERY_MASS_BOSS_INFO,	-- 查询挑战人员个数
+		CMSG_QUERY_MASS_BOSS_RANK,	-- 查询排行榜
 
 		--CMSG_CHANGE_LINE,
 		--[[
@@ -274,6 +279,10 @@ function load_lua_scripts()
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
+		
+		{'全民boss'				,'scened/instance/instance_mass_boss'},
+		{'跨服组队副本'			,'scened/instance/instance_kuafu_group'},
+		
 		{'LUA之GM命令'		,'scened/gm_command'},
 	}
 	local i = 0
@@ -305,11 +314,33 @@ INSTANCE_SCRIPT_TABLE = {
 	[2014] = InstanceResGold,
 	[2015] = InstanceResGem,
 	[2018] = InstanceXianfuTest,
+	
+	[2019] = InstanceMassBoss,
+	[2020] = InstanceMassBoss,
+	[2021] = InstanceMassBoss,
+	[2022] = InstanceMassBoss,
+	[2023] = InstanceMassBoss,
+	[2024] = InstanceMassBoss,
+	[2025] = InstanceMassBoss,
+	[2026] = InstanceMassBoss,
+	[2027] = InstanceMassBoss,
+	[2028] = InstanceMassBoss,	
 
 	[3001] = InstanceDoujiantai,
 	[3002] = InstanceKuafu3v3,
 	[3003] = InstanceKuafuXianfu,
 	[3005] = InstanceXiulianchang,
+	
+	[3006] = InstanceKuafuGroup,
+	[3007] = InstanceKuafuGroup,
+	[3008] = InstanceKuafuGroup,
+	[3009] = InstanceKuafuGroup,
+	[3010] = InstanceKuafuGroup,
+	[3011] = InstanceKuafuGroup,
+	[3012] = InstanceKuafuGroup,
+	[3013] = InstanceKuafuGroup,
+	[3014] = InstanceKuafuGroup,
+	[3015] = InstanceKuafuGroup,
 	
 	[4001] = InstanceRemind0,
 	[4002] = InstanceRemind0,
@@ -325,6 +356,10 @@ function GetRespawnPos()
 	return {55,19}
 end
 
+-- 副本是否有时间限制
+function isMapTimeLimit(mapid)
+	return tb_map[mapid] and tb_map[mapid].isTimeLimit == 1
+end
 
 -- 获取地图模板名称
 function GetMapTemplateName(mapid)

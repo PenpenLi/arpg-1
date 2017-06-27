@@ -6,6 +6,7 @@ InstanceInstBase.Time_Out_Fail_Callback = "instanceFail"
 
 InstanceInstBase.Leave_Callback = "prepareToLeave"
 InstanceInstBase.player_auto_respan = 9
+InstanceInstBase.exit_time = 10
 
 function InstanceInstBase:ctor(  )
 	
@@ -14,6 +15,16 @@ end
 --初始化脚本函数
 function InstanceInstBase:OnInitScript(  )
 	Instance_base.OnInitScript(self) --调用基类
+end
+
+-- 判断是否能退出副本
+function InstanceInstBase:DoPlayerExitInstance(player)
+	local playerInfo = UnitInfo:new {ptr = player}
+	-- 死了让他活
+	if not playerInfo:IsAlive() then
+		unitLib.Respawn(player, RESURRECTION_SPAWNPOINT, 100)
+	end
+	return 1	--返回1的话为正常退出，返回0则不让退出
 end
 
 

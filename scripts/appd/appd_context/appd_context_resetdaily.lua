@@ -108,4 +108,7 @@ function PlayerInfo:onRealReset()
 	
 	self:DailyResetFactionBuildingSpeedUpDailyCount()
 	self:DailyResetFactionDonateGiftExchangeDailyCount()
+	
+	
+	self:ResetMassBossTimes()
 end

@@ -220,7 +220,7 @@ function NotifyAllRankUpdate(map_ptr, rankInfo, rankList)
 		local unitInfo = UnitInfo:new {ptr = player}
 		local mine = tmp[unitInfo:GetName()]
 		mine = mine or 0
-		unitInfo:call_world_boss_rank(rankList, mine)
+		unitInfo:call_boss_rank(1, rankList, mine)
 	end
 end
 

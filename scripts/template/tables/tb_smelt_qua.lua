@@ -4,6 +4,6 @@
 
 
 tb_smelt_qua = {
-	--  id:int	ID
-	[1] = {id = 1,},
+	--  id:int ID
+	[1] = {id = 1},
 }

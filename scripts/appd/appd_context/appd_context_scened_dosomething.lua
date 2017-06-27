@@ -111,5 +111,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		
 		local list = Change_To_Item_Reward_Info(dict)
 		self:call_offline_reward_result (sell, data, 0, 0, list)
+	elseif SCENED_APPD_ENTER_MASS_BOSS_INSTANCE == ntype then
+		self:checkMassBossMapTeleport(data)
 	end
 end

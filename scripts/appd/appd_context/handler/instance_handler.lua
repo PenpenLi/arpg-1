@@ -34,3 +34,38 @@ end
 function PlayerInfo:Handle_World_Boss_Enroll(pkt)
 	onEnrole(self)
 end
+
+
+function PlayerInfo:Handle_Buy_Mass_Boss_Times(pkt)
+	local cnt = pkt.cnt
+	if cnt <= 0 then
+		return
+	end
+	
+	-- 购买次数不能超过上限
+	local buyed = self:GetMassBossBuyedTimes()
+	if buyed + cnt > #tb_mass_boss_times then
+		return
+	end
+	
+	-- 次数满了不能购买
+	local curr = self:getMassBossTimes()
+	if curr + cnt > tb_mass_boss_base[ 1 ].dailytimes then
+		return
+	end
+		
+	local cost = {}
+	for i = 1, cnt do
+		local config = tb_mass_boss_times[buyed+i]
+		for _, rinfo in pairs(config.cost) do
+			AddTempInfoIfExist(cost, rinfo[ 1 ], rinfo[ 2 ])
+		end
+	end
+	
+	if not self:costMoneys(MONEY_CHANGE_MASS_BOSS_BUY_TIMES, cost, 1) then
+		return
+	end
+	
+	self:AddMassBossBuyedTimes(cnt)
+	self:AddMassBossTimes(cnt)
+end

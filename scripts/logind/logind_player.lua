@@ -86,6 +86,22 @@ function LogindPlayer:SelectKuafuMapid(warid, kuafu_type, number, reverse, rever
 		local offsetY = randInt(-offset, offset)
 		self:SetTeleportInfo(KUAFU_XIANFU_MAPID, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, general_id)
 		return true
+	elseif (kuafu_type == KUAFU_TYPE_GROUP_INSTANCE) then
+		local general_id = string.format("group_instance_%s|%d", reverse_str, reverse)		--warid即房间id
+		if reverse < 1 or reverse > #tb_group_instance_base then
+			reverse = #tb_group_instance_base
+		end
+		local config = tb_group_instance_base[reverse]
+		local pos = config.enterPos
+		
+		--生命回满
+		self:SetHealth(self:GetMaxHealth())
+		local offset = 2
+		local offsetX = randInt(-offset, offset)
+		local offsetY = randInt(-offset, offset)
+		local mapid = config.mapid
+		self:SetTeleportInfo(mapid, pos[ 1 ] + offsetX, pos[ 2 ] + offsetY, general_id)
+		return true
 	end
 	
 	return false

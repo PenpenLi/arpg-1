@@ -71,7 +71,7 @@ function PlayerInfo:OnCheckWorldXianfuMatch()
 				local target = dict.target
 				local count = dict.count
 				outFmtDebug("taget = %d, count = %d", target, count)
-				self:call_kuafu_xianfu_match_wait(target ,count)
+				self:call_kuafu_match_wait(KUAFU_TYPE_XIANFU, target ,count)
 			elseif dict.ret == 2 then
 				outFmtDebug("== player on cancel match, %s", self:GetGuid())
 				self:OnCancelMatch(KUAFU_TYPE_XIANFU)

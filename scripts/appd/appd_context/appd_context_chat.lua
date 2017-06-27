@@ -409,6 +409,7 @@ function PlayerInfo:GmCommand(str)
 		pkt4.reserve_int2 = 1
 		self:Handle_Faction_People(pkt4)
 		--]]
+		--[[
 		local pkt= {}
 		pkt.list = {{1201,4}}			--道具list
 		pkt.msg = "aaa"
@@ -443,7 +444,13 @@ function PlayerInfo:GmCommand(str)
 		pkt4.opt_type = FACTION_MANAGER_TYPE_GIFT_SHOW_PAGE
 		pkt4.reserve_int1 = 1
 		--self:Handle_Faction_People(pkt4)
+		--]]
 		
+		local pkt = {}
+		pkt.id = 1
+		--self:Handle_Talisman_Active(pkt)
+		
+		self:Handle_Talisman_Lvup(pkt)
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

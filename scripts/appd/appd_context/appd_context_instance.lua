@@ -224,3 +224,14 @@ function DoWorldBossTeleport(playerDict, roomInfo)
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_WORLD_BOSS)
 	end
 end
+
+function PlayerInfo:checkMassBossMapTeleport(id)
+	--[[
+	-- ÏµÍ³Î´¼¤»î
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_VIP)) then
+		return
+	end
+	--]]
+	local instMgr = self:getInstanceMgr()
+	instMgr:checkIfCanEnterMassBoss(id)
+end

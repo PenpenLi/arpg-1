@@ -4,7 +4,7 @@
 
 
 tb_map_jump_point = {
-	--  id:int	地图编号
-	--  jumps:array	跳点列表
-	[1001] = {id = 1001,jumps = {1,2},},
+	--  id:int 地图编号
+	--  jumps:array 跳点列表
+	[1001] = {id = 1001, jumps = {1,2}},
 }

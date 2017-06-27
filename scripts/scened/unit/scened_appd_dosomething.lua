@@ -106,6 +106,8 @@ function DoScenedAppGetAppdDoSomething( ntype, data, str)
 		OnFightWorldBoss(data)
 	elseif ntype == APPD_SCENED_WORLD_BOSS_END then
 		OnWorldBossEnd()
+	elseif ntype == APPD_SCENED_MASS_BOSS_REBORN then
+		onMassBossReborn(data)
 	end
 end
 

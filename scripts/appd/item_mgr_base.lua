@@ -99,7 +99,7 @@ function ItemMgrBase:addItem(entry, count, isBind, isAppaisal, isSystem, strong_
 		
 		local bag_pos = self.itemMgr:Add(item.item, bag_type, pos)
 		
-		if item_tempate.type == ITEM_TYPE_EQUIP and table.find(item_tempate.availableGender, self:getOwner():GetGender()) then
+		if item_tempate.type == ITEM_TYPE_EQUIP then --and table.find(item_tempate.availableGender, self:getOwner():GetGender()) then
 			-- 与背包对应位置装备战力比较
 			local equiped_item = self:getBagItemByPos(BAG_TYPE_EQUIP,item_tempate.pos)
 	

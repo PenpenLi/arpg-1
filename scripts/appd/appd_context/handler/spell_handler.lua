@@ -330,3 +330,92 @@ function PlayerInfo:Handle_Divine_Switch(pkt)
 
 	
 end
+
+--神兵强化
+function PlayerInfo:Handle_Divine_Forge(pkt)
+	local id = pkt.id
+	local count = pkt.count
+	if tb_divine_base[id] == nil then
+		outFmtError("table has no divine id = %d", id)
+		return
+	end
+	local spellMgr = self:getSpellMgr()
+	if not spellMgr:hasDivine(id) then
+		outFmtError("forge divine - player has not already active divine id = %d", id)
+		return
+	end
+	
+	if count == 1 then
+		self:DivineForgeUpLev(id)
+	elseif count == 5 then
+		for i = 1,5 do
+			self:DivineForgeUpLev(id)
+		end
+	end
+end
+
+--神兵升阶
+function PlayerInfo:Handle_Divine_Advance(pkt)
+	local id = pkt.id
+	if tb_divine_base[id] == nil then
+		outFmtError("table has no divine id = %d", id)
+		return
+	end
+	local spellMgr = self:getSpellMgr()
+	if not spellMgr:hasDivine(id) then
+		outFmtError("advance divine - player has not already active divine id = %d", id)
+		return
+	end
+	
+	self:DivineAdvanceUpLev(id)
+end
+
+--神兵铸魂
+function PlayerInfo:Handle_Divine_Spirit(pkt)
+	local id = pkt.id
+	local protect = pkt.protect
+	local improve = pkt.improve
+	if tb_divine_base[id] == nil then
+		outFmtError("table has no divine id = %d", id)
+		return
+	end
+	local spellMgr = self:getSpellMgr()
+	if not spellMgr:hasDivine(id) then
+		outFmtError("spirit divine - player has not already active divine id = %d", id)
+		return
+	end
+	
+	self:DivineSpiritUpLev(id,protect,improve)
+end
+
+--法宝激活
+function PlayerInfo:Handle_Talisman_Active(pkt)
+	local id = pkt.id
+	if tb_talisman_base[id] == nil then
+		outFmtError("table has no talisman id = %d", id)
+		return
+	end
+	local spellMgr = self:getSpellMgr()
+	if spellMgr:hasTalisman(id) then
+		outFmtError("active talisman - player has already active talisman id = %d", id)
+		return
+	end
+	
+	self:TalismanActive(id)
+end
+
+--法宝注灵
+function PlayerInfo:Handle_Talisman_Lvup(pkt)
+	local id = pkt.id
+	if tb_talisman_base[id] == nil then
+		outFmtError("table has no talisman id = %d", id)
+		return
+	end
+	local spellMgr = self:getSpellMgr()
+	if not spellMgr:hasTalisman(id) then
+		outFmtError("lvup talisman - player has not already active talisman id = %d", id)
+		return
+	end
+	
+	self:TalismanLvUp(id)
+end

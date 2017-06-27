@@ -170,52 +170,16 @@ function UnitInfo:SetSpellCD(spell_id, nowtime)
 	if config ~= nil then
 		local levelIndex = self:GetSpellLvIndex(spell_id)
 		local upConfig = tb_skill_uplevel[levelIndex]
-		local category_cd = OnAttackSpeedChangeToShortenInterval(self:GetAttackSpeed(), config.groupCD)
-		local single_cd = OnAttackSpeedChangeToShortenInterval(self:GetAttackSpeed(), config.singleCD - upConfig.mcd)
-		local self_cd = OnAttackSpeedChangeToShortenInterval(self:GetAttackSpeed(), config.self_cd)
-		local group = config.group	--技能族(同一技能族共享公共CD)
+		local category_cd = config.groupCD
+		local single_cd = config.singleCD - upConfig.mcd
 		
-		if group > 0 then
-			-- 一定装备在技能槽
-			-- 给同一族的技能设置公共CD
-			-- 给当前技能设置设置max(single_cd, group_cd)
-			if self:HasSpell(spell_id) then
-				for i = PLAYER_INT_FIELD_SPELL_START, PLAYER_INT_FIELD_SPELL_END-1 do
-					local temp_id = self:GetPlayerUInt16(i, SHORT_SLOT_SPELL_ID)
-					if tb_skill_base[temp_id] ~= nil and group == tb_skill_base[temp_id].group then
-						local tcd = category_cd
-						if temp_id == spell_id then
-							if single_cd > tcd then
-								tcd = single_cd
-							end
-						end
-						self:FinalSetSpellCD(temp_id, tcd + nowtime)
-					end
-				end
-			else
-				local follow = config.follow
-				local combats = {spell_id}
-				for _, spell in ipairs(follow) do
-					table.insert(combats, spell)
-				end
-					
-				for _, temp_id in ipairs(combats) do
-					local tcd = category_cd
-					if temp_id == spell_id then
-						if single_cd > tcd then
-							tcd = single_cd
-						end
-					end
-					self:FinalSetSpellCD(temp_id, tcd + nowtime)
-				end
-			end
-		else
+		if self:HasSpell(spell_id) then
 			-- 设置cd即可
 			self:FinalSetSpellCD(spell_id, nowtime + single_cd)
 		end
 		
 		-- 设置释放技能结束时间
-		self:SetCurSpellTime(nowtime + self_cd)
+		self:SetCurSpellTime(nowtime + category_cd)
 	end
 end
 

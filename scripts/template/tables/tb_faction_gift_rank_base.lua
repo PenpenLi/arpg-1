@@ -4,8 +4,8 @@
 
 
 tb_faction_gift_rank_base = {
-	--  id:int	序号
-	--  update_cycle:int	更新周期(天)
-	--  max_round:int	总轮数
-	[1] = {id = 1,update_cycle = 7,max_round = 1,},
+	--  id:int 序号
+	--  update_cycle:int 更新周期(天)
+	--  max_round:int 总轮数
+	[1] = {id = 1, update_cycle = 7, max_round = 1},
 }

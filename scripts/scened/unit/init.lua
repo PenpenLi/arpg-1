@@ -462,13 +462,10 @@ function UnitInfo:GetSpells()
 			if 1 <= config.skill_slot and config.skill_slot <= 5 then
 				local level = self:GetPlayerByte(i, 2)
 				local slot  = self:GetPlayerByte(i, 3)
-				local self_cd = config.self_cd
+				local groupCD = config.groupCD
 				local rate = 0
-				table.insert(spells, {id, rate, self_cd, level, slot})
+				table.insert(spells, {id, rate, groupCD, level, slot})
 			end
-			--if slot == 1 then
-			--	total_slot_1_cd = total_slot_1_cd + self_cd
-			--end
 		end
 	end
 	
@@ -1381,6 +1378,12 @@ function GetFactionGuid(player_ptr)
 	local player_data_ptr = playerLib.GetSession(player_ptr)
 	return binLogLib.GetStr(player_data_ptr, PLAYER_STRING_FIELD_FACTION_GUID)
 end
+
+function GetPlayerGuid(player_ptr)
+	local player_data_ptr = playerLib.GetSession(player_ptr)
+	return binLogLib.GetStr(player_data_ptr, BINLOG_STRING_FIELD_GUID)
+end
+
 
 function GetAailableSectionid(player_ptr)
 	local player_data_ptr = playerLib.GetSession(player_ptr)

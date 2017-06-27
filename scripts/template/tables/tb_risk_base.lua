@@ -4,8 +4,8 @@
 
 
 tb_risk_base = {
-	--  id:int	ID
-	--  pos_offset:int	刷新怪物坐标误差
-	--  firstSection:int	首关卡的id
-	[1] = {id = 1,pos_offset = 2,firstSection = 1001001,},
+	--  id:int ID
+	--  pos_offset:int 刷新怪物坐标误差
+	--  firstSection:int 首关卡的id
+	[1] = {id = 1, pos_offset = 2, firstSection = 1001001},
 }

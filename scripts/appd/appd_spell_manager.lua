@@ -395,7 +395,47 @@ function AppSpellMgr:calculDivineAttr(attrs)
 	local allForce = 0
 	for k,v in pairs(tab) do
 		local id = (k-1) * #tb_divine_bless + v + 1
-		local config = tb_divine_streng[id].props
+		--local config = tb_divine_streng[id].props
+		
+		local props_table = {}
+		for _,prop in pairs(tb_divine_base[k].props) do
+			props_table[prop[1]] = prop[2]
+		end
+		local index = self:GetDivineIndex(k)
+		local forge_lv = self:GetDivineForgeLv(index)
+		local advance_lv = self:GetDivineAdvanceLv(index)
+		local spirit_lv = self:GetDivineSpiritLv(index)
+		
+		local spirit_attr_scale = (tb_divine_spirit[spirit_lv].attr_scale + 100)/100
+		
+		local forge_attr_id = tb_divine_forge[forge_lv].attr_id
+		local forge_attr_value = tb_divine_forge[forge_lv].attr_value
+		
+		for key,attr_id in pairs(forge_attr_id) do
+			if props_table[attr_id] then
+				props_table[attr_id] = props_table[attr_id] + forge_attr_value[key] * spirit_attr_scale
+			end
+		end
+		
+		if advance_lv > 0 then
+			for advance_index = k*100 + 1,k*100 + advance_lv do
+				local advance_config = tb_divine_advance[advance_index]
+				local attr_id = advance_config.attr_id
+				local attr_value = advance_config.attr_value
+				if props_table[attr_id] then
+					props_table[attr_id] = props_table[attr_id] + attr_value
+				else
+					props_table[attr_id] = attr_value
+				end
+			end
+		end
+		
+		local config = {}
+		for attr_id,attr_value in pairs(props_table) do
+			table.insert(config,{attr_id,attr_value})
+			
+		end
+		
 		local baseForce = DoAnyOneCalcForceByAry(config)
 		allForce = allForce + baseForce
 		for i=1,#config do
@@ -564,7 +604,180 @@ function AppSpellMgr:DivineSkillUpLev(skillid)
 	return false
 end
 
+
+--神兵培养
+--取得神兵下标
+function AppSpellMgr:GetDivineIndex(divineId)
+	for i = SPELL_DIVINE_START, SPELL_DIVINE_END, MAX_DIVINE_COUNT do
+		if self:GetByte(i,0) == divineId then
+			return i
+		end
+	end
+	return 0
+end
+
+--铸造
+function AppSpellMgr:GetDivineForgeLv(index)
+	return self:GetByte(index + DIVINE_IMPROVE,0)
+end
+
+function AppSpellMgr:SetDivineForgeLv(index,value)
+	self:SetByte(index + DIVINE_IMPROVE,0,value)
+end
+
+--升阶
+function AppSpellMgr:GetDivineAdvanceLv(index)
+	return self:GetByte(index + DIVINE_IMPROVE,1)
+end
+
+function AppSpellMgr:SetDivineAdvanceLv(index,value)
+	self:SetByte(index + DIVINE_IMPROVE,1,value)
+end
+
+--铸魂
+function AppSpellMgr:GetDivineSpiritLv(index)
+	return self:GetByte(index + DIVINE_IMPROVE,2)
+end
+
+function AppSpellMgr:SetDivineSpiritLv(index,value)
+	self:SetByte(index + DIVINE_IMPROVE,2,value)
+end
+
+
 ----------------------------------------------神兵结束-------------------------------------------
+
+----------------------------------------------法宝-------------------------------------------
+
+function AppSpellMgr:GetTalismanIndex(id)
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+		if self:GetByte(i,0) == id then
+			return i
+		end
+	end
+	return 0
+end
+
+function AppSpellMgr:AddTalisman(id)
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+		if self:GetByte(i,0) == id then
+			return
+		end
+		if self:GetByte(i,0) == 0 then
+			self:SetByte(i,0,id)
+			return
+		end
+	end
+end
+
+function AppSpellMgr:SetTalismanLv(index, value)
+	self:SetByte(index,1,value)
+end
+
+function AppSpellMgr:GetTalismanLv(index)
+	return self:GetByte(index,1)
+end
+
+function AppSpellMgr:SetTalismanForce(index,value)
+	self:SetUInt32(index + TALISMAN_FORCE,value)
+end
+
+function AppSpellMgr:GetTalismanForce(index)
+	return self:GetUInt32(index + TALISMAN_FORCE)
+end
+
+--获取法宝列表
+function AppSpellMgr:getTalismanList()
+	local tab = {}
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+		local id = self:GetByte(i,0)
+		if id ~= 0  then
+			local lev = self:GetByte(i,1)
+			tab[id] = lev
+		end
+	end
+	return tab
+end
+
+function AppSpellMgr:hasTalisman(id)
+	for i = SPELL_TALISMAN_START, SPELL_TALISMAN_END, MAX_TALISMAN_COUNT do
+		if self:GetByte(i,0) == id then
+			return true
+		end
+	end
+	return false
+end
+
+
+--重算法宝战力
+function AppSpellMgr:calculTalismanForce(id)
+	local index = self:GetTalismanIndex(id)
+	local curlev = self:GetTalismanLv(index)
+	
+	local props_table = {}
+	for _,prop in pairs(tb_talisman_base[id].props) do
+		props_table[prop[1]] = prop[2]
+	end
+	
+	local spirit_attr_id = tb_talisman_spirit[curlev].attr_id
+	local spirit_attr_value = tb_talisman_spirit[curlev].attr_value
+	
+	for key,attr_id in pairs(spirit_attr_id) do
+		if props_table[attr_id] then
+			props_table[attr_id] = props_table[attr_id] + spirit_attr_value[key]
+		end
+	end
+	
+	local config = {}
+	for attr_id,attr_value in pairs(props_table) do
+		table.insert(config,{attr_id,attr_value})
+		
+	end
+	
+	local baseForce = DoAnyOneCalcForceByAry(config)
+	self:SetTalismanForce(index,baseForce)
+end
+
+
+--法宝属性总加成
+function AppSpellMgr:calculTalismanAttr(attrs)
+	local tab = self:getTalismanList()
+	--Ttab(attrs)
+	local allForce = 0
+	for k,v in pairs(tab) do
+		local props_table = {}
+		for _,prop in pairs(tb_talisman_base[k].props) do
+			props_table[prop[1]] = prop[2]
+		end
+		local index = self:GetTalismanIndex(k)
+		local curlev = self:GetTalismanLv(index)
+		
+		local spirit_attr_id = tb_talisman_spirit[curlev].attr_id
+		local spirit_attr_value = tb_talisman_spirit[curlev].attr_value
+		
+		for key,attr_id in pairs(spirit_attr_id) do
+			if props_table[attr_id] then
+				props_table[attr_id] = props_table[attr_id] + spirit_attr_value[key]
+			end
+		end
+		
+		local config = {}
+		for attr_id,attr_value in pairs(props_table) do
+			table.insert(config,{attr_id,attr_value})
+			
+		end
+		
+		local baseForce = DoAnyOneCalcForceByAry(config)
+		allForce = allForce + baseForce
+		for i=1,#config do
+			attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
+		end
+	end
+	
+	local player = self:getOwner()
+	player:SetAllTalismanForce(allForce)
+	--Ttab(attrs)
+end
+----------------------------------------------法宝结束-------------------------------------------
 
 ----------------------------------------------强化宝石-----------------------------------------------
 -- 获取部位强化等级

@@ -3519,7 +3519,7 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 	--rankInsertTask(self:GetGuid(), RANK_TYPE_CHARM)
 	--self:AddGiftUncheckCount(index_queen,1)
 	self:AddGiftQueenUncheckCount(1)
-	--outFmtDebug("=============count: %d",self:GetGiftQueenUncheckCount())
+	outFmtDebug("=============count: %d",self:GetGiftQueenUncheckCount())
 	self:AddGiftWeekPoint(index_sender,point)
 	self:AddGiftSendCount(index_sender,1)
 	
@@ -3751,6 +3751,7 @@ function FactionInfo:ThankFactionGift(factionData,player,id,refresh_page )
 	
 	--self:SubGiftUncheckCount(index_queen,1)
 	self:SubGiftQueenUncheckCount(1)
+	outFmtDebug("=============count: %d",self:GetGiftQueenUncheckCount())
 	self:AddGiftUncheckCount(index_sender,1)
 	
 	outFmtInfo("============ThankFactionGift finish ")
@@ -3817,6 +3818,8 @@ function FactionInfo:ThankAndReplyFactionGift(factionData,player,id,reply_type,r
 			player:SetGiftReplyList(index,"")
 			player:SetGiftFlagThank(index,1)
 		end
+		self:SubGiftQueenUncheckCount(1)
+		outFmtDebug("=============count: %d",self:GetGiftQueenUncheckCount())
 		return
 	end
 	
@@ -3856,6 +3859,7 @@ function FactionInfo:ThankAndReplyFactionGift(factionData,player,id,reply_type,r
 	
 	--self:SubGiftUncheckCount(index_queen,1)
 	self:SubGiftQueenUncheckCount(1)
+	outFmtDebug("=============count: %d",self:GetGiftQueenUncheckCount())
 	self:AddGiftUncheckCount(index_sender,1)
 	
 	outFmtInfo("============ThankAndReplyFactionGift finish ")

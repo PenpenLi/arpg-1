@@ -4,10 +4,10 @@
 
 
 tb_worldboss_time = {
-	--  id:int	序号
-	--  time:array	开始的时间
-	--  notice:int	世界BOSS开始通知时间
-	--  enrolllast:int	世界BOSS报名持续分钟
-	--  time_last:int	世界BOSS持续分钟
-	[1] = {id = 1,time = {19,0},notice = 3,enrolllast = 1,time_last = 15,},
+	--  id:int 序号
+	--  time:array 开始的时间
+	--  notice:int 世界BOSS开始通知时间
+	--  enrolllast:int 世界BOSS报名持续分钟
+	--  time_last:int 世界BOSS持续分钟
+	[1] = {id = 1, time = {19,0}, notice = 3, enrolllast = 1, time_last = 15},
 }

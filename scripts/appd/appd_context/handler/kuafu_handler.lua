@@ -247,6 +247,11 @@ function PlayerInfo:Handle_Doujiantai_Fight(pkt)
 		return
 	end
 	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		return 
+	end
+	
 	self:OnDoujiantaiFight(rank)
 end
 
@@ -298,4 +303,42 @@ end
 
 function PlayerInfo:Handle_Doujiantai_Top3(pkt)
 	self:GetTop3()
+end
+
+
+function PlayerInfo:Handle_Group_Instance_Match(pkt)
+	local indx = pkt.indx
+	-- index是否正确
+	if indx < 1 or indx > #tb_group_instance_base then
+		return
+	end
+	
+	-- 等级是否满足
+	local config = tb_group_instance_base[indx]
+	local levelRange = config.limLev
+	local level = self:GetLevel()
+	if not (levelRange[ 1 ] <= level and level <= levelRange[ 2 ]) then
+		return
+	end
+	
+	--[[
+	-- TODO:判断进入次数
+	local instMgr = self:getInstanceMgr()
+	if not instMgr:CheckXianfuDayTimes() then
+		return
+	end
+	--]]
+	
+	-- 模块没开 不让进
+	--[[
+	if not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_XIANFU) then
+		return
+	end
+	--]]
+	
+	local rt = self:OnGroupInstanceMatch(indx)
+	if rt then
+		-- 开始匹配
+		self:call_kuafu_match_start(KUAFU_TYPE_GROUP_INSTANCE)
+	end
 end

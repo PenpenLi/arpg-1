@@ -119,3 +119,8 @@ require("template.tables.tb_faction_monster")
 -- 世界冒险
 require("template.tables.tb_risk_base")
 require("template.tables.tb_risk_data")
+
+-- 全名boss
+require("template.tables.tb_mass_boss_base")
+require("template.tables.tb_mass_boss_info")
+require("template.tables.tb_mass_boss_loot")

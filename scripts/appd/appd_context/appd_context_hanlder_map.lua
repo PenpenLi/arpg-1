@@ -190,5 +190,17 @@ hanlders[CMSG_GET_ALL_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_All_Faction
 
 hanlders[CMSG_GET_FACTION_GIFT_RANK_PAGE] = PlayerInfo.Handle_Get_Faction_Gift_Rank_Page
 
+hanlders[CMSG_DIVINE_FORGE] = PlayerInfo.Handle_Divine_Forge
+hanlders[CMSG_DIVINE_ADVANCE] = PlayerInfo.Handle_Divine_Advance
+hanlders[CMSG_DIVINE_SPIRIT] = PlayerInfo.Handle_Divine_Spirit
+
+
+hanlders[CMSG_BUY_MASS_BOSS_TIMES] = PlayerInfo.Handle_Buy_Mass_Boss_Times
+
+hanlders[CMSG_TALISMAN_ACTIVE] = PlayerInfo.Handle_Talisman_Active
+hanlders[CMSG_TALISMAN_LVUP] = PlayerInfo.Handle_Talisman_Lvup
+
+hanlders[CMSG_GROUP_INSTANCE_MATCH] = PlayerInfo.Handle_Group_Instance_Match
+
 
 return hanlders

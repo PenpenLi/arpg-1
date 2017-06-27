@@ -4,8 +4,8 @@
 
 
 tb_quest_daily_base = {
-	--  id:int	序号
-	--  dailyLimit:int	每日上限
-	--  npcQuest:int	每日任务接取npc初始任务
-	[1] = {id = 1,dailyLimit = 20,npcQuest = 30001,},
+	--  id:int 序号
+	--  dailyLimit:int 每日上限
+	--  npcQuest:int 每日任务接取npc初始任务
+	[1] = {id = 1, dailyLimit = 20, npcQuest = 30001},
 }

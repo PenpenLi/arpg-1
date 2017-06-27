@@ -43,4 +43,10 @@ OpcodeHandlerFuncTable[CMSG_CHALLANGE_BOSS] = ScenedContext.Handle_Challange_Bos
 
 OpcodeHandlerFuncTable[CMSG_PICK_OFFLINE_REWARD] = ScenedContext.Handle_Pick_Offline_Reward
 
+OpcodeHandlerFuncTable[CMSG_TRY_MASS_BOSS] = ScenedContext.Handle_Try_Mass_Boss
+
+OpcodeHandlerFuncTable[CMSG_QUERY_MASS_BOSS_INFO] = ScenedContext.Handle_Query_Mass_Boss_Info
+
+OpcodeHandlerFuncTable[CMSG_QUERY_MASS_BOSS_RANK] = ScenedContext.Handle_Query_Mass_Boss_Rank
+
 return OpcodeHandlerFuncTable

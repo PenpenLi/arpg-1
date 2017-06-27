@@ -39,6 +39,14 @@ require("template.tables.tb_gem_rate")
 require("template.tables.tb_divine_base")
 require("template.tables.tb_divine_streng")
 require("template.tables.tb_divine_bless")
+require("template.tables.tb_divine_forge")
+require("template.tables.tb_divine_advance")
+require("template.tables.tb_divine_spirit")
+
+--法宝表
+require("template.tables.tb_talisman_base")
+require("template.tables.tb_talisman_spirit")
+
 
 --副本
 require("template.tables.tb_map_vip")
@@ -168,6 +176,14 @@ require("template.tables.tb_item_quality_color")
 -- 世界冒险
 require("template.tables.tb_risk_base")
 require("template.tables.tb_risk_data")
+
+-- 全名boss
+require("template.tables.tb_mass_boss_base")
+require("template.tables.tb_mass_boss_info")
+require("template.tables.tb_mass_boss_loot")
+require("template.tables.tb_mass_boss_times")
+
+require("template.tables.tb_group_instance_base")
 
 --- 数据预处理
 require("template.tabset")

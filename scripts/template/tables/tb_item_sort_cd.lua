@@ -4,7 +4,7 @@
 
 
 tb_item_sort_cd = {
-	--  id:int	资源ID
-	--  cd:int	资源槽位
-	[1] = {id = 1,cd = 10,},
+	--  id:int 资源ID
+	--  cd:int 资源槽位
+	[1] = {id = 1, cd = 10},
 }

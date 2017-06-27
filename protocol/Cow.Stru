@@ -136,3 +136,15 @@ faction_gift_rank_info,/*家族魅力排行信息*/
 	queen_vip,uint32,0,/*女王vip等级*/
 	guard_vip,uint32,0,/*骑士vip等级*/
 	
+#全民boss信息
+mass_boss_info,/*全民boss信息*/
+	id,uint8,0,/*全民boss编号*/
+	state,uint8,0,/*全民boss状态*/
+	time,uint32,0,/*全民boss刷新时间*/
+	percent,uint8,0,/*boss血量*/
+	count,uint16,0,/*挑战boss人数*/
+
+#全民boss排名
+mass_boss_rank_info,/*全民boss排名*/
+	name,String,50,/*名称*/
+	dam,double,0,/*伤害*/

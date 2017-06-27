@@ -120,10 +120,12 @@ function InstanceResBase:OnSetState(fromstate,tostate)
 	end
 end
 
+--[[
 -- 判断是否能退出副本
 function InstanceResBase:DoPlayerExitInstance(player)
 	return 1	--返回1的话为正常退出，返回0则不让退出
 end
+--]]
 
 --玩家加入地图
 function InstanceResBase:OnJoinPlayer(player)

@@ -688,54 +688,6 @@ function PlayerInfo:Login()
 		playerLib.SendAttr(self.ptr)
 	end
 	
-	-- 判断是否是帮派邀请的
-	local inviteFactionGuid = self:GetStr(PLAYER_STRING_FIELD_INVITE_FACTION_GUID)
-	if string.len(inviteFactionGuid) > 0 then
-		self:SetStr(PLAYER_STRING_FIELD_INVITE_FACTION_GUID, '')
-		local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetGuid(), 0)
-		
-		--进行加帮派操作
-		if app.objMgr:IsFactionGuid(inviteFactionGuid) then
-			local faction = app.objMgr:getObj(inviteFactionGuid)
-			if faction then
-				-- 发送给logind数据不同
-				if faction:MemberAdd(self, true) then
-					--[[
-					mapid = FACTION_MAP_ID
-					x = FACTION_FUHUO_X
-					y = FACTION_FUHUO_Y
-					generalId = inviteFactionGuid
-					--]]
-				end
-			end
-		end
-		--TODO: 发送
-		call_opt_login_teleport(self:GetGuid(), inviteFactionGuid, mapid, x, y, generalId)
-	else
-		-- 判断是否需要新建帮派
-		local faction_name = self:GetStr(PLAYER_STRING_FIELD_CREATE_FACTION_NAME)
-		if string.len(faction_name) > 0 then
-			local icon = self:GetUInt32(PLAYER_INT_FIELD_CREATE_ICON)
-			self:SetStr(PLAYER_STRING_FIELD_CREATE_FACTION_NAME, '')
-			self:SetUInt32(PLAYER_INT_FIELD_CREATE_ICON, 0)
-			
-			local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetGuid(), 0)
-			local faction_guid = ''
-			--进行加帮派操作
-			if self:NewPlayerCreateFaction(faction_name, icon) then
-				--[[TODO:
-				faction_guid = self:GetFactionId()
-				mapid = FACTION_MAP_ID
-				x = FACTION_FUHUO_X
-				y = FACTION_FUHUO_Y
-				generalId = faction_guid
-				--]]
-			end
-			--TODO: 发送
-			call_opt_login_teleport(self:GetGuid(), faction_guid, mapid, x, y, generalId)
-		end
-	end
-	
 	self:socialLogIn()
 	self:factionLogin()
 	
@@ -750,7 +702,7 @@ function PlayerInfo:Login()
 	-- self:CheckMatchReward()	
 	
 	-- 同步斗剑台信息
-	-- globalCounter:Login(self)
+	globalCounter:Login(self)
 	
 	--同步修炼信息
 	-- self:LoginRestoreCultivation()
@@ -1173,6 +1125,14 @@ end
 	PLAYER_FIELD_STRENGTH_FORCE			= PLAYER_FILED_GEM_FORCE + 1,				//强化战力
 --]]
 
+--设置神兵总战力
+function PlayerInfo:SetAllTalismanForce(val)
+	local old = self:GetUInt32(PLAYER_INT_FIELD_TALISMAN_FORCE)
+	if old ~= val then
+		self:SetUInt32(PLAYER_INT_FIELD_TALISMAN_FORCE,val)
+	end
+end
+
 local OFFLINE_MAIL_PATH_FORMAT = __OFFLINE_MAIL_FOLDER__.."/%s.mail"
 local OFFLINE_MAIL_INFO = "%u|%u|%u|%s|%s|%s|%s\n"
 
@@ -1419,13 +1379,10 @@ function PlayerInfo:GetSpells()
 			if 1 <= config.skill_slot and config.skill_slot <= 5 then
 				local level = self:GetByte(i, 2)
 				local slot  = self:GetByte(i, 3)
-				local self_cd = config.self_cd
+				local groupCD = config.groupCD
 				local rate = 0
-				table.insert(spells, {id, rate, self_cd, level, slot})
+				table.insert(spells, {id, rate, groupCD, level, slot})
 			end
-			--if slot == 1 then
-			--	total_slot_1_cd = total_slot_1_cd + self_cd
-			--end
 		end
 	end
 	
@@ -1966,6 +1923,84 @@ function PlayerInfo:AddFactionGiftBeenThankCount(value)
 end
 
 
+---------------------------------全民boss---------------------------------------
+function PlayerInfo:costMassBossTimes()
+	local curr = self:getMassBossTimes()
+	if curr > 0 then
+		self:SubUInt32(PLAYER_INT_FIELD_MASS_BOSS_TIMES, 1)
+		if curr == tb_mass_boss_base[ 1 ].dailytimes then
+			self:SetMassBossCD(os.time() + 60 * tb_mass_boss_base[ 1 ].cd)
+		end
+		return true
+	end
+	
+	return false
+end
+
+function PlayerInfo:getMassBossTimes()
+	return self:GetUInt32(PLAYER_INT_FIELD_MASS_BOSS_TIMES)
+end
+
+function PlayerInfo:SetMassBossTimes(times)
+	times = times or 1
+	self:SetUInt32(PLAYER_INT_FIELD_MASS_BOSS_TIMES, times)
+end
+
+function PlayerInfo:AddMassBossTimes(times)
+	times = times or 1
+	self:AddUInt32(PLAYER_INT_FIELD_MASS_BOSS_TIMES, times)
+	local curr = self:getMassBossTimes()
+	if curr >= tb_mass_boss_base[ 1 ].dailytimes then
+		self:SetMassBossCD(0)
+	end
+end
+
+function PlayerInfo:SetMassBossBuyedTimes(times)
+	self:SetUInt32(PLAYER_INT_FIELD_MASS_BOSS_BUYED_TIMES, times)
+end
+
+function PlayerInfo:AddMassBossBuyedTimes(times)
+	self:AddUInt32(PLAYER_INT_FIELD_MASS_BOSS_BUYED_TIMES, times)
+end
+
+function PlayerInfo:GetMassBossBuyedTimes()
+	return self:GetUInt32(PLAYER_INT_FIELD_MASS_BOSS_BUYED_TIMES)
+end
+
+function PlayerInfo:SetMassBossCD(cd)
+	self:SetUInt32(PLAYER_INT_FIELD_MASS_BOSS_CD, cd)
+end
+
+function PlayerInfo:GetMassBossCD()
+	return self:GetUInt32(PLAYER_INT_FIELD_MASS_BOSS_CD)
+end
+
+function PlayerInfo:CheckAddMassBossTimes()
+	if self:getMassBossTimes() >= tb_mass_boss_base[ 1 ].dailytimes then
+		return
+	end
+	
+	-- 时间是否到了
+	if os.time() >= self:GetMassBossCD() then
+		self:AddMassBossTimes()
+		local curr = self:getMassBossTimes()
+		-- 是否还有下次回复时间
+		if curr < tb_mass_boss_base[ 1 ].dailytimes then
+			self:SetMassBossCD(os.time() + 60 * tb_mass_boss_base[ 1 ].cd)
+		end
+	end
+end
+
+-- 重置全民boss的次数
+function PlayerInfo:ResetMassBossTimes()
+	if self:getMassBossTimes() < tb_mass_boss_base[ 1 ].dailytimes then
+		self:SetMassBossTimes(tb_mass_boss_base[ 1 ].dailytimes)
+	end
+	self:SetMassBossCD(0)
+	self:SetMassBossBuyedTimes(0)
+end
+
+
 
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()
@@ -2018,6 +2053,7 @@ require("appd/appd_context/appd_context_xianfu_test")
 require("appd/appd_context/appd_context_kuafu")
 require("appd/appd_context/appd_context_world3v3")
 require("appd/appd_context/appd_context_xianfu")
+require("appd/appd_context/appd_context_group_instance")
 require("appd/appd_context/appd_context_doujiantai")
 require("appd/appd_context/appd_context_module_unlock")
 require("appd/appd_context/appd_context_guide")

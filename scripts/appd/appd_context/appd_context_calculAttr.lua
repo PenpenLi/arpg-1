@@ -448,6 +448,11 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	printAttr("divine ", attrs)
 	
+	--法宝
+	spellMgr:calculTalismanAttr(attrs)
+	
+	printAttr("talisman ", attrs)
+	
 	--称号
 	self:calculTitleAttr(attrs)
 	

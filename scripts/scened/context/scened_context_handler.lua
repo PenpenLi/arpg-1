@@ -738,6 +738,11 @@ function ScenedContext:Hanlde_Teleport_Main_City(pkt)
 		return
 	end
 	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		return 
+	end
+	
 	local map_ptr = unitLib.GetMap(self.ptr)
 	mapLib.ExitInstance(map_ptr, self.ptr)
 end
@@ -748,6 +753,11 @@ function ScenedContext:Handle_Back_To_Family(pkt)
 	if string.len(factionGuid) == 0 then
 		return
 	end
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		return 
+	end
+	
 	local x = randInt(-2, 2)
 	local y = randInt(-2, 2)
 	playerLib.Teleport(self.ptr, FACTION_MAP_ID, x+FACTION_FUHUO_X, y+FACTION_FUHUO_Y, 0, factionGuid)
@@ -768,6 +778,11 @@ function ScenedContext:Handle_Challange_Boss(pkt)
 	-- 判断是否能挑战boss
 	if not self:isCanChallengeRiskBoss() then
 		return
+	end
+	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		return 
 	end
 	
 	local bossSectionId = tb_risk_data[sectionId].relateId
@@ -828,6 +843,11 @@ function ScenedContext:Handle_World_Boss_Fight(pkt)
 	if id ~= self:GetLastJoinID() then
 		outFmtDebug("current joinid = %d, but curr = %d", id, self:GetLastJoinID())
 		return
+	end
+	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		return 
 	end
 	
 	local indx = globalValue:GetTodayWorldBossID()
@@ -935,7 +955,99 @@ function ScenedContext:Handle_Pick_Offline_Reward(pkt)
 	--]]
 end
 
+function ScenedContext:Handle_Try_Mass_Boss (pkt)
+	local id = pkt.id
+	
+	if not tb_mass_boss_info[ id ] then
+		return
+	end
+	
+	local map_ptr = unitLib.GetMap(self.ptr)
+	if not map_ptr then 
+		return
+	end
+	
+	-- boss未刷新
+	if not globalValue:isMassBossAlive(id) then
+		return
+	end
+	
+	local toMapId = tb_mass_boss_info[ id ].mapId
+	
+	-- 玩家必须还活着
+	if not self:IsAlive() then
+		outFmtError("Handle_Try_Mass_Boss player %s is not alive!", self:GetPlayerGuid())
+		return 
+	end
 
+	-- 该地图是否存在
+	if not tb_map[toMapId] then
+		return
+	end
+	
+	-- 人数是否超过上限
+	local currentCount = InstanceMassBoss.enterCount[ id ]
+	if currentCount > tb_mass_boss_info[ id ].permitCount then
+		return
+	end
+	
+	-- 是否允许传送
+	if not self:makeEnterTest(toMapId) then
+		return
+	end
+	
+	--pvp状态下一律不准进
+	if self:GetPVPState() then
+		self:CallOptResult(OPRATE_TYPE_TELEPORT, TELEPORT_OPRATE_PVP_STATE)
+		return
+	end
+	
+	--发到应用服进行进入判断
+	playerLib.SendToAppdDoSomething(self.ptr, SCENED_APPD_ENTER_MASS_BOSS_INSTANCE, id)
+end
+
+function ScenedContext:Handle_Query_Mass_Boss_Info(pkt)
+	local id = pkt.id
+	if not tb_mass_boss_info[ id ] then
+		return
+	end
+	
+	local rankList = InstanceMassBoss.globalRankList[ id ]
+	local count = 0
+	local rate = 100
+	if rankList then
+		count = #rankList
+	end
+	
+	if InstanceMassBoss.bossHpRate[ id ] then
+		rate = InstanceMassBoss.bossHpRate[ id ]
+	end
+	
+	self:call_mass_boss_info_ret (count, rate)
+end
+
+function ScenedContext:Handle_Query_Mass_Boss_Rank(pkt)
+	local id = pkt.id
+	if not tb_mass_boss_info[ id ] then
+		return
+	end
+	
+	local rankList = InstanceMassBoss.globalRankList[ id ]
+	local info = {}
+	if rankList then
+		local maxHP = InstanceMassBoss.bossMaxHp[id]
+		local len = math.min(10, #rankList)
+		for i = 1, len do
+			local datainfo = rankList[ i ]
+			local rank_info = mass_boss_rank_info_t .new()
+			rank_info.name = datainfo[ 1 ]
+			rank_info.dam = datainfo[ 2 ] * 100 / maxHP
+			table.insert(info, rank_info)
+		end
+	end
+	
+	self:call_mass_boss_rank_result (info)
+end
 
 local OpcodeHandlerFuncTable = require 'scened.context.scened_context_handler_map'
 
