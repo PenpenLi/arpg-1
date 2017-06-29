@@ -699,7 +699,7 @@ function PlayerInfo:Login()
 	--同步魅力值
 	self:LoginUpdateCharmPoint()
 	-- 检查奖励
-	-- self:CheckMatchReward()	
+	self:CheckMatchReward()	
 	
 	-- 同步斗剑台信息
 	globalCounter:Login(self)
@@ -2008,7 +2008,16 @@ function PlayerInfo:ResetMassBossTimes()
 	self:SetMassBossBuyedTimes(0)
 end
 
+--组队副本
+--设置通关状态
+function PlayerInfo:SetGroupInstanceClearFlag(val)
+	self:SetBit(PLAYER_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG,val)
+end
 
+--获得通关状态
+function PlayerInfo:GetGroupInstanceClearFlag(val)
+	return self:GetBit(PLAYER_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG,val)
+end
 
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()

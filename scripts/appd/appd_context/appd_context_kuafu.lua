@@ -22,10 +22,11 @@ function PlayerInfo:CheckMatchReward()
 		return
 	end
 	
-	self:CheckWorld3v3Reward()
+	--self:CheckWorld3v3Reward()
+	--[[
 	self:CheckWorldXianfuReward()
 	self:OnSyncMoney()
-	
+	--]]
 	self:CheckGroupInstanceReward()
 end
 

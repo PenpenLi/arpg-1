@@ -626,6 +626,60 @@ function AppInstanceMgr:checkIfCanEnterMassBoss(id)
 	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, ''..id)
 end
 
+--组队副本
+--设置通关状态
+function AppInstanceMgr:SetGroupInstanceClearFlag(val)
+	self:SetBit(INSTANCE_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG,val)
+end
+
+--获得通关状态
+function AppInstanceMgr:GetGroupInstanceClearFlag(val)
+	return self:GetBit(INSTANCE_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG,val)
+end
+--设置挑战次数
+function AppInstanceMgr:SetGroupInstanceChallengeCount(val)
+	self:SetUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_CHALLENGE_COUNT,val)
+end
+
+--获得挑战次数
+function AppInstanceMgr:GetGroupInstanceChallengeCount()
+	return self:GetUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_CHALLENGE_COUNT)
+end
+
+--增加挑战次数
+function AppInstanceMgr:AddGroupInstanceChallengeCount(val)
+	self:AddUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_CHALLENGE_COUNT,val)
+end
+
+--减少挑战次数
+function AppInstanceMgr:SubGroupInstanceChallengeCount(val)
+	if self:GetGroupInstanceChallengeCount() - val > 0 then
+		self:SubUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_CHALLENGE_COUNT,val)
+	else
+		self:SetGroupInstanceChallengeCount(0)
+	end
+end
+
+--设置购买次数
+function AppInstanceMgr:SetGroupInstanceBuyCount(val)
+	self:SetUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_BUY_COUNT,val)
+end
+
+--获得购买次数
+function AppInstanceMgr:GetGroupInstanceBuyCount()
+	return self:GetUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_BUY_COUNT)
+end
+
+--增加购买次数
+function AppInstanceMgr:AddGroupInstanceBuyCount(val)
+	self:AddUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_BUY_COUNT,val)
+end
+
+function AppInstanceMgr:ResetGroupInstanceDayTimes()
+	self:SetGroupInstanceBuyCount(0)
+	self:SetGroupInstanceChallengeCount(tb_group_instance_buy[1].daily_reset)
+end
+
 
 -- 获得玩家guid
 function AppInstanceMgr:getPlayerGuid()

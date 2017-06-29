@@ -1382,6 +1382,10 @@ group_instance_match,c2s,358,/*组队副本跨服匹配*/,STATUS_NEVER,False
 	indx,uint8,False,/*组队副本类型*/
 	
 #
+buy_group_instance_times,c2s,359,/*组队副本跨服次数购买*/,STATUS_NEVER,False
+	count,uint8,False,/*数量*/
+	
+#
 talisman_active,c2s,360,/*法宝激活*/,STATUS_NEVER,False
 	id,uint32,False,/*法宝id*/
 	

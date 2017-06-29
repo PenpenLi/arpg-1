@@ -455,7 +455,10 @@ function PlayerInfo:GmCommand(str)
 		--self:Handle_Wings_Active(pkt)
 		--self:Handle_Wings_Bless(pkt)
 		--self:Handle_Wings_RankUp(pkt)
-		self:Handle_Wings_Strength(pkt)
+		--self:Handle_Wings_Strength(pkt)
+		
+		--self:MatchGroupInstance(1)
+		self:OnBuyGroupInstanceTicket(1)
 		
 	else
 		--[[

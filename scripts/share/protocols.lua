@@ -324,6 +324,7 @@ SMSG_MASS_BOSS_RANK_RESULT		= 355	-- /*全民boss排行结果*/
 CMSG_TRY_MASS_BOSS		= 356	-- /*挑战全民boss*/	
 CMSG_BUY_MASS_BOSS_TIMES		= 357	-- /*购买挑战全民boss次数*/	
 CMSG_GROUP_INSTANCE_MATCH		= 358	-- /*组队副本跨服匹配*/	
+CMSG_BUY_GROUP_INSTANCE_TIMES		= 359	-- /*组队副本跨服次数购买*/	
 CMSG_TALISMAN_ACTIVE		= 360	-- /*法宝激活*/	
 CMSG_TALISMAN_LVUP		= 361	-- /*法宝注灵*/	
 CMSG_WINGS_ACTIVE		= 362	-- /*神羽激活*/	
@@ -11697,6 +11698,35 @@ function Protocols.unpack_group_instance_match (pkt)
 end
 
 
+-- /*组队副本跨服次数购买*/	
+function Protocols.pack_buy_group_instance_times ( count)
+	local output = Packet.new(CMSG_BUY_GROUP_INSTANCE_TIMES)
+	output:writeByte(count)
+	return output
+end
+
+-- /*组队副本跨服次数购买*/	
+function Protocols.call_buy_group_instance_times ( playerInfo, count)
+	local output = Protocols.	pack_buy_group_instance_times ( count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*组队副本跨服次数购买*/	
+function Protocols.unpack_buy_group_instance_times (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.count = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 -- /*法宝激活*/	
 function Protocols.pack_talisman_active ( id)
 	local output = Packet.new(CMSG_TALISMAN_ACTIVE)
@@ -12171,6 +12201,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_try_mass_boss = self.call_try_mass_boss
 	playerInfo.call_buy_mass_boss_times = self.call_buy_mass_boss_times
 	playerInfo.call_group_instance_match = self.call_group_instance_match
+	playerInfo.call_buy_group_instance_times = self.call_buy_group_instance_times
 	playerInfo.call_talisman_active = self.call_talisman_active
 	playerInfo.call_talisman_lvup = self.call_talisman_lvup
 	playerInfo.call_wings_active = self.call_wings_active
@@ -12490,6 +12521,7 @@ local unpack_handler = {
 [CMSG_TRY_MASS_BOSS] =  Protocols.unpack_try_mass_boss,
 [CMSG_BUY_MASS_BOSS_TIMES] =  Protocols.unpack_buy_mass_boss_times,
 [CMSG_GROUP_INSTANCE_MATCH] =  Protocols.unpack_group_instance_match,
+[CMSG_BUY_GROUP_INSTANCE_TIMES] =  Protocols.unpack_buy_group_instance_times,
 [CMSG_TALISMAN_ACTIVE] =  Protocols.unpack_talisman_active,
 [CMSG_TALISMAN_LVUP] =  Protocols.unpack_talisman_lvup,
 [CMSG_WINGS_ACTIVE] =  Protocols.unpack_wings_active,

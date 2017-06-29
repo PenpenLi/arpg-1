@@ -69,3 +69,14 @@ function PlayerInfo:Handle_Buy_Mass_Boss_Times(pkt)
 	self:AddMassBossBuyedTimes(cnt)
 	self:AddMassBossTimes(cnt)
 end
+
+function PlayerInfo:Handle_Buy_Group_Instance_Times(pkt)
+	local count = pkt.count
+	
+	self:OnBuyGroupInstanceTicket(count)
+end
+
+function PlayerInfo:Handle_Group_Instance_Match(pkt)
+	local id = pkt.indx
+	self:MatchGroupInstance(id)
+end

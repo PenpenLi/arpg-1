@@ -209,6 +209,7 @@ hanlders[CMSG_WINGS_RANKUP] = PlayerInfo.Handle_Wings_RankUp
 hanlders[CMSG_WINGS_STRENGTH] = PlayerInfo.Handle_Wings_Strength
 --
 hanlders[CMSG_GROUP_INSTANCE_MATCH] = PlayerInfo.Handle_Group_Instance_Match
+hanlders[CMSG_BUY_GROUP_INSTANCE_TIMES] = PlayerInfo.Handle_Buy_Group_Instance_Times
 
 
 return hanlders

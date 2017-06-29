@@ -269,6 +269,9 @@ function ScenedContext:Hanlde_Jump_Start(packet)
 		
 		-- TODO: 设置目的坐标 并 广播跳跃到目标点
 		unitLib.CallJumpStart(player_ptr, dst_x, dst_y)
+		
+		-- 加无敌buff
+		unitLib.AddBuff(player_ptr, BUFF_INVINCIBLE, player_ptr, 1, 1)
 	else
 		outFmtError("error : MSG_JUMP_START is not can run x = %d  y = %d",dst_x, dst_y)
 		self:CallOptResult(OPRATE_TYPE_JUMP, JUMP_RESULT_WRONG_COORD)

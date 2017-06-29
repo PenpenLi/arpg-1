@@ -188,6 +188,7 @@ require("template.tables.tb_mass_boss_loot")
 require("template.tables.tb_mass_boss_times")
 
 require("template.tables.tb_group_instance_base")
+require("template.tables.tb_group_instance_buy")
 
 --- 数据预处理
 require("template.tabset")

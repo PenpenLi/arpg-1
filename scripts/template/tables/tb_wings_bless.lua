@@ -14,16 +14,16 @@ tb_wings_bless = {
 	--  need_exp:int 升星需求经验
 	--  attr_id:array 属性
 	--  attr_value:array 属性值
-	[100] = {id = 100, rank = 1, star = 0, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 100, attr_id = {1,2}, attr_value = {100,10}},
-	[101] = {id = 101, rank = 1, star = 1, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 200, attr_id = {1,2}, attr_value = {110,11}},
-	[102] = {id = 102, rank = 1, star = 2, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 300, attr_id = {1,2}, attr_value = {120,12}},
-	[103] = {id = 103, rank = 1, star = 3, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 400, attr_id = {1,2}, attr_value = {130,13}},
-	[104] = {id = 104, rank = 1, star = 4, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 500, attr_id = {1,2}, attr_value = {140,14}},
-	[105] = {id = 105, rank = 1, star = 5, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 600, attr_id = {1,2}, attr_value = {150,15}},
-	[106] = {id = 106, rank = 1, star = 6, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 700, attr_id = {1,2}, attr_value = {160,16}},
-	[107] = {id = 107, rank = 1, star = 7, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 800, attr_id = {1,2}, attr_value = {170,17}},
-	[108] = {id = 108, rank = 1, star = 8, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 900, attr_id = {1,2}, attr_value = {180,18}},
-	[109] = {id = 109, rank = 1, star = 9, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 100, need_exp = 1000, attr_id = {1,2}, attr_value = {190,19}},
+	[100] = {id = 100, rank = 1, star = 0, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 100, attr_id = {1,2}, attr_value = {100,10}},
+	[101] = {id = 101, rank = 1, star = 1, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 200, attr_id = {1,2}, attr_value = {110,11}},
+	[102] = {id = 102, rank = 1, star = 2, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 300, attr_id = {1,2}, attr_value = {120,12}},
+	[103] = {id = 103, rank = 1, star = 3, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 400, attr_id = {1,2}, attr_value = {130,13}},
+	[104] = {id = 104, rank = 1, star = 4, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 500, attr_id = {1,2}, attr_value = {140,14}},
+	[105] = {id = 105, rank = 1, star = 5, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 600, attr_id = {1,2}, attr_value = {150,15}},
+	[106] = {id = 106, rank = 1, star = 6, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 700, attr_id = {1,2}, attr_value = {160,16}},
+	[107] = {id = 107, rank = 1, star = 7, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 800, attr_id = {1,2}, attr_value = {170,17}},
+	[108] = {id = 108, rank = 1, star = 8, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 900, attr_id = {1,2}, attr_value = {180,18}},
+	[109] = {id = 109, rank = 1, star = 9, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 1000, attr_id = {1,2}, attr_value = {190,19}},
 	[110] = {id = 110, rank = 1, star = 10, operate_type = 2, item_cost = {{201,10}}, money_cost = {{2,1000}}, bless_exp = 0, need_exp = 0, attr_id = {1,2}, attr_value = {200,20}},
 	[200] = {id = 200, rank = 2, star = 0, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 1100, attr_id = {1,2}, attr_value = {210,21}},
 	[201] = {id = 201, rank = 2, star = 1, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 1200, attr_id = {1,2}, attr_value = {220,22}},
@@ -57,5 +57,5 @@ tb_wings_bless = {
 	[407] = {id = 407, rank = 4, star = 7, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 3800, attr_id = {1,2}, attr_value = {500,50}},
 	[408] = {id = 408, rank = 4, star = 8, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 3900, attr_id = {1,2}, attr_value = {510,51}},
 	[409] = {id = 409, rank = 4, star = 9, operate_type = 1, item_cost = {{201,1}}, money_cost = {{2,100}}, bless_exp = 10, need_exp = 4000, attr_id = {1,2}, attr_value = {520,52}},
-	[410] = {id = 410, rank = 4, star = 10, operate_type = 2, item_cost = {{201,10}}, money_cost = {{2,1000}}, bless_exp = 0, need_exp = 0, attr_id = {1,2}, attr_value = {530,53}},
+	[410] = {id = 410, rank = 4, star = 10, operate_type = 0, item_cost = {{201,10}}, money_cost = {{2,1000}}, bless_exp = 0, need_exp = 0, attr_id = {1,2}, attr_value = {530,53}},
 }

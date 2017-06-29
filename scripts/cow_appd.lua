@@ -218,6 +218,7 @@ config = {
 		
 		CMSG_BUY_MASS_BOSS_TIMES,
 		CMSG_GROUP_INSTANCE_MATCH,
+		CMSG_BUY_GROUP_INSTANCE_TIMES,
 	},
 	--pk服命令表
 	pk_external_router_map = {

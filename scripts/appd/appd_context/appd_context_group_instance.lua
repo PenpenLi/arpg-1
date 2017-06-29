@@ -164,31 +164,29 @@ function PlayerInfo:CheckGroupInstanceReward()
 			outFmtDebug("%d %s %s", dict.ret, dict.msg, self:GetGuid())
 			
 			if dict.ret == 0 then
+				local id = tonumber(dict.details)
+				-- 扣次数
+				local instMgr = self:getInstanceMgr()
+				instMgr:SubGroupInstanceChallengeCount(1)
 				
-				-- 任务
-				--[[
-				local questMgr = self:getQuestMgr()
-				questMgr:OnUpdate(QUEST_TARGET_TYPE_JOIN_XIANFU)
-				--]]
-				-- 这里的data判断是否通关
-				local data = dict.details
-				--[[
-				local itemInfoTable = string.split(data, ",")
-				
-				if #itemInfoTable > 0 then
-					outFmtDebug("%s get reward %s", self:GetGuid(), data)
-					local rewardDict = {}
-					for i = 1, #itemInfoTable, 2 do
-						local itemId = tonumber(itemInfoTable[ i ])
-						local count  = tonumber(itemInfoTable[i+1])
-						table.insert(rewardDict, {itemId, count})
-					end
-					
-					self:AppdAddItems(rewardDict, MONEY_CHANGE_KUAFU_WORLD_XIANFU, LOG_ITEM_OPER_TYPE_XIANFU)
+				-- 选取通关奖励
+				local config = tb_group_instance_base[id]
+				local itemKeys = config.passRewardId
+				local itemVals = config.passRewardCnt
+				if not self:GetGroupInstanceClearFlag(id) then
+					itemKeys = config.fpRewardId
+					itemVals = config.fpRewardCnt
 				end
-				--]]
+				self:SetGroupInstanceClearFlag(id)
+
+				local rewardDict = {}
+				for i = 1, #itemKeys do
+					local itemId = itemKeys[ i ]
+					local count  = itemVals[ i ]
+					table.insert(rewardDict, {itemId, count})
+				end
 				
-				
+				self:AppdAddItems(rewardDict, MONEY_CHANGE_KUAFU_GROUP_INSTANCE, LOG_ITEM_OPER_TYPE_GROUP_INSTANCE)
 			end
 		end
 		
@@ -197,30 +195,70 @@ end
 
 
 -- 购买进入次数
-function PlayerInfo:OnBuyTicket(type, indx, count)
-	local config = tb_kuafu_xianfu_condition[type].price
+function PlayerInfo:OnBuyGroupInstanceTicket(count)
+	local buy_type = tb_group_instance_buy[1].buy_type
+	local buy_price = tb_group_instance_buy[1].buy_price
+	local instMgr = self:getInstanceMgr()
+	local buy_count = instMgr:GetGroupInstanceBuyCount()
 	
-	if not config[indx] then
+	if buy_count + count > #buy_type then
+		outFmtError("OnBuyGroupInstanceTicket buy more than limit")
 		return
 	end
 	
-	local ticketid = tb_kuafu_xianfu_condition[type].ticketid
-	local cost = {{config[indx][1], config[indx][2]}}
+	local cost_table = {}
 	
-	local itemMgr = self:getItemMgr()
-	local emptys  = itemMgr:getEmptyCount(BAG_TYPE_MAIN_BAG)
-	if emptys < 1 then
-		self:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
-		return
+	for i = buy_count + 1,buy_count+ count do
+		if cost_table[buy_type[i]] then
+			cost_table[buy_type[i]] = cost_table[buy_type[i]] + buy_price[i]
+		else
+			cost_table[buy_type[i]] = buy_price[i]
+		end
 	end
 	
-	if self:costMoneys(MONEY_CHANGE_BUY_XIANFU_TICKET, cost, count) then
-		self:AppdAddItems({{ticketid, count}}, nil, LOG_ITEM_OPER_TYPE_XIANFU_BUY)
+	local cost = {}
+	for k,v in pairs(cost_table) do
+		table.insert(cost, {k,v})
 	end
+	
+	if self:costMoneys(MONEY_CHANGE_GROUP_INSTANCE_BUY_TIMES, cost, 1) then
+		instMgr:AddGroupInstanceChallengeCount(count)
+		instMgr:AddGroupInstanceBuyCount(count)
+		
+		outFmtDebug("OnBuyGroupInstanceTicket ticket :%d",instMgr:GetGroupInstanceChallengeCount())
+		outFmtDebug("OnBuyGroupInstanceTicket buy count :%d",instMgr:GetGroupInstanceBuyCount())
+	else
+		outFmtError("OnBuyGroupInstanceTicket resource not enough")
+	end
+	
 end
 
 -- 重置组队副本
-function PlayerInfo:OnResetXianfu()
+function PlayerInfo:OnResetGroupInstanceDayTimes()
 	local instMgr = self:getInstanceMgr()
-	instMgr:ResetXianfuDayTimes()
+	instMgr:ResetGroupInstanceDayTimes()
 end
+
+--挑战副本
+function PlayerInfo:MatchGroupInstance(id)
+	local config = tb_group_instance_base[id]
+	if not config then
+		outFmtError("OnChallengeGroupInstance id:%d not exist",id)
+		return
+	end
+	
+	if self:GetLevel() < config.limLev then
+		outFmtError("OnChallengeGroupInstance level not enough")
+		return
+	end
+	local instMgr = self:getInstanceMgr()
+	local count = instMgr:GetGroupInstanceChallengeCount()
+	if count == 0 then
+		outFmtError("OnChallengeGroupInstance ticket not enough")
+		return
+	end
+	
+	--开始匹配
+	outFmtDebug("MatchGroupInstance begin match")
+end
+

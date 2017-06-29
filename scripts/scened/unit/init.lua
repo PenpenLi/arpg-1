@@ -16,6 +16,12 @@ function UnitInfo:ctor( )
 	end
 end
 
+
+--获得通关状态
+function UnitInfo:isGroupInstanceClearFlag(val)
+	return self:GetPlayerBit(PLAYER_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG, val)
+end
+
 -- 是否在挂机
 function UnitInfo:isInHook()
 	return self:GetPlayerUInt32(PLAYER_FIELD_HOOK) > 0
