@@ -253,16 +253,15 @@ function InstanceWorldBoss:OnAfterJoinPlayer(player)
 	playerInfo:ChangeToPeaceModeAfterTeleport()
 end
 
--- 获得单人的复活时间
-function InstanceWorldBoss:GetSingleRespawnTime(player)
+function InstanceWorldBoss:GetDeadTimes(playerInfo)
 	local lineNo = self:GetMapLineNo()
-	local playerInfo = UnitInfo:new{ptr = player}
 	if not InstanceWorldBoss.deathList[lineNo] then
 		InstanceWorldBoss.deathList[lineNo] = {}
 	end
 	local cnt = InstanceWorldBoss.deathList[lineNo][playerInfo:GetPlayerGuid()]
 	cnt = cnt or 0
-	return self.player_auto_respan + cnt * 3
+	
+	return cnt
 end
 
 -- 当玩家死亡后

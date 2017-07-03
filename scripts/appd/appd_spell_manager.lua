@@ -745,6 +745,11 @@ function AppSpellMgr:calculTalismanAttr(attrs)
 	local allForce = 0
 	for k,v in pairs(tab) do
 		local props_table = {}
+		if not tb_talisman_base[k] then
+			outFmtError("talisman id:%d not exist",k)
+			return
+		end
+		
 		for _,prop in pairs(tb_talisman_base[k].props) do
 			props_table[prop[1]] = prop[2]
 		end

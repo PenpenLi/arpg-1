@@ -177,6 +177,8 @@ function PlayerInfo:Handle_Kuafu_3v3_Cancel_Match(pkt)
 		self:OnCancelWorld3v3MatchBeforeOffline()
 	elseif type == KUAFU_TYPE_XIANFU then
 		self:OnCancelWorldXianfuMatchBeforeOffline()
+	elseif type == KUAFU_TYPE_GROUP_INSTANCE then
+		self:OnCancelGroupInstanceMatchBeforeOffline()
 	end
 end
 
@@ -321,13 +323,12 @@ function PlayerInfo:Handle_Group_Instance_Match(pkt)
 		return
 	end
 	
-	--[[
-	-- TODO:判断进入次数
 	local instMgr = self:getInstanceMgr()
-	if not instMgr:CheckXianfuDayTimes() then
+	local count = instMgr:GetGroupInstanceChallengeCount()
+	if count == 0 then
+		outFmtError("OnChallengeGroupInstance ticket not enough")
 		return
 	end
-	--]]
 	
 	-- 模块没开 不让进
 	--[[

@@ -627,6 +627,7 @@ function AppInstanceMgr:checkIfCanEnterMassBoss(id)
 end
 
 --组队副本
+--[[
 --设置通关状态
 function AppInstanceMgr:SetGroupInstanceClearFlag(val)
 	self:SetBit(INSTANCE_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG,val)
@@ -636,6 +637,7 @@ end
 function AppInstanceMgr:GetGroupInstanceClearFlag(val)
 	return self:GetBit(INSTANCE_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG,val)
 end
+--]]
 --设置挑战次数
 function AppInstanceMgr:SetGroupInstanceChallengeCount(val)
 	self:SetUInt32(INSTANCE_INT_FIELD_GROUP_INSTANCE_CHALLENGE_COUNT,val)

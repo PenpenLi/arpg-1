@@ -229,7 +229,11 @@ end
 
 -- 判断是否能退出副本
 function InstanceKuafuXianfu:DoPlayerExitInstance(player)
-	return 1	--返回1的话为正常退出，返回0则不让退出
+	-- 直接回原服
+	local playerInfo = UnitInfo:new {ptr = player}
+	local login_fd = serverConnList:getLogindFD()
+	call_scene_login_to_kuafu_back(login_fd, playerInfo:GetPlayerGuid())
+	return 0	--返回1的话为正常退出，返回0则不让退出
 end
 
 --玩家加入地图
@@ -360,37 +364,6 @@ function InstanceKuafuXianfu:SyncResultToWeb()
 	end)
 end
 
--- 复活后
-function InstanceKuafuXianfu:DoAfterRespawn(unit_ptr)
-	local unitInfo = UnitInfo:new{ptr = unit_ptr}
-	-- 加无敌buff
-	unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 1, 3)
-	
-	local unitInfo = UnitInfo:new {ptr = unit_ptr}
-	if unitInfo:GetTypeID() == TYPEID_PLAYER then
-		-- 如果不对 退出跨服
-		if unitInfo:GetUseRespawnMapId() > 0 then
-			if unitInfo:GetUseRespawnMapId() ~= self:GetMapId() then
-				self:IsNeedTeleportWhileMapClear(unit_ptr)
-			end
-		else
-			-- 随机复活区域
-			local a = GetRandomIndexTable(#tb_kuafu_xianfu_base[ 1 ].respawnPos, 1)
-			local pos = tb_kuafu_xianfu_base[ 1 ].respawnPos[a[ 1 ]]
-			local offsetX = randInt(-1, 1)
-			local offsetY = randInt(-1, 1)
-			
-			local toMapId = self:GetMapId()
-			local toX = pos[ 1 ] + offsetX
-			local toY = pos[ 2 ] + offsetY
-			local lineNo = self:GetMapLineNo()
-			local generalId	= self:GetMapGeneralId()
-			playerLib.Teleport(unit_ptr, toMapId, toX, toY, lineNo, generalId)
-		end
-		unitInfo:SetUseRespawnMapId(0)
-	end
-end
-
 function InstanceKuafuXianfu:OnPlayerKilled(player, killer)
 	local killerInfo = UnitInfo:new{ptr = killer}
 	local playerInfo = UnitInfo:new{ptr = player}
@@ -439,11 +412,6 @@ function InstanceKuafuXianfu:OnPlayerKilledByMonster(player, killer)
 	return 0
 end
 
-function InstanceKuafuXianfu:OnSendDeathInfo(playerInfo, deathname ,killername ,params)
-	-- 发送野外死亡回城倒计时
-	playerInfo:call_field_death_cooldown(DEAD_PLACE_TYPE_XIANFU, deathname, killername, params, tb_kuafu_xianfu_base[ 1 ].seconds)
-end
-
 
 function InstanceKuafuXianfu:OnDropTreasure(playerInfo, killerInfo, is_offline)
 	local belongGuid = ''
@@ -470,7 +438,7 @@ function InstanceKuafuXianfu:OnDropTreasure(playerInfo, killerInfo, is_offline)
 			end
 		end
 		
-		self:OnSendDeathInfo(playerInfo, playerInfo:GetName() ,killerInfo:GetName(), string.format("%d", count))			
+		self:OnSendDeathInfo(playerInfo, killerInfo:GetName(), string.format("%d", count))			
 		if count > 0 then				
 			app:CallOptResult(self.ptr, OPRATE_TYPE_XIANFU, XIANFU_TYPE_BOSS_KILL, {playerInfo:GetName(), killerInfo:GetName(), count})
 		end
@@ -559,11 +527,6 @@ function InstanceKuafuXianfu:OnUseGameObject(user, go, go_entryid, posX, posY)
 	return 1	
 end
 
--- 获得单人的复活时间
-function InstanceKuafuXianfu:GetSingleRespawnTime(player)
-	return tb_kuafu_xianfu_base[ 1 ].seconds
-end
-
 -- 地图需要清空人时要做的事
 function InstanceKuafuXianfu:IsNeedTeleportWhileMapClear(player)
 	local playerInfo = UnitInfo:new {ptr = player}
@@ -616,22 +579,6 @@ function InstanceKuafuXianfu:OnCheckIfCanCostRespawn(player)
 	self:OnCostRespawn(unitInfo)
 end
 	
--- 花元宝复活
-function InstanceKuafuXianfu:OnCostRespawn(unitInfo)
-	if not unitInfo:IsAlive() then
-		local mapid = self:GetMapId()
-		unitInfo:SetUseRespawnMapId(mapid)
-		unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
-	end
-end
-
-function InstanceKuafuXianfu:OnRandomRespawn(unitInfo)
-	if not unitInfo:IsAlive() then
-		unitInfo:SetUseRespawnMapId(0)
-		unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
-	end
-end
-
 
 -- 同步钱
 function InstanceKuafuXianfu:OnSyncMoney(player_guid, binindx)

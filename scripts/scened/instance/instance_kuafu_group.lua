@@ -36,7 +36,7 @@ function InstanceKuafuGroup:AddCountDown()
 	local id = self:GetHard()
 	local timestamp = os.time() + tb_group_instance_base[ id ].startcd
 	self:SetMapStartTime(timestamp)
-	self:AddTimeOutCallback("OnMonsterRefresh", timestamp)
+	self:AddTimeOutCallback("TryToNextPart", timestamp)
 end
 
 function InstanceKuafuGroup:parseGeneralId()
@@ -47,40 +47,10 @@ function InstanceKuafuGroup:parseGeneralId()
 end
 
 function InstanceKuafuGroup:TryToNextPart()
-	self:AddUInt32(KUAFU_GROUP_INSTANCE_FIELDS_PART, 1)
 	local part = self:GetPart()
 	local id = self:GetHard()
 	local len = #tb_group_instance_base[id].monster
-	if part >= len then
-		-- 写奖励
-		local config = tb_group_instance_base[id]
-		local allPlayers = mapLib.GetAllPlayer(self.ptr)
-		for _, player_ptr in pairs(allPlayers) do
-			local playerInfo = UnitInfo:new {ptr = player_ptr}
-			
-			local itemKeys = config.passRewardId
-			local itemVals = config.passRewardCnt
-			if not playerInfo:isGroupInstanceClearFlag(id) then
-				itemKeys = config.fpRewardId
-				itemVals = config.fpRewardCnt
-			end
-			
-			local rewardDict = {}
-			for i = 1, #itemKeys do
-				local itemId = itemKeys[ i ]
-				local count  = itemVals[ i ]
-				table.insert(rewardDict, itemId..":"..count)
-			end
-			
-			-- 设置名称
-			local emptyIndex = self:findIndexByName(playerInfo:GetName())
-			if emptyIndex > -1 then
-				local intstart = KUAFU_GROUP_INSTANCE_INT_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_INT_COUNT
-				local strstart = KUAFU_GROUP_INSTANCE_STR_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_STR_COUNT
-				self:SetStr(strstart + KUAFU_GROUP_INSTANCE_PLAYER_REWARDS, string.join(",", rewardDict))
-			end
-		end
-	
+	if part >= len then	
 		-- 副本完成
 		self:SetMapState(self.STATE_FINISH)
 		
@@ -94,6 +64,7 @@ end
 function InstanceKuafuGroup:AfterProcessUpdate(player)
 	-- 判断副本是否
 	if self:CheckQuestAfterTargetUpdate() then
+		self:AddUInt32(KUAFU_GROUP_INSTANCE_FIELDS_PART, 1)
 		self:TryToNextPart()
 	end
 end
@@ -169,7 +140,11 @@ end
 
 -- 判断是否能退出副本
 function InstanceKuafuGroup:DoPlayerExitInstance(player)
-	return 1	--返回1的话为正常退出，返回0则不让退出
+	-- 直接回原服
+	local playerInfo = UnitInfo:new {ptr = player}
+	local login_fd = serverConnList:getLogindFD()
+	call_scene_login_to_kuafu_back(login_fd, playerInfo:GetPlayerGuid())
+	return 0	--返回1的话为正常退出，返回0则不让退出
 end
 
 --玩家加入地图
@@ -189,14 +164,36 @@ function InstanceKuafuGroup:OnJoinPlayer(player)
 		return
 	end
 	
+	--[[
+	local id = self:GetHard()
+	-- 写奖励
+	local config = tb_group_instance_base[id]
+		
+	local itemKeys = config.passRewardId
+	local itemVals = config.passRewardCnt
+	if not playerInfo:isGroupInstanceClearFlag(id) then
+		itemKeys = config.fpRewardId
+		itemVals = config.fpRewardCnt
+	end
+	
+	local rewardDict = {}
+	for i = 1, #itemKeys do
+		local itemId = itemKeys[ i ]
+		local count  = itemVals[ i ]
+		table.insert(rewardDict, itemId..":"..count)
+	end
+	--]]
+	
 	-- 设置名称
 	local emptyIndex = self:findIndexByName()
 	if emptyIndex > -1 then
 		local intstart = KUAFU_GROUP_INSTANCE_INT_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_INT_COUNT
 		local strstart = KUAFU_GROUP_INSTANCE_STR_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_STR_COUNT
-
+		
+		--self:SetStr(strstart + KUAFU_GROUP_INSTANCE_PLAYER_REWARDS, string.join(",", rewardDict))
 		self:SetStr(strstart + KUAFU_GROUP_INSTANCE_PLAYER_NAME, playerInfo:GetName())
 		self:SetStr(strstart + KUAFU_GROUP_INSTANCE_PLAYER_GUID, playerInfo:GetPlayerGuid())
+		
 		self:SetByte(intstart + KUAFU_GROUP_INSTANCE_PLAYER_DAED_TIMES, 0, 0)
 	end
 end
@@ -248,9 +245,17 @@ function InstanceKuafuGroup:OnPlayerDeath(player)
 	if emptyIndex > -1 then
 		local intstart = KUAFU_GROUP_INSTANCE_INT_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_INT_COUNT
 		self:AddByte(intstart + KUAFU_GROUP_INSTANCE_PLAYER_DAED_TIMES, 0, 1)
+		local times = self:GetByte(intstart + KUAFU_GROUP_INSTANCE_PLAYER_DAED_TIMES, 0)
+		local mapid = self:GetMapId()
+		local waitTimeList = tb_map[mapid].rebornWaitTime
+		if times > #waitTimeList then
+			times = #waitTimeList
+		end
+		local sec = waitTimeList[times]
+		self:SetUInt32(intstart + KUAFU_GROUP_INSTANCE_PLAYER_REBRON_CD, os.time() + sec)
 	end
 	
-	self:OnSendDeathInfo(playerInfo, '', '', '')
+	self:OnSendDeathInfo(playerInfo, '', '')
 end
 
 -- 同步数据到场景服
@@ -276,76 +281,35 @@ function InstanceKuafuGroup:SyncResultToWeb()
 	end)
 end
 
--- 复活后
-function InstanceKuafuGroup:DoAfterRespawn(unit_ptr)
-	local unitInfo = UnitInfo:new{ptr = unit_ptr}
-	-- 加无敌buff
-	unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 1, 3)
-	
-	local unitInfo = UnitInfo:new {ptr = unit_ptr}
-	if unitInfo:GetTypeID() == TYPEID_PLAYER then
-		-- 如果不对 退出跨服
-		if unitInfo:GetUseRespawnMapId() > 0 then
-			if unitInfo:GetUseRespawnMapId() ~= self:GetMapId() then
-				self:IsNeedTeleportWhileMapClear(unit_ptr)
-			end
-			
-			-- 复活到进入点
-			local id = self:GetHard()
-			local part = self:GetPart()
-			local len = #tb_group_instance_base[id].monster
-			if part >= len then
-				part = len - 1
-			end
-			local pos = tb_group_instance_base[id].enterPos[part+1]
-			local offsetX = randInt(-1, 1)
-			local offsetY = randInt(-1, 1)
-			
-			local toMapId = self:GetMapId()
-			local toX = pos[ 1 ] + offsetX
-			local toY = pos[ 2 ] + offsetY
-			local lineNo = self:GetMapLineNo()
-			local generalId	= self:GetMapGeneralId()
-			playerLib.Teleport(unit_ptr, toMapId, toX, toY, lineNo, generalId)
-
-		end
-		unitInfo:SetUseRespawnMapId(0)
-	end
-end
-
-function InstanceKuafuGroup:OnSendDeathInfo(playerInfo, deathname ,killername ,params)
+function InstanceKuafuGroup:GetCostTimeCD(playerInfo)
 	local emptyIndex = self:findIndexByName(playerInfo:GetName())
-	local cd = 60
 	if emptyIndex > -1 then
 		local intstart = KUAFU_GROUP_INSTANCE_INT_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_INT_COUNT
-		local times = self:GetByte(intstart + KUAFU_GROUP_INSTANCE_PLAYER_DAED_TIMES, 0)
-		local id = self:GetHard()
-		if times > #tb_group_instance_base[id].reborn then
-			times = #tb_group_instance_base[id].reborn
-		end
-		cd = tb_group_instance_base[id].reborn[times]
+		return self:GetUInt32(intstart + KUAFU_GROUP_INSTANCE_PLAYER_REBRON_CD)
 	end
 	
-	-- 发送野外死亡回城倒计时
-	playerInfo:call_field_death_cooldown(DEAD_PLACE_TYPE_GROUP_INSTANCE, deathname, killername, params, cd)
+	return 0
 end
 
--- 获得单人的复活时间
-function InstanceKuafuGroup:GetSingleRespawnTime(player)
-	local playerInfo = UnitInfo:new {ptr = player}
+function InstanceKuafuGroup:DoIsMate(killer_ptr, target_ptr)
+	if killer_ptr and target_ptr and GetUnitTypeID(killer_ptr) == TYPEID_PLAYER and GetUnitTypeID(target_ptr) == TYPEID_PLAYER then
+		return true
+	end
+	return false
+end
+
+-- 获取死亡次数
+function InstanceKuafuGroup:GetDeadTimes(playerInfo)
 	local emptyIndex = self:findIndexByName(playerInfo:GetName())
 	if emptyIndex > -1 then
 		local intstart = KUAFU_GROUP_INSTANCE_INT_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_INT_COUNT
 		local times = self:GetByte(intstart + KUAFU_GROUP_INSTANCE_PLAYER_DAED_TIMES, 0)
-		local id = self:GetHard()
-		if times > #tb_group_instance_base[id].reborn then
-			times = #tb_group_instance_base[id].reborn
-		end
-		return tb_group_instance_base[id].reborn[times]
+		return times
 	end
 	
-	return 60
+	return 99999999
 end
+
 
 -- 地图需要清空人时要做的事
 function InstanceKuafuGroup:IsNeedTeleportWhileMapClear(player)
@@ -355,19 +319,6 @@ function InstanceKuafuGroup:IsNeedTeleportWhileMapClear(player)
 	return 0
 end
 
-
--- 判断是否够钱花元宝复活
-function InstanceKuafuGroup:OnCheckIfCanCostRespawn(player) end
--- 花元宝复活
-function InstanceKuafuGroup:OnCostRespawn(unitInfo) end
-
-function InstanceKuafuGroup:OnRandomRespawn(unitInfo)
-	if not unitInfo:IsAlive() then
-		local mapid = self:GetMapId()
-		unitInfo:SetUseRespawnMapId(mapid)
-		unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
-	end
-end
 
 AI_GroupMonster = class("AI_GroupMonster", AI_Base)
 AI_GroupMonster.ainame = "AI_GroupMonster"

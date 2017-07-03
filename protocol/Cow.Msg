@@ -648,11 +648,11 @@ gold_respawn,c2s,135,/*元宝复活*/,STATUS_NEVER,False
 
 #
 field_death_cooldown,s2c,136,/*野外死亡倒计时*/,STATUS_NEVER,False
-	type,uint16,False,/*死亡地类型*/
-	deathname,String,False,/*死亡者名字*/
+	type,uint8,False,/*原地复活类型,0:元宝,1:时间戳*/
+	value,uint32,False,/*时间戳或者元宝值*/
 	killername,String,False,/*杀人者名字*/
+	cooldown,uint16,False,/*自动复活倒计时*/
 	params,String,False,/*参数*/
-	cooldown,uint16,False,/*倒计时*/
 
 #
 mall_buy,c2s,137,/*商城购买*/,STATUS_NEVER,False
@@ -1112,6 +1112,8 @@ kuafu_match_wait,s2c,256,/*单方跨服匹配等待*/,STATUS_NEVER,False
 	type,uint8,False,/*匹配类型*/
 	target,uint8,False,/*需要匹配个数*/
 	count,uint8,False,/*当前匹配个数*/
+	data,uint32,False,/*int参数*/
+	params,String,False,/*str参数*/
 	
 #
 kuafu_xianfu_minimap_info,s2c,257,/*仙府夺宝小地图信息*/,STATUS_NEVER,False

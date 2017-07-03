@@ -6250,19 +6250,19 @@ end
 
 
 -- /*野外死亡倒计时*/	
-function Protocols.pack_field_death_cooldown ( type ,deathname ,killername ,params ,cooldown)
+function Protocols.pack_field_death_cooldown ( type ,value ,killername ,cooldown ,params)
 	local output = Packet.new(SMSG_FIELD_DEATH_COOLDOWN)
-	output:writeI16(type)
-	output:writeUTF(deathname)
+	output:writeByte(type)
+	output:writeU32(value)
 	output:writeUTF(killername)
-	output:writeUTF(params)
 	output:writeI16(cooldown)
+	output:writeUTF(params)
 	return output
 end
 
 -- /*野外死亡倒计时*/	
-function Protocols.call_field_death_cooldown ( playerInfo, type ,deathname ,killername ,params ,cooldown)
-	local output = Protocols.	pack_field_death_cooldown ( type ,deathname ,killername ,params ,cooldown)
+function Protocols.call_field_death_cooldown ( playerInfo, type ,value ,killername ,cooldown ,params)
+	local output = Protocols.	pack_field_death_cooldown ( type ,value ,killername ,cooldown ,params)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -6272,11 +6272,11 @@ function Protocols.unpack_field_death_cooldown (pkt)
 	local input = Packet.new(nil, pkt)
 	local param_table = {}
 	local ret
-	ret,param_table.type = input:readU16()
+	ret,param_table.type = input:readByte()
 	if not ret then
 		return false
 	end
-	ret,param_table.deathname = input:readUTF()
+	ret,param_table.value = input:readU32()
 	if not ret then
 		return false
 	end	
@@ -6284,14 +6284,14 @@ function Protocols.unpack_field_death_cooldown (pkt)
 	if not ret then
 		return false
 	end	
-	ret,param_table.params = input:readUTF()
-	if not ret then
-		return false
-	end	
 	ret,param_table.cooldown = input:readU16()
 	if not ret then
 		return false
 	end
+	ret,param_table.params = input:readUTF()
+	if not ret then
+		return false
+	end	
 
 	return true,param_table	
 
@@ -9649,17 +9649,19 @@ end
 
 
 -- /*单方跨服匹配等待*/	
-function Protocols.pack_kuafu_match_wait ( type ,target ,count)
+function Protocols.pack_kuafu_match_wait ( type ,target ,count ,data ,params)
 	local output = Packet.new(SMSG_KUAFU_MATCH_WAIT)
 	output:writeByte(type)
 	output:writeByte(target)
 	output:writeByte(count)
+	output:writeU32(data)
+	output:writeUTF(params)
 	return output
 end
 
 -- /*单方跨服匹配等待*/	
-function Protocols.call_kuafu_match_wait ( playerInfo, type ,target ,count)
-	local output = Protocols.	pack_kuafu_match_wait ( type ,target ,count)
+function Protocols.call_kuafu_match_wait ( playerInfo, type ,target ,count ,data ,params)
+	local output = Protocols.	pack_kuafu_match_wait ( type ,target ,count ,data ,params)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -9681,6 +9683,14 @@ function Protocols.unpack_kuafu_match_wait (pkt)
 	if not ret then
 		return false
 	end
+	ret,param_table.data = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.params = input:readUTF()
+	if not ret then
+		return false
+	end	
 
 	return true,param_table	
 

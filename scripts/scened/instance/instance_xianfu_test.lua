@@ -395,7 +395,7 @@ function InstanceXianfuTest:DoAfterRespawn(unit_ptr)
 		-- 如果不对 退出跨服
 		if unitInfo:GetUseRespawnMapId() > 0 then
 			if unitInfo:GetUseRespawnMapId() ~= self:GetMapId() then
-				self:IsNeedTeleportWhileMapClear(unit_ptr)
+				mapLib.ExitInstance(self.ptr, unit_ptr)
 			end
 		else
 			self:FindAPlaceToRespawn(unit_ptr)
@@ -485,16 +485,6 @@ function InstanceXianfuTest:OnPlayerKilledByMonster(player, killer)
 	return 0
 end
 
-function InstanceXianfuTest:OnSendDeathInfo(playerInfo, deathname ,killername ,params)
-	-- 是假人的不发
-	if playerInfo:GetTypeID() ~= TYPEID_PLAYER then
-		return
-	end
-	-- 发送野外死亡回城倒计时
-	playerInfo:call_field_death_cooldown(DEAD_PLACE_TYPE_XIANFU, deathname, killername, params, tb_kuafu_xianfu_tst_base[ 1 ].seconds)
-end
-
-
 function InstanceXianfuTest:OnDropTreasure(playerInfo, killerInfo, is_offline)
 	local belongGuid = ''
 	if killerInfo and killerInfo:GetTypeID() == TYPEID_PLAYER and playerInfo:GetTypeID() == TYPEID_PLAYER then
@@ -520,7 +510,7 @@ function InstanceXianfuTest:OnDropTreasure(playerInfo, killerInfo, is_offline)
 			end
 		end
 		
-		self:OnSendDeathInfo(playerInfo, playerInfo:GetName() ,killerInfo:GetName(), string.format("%d", count))			
+		self:OnSendDeathInfo(playerInfo,killerInfo:GetName(), string.format("%d", count))			
 		if count > 0 then				
 			app:CallOptResult(self.ptr, OPRATE_TYPE_XIANFU, XIANFU_TYPE_BOSS_KILL, {playerInfo:GetName(), killerInfo:GetName(), count})
 		end
@@ -604,11 +594,6 @@ function InstanceXianfuTest:OnUseGameObject(user, go, go_entryid, posX, posY)
 	return 1	
 end
 
--- 获得单人的复活时间
-function InstanceXianfuTest:GetSingleRespawnTime(player)
-	return tb_kuafu_xianfu_tst_base[ 1 ].seconds
-end
-
 -- 地图需要清空人时要做的事
 function InstanceXianfuTest:IsNeedTeleportWhileMapClear(player)
 	return 1
@@ -637,22 +622,6 @@ function InstanceXianfuTest:OnCheckIfCanCostRespawn(player)
 	end
 	
 	self:OnCostRespawn(unitInfo)
-end
-	
--- 花元宝复活
-function InstanceXianfuTest:OnCostRespawn(unitInfo)
-	if not unitInfo:IsAlive() then
-		local mapid = self:GetMapId()
-		unitInfo:SetUseRespawnMapId(mapid)
-		unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
-	end
-end
-
-function InstanceXianfuTest:OnRandomRespawn(unitInfo)
-	if not unitInfo:IsAlive() then
-		unitInfo:SetUseRespawnMapId(0)
-		unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
-	end
 end
 
 --[[

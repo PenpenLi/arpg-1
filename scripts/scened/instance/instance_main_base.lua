@@ -20,8 +20,3 @@ function InstanceMainBase:OnAfterJoinPlayer(player)
 	-- 进城修改模式
 	playerInfo:ChangeToPeaceModeAfterTeleport()
 end
-
--- 获得单人的复活时间
-function InstanceMainBase:GetSingleRespawnTime(player)
-	return self.player_auto_respan
-end

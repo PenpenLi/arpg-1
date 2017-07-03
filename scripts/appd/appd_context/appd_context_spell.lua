@@ -1109,6 +1109,7 @@ function PlayerInfo:TalismanActive(id)
 				self:updatePassive(v[1], v[2])
 			end
 			spellMgr:calculTalismanForce(id)
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_TALISMAN_ACTIVE)
 			self:RecalcAttrAndBattlePoint()
 		else 
 			outFmtError("active talisman has not enough item");
@@ -1149,7 +1150,7 @@ function PlayerInfo:TalismanLvUp(id)
 	 	spellMgr:SetTalismanLv(index,nowLev)
 		spellMgr:calculTalismanForce(id)
 		--提示前端
-		
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_TALISMAN_LVUP)
 		-- 重算战斗力(当前和属性绑定在一起)
 		self:RecalcAttrAndBattlePoint()
 		
@@ -1162,6 +1163,8 @@ function PlayerInfo:WingsActive()
 	local spellMgr = self:getSpellMgr()
 	if spellMgr:GetWingsId() == 0 then
 		spellMgr:SetWingsId(100) --初始阶数1 星级0
+		
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_ACTIVE)
 		--重算战斗力
 		self:RecalcAttrAndBattlePoint()
 	end
@@ -1193,6 +1196,8 @@ function PlayerInfo:WingsBless()
 			if cur_exp + config.bless_exp >= config.need_exp then
 				spellMgr:SetWingsBlessExp(0)
 				spellMgr:SetWingsId(wings_id + 1)
+				
+				self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_BLESS)
 				-- 重算战斗力(当前和属性绑定在一起)
 				self:RecalcAttrAndBattlePoint()
 			else
@@ -1227,6 +1232,8 @@ function PlayerInfo:WingsRankUp()
 		
 		if self:useMulItem(config.item_cost) and self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
 			spellMgr:SetWingsId((config.rank + 1)*100)
+			
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_RANKUP)
 			-- 重算战斗力(当前和属性绑定在一起)
 			self:RecalcAttrAndBattlePoint()
 		end
@@ -1269,10 +1276,14 @@ function PlayerInfo:WingsStrength()
 		if random <= config.possibility then
 			spellMgr:SetWingsLevel(wings_level + 1)
 			outFmtInfo("wings strength success")
+			
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_STRENGTH_SUCESS)
+			
 			-- 重算战斗力(当前和属性绑定在一起)
 			self:RecalcAttrAndBattlePoint()
 		else
 			outFmtInfo("wings strength fail")
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_STRENGTH_FAIL)
 		end
 		
 	end

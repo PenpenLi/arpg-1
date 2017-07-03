@@ -28,10 +28,7 @@ Instance_base = {
 		self.__index = self
 		return object
 	end,
-	
-	-- 普通复活需要的元宝数
-	COST_GOLD = 10,
-	
+
 	-- 仇恨度
 	THREAT_V = 9999999,
 	
@@ -58,8 +55,13 @@ Instance_base = {
 	is_guajibaohu = true,
 	
 	--死后自动回城复活时间
-	player_auto_respan = 120,
+	player_auto_respan = 5,
 	
+	-- 原地复活方式0
+	STAND_UP_TYPE_COST_GOLD = 0,
+	
+	-- 原地复活方式1
+	STAND_UP_TYPE_COST_TIME = 1,
 	
 	--获取本地图是否需要持久化，及持久化名
 	GetPersistenceName = function(self)
@@ -479,13 +481,7 @@ Instance_base = {
 		function(self, data)
 			self:SetStr(MAP_STR_REWARD, data)
 		end,
-	
-	-- 获得单人的复活时间
-	GetSingleRespawnTime = 
-		function(self, player)
-			return self.player_auto_respan
-		end,
-	
+		
 	--获取击杀怪物数量
 	GetMapKillNum = function(self)
 		return self:GetUInt32(MAP_INT_FIELD_KILL_NUM)
@@ -833,7 +829,32 @@ Instance_base = {
 	DoAfterRespawn = 
 		function(self, unit_ptr)
 			-- 加无敌buff
-			unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 0, 5)
+			unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 0, 3)
+			local unitInfo = UnitInfo:new {ptr = unit_ptr}
+			if unitInfo:GetTypeID() == TYPEID_PLAYER then
+				local mapid = self:GetMapId()
+				-- 如果是原地复活
+				if unitInfo:GetUseRespawnMapId() > 0 then
+					if unitInfo:GetUseRespawnMapId() ~= mapid then
+						mapLib.ExitInstance(self.ptr, unit_ptr)
+					end
+				else
+					-- 随机复活区域
+					local rebornPosList = tb_map[mapid].rebornPos
+					local a = GetRandomIndexTable(#rebornPosList, 1)
+					local pos = rebornPosList[a[ 1 ]]
+					local offsetX = randInt(-1, 1)
+					local offsetY = randInt(-1, 1)
+					
+					local toX = pos[ 1 ] + offsetX
+					local toY = pos[ 2 ] + offsetY
+					local lineNo = self:GetMapLineNo()
+					local generalId	= self:GetMapGeneralId()
+					playerLib.Teleport(unit_ptr, mapid, toX, toY, lineNo, generalId)
+				end
+				unitInfo:SetUseRespawnMapId(0)
+			end
+	
 		end,
 		
 	--当玩家被玩家杀掉时触发
@@ -1121,32 +1142,88 @@ Instance_base = {
 		return 1
 	end,
 	
+	--[[
+	
+	--]]
+	OnSendDeathInfo = function (self, playerInfo, killername, params)
+		-- 是假人的不发
+		if playerInfo:GetTypeID() ~= TYPEID_PLAYER then
+			return
+		end
+	
+		local type = self.STAND_UP_TYPE_COST_TIME
+		local value = self:GetCostTimeCD(playerInfo) - os.time()
+		if value == 0 then
+			type = self.STAND_UP_TYPE_COST_GOLD
+			value = self:GetCostGold(playerInfo)
+		end
+		local cooldown = self:GetSingleRespawnTime(playerInfo.ptr)
+		playerInfo:call_field_death_cooldown(type ,value , killername, cooldown, params)
+	end,
+	
 	-- 判断是否够钱花元宝复活
 	OnCheckIfCanCostRespawn = function (self, player)
-		local unitInfo = UnitInfo:new {ptr = player}
-		if unitInfo:IsAlive() then
+		local playerInfo = UnitInfo:new {ptr = player}
+		if playerInfo:IsAlive() then
 			return
 		end
-		-- 非野外地图不能使用复活
+		
+		local respawnCD = self:GetCostTimeCD(playerInfo)
+		if respawnCD > 0 then
+			if os.time() >= respawnCD then
+				self:OnCostRespawn(playerInfo)
+			end
+		else
+			local gold = self:GetCostGold(playerInfo)
+			-- 通知是否可以复活
+			playerLib.SendToAppdDoSomething(player, SCENED_APPD_GOLD_RESPAWN, gold)
+		end
+	end,
+	
+	-- 如果是花时间复活的话 返回一个cd (默认不花时间)
+	GetCostTimeCD = function (self, playerInfo)
+		return 0
+	end,
+	
+	-- 获得花费的元宝
+	GetCostGold = function (self, playerInfo)
+		local deadtimes = self:GetDeadTimes(playerInfo)
 		local mapid = self:GetMapId()
-		if tb_map[mapid].type ~= MAP_TYPE_FIELD then
-			return
+		local golds = tb_map[mapid].costGold
+		if deadtimes > #golds then
+			deadtimes = #golds
 		end
-		-- 通知是否可以复活
-		playerLib.SendToAppdDoSomething(player, SCENED_APPD_GOLD_RESPAWN, self.COST_GOLD)
+		return golds[deadtimes]
+	end,
+	
+	-- 获得单人的自动复活时间
+	GetSingleRespawnTime = 
+		function(self, player)
+			local playerInfo = UnitInfo:new {ptr = player}
+			local deadtimes = self:GetDeadTimes(playerInfo)
+			local mapid = self:GetMapId()
+			
+			local rebornTimes = tb_map[mapid].rebornTime
+			if deadtimes > #rebornTimes then
+				deadtimes = #rebornTimes
+			end
+			if deadtimes > 0 then
+				return rebornTimes[deadtimes]
+			end
+			return self.player_auto_respan
+		end,
+	
+	-- NOTICE: 如果没有重载就是做的那个人的问题
+	GetDeadTimes = function (self, playerInfo)
+		return 1
 	end,
 	
 	-- 花元宝复活
-	OnCostRespawn = function (self, unitInfo)
-		if not unitInfo:IsAlive() then
-			-- 非野外地图不能使用复活
+	OnCostRespawn = function (self, playerInfo)
+		if not playerInfo:IsAlive() then
 			local mapid = self:GetMapId()
-			if tb_map[mapid].type ~= MAP_TYPE_FIELD then
-				return
-			end
-			
-			unitInfo:SetUseRespawnMapId(mapid)
-			unitLib.Respawn(unitInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+			playerInfo:SetUseRespawnMapId(mapid)
+			unitLib.Respawn(playerInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
 		end
 	end,
 	

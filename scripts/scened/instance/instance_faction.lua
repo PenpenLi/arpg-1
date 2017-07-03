@@ -317,12 +317,6 @@ function InstanceFaction:OnLeavePlayer( player, is_offline)
 	--RemoveNormalBuff(player,5)
 end
 
--- 获得单人的复活时间
-function InstanceFaction:GetSingleRespawnTime(player)
-	return 10
-end
-
-
 function InstanceFaction:DoIsFriendly(killer_ptr, target_ptr)
 	local killer_typeId = GetUnitTypeID(killer_ptr)
 	local target_typeId = GetUnitTypeID(target_ptr)

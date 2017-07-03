@@ -75,8 +75,3 @@ function PlayerInfo:Handle_Buy_Group_Instance_Times(pkt)
 	
 	self:OnBuyGroupInstanceTicket(count)
 end
-
-function PlayerInfo:Handle_Group_Instance_Match(pkt)
-	local id = pkt.indx
-	self:MatchGroupInstance(id)
-end

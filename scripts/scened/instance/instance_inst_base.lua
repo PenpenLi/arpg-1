@@ -45,6 +45,7 @@ end
 
 --增加任务
 function InstanceInstBase:OnAddQuests(questTable)
+	self:ClearQuestMemory()
 	for _, quest in pairs(questTable) do
 		local instQuestType = quest[ 1 ]
 		if Quest_Func_Table[instQuestType] then
@@ -64,6 +65,15 @@ function InstanceInstBase:GetEmptySlot()
 	return -1
 end
 
+function InstanceInstBase:ClearQuestMemory()
+	for i = MAP_INT_FIELD_QUESTS_START, MAP_INT_FIELD_QUESTS_END-1 do
+		self:SetUInt32(i, 0)
+	end
+	
+	for i = MAP_INT_FIELD_QUESTS_PROCESS_START, MAP_INT_FIELD_QUESTS_PROCESS_END-1 do
+		self:SetUInt32(i, 0)
+	end
+end
 
 ----------------------------------------增加任务 ------------------------------------------
 --增加击杀怪物任务

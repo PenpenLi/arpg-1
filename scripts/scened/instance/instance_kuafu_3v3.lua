@@ -92,7 +92,11 @@ end
 
 -- 判断是否能退出副本
 function InstanceKuafu3v3:DoPlayerExitInstance(player)
-	return 1	--返回1的话为正常退出，返回0则不让退出
+	-- 直接回原服
+	local playerInfo = UnitInfo:new {ptr = player}
+	local login_fd = serverConnList:getLogindFD()
+	call_scene_login_to_kuafu_back(login_fd, playerInfo:GetPlayerGuid())
+	return 0	--返回1的话为正常退出，返回0则不让退出
 end
 
 --玩家加入地图
@@ -501,10 +505,6 @@ function InstanceKuafu3v3:OnUseGameObject(user, go, go_entryid, posX, posY)
 	return 1	
 end
 
--- 获得单人的复活时间
-function InstanceKuafu3v3:GetSingleRespawnTime(player)
-	return tb_kuafu3v3_base[ 1 ].seconds
-end
 
 -- 地图需要清空人时要做的事
 function InstanceKuafu3v3:IsNeedTeleportWhileMapClear(player)

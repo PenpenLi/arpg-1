@@ -70,7 +70,7 @@ function PlayerInfo:OnCheckGroupInstanceMatch()
 				local target = dict.target
 				local count = dict.count
 				outFmtDebug("taget = %d, count = %d", target, count)
-				self:call_kuafu_match_wait(KUAFU_TYPE_GROUP_INSTANCE, target ,count)
+				self:call_kuafu_match_wait(KUAFU_TYPE_GROUP_INSTANCE, target ,count, indx, '')
 			elseif dict.ret == 2 then
 				outFmtDebug("== player on cancel match, %s", self:GetGuid())
 				self:OnCancelMatch(KUAFU_TYPE_GROUP_INSTANCE)
