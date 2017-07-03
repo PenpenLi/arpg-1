@@ -325,7 +325,7 @@ function PlayerInfo:Handle_Group_Instance_Match(pkt)
 	
 	local instMgr = self:getInstanceMgr()
 	local count = instMgr:GetGroupInstanceChallengeCount()
-	if count == 0 then
+	if self:GetGroupInstanceClearFlag(indx) and count == 0 then
 		outFmtError("OnChallengeGroupInstance ticket not enough")
 		return
 	end

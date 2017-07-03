@@ -165,17 +165,18 @@ function PlayerInfo:CheckGroupInstanceReward()
 			
 			if dict.ret == 0 then
 				local id = tonumber(dict.details)
-				-- 扣次数
-				local instMgr = self:getInstanceMgr()
-				instMgr:SubGroupInstanceChallengeCount(1)
 				
 				-- 选取通关奖励
 				local config = tb_group_instance_base[id]
-				local itemKeys = config.passRewardId
-				local itemVals = config.passRewardCnt
-				if not self:GetGroupInstanceClearFlag(id) then
-					itemKeys = config.fpRewardId
-					itemVals = config.fpRewardCnt
+				local itemKeys = config.fpRewardId
+				local itemVals = config.fpRewardCnt
+				if self:GetGroupInstanceClearFlag(id) then
+					itemKeys = config.passRewardId
+					itemVals = config.passRewardCnt
+					
+					-- 扣次数
+					local instMgr = self:getInstanceMgr()
+					instMgr:SubGroupInstanceChallengeCount(1)
 				end
 				self:SetGroupInstanceClearFlag(id)
 
