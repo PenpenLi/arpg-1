@@ -902,6 +902,25 @@ function PlayerInfo:AddItemByEntry(entry, count, money_log, item_log, item_bind,
 end
 
 --使用多个物品
+function PlayerInfo:useAllItems(moneyLog, costItemTable, multiple)
+	local resources, items, _ = AllItemsSplitResourceAndItemAndExp(costItemTable, multiple)
+	
+	if not self:checkMoneyEnoughs(resources, multiple) then
+		return false
+	end
+	
+	if not self:hasMulItem(items, multiple) then
+		return false
+	end
+	
+	self:costMoneys(moneyLog, resources, multiple)
+	self:useMulItem(items, multiple)
+	
+	return true
+end
+
+
+--使用多个物品
 function PlayerInfo:useMulItem(costItemTable,multiple)
 	local itemMgr = self:getItemMgr()						
 	return itemMgr:useMulItem(costItemTable,multiple)

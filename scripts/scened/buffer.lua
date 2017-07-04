@@ -118,6 +118,8 @@ function DOComputeBuffAttr(unit,buff_id,buffEffectId)
 		local attrId = config.attr_id
 		local binlogIndx = GetAttrUnitBinlogIndex(attrId)
 		binLogLib.AddUInt32(unit, binlogIndx, value)
+	elseif buff_id == BUFF_ALLATTR then
+		unitInfo:addAllAttrRate(value)
 	end
 end
 

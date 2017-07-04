@@ -109,6 +109,14 @@ function AppSpellMgr:canRaise()
 	return self:getMountStar() < 10
 end
 
+function AppSpellMgr:getMountLevelBase()
+	return self:GetUInt32(SPELL_INT_FIELD_MOUNT_LEVEL_BASE)
+end
+
+function AppSpellMgr:addMountLevelBase()
+	self:AddUInt32(SPELL_INT_FIELD_MOUNT_LEVEL_BASE, 1)
+end
+
 -- 玩家能否升阶
 function AppSpellMgr:canUpgrade()
 	return self:getMountLevel() < #tb_mount_upgrade and self:getMountStar() == 10
@@ -171,21 +179,19 @@ function AppSpellMgr:calculMountAttr(attrs)
 	local seq = (level - 1) * 11 + star + 1
 	local trainConfig = tb_mount_train[seq]
 	
+	local mountAttr = {}
+	-- 升阶
 	if trainConfig then
-		local baseForce = DoAnyOneCalcForceByAry(trainConfig.pros)
-		allForce = allForce + baseForce
-		
-		-- 属性
-		for _, val in ipairs(trainConfig.pros)do
-			local indx = val[ 1 ]
-			-- 速度属性就不在这里计算了
-			if attrs[indx] == nil then
-				attrs[indx] = 0
-			end
-			if indx ~= EQUIP_ATTR_MOVE_SPEED then
-				attrs[indx] = attrs[indx] + val[ 2 ]
-			end
-		end
+		local upgradeAttrs = MergeAttrKeysAndValues(trainConfig.prosKeys, trainConfig.prosValues)
+		mergeAttrs(mountAttr, upgradeAttrs)
+	end
+	
+	-- 升级
+	local mountLevel = self:getMountLevelBase()
+	local levelConfig = tb_mount_raise_level[mountLevel]
+	if levelConfig then
+		local levelAttrs = MergeAttrKeysAndValues(levelConfig.prosKeys, levelConfig.prosValues)
+		mergeAttrs(mountAttr, levelAttrs)
 	end
 		
 	-- 坐骑进阶技能战力
@@ -200,26 +206,14 @@ function AppSpellMgr:calculMountAttr(attrs)
 		end
 	end
 	
-	
 	-- 幻化
 	for i = SPELL_INT_FIELD_MOUNT_ILLUSION_START, SPELL_INT_FIELD_MOUNT_ILLUSION_END, MAX_ILLUSION_ATTR_COUNT do
 		local illusionId = self:GetUInt32(i+ILLUSION_ATTR_ID)
 		if illusionId > 0 then
 			local illuConfig = tb_mount_illusion[illusionId]
 			if illuConfig then
-				local baseForce = DoAnyOneCalcForceByAry(illuConfig.pros)
-				allForce = allForce + baseForce
-				-- 属性
-				for _, val in ipairs(illuConfig.pros)do
-					local indx = val[ 1 ]
-					-- 速度属性就不在这里计算了
-					if indx ~= EQUIP_ATTR_MOVE_SPEED then
-						if attrs[indx] == nil then
-							attrs[indx] = 0
-						end
-						attrs[indx] = attrs[indx] + val[ 2 ]
-					end
-				end
+				local illuAttrs = MergeAttrKeysAndValues(illuConfig.prosKeys, illuConfig.prosValues)
+				mergeAttrs(mountAttr, illuAttrs)
 			end
 			
 			-- 坐骑幻化技能战力
@@ -235,6 +229,19 @@ function AppSpellMgr:calculMountAttr(attrs)
 		end
 	end
 	
+	-- 计算总的属性
+	local baseForce = DoAnyOneCalcForce(mountAttr)
+	allForce = allForce + baseForce
+	-- 属性
+	for indx, val in ipairs(mountAttr)do
+		-- 速度属性就不在这里计算了
+		if indx ~= EQUIP_ATTR_MOVE_SPEED then
+			if attrs[indx] == nil then
+				attrs[indx] = 0
+			end
+			attrs[indx] = attrs[indx] + val
+		end
+	end
 	
 	player:SetMountForce(allForce)
 	
@@ -792,6 +799,8 @@ end
 
 function AppSpellMgr:SetWingsId(value)
 	self:SetUInt32(SPELL_WINGS_ID,value)
+	local owner = self:getOwner()
+	owner:SetUInt32(PLAYER_INT_FIELD_WINGS_RANK,math.floor(value/100))
 end
 --神羽强化等级
 function AppSpellMgr:GetWingsLevel()
@@ -854,6 +863,87 @@ function AppSpellMgr:calculWingsAttr(attrs)
 end
 
 ----------------------------------------------神羽结束-------------------------------------------
+
+
+----------------------------------------------经脉开始-------------------------------------------
+function AppSpellMgr:getMeridianLevel()
+	return self:GetUInt16(SPELL_INT_FIELD_MERIDIAN_LEVEL, 0)
+end
+
+function AppSpellMgr:addMeridianLevel()
+	self:AddUInt16(SPELL_INT_FIELD_MERIDIAN_LEVEL, 0, 1)
+end
+
+function AppSpellMgr:isMeridianNeedBreak()
+	return self:GetUInt16(SPELL_INT_FIELD_MERIDIAN_LEVEL, 1) == 1
+end
+
+function AppSpellMgr:setMeridianBreakState(state)
+	self:SetUInt16(SPELL_INT_FIELD_MERIDIAN_LEVEL, 1, state)
+end
+
+
+function AppSpellMgr:getMeridianExp()
+	return self:GetUInt32(SPELL_INT_FIELD_MERIDIAN_EXP)
+end
+
+function AppSpellMgr:addMeridianExp(val)
+	self:AddUInt32(SPELL_INT_FIELD_MERIDIAN_EXP, val)
+end
+
+function AppSpellMgr:costMeridianExp(val)
+	local curr = self:getMeridianExp()
+	if curr < val or val < 0 then
+		return false
+	end
+	
+	self:subMeridianExp(val)
+	return true
+end
+
+function AppSpellMgr:subMeridianExp(val)
+	if val < 0 then val = -val end
+	val = math.min(self:getMeridianExp(), val)
+	self:SubUInt32(SPELL_INT_FIELD_MERIDIAN_EXP, val)
+end
+
+function AppSpellMgr:addMeridianExpSource(sourceId)
+	local config = tb_meridian_source[sourceId]
+	if not config then
+		return
+	end
+	
+	local limit = config.limit
+	local prev = self:GetByte(SPELL_INT_FIELD_MERIDIAN_CNT_START, sourceId-1)
+	-- 已经满了就不加了
+	if prev >= limit then
+		return
+	end
+	
+	self:AddByte(SPELL_INT_FIELD_MERIDIAN_CNT_START, sourceId-1, 1)
+	self:addMeridianExp(config.exp)
+end
+
+function AppSpellMgr:calcMeridianAttr(attrs)
+	
+	local attrs = {}
+	local lv = self:getMeridianLevel()
+	local config = tb_meridian_info[lv]
+	
+	local attrKeys = config.attrKeys
+	local attrValues = config.attrValues
+	for i = 1, #attrKeys do
+		local attr_id		= attrKeys[ i ]
+		local attr_value	= attrValues[ i ]
+		table.insert(attrs, {attr_id, attr_value})
+	end
+	
+	local baseForce = DoAnyOneCalcForceByAry(attrs)
+	local player = self:getOwner()
+	player:SetMeridianForce(baseForce)
+end
+
+----------------------------------------------经脉结束-------------------------------------------
 
 ----------------------------------------------强化宝石-----------------------------------------------
 -- 获取部位强化等级

@@ -132,6 +132,10 @@ function DoIsNeedGeneralid(mapid)
 	return tb_map[mapid] and tb_map[mapid].is_need_general == 1
 end
 
+function DoIsOfflineReenter(mapid)
+	return tb_map[mapid] and tb_map[mapid].isOfflineReenter == 1
+end
+
 --地图管理器，查找或创建地图
 function FindOrCreateMap(mapid, inst_type, general_id, lineno)
 	if(inst_type == MAP_INST_TYP_SINGLETON)then	--单人副本

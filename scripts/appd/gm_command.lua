@@ -72,6 +72,12 @@ function  DoGMScripts(player_ptr, gm_commands)
 				end
 			end
 		end
+	elseif(tokens[1] == "@增加修炼经验")then
+		if tokens[2] then
+			local val = tonumber(tokens[ 2 ])
+			local spellMgr = player:getSpellMgr()
+			spellMgr:addMeridianExp(val)
+		end
 	elseif(tokens[ 1 ] == "@属性")then
 		if tokens[ 2 ] then
 			local equipmentId = tonumber(tokens[ 2 ])

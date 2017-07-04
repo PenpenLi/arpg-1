@@ -331,6 +331,10 @@ CMSG_WINGS_ACTIVE		= 362	-- /*神羽激活*/
 CMSG_WINGS_BLESS		= 363	-- /*神羽祝福*/	
 CMSG_WINGS_RANKUP		= 364	-- /*神羽升阶*/	
 CMSG_WINGS_STRENGTH		= 365	-- /*神羽强化*/	
+CMSG_MERIDIAN_PRACTISE		= 366	-- /*经脉修炼*/	
+CMSG_ADD_MERIDIAN_EXP		= 367	-- /*加经脉修炼经验值*/	
+CMSG_RAISE_MOUNT_LEVEL_BASE		= 368	-- /*提升坐骑等级*/	
+CMSG_ACTIVE_MOUNT		= 369	-- /*解锁坐骑*/	
 
 
 ---------------------------------------------------------------------
@@ -11895,6 +11899,110 @@ function Protocols.unpack_wings_strength (pkt)
 end
 
 
+-- /*经脉修炼*/	
+function Protocols.pack_meridian_practise (  )
+	local output = Packet.new(CMSG_MERIDIAN_PRACTISE)
+	return output
+end
+
+-- /*经脉修炼*/	
+function Protocols.call_meridian_practise ( playerInfo )
+	local output = Protocols.	pack_meridian_practise (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*经脉修炼*/	
+function Protocols.unpack_meridian_practise (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*加经脉修炼经验值*/	
+function Protocols.pack_add_meridian_exp ( id)
+	local output = Packet.new(CMSG_ADD_MERIDIAN_EXP)
+	output:writeByte(id)
+	return output
+end
+
+-- /*加经脉修炼经验值*/	
+function Protocols.call_add_meridian_exp ( playerInfo, id)
+	local output = Protocols.	pack_add_meridian_exp ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*加经脉修炼经验值*/	
+function Protocols.unpack_add_meridian_exp (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*提升坐骑等级*/	
+function Protocols.pack_raise_mount_level_base (  )
+	local output = Packet.new(CMSG_RAISE_MOUNT_LEVEL_BASE)
+	return output
+end
+
+-- /*提升坐骑等级*/	
+function Protocols.call_raise_mount_level_base ( playerInfo )
+	local output = Protocols.	pack_raise_mount_level_base (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*提升坐骑等级*/	
+function Protocols.unpack_raise_mount_level_base (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*解锁坐骑*/	
+function Protocols.pack_active_mount (  )
+	local output = Packet.new(CMSG_ACTIVE_MOUNT)
+	return output
+end
+
+-- /*解锁坐骑*/	
+function Protocols.call_active_mount ( playerInfo )
+	local output = Protocols.	pack_active_mount (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*解锁坐骑*/	
+function Protocols.unpack_active_mount (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -12218,6 +12326,10 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_wings_bless = self.call_wings_bless
 	playerInfo.call_wings_rankup = self.call_wings_rankup
 	playerInfo.call_wings_strength = self.call_wings_strength
+	playerInfo.call_meridian_practise = self.call_meridian_practise
+	playerInfo.call_add_meridian_exp = self.call_add_meridian_exp
+	playerInfo.call_raise_mount_level_base = self.call_raise_mount_level_base
+	playerInfo.call_active_mount = self.call_active_mount
 end
 
 local unpack_handler = {
@@ -12538,6 +12650,10 @@ local unpack_handler = {
 [CMSG_WINGS_BLESS] =  Protocols.unpack_wings_bless,
 [CMSG_WINGS_RANKUP] =  Protocols.unpack_wings_rankup,
 [CMSG_WINGS_STRENGTH] =  Protocols.unpack_wings_strength,
+[CMSG_MERIDIAN_PRACTISE] =  Protocols.unpack_meridian_practise,
+[CMSG_ADD_MERIDIAN_EXP] =  Protocols.unpack_add_meridian_exp,
+[CMSG_RAISE_MOUNT_LEVEL_BASE] =  Protocols.unpack_raise_mount_level_base,
+[CMSG_ACTIVE_MOUNT] =  Protocols.unpack_active_mount,
 
 }
 

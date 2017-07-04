@@ -211,5 +211,12 @@ hanlders[CMSG_WINGS_STRENGTH] = PlayerInfo.Handle_Wings_Strength
 hanlders[CMSG_GROUP_INSTANCE_MATCH] = PlayerInfo.Handle_Group_Instance_Match
 hanlders[CMSG_BUY_GROUP_INSTANCE_TIMES] = PlayerInfo.Handle_Buy_Group_Instance_Times
 
+-- 经脉
+hanlders[CMSG_MERIDIAN_PRACTISE] = PlayerInfo.Handle_Meridian_Practise
+hanlders[CMSG_ADD_MERIDIAN_EXP] = PlayerInfo.Handle_Add_Meridian_Exp
+
+
+hanlders[CMSG_RAISE_MOUNT_LEVEL_BASE] = PlayerInfo.Handle_Raise_Mount_Level_Base
+hanlders[CMSG_ACTIVE_MOUNT]	= PlayerInfo.Handle_Active_Mount
 
 return hanlders

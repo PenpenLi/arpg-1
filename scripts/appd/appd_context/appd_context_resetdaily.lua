@@ -112,4 +112,6 @@ function PlayerInfo:onRealReset()
 	
 	self:ResetMassBossTimes()
 	self:OnResetGroupInstanceDayTimes()
+	
+	self:OnResetMeridianDayTimes()
 end

@@ -1407,3 +1407,17 @@ wings_rankup,c2s,364,/*神羽升阶*/,STATUS_NEVER,False
 #
 wings_strength,c2s,365,/*神羽强化*/,STATUS_NEVER,False
 
+#
+meridian_practise,c2s,366,/*经脉修炼*/,STATUS_NEVER,False
+	
+
+#
+add_meridian_exp,c2s,367,/*加经脉修炼经验值*/,STATUS_NEVER,False
+	id,uint8,False,/*修炼道具的序号列表*/
+	
+#
+raise_mount_level_base,c2s,368,/*提升坐骑等级*/,STATUS_NEVER,False
+	
+#
+active_mount,c2s,369,/*解锁坐骑*/,STATUS_NEVER,False
+	

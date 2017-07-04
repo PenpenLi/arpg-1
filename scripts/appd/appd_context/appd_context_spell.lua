@@ -503,7 +503,7 @@ end
 
 -- 申请升阶坐骑
 function PlayerInfo:DoHandleUpgradeMount()
-	local spellMgr = self:getSpellMgr()
+--[[	local spellMgr = self:getSpellMgr()
 	
 	local level = spellMgr:getMountLevel()
 	
@@ -516,17 +516,17 @@ function PlayerInfo:DoHandleUpgradeMount()
 	end
 	local now = prev + added
 	
-	if ret then
+	if ret then--]]
 		self:upgraded()
-		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT)
+--[[		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT)
 		now = 0
 	end
 	
 	if prev ~= now then
 		spellMgr:setBlessExp(now)
-	end
+	end--]]
 	
-	outFmtDebug("upgrade from (%d, 10, %d) to (%d, %d, %d)", level, prev, spellMgr:getMountLevel(), spellMgr:getMountStar(), spellMgr:getBlessExp())
+	outFmtDebug("upgrade from (%d, 10) to (%d, %d)", level, spellMgr:getMountLevel(), spellMgr:getMountStar())
 end
 
 -- 一键进阶
@@ -723,6 +723,17 @@ function PlayerInfo:DoHandleIllusion(illuId)
 	--[[
 	self:Send2ScenedIllusion(illuId)
 	]]
+end
+
+function PlayerInfo:raiseMountLevelBase()
+	local spellMgr = self:getSpellMgr()
+	local levelBase = spellMgr:getMountLevelBase()
+	if tb_mount_raise_level[levelBase+1] then
+		if not self:useAllItems(MONEY_CHANGE_RAISE_MOUNT, tb_mount_raise_level[levelBase+1].cost) then
+			return
+		end
+		spellMgr:addMountLevelBase()
+	end
 end
 
 -- 移除过期幻化信息
@@ -1149,6 +1160,9 @@ function PlayerInfo:TalismanLvUp(id)
 		local nowLev = curlev + 1
 	 	spellMgr:SetTalismanLv(index,nowLev)
 		spellMgr:calculTalismanForce(id)
+		
+		self:onAddMeridianExpSource(MERIDIAN_EXP_SOURCE_TALISMAN_ZHULING)
+		
 		--提示前端
 		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_TALISMAN_LVUP)
 		-- 重算战斗力(当前和属性绑定在一起)
@@ -1277,6 +1291,8 @@ function PlayerInfo:WingsStrength()
 			spellMgr:SetWingsLevel(wings_level + 1)
 			outFmtInfo("wings strength success")
 			
+			self:onAddMeridianExpSource(MERIDIAN_EXP_SOURCE_WINGS_STRENGTH)
+			
 			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_STRENGTH_SUCESS)
 			
 			-- 重算战斗力(当前和属性绑定在一起)
@@ -1288,6 +1304,69 @@ function PlayerInfo:WingsStrength()
 		
 	end
 	
+end
+
+function PlayerInfo:onAddMeridianExpSource(sourceId)
+	local spellMgr = self:getSpellMgr()
+	spellMgr:addMeridianExpSource(sourceId)
+end
+
+function PlayerInfo:onAddMeridianExpItem(id)
+	local spellMgr = self:getSpellMgr()
+	local config = tb_meridian_item[ id ]
+	
+	if not self:useMulItem({{config.itemId, 1}}) then
+		return
+	end
+	
+	spellMgr:addMeridianExp(config.exp)
+end
+
+
+-- 设置经脉战力
+function PlayerInfo:SetMeridianForce(val)
+	self:SetUInt32(PLAYER_INT_FIELD_MERIDIAN_FORCE, val)
+end
+
+
+function PlayerInfo:meridianPractise()
+	local spellMgr = self:getSpellMgr()
+	local level = spellMgr:getMeridianLevel()
+	
+	if not spellMgr:isMeridianNeedBreak() then
+		-- 表示升级
+		if not tb_meridian_info[level+1] then
+			-- 已经满级了
+			return
+		end
+		
+		-- 活力不够
+		if not spellMgr:costMeridianExp(tb_meridian_info[level+1].costExp) then
+			return
+		end
+		
+		spellMgr:addMeridianLevel()
+		if #tb_meridian_info[level+1].costMoney > 0 then
+			spellMgr:setMeridianBreakState(1)
+		end
+	else
+		-- 表示突破
+		
+		-- 钱不够
+		if not self:costMoneys(MONEY_CHANGE_MERIDIAN, tb_meridian_info[level].costMoney) then
+			return
+		end
+		
+		spellMgr:setMeridianBreakState(0)
+	end
+end
+
+
+function PlayerInfo:OnResetMeridianDayTimes()
+	local spellMgr = self:getSpellMgr()
+	for i = SPELL_INT_FIELD_MERIDIAN_CNT_START, SPELL_INT_FIELD_MERIDIAN_CNT_END - 1 do
+		spellMgr:SetUInt32(i, 0)
+	end
 end
 
 --[[

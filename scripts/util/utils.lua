@@ -661,3 +661,37 @@ function pairsByKeys(t)
         return a[i], t[a[i]]
     end
 end
+
+function AllItemsSplitResourceAndItemAndExp(itemTable)
+	local resources = {}
+	local items		= {}
+	local exp		= 0
+	
+	for _, itemInfo in pairs(itemTable) do
+		
+		local itemId = itemInfo[ 1 ]
+		local count  = itemInfo[ 2 ]
+		if IsResource(itemId) then
+			local moneyType = GetMoneyType(itemId)
+			table.insert(resources, {moneyType, count})
+		elseif itemId == Item_Loot_Exp then
+			exp = count
+		else
+			if tb_item_template[itemId] then
+				table.insert(items, {itemId, count})
+			end
+		end
+	end
+	
+	return resources, items, exp
+end
+
+
+function MergeAttrKeysAndValues(attrKeys, attrValues)
+	local ret = {}
+	for i = 1, #attrKeys do
+		table.insert(ret, {attrKeys[ i ], attrValues[ i ]})
+	end
+	
+	return ret
+end

@@ -13,12 +13,14 @@ require("template.tables.tb_item_template")
 require("template.tables.tb_bag_size")
 require("template.tables.tb_item_sort_cd")
 
-
+-- 坐骑
 require("template.tables.tb_mount_base")
 require("template.tables.tb_mount_illusion")
 require("template.tables.tb_mount_train")
 require("template.tables.tb_mount_train_type")
 require("template.tables.tb_mount_upgrade")
+require("template.tables.tb_mount_raise_level")
+
 require("template.tables.tb_shop")
 require("template.tables.tb_store")
 require("template.tables.tb_hook_hp_item")
@@ -189,6 +191,11 @@ require("template.tables.tb_mass_boss_times")
 
 require("template.tables.tb_group_instance_base")
 require("template.tables.tb_group_instance_buy")
+
+-- 经脉
+require("template.tables.tb_meridian_info")
+require("template.tables.tb_meridian_item")
+require("template.tables.tb_meridian_source")
 
 --- 数据预处理
 require("template.tabset")

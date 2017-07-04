@@ -219,6 +219,11 @@ config = {
 		CMSG_BUY_MASS_BOSS_TIMES,
 		CMSG_GROUP_INSTANCE_MATCH,
 		CMSG_BUY_GROUP_INSTANCE_TIMES,
+		
+		CMSG_MERIDIAN_PRACTISE,		-- /*经脉修炼*/	
+		CMSG_ADD_MERIDIAN_EXP,		-- /*加经脉修炼经验值*/
+		CMSG_RAISE_MOUNT_LEVEL_BASE,	-- 升级坐骑等级
+		CMSG_ACTIVE_MOUNT,				-- 激活坐骑
 	},
 	--pk服命令表
 	pk_external_router_map = {

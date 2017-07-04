@@ -574,6 +574,14 @@ function GetAttrUnitBinlogIndex(attrId)
 	return tBaseKey[attrId]
 end
 
+function UnitInfo:addAllAttrRate(rate)
+	foreachAttr(function (attrId, binlogIndx)
+		local val = self:GetUInt32(binlogIndx)
+		val = math.floor(val * (100 + rate) / 100)
+		self:SetUInt32(binlogIndx, val)
+	end)
+end
+
 
 --生物部分
 function UnitInfo:SetBaseAttrs(info, bRecal, mul)

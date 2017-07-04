@@ -125,7 +125,7 @@ function PlayerInfo:Handle_Raise_Mount(pkt)
 	local trainExp = spellMgr:getTrainExp()	
 	
 	-- 扣资源
-	if not self:costMoneys(MONEY_CHANGE_RAISE_MOUNT, config.traincost) then
+	if not self:useAllItems(MONEY_CHANGE_RAISE_MOUNT, config.traincost) then
 		outFmtError("resouce not enough")
 		return
 	end
@@ -160,17 +160,17 @@ function PlayerInfo:Handle_Upgrade_Mount(pkt)
 	local cost = upgradeConfig.upgradecost
 	
 	-- 如果扣除物品失败, 返回
-	if useItem == 0 then
-		if not self:useMulItem(cost) then
-			outFmtError("player has not enough item")
-			return
-		end
-	else
+--	if useItem == 0 then
+	if not self:useAllItems(MONEY_CHANGE_RAISE_MOUNT, cost) then
+		outFmtError("player has not enough item")
+		return
+	end
+--[[	else
 		if not self:useMulItemIfCostMoneyEnabled(cost) then
 			outFmtError("ingots not enough")
 			return
 		end
-	end
+	end--]]
 	
 	self:DoHandleUpgradeMount()
 end
@@ -267,6 +267,17 @@ function PlayerInfo:Handle_Illusion(pkt)
 	
 	self:DoHandleIllusion(illuId)
 end
+
+
+function PlayerInfo:Handle_Raise_Mount_Level_Base(pkt)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) then
+		return
+	end
+
+	self:raiseMountLevelBase()
+end
+
 
 -- 激活神兵
 function PlayerInfo:Handle_Divine_Active(pkt)
@@ -438,4 +449,28 @@ end
 --神羽强化
 function PlayerInfo:Handle_Wings_Strength(pkt)
 	self:WingsStrength()
+end
+
+function PlayerInfo:Handle_Meridian_Practise(pkt)
+	self:meridianPractise()
+end
+
+function PlayerInfo:Handle_Add_Meridian_Exp(pkt)
+	local id = pkt.id
+
+	if not tb_meridian_item[ id ] then
+		return
+	end
+
+	self:onAddMeridianExpItem(id)
+end
+
+function PlayerInfo:Handle_Active_Mount(pkt)
+	local spellMgr = self:getSpellMgr()
+	-- 系统未激活 或者 坐骑已经激活
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) or spellMgr:getMountLevel() > 0 then
+		return
+	end
+	
+	self:activeMount()
 end

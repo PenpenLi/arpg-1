@@ -53,12 +53,7 @@ function PlayerInfo:AddOpenMenuFlag(id,subid)
 		--outFmtInfo("AddOpenMenuFlag: already set flag true: %d %d",id,subid)
 		return 0
 	end
-	
-	-- Ω‚À¯◊¯∆Ô
-	if id == MODULE_MOUNT_GET and subid == MODULE_MOUNT_GET_ALL then
-		self:activeMount()
-	end
-	
+
 	--≤‚ ‘
 	if id == MODULE_PRACTICE and subid == MODULE_PRACTICE_EXP then
 		self:InitCultivation()
