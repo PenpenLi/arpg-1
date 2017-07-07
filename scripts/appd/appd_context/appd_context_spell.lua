@@ -518,7 +518,8 @@ function PlayerInfo:DoHandleUpgradeMount()
 	
 	if ret then--]]
 		self:upgraded()
---[[		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT)
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT)
+--[[		
 		now = 0
 	end
 	

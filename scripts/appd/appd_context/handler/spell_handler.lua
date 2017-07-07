@@ -177,6 +177,7 @@ end
 
 -- 一键进阶
 function PlayerInfo:Handle_Upgrade_Mount_One_Step(pkt)
+	--[[
 	local useItem = pkt.useItem
 	-- 系统未激活
 	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) then
@@ -197,6 +198,7 @@ function PlayerInfo:Handle_Upgrade_Mount_One_Step(pkt)
 	end
 	
 	self:DoHandleUpgradeMountOneStep(useItem)
+	--]]
 end
 
 ILLUSION_EXPIRE_ACTIVE = 3		--有实现的激活

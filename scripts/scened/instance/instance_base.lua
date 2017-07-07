@@ -1240,4 +1240,12 @@ Instance_base = {
 	OnSpecifyTeleportOrigin = function (self, player)
 
 	end,
+	
+	isInstanceInit = function (self)
+		return self:GetUInt32(MAP_INT_FIELD_RESERVE4) == 1
+	end,
+	
+	SetInstanceInited = function (self)
+		self:SetUInt32(MAP_INT_FIELD_RESERVE4, 1)
+	end,
 }

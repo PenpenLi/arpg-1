@@ -33,6 +33,28 @@ function InstanceInstBase:prepareToLeave()
 	mapLib.ExitInstance(self.ptr)
 end
 
+-- 设置总的波数
+function InstanceInstBase:GetCurrFinishWave()
+	return self:GetUInt16(MAP_INT_FIELD_INSTANCE_WAVE, 0)
+end
+
+-- 设置总的波数
+function InstanceInstBase:SetWaves(val)
+	self:SetUInt16(MAP_INT_FIELD_INSTANCE_WAVE, 1, val)
+end
+
+-- 增加当前波数
+function InstanceInstBase:toNextWave()
+	self:AddUInt16(MAP_INT_FIELD_INSTANCE_WAVE, 0, 1)
+end
+
+-- 判断波数是否完成
+function InstanceInstBase:isWaveFinish()
+	local curr = self:GetUInt16(MAP_INT_FIELD_INSTANCE_WAVE, 0)
+	local alls = self:GetUInt16(MAP_INT_FIELD_INSTANCE_WAVE, 1)
+	
+	return curr >= alls and alls > 0
+end
 
 -- 副本失败退出
 function InstanceInstBase:instanceFail()

@@ -21,4 +21,5 @@ tb_buff_template = {
 	[202] = {id = 202, name = "防御增强", attr_id = {3}, recalculation = 1, die_clear = 1},
 	[203] = {id = 203, name = "暴击增强", attr_id = {4}, recalculation = 1, die_clear = 1},
 	[204] = {id = 204, name = "全属性增强", attr_id = {}, recalculation = 1, die_clear = 1},
+	[205] = {id = 205, name = "属性削弱", attr_id = {1,2}, recalculation = 1, die_clear = 1},
 }

@@ -11,12 +11,19 @@ end
 
 --初始化脚本函数
 function InstanceKuafuGroup:OnInitScript()
+	-- 不让重复初始化
+	if self:isInstanceInit() then
+		return
+	end
+	self:SetInstanceInited()
+	
 	InstanceInstBase.OnInitScript(self) --调用基类
 	-- 解析generalid
 	self:parseGeneralId()
 	
 	self:OnInitMapTime()
 	self:AddCountDown()
+	
 end
 
 -- 活动正式开始
@@ -41,16 +48,13 @@ function InstanceKuafuGroup:parseGeneralId()
 	local params = string.split(generalId, '|')
 	local hard = tonumber(params[ 2 ])
 	self:SetHard(hard)
+	self:SetWaves(#tb_group_instance_base[hard].monster)
 end
 
 function InstanceKuafuGroup:TryToNextPart()
-	local part = self:GetPart()
-	local id = self:GetHard()
-	local len = #tb_group_instance_base[id].monster
-	if part >= len then	
+	if self:isWaveFinish() then	
 		-- 副本完成
 		self:SetMapState(self.STATE_FINISH)
-		
 		return
 	end
 	
@@ -61,7 +65,7 @@ end
 function InstanceKuafuGroup:AfterProcessUpdate(player)
 	-- 判断副本是否
 	if self:CheckQuestAfterTargetUpdate() then
-		self:AddUInt32(KUAFU_GROUP_INSTANCE_FIELDS_PART, 1)
+		self:toNextWave()
 		self:TryToNextPart()
 	end
 end
@@ -75,7 +79,7 @@ function InstanceKuafuGroup:GetHard()
 end
 
 function InstanceKuafuGroup:GetPart()
-	return self:GetUInt32(KUAFU_GROUP_INSTANCE_FIELDS_PART)
+	return self:GetCurrFinishWave()
 end
 
 -- 刷新boss

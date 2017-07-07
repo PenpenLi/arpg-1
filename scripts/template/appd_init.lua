@@ -204,5 +204,8 @@ require("template.tables.tb_meridian_info")
 require("template.tables.tb_meridian_item")
 require("template.tables.tb_meridian_source")
 
+-- 排名赛
+require("template.tables.tb_single_pvp_base")
+
 --- 数据预处理
 require("template.tabset")

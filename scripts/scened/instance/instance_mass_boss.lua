@@ -21,6 +21,12 @@ end
 
 --初始化脚本函数
 function InstanceMassBoss:OnInitScript(  )
+	-- 不让重复初始化
+	if self:isInstanceInit() then
+		return
+	end
+	self:SetInstanceInited()
+	
 	Instance_base.OnInitScript(self) --调用基类
 	-- 解析generalid
 	self:parseGeneralId()
