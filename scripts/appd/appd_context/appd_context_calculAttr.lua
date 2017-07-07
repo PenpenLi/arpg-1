@@ -458,6 +458,10 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	
 	printAttr("wings ", attrs)
 	
+	-- 经脉
+	spellMgr:calcMeridianAttr(attrs)
+	printAttr("meridian ", attrs)
+	
 	--称号
 	self:calculTitleAttr(attrs)
 	

@@ -27,6 +27,12 @@ function PlayerInfo:DoResetDaily  ()
 		self:SetResetDailyTime(5,os.time())
 	end
 	
+	--每日12点重置
+	if(self:ResetDaily_Time(12))then
+		self:ResetFactionBossDefenseTickets()
+		--重置下标时间设置下
+		self:SetResetDailyTime(12,os.time())
+	end
 	--每日累加登陆次数
 	local limit_acti = self:getLimitActivityInfo()
 	if limit_acti then

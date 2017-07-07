@@ -926,7 +926,7 @@ end
 
 function AppSpellMgr:calcMeridianAttr(attrs)
 	
-	local attrs = {}
+	local meridianAttrs = {}
 	local lv = self:getMeridianLevel()
 	local config = tb_meridian_info[lv]
 	
@@ -935,10 +935,14 @@ function AppSpellMgr:calcMeridianAttr(attrs)
 	for i = 1, #attrKeys do
 		local attr_id		= attrKeys[ i ]
 		local attr_value	= attrValues[ i ]
-		table.insert(attrs, {attr_id, attr_value})
+		table.insert(meridianAttrs, {attr_id, attr_value})
+		if not attrs[attr_id] then
+			attrs[attr_id] = 0
+		end
+		attrs[attr_id] = attrs[attr_id] + attr_value
 	end
 	
-	local baseForce = DoAnyOneCalcForceByAry(attrs)
+	local baseForce = DoAnyOneCalcForceByAry(meridianAttrs)
 	local player = self:getOwner()
 	player:SetMeridianForce(baseForce)
 end

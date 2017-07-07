@@ -96,6 +96,13 @@ function AppdApp:InitCorn()
 		SendFactionGiftRankReward()
 	end)
 	
+	--12点重置
+	self.cron:addCron("12点重置",'0 12 * * *',function() 
+		self.objMgr:foreachAllFaction(function(faction)
+			faction:ResetAllBossDenfense()
+		end)
+	end)
+	
 	-- 每周重置
 	self.cron:addCron("每周重置",'0 0 * * 1',function() 
 		Rank3v3kuafuWeek()

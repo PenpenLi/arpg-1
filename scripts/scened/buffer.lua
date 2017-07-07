@@ -114,10 +114,11 @@ function DOComputeBuffAttr(unit,buff_id,buffEffectId)
 	local value = tb_buff_effect[buffEffectId].value
 	
 	-- 改变属性的
-	if config.attr_id > 0 then
-		local attrId = config.attr_id
-		local binlogIndx = GetAttrUnitBinlogIndex(attrId)
-		binLogLib.AddUInt32(unit, binlogIndx, value)
+	if #config.attr_id > 0 then
+		for _, attrId in ipairs(config.attr_id) do
+			local binlogIndx = GetAttrUnitBinlogIndex(attrId)
+			binLogLib.AddUInt32(unit, binlogIndx, value)
+		end
 	elseif buff_id == BUFF_ALLATTR then
 		unitInfo:addAllAttrRate(value)
 	end

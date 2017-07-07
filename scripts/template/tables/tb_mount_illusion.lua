@@ -15,6 +15,6 @@ tb_mount_illusion = {
 	--  speed:int 坐骑速度
 	--  prosKeys:array 坐骑属性key
 	--  prosValues:array 坐骑属性值
-	[1] = {id = 1, mountID = 5121, condition = 1, mountLevel = 2, costResource = {}, costItem = {{1201,10}}, last = 0, spells = {11014}, speed = 200, prosKeys = {1,2,3,8,10,11,13}, prosValues = {4800,255,255,255,255,255,255}},
-	[2] = {id = 2, mountID = 5122, condition = 2, mountLevel = 1, costResource = {{0,100}}, costItem = {}, last = 0, spells = {11015}, speed = 200, prosKeys = {1,2,3,8,10,11,13}, prosValues = {9600,450,450,450,450,450,450}},
+	[1] = {id = 1, mountID = 5121, condition = 1, mountLevel = 1, costResource = {}, costItem = {{1201,10}}, last = 0, spells = {}, speed = 200, prosKeys = {1,2,3,8,10,11,13}, prosValues = {4800,255,255,255,255,255,255}},
+	[2] = {id = 2, mountID = 5122, condition = 1, mountLevel = 1, costResource = {}, costItem = {{1201,10}}, last = 0, spells = {}, speed = 200, prosKeys = {1,2,3,8,10,11,13}, prosValues = {9600,450,450,450,450,450,450}},
 }

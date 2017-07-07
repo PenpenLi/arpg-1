@@ -255,6 +255,27 @@ local function on_scened_send_faction_update_target_info( pkt )
 	faction:UpdateTargetInfo(hp_rate, x, y)
 end
 
+local function on_scened_send_faction_bossdefense_win( pkt )
+	local ret, faction_guid,player_guid, pool_id = unpack_scened_send_faction_bossdefense_win(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_update_target_info: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:OnBossDenfenseChallengeKill(player_guid, pool_id)
+end
+
+local function on_scened_send_faction_bossdefense_leave( pkt )
+	local ret, faction_guid,player_guid, index, pool_id, hp = unpack_scened_send_faction_bossdefense_leave(pkt)
+	if not ret then return end
+	local faction = app.objMgr:getObj(faction_guid)
+	if not faction then 
+		outFmtDebug("AppdApp::on_scened_send_faction_update_target_info: faction = null, %s", faction_guid)
+		return 
+	end
+	faction:OnBossDenfenseChallengeFinish(player_guid,index,pool_id,hp)
+end
 
 local appdInsternalHanlders = {}
 appdInsternalHanlders[INTERNAL_OPT_USER_ITEM_RESULT] = on_scened_use_item_result
@@ -277,6 +298,8 @@ appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSS_DAMAGED] = on_scened_send_factio
 appdInsternalHanlders[INTERNAL_OPT_FACTION_UPDATE_BOSS_INFO] = on_scened_send_faction_update_boss_info
 appdInsternalHanlders[INTERNAL_OPT_FACTION_UPDATE_TARGET_INFO] = on_scened_send_faction_update_target_info
 
+appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSSDEFENSE_WIN] = on_scened_send_faction_bossdefense_win
+appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSSDEFENSE_LEAVE] = on_scened_send_faction_bossdefense_leave
 
 
 --网络包处理方法

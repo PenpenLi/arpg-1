@@ -446,8 +446,8 @@ function PlayerInfo:GmCommand(str)
 		--self:Handle_Faction_People(pkt4)
 		--]]
 		
-		local pkt = {}
-		pkt.id = 1
+		--local pkt = {}
+		--pkt.id = 1
 		--self:Handle_Talisman_Active(pkt)
 		
 		--self:Handle_Talisman_Lvup(pkt)
@@ -458,7 +458,12 @@ function PlayerInfo:GmCommand(str)
 		--self:Handle_Wings_Strength(pkt)
 		
 		--self:MatchGroupInstance(1)
-		self:OnBuyGroupInstanceTicket(1)
+		--self:OnBuyGroupInstanceTicket(1)
+		self:SetFactionBossDefenseTickets(10)
+		local pkt4 = {}
+		pkt4.opt_type = FACTION_MANAGER_TYPE_BOSSDEFENSE_CHALLENGE
+		pkt4.reserve_int1 = 1
+		self:Handle_Faction_People(pkt4)
 		
 	else
 		--[[

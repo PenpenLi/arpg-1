@@ -1421,3 +1421,16 @@ raise_mount_level_base,c2s,368,/*提升坐骑等级*/,STATUS_NEVER,False
 #
 active_mount,c2s,369,/*解锁坐骑*/,STATUS_NEVER,False
 	
+#
+show_faction_bossdefense_damage_list,s2c,370,/*家族领主挑战输出排行*/,STATUS_NEVER,False
+	list,mass_boss_rank_info,True,/*输出排行*/
+	
+#
+show_faction_tower_sweep_list,s2c,371,/*家族无尽远征扫荡结果*/,STATUS_NEVER,False
+	list,item_reward_info,True,/*扫荡物品*/
+
+#
+send_instance_result,s2c,375,/*副本结果*/,STATUS_NEVER,False
+	state,uint8,False,/*副本状态(249:副本失败,250:副本通关,251:副本未通关)*/
+	cd,uint8,False,/*副本cd*/
+	list,item_reward_info,True,/*道具列表*/

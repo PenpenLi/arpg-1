@@ -93,7 +93,27 @@ function call_appd_faction_update_target_info(faction_guid,hp_rate,x,y)
 	pkt:delete()
 end
 
+--家族首领挑战击杀
+function call_appd_faction_bossdefense_win(faction_guid,player_guid,pool_id)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_BOSSDEFENSE_WIN)
+	pkt:writeUTF(faction_guid)
+	pkt:writeUTF(player_guid)
+	pkt:writeU32(pool_id)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
 
+--家族首领挑战离开结算
+function call_appd_faction_bossdefense_leave(faction_guid,player_guid,index,pool_id,hp)
+	local pkt = Packet.new(INTERNAL_OPT_FACTION_BOSSDEFENSE_LEAVE)
+	pkt:writeUTF(faction_guid)
+	pkt:writeUTF(player_guid)
+	pkt:writeU32(index)
+	pkt:writeU32(pool_id)
+	pkt:writeU32(hp)
+	app:sendToAppd(pkt)
+	pkt:delete()
+end
 
 -- 通知登录服 跨服数据
 function call_scene_login_to_kuafu_back(login_fd, guid)

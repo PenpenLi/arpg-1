@@ -3,9 +3,6 @@ local security = require("base/Security")
 InstanceKuafuGroup = class("InstanceKuafuGroup", InstanceInstBase)
 
 InstanceKuafuGroup.Name = "InstanceKuafuGroup"
-InstanceKuafuGroup.exit_time = 20
-InstanceKuafuGroup.Time_Out_Fail_Callback = "timeoutCallback"
---InstanceKuafuGroup.broadcast_nogrid = 1
 InstanceKuafuGroup.sub = "group_instance"
 
 function InstanceKuafuGroup:ctor(  )
@@ -111,6 +108,10 @@ function InstanceKuafuGroup:OnMonsterRefresh()
 			templateid = entry, x = bornX, y = bornY,
 			active_grid = true, ainame = config.ainame, npcflag = {}
 		})
+		if string.find(config.ainame, 'Boss') then
+			local creatureInfo = UnitInfo:new{ptr = creature}
+			creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE)
+		end
 	end
 	
 	-- 刷新任务
@@ -119,22 +120,47 @@ function InstanceKuafuGroup:OnMonsterRefresh()
 	InstanceInstBase.OnAddQuests(self, {mapQuest})
 end
 
--- 副本失败退出
-function InstanceKuafuGroup:timeoutCallback()
-	self:SetMapState(self.STATE_FAIL)
-end
-
 --当副本状态发生变化时间触发
 function InstanceKuafuGroup:OnSetState(fromstate,tostate)
 	if tostate == self.STATE_FINISH or tostate == self.STATE_FAIL then
 		self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
-		
+		self:SendInstanceResult()
 		self:SyncResultToWeb()
 		--10s后结束副本
 		local timestamp = os.time() + self.exit_time
 		
 		self:AddTimeOutCallback(self.Leave_Callback, timestamp)
 		self:SetMapEndTime(timestamp)
+	end
+end
+
+-- 判断是否能退出副本
+function InstanceKuafuGroup:SendInstanceResult()
+	local id = self:GetHard()
+	local allPlayers = mapLib.GetAllPlayer(self.ptr)
+	for _, player_ptr in pairs(allPlayers) do		
+		local playerInfo = UnitInfo:new {ptr = player_ptr}
+		
+		-- 选取通关奖励
+		local config = tb_group_instance_base[id]
+		local itemKeys = config.fpRewardId
+		local itemVals = config.fpRewardCnt
+		if playerInfo:isGroupInstancePassed(id) then
+			itemKeys = config.passRewardId
+			itemVals = config.passRewardCnt
+		end
+
+		local rewardDict = {}
+		for i = 1, #itemKeys do
+			local itemId = itemKeys[ i ]
+			local count  = itemVals[ i ]
+			rewardDict[itemId] = count
+		end
+
+		-- 扫荡的结果发送
+		local list = Change_To_Item_Reward_Info(rewardDict, true)
+		playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list)
+		
 	end
 end
 

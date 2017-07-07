@@ -618,6 +618,8 @@ end
 -- 激活坐骑
 function PlayerInfo:activeMount()
 	self:upgraded()
+	local spellMgr = self:getSpellMgr()
+	spellMgr:addMountLevelBase()
 end
 
 -- 进阶
@@ -1349,6 +1351,8 @@ function PlayerInfo:meridianPractise()
 		if #tb_meridian_info[level+1].costMoney > 0 then
 			spellMgr:setMeridianBreakState(1)
 		end
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
 	else
 		-- 表示突破
 		

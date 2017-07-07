@@ -558,6 +558,11 @@ function PlayerInfo:Handle_Faction_People( pkt )
 		end
 		faction:ReplyFactionGift(factionData,self,reserve_int1,reserve_int2,reserve_str1)
 		
+	elseif opt_type == FACTION_MANAGER_TYPE_BOSSDEFENSE_CHALLENGE then
+		faction:BossDenfenseChallenge(self,reserve_int1)
+		
+	elseif opt_type == FACTION_MANAGER_TYPE_BOSSDEFENSE_DAMAGE_LIST then
+		faction:GetBossDenfenseDamageList(self,reserve_int1)
 		
 	end
 	

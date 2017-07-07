@@ -2038,6 +2038,45 @@ function PlayerInfo:GetGroupInstanceClearFlag(val)
 	return self:GetBit(PLAYER_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG,val)
 end
 
+--家族首领挑战tickets
+function PlayerInfo:SetFactionBossDefenseTickets(value)
+	self:SetUInt32(PLAYER_INT_FIELD_FACTION_BOSSDEFENSE_TICKETS,value)
+end
+
+function PlayerInfo:GetFactionBossDefenseTickets()
+	return self:GetUInt32(PLAYER_INT_FIELD_FACTION_BOSSDEFENSE_TICKETS)
+end
+
+function PlayerInfo:SubFactionBossDefenseTickets(value)
+	if self:GetFactionBossDefenseTickets() > value then
+		self:SubUInt32(PLAYER_INT_FIELD_FACTION_BOSSDEFENSE_TICKETS,value)
+	else
+		self:SetFactionBossDefenseTickets(0)
+	end
+end
+
+function PlayerInfo:ResetFactionBossDefenseTickets()
+	local default = tb_faction_bossdefense_base[1].challenge_times
+	local faction = app.objMgr:getObj(self:GetFactionId())
+	if not faction then
+		self:SetFactionBossDefenseTickets(default)
+		return
+	end
+	local building_lv = faction:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT)
+	if building_lv == 0 then
+		outFmtDebug("ResetFactionBossDefenseTickets building lv is 0")
+		self:SetFactionBossDefenseTickets(default)
+		return
+	end
+	local base_config = tb_faction_bossdefense_base[building_lv]
+	if not base_config then
+		outFmtDebug("ResetFactionBossDefenseTickets building lv:%d config not exist",building_lv)
+		self:SetFactionBossDefenseTickets(default)
+		return
+	end
+	self:SetFactionBossDefenseTickets(base_config.challenge_times)
+end
+
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()
 	self:KuafuMarked(0)

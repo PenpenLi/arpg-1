@@ -27,6 +27,11 @@ function UnitInfo:isInHook()
 	return self:GetPlayerUInt32(PLAYER_FIELD_HOOK) > 0
 end
 
+--获得通关状态
+function UnitInfo:isGroupInstancePassed(val)
+	return self:GetPlayerBit(PLAYER_INT_FIELD_GROUP_INSTANCE_CLEAR_FLAG, val)
+end
+
 -- 是否自动使用复活丹(原地复活)
 function UnitInfo:isUseRespawnItem()
 	return self:GetPlayerByte(PLAYER_FIELD_HOOK_BYTE3, 0) > 0
@@ -1671,6 +1676,10 @@ end
 -- 获得当前生命
 function UnitInfo:GetHealth()
 	return self:GetUInt32(UNIT_FIELD_HEALTH)
+end
+
+function UnitInfo:SetHealth(val)
+	self:SetUInt32(UNIT_FIELD_HEALTH, val)
 end
 
 -- 获得最大生命

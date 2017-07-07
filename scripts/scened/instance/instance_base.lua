@@ -41,6 +41,8 @@ Instance_base = {
 	STATE_FAIL = 249,
 	--副本通关
 	STATE_FINISH = 250,
+	-- 未通关(挑战boss没打掉,但是有奖励)
+	STATE_NOTPASS = 251,
 	
 	--本地图实例是否进行全图广播
 	broadcast_nogrid = 0,

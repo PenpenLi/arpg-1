@@ -36,11 +36,13 @@ end
 
 -- 副本失败退出
 function InstanceInstBase:instanceFail()
-	local state = self.STATE_FAIL
-	if self:CheckQuestAfterTargetUpdate() then
-		state = self.STATE_FINISH
+	self:SetMapState(self.STATE_FAIL)
+	
+	local allPlayers = mapLib.GetAllPlayer(self.ptr)
+	for _, unit_player in ipairs(allPlayers) do
+		local playerInfo = UnitInfo:new {ptr = unit_player}
+		playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, {})
 	end
-	self:SetMapState(state)
 end
 
 --增加任务

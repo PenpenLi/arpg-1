@@ -8,6 +8,8 @@ tb_faction_bossdefense_pool = {
 	--  entry:int 怪物id
 	--  join_drop:int 参与掉落
 	--  kill_drop:int 击杀掉落
-	[1011] = {id = 1011, entry = 7001, join_drop = 1, kill_drop = 1},
-	[1080] = {id = 1080, entry = 7001, join_drop = 1, kill_drop = 1},
+	--  mail_name:string 邮件名
+	--  mail_desc:string 邮件内容
+	[1011] = {id = 1011, entry = 40201, join_drop = 1, kill_drop = 1, mail_name = "参与奖励", mail_desc = "挑战家族首领的参与奖励"},
+	[1080] = {id = 1080, entry = 40202, join_drop = 1, kill_drop = 1, mail_name = "参与奖励", mail_desc = "挑战家族首领的参与奖励"},
 }

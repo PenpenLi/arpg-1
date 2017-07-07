@@ -242,8 +242,31 @@ function unpack_scened_send_faction_update_target_info( pkt )
 	return true, faction_guid, hp_rate, x, y
 end
 
+function unpack_scened_send_faction_bossdefense_win( pkt )
+	local ret, faction_guid,player_guid, pool_id
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, player_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, pool_id = pkt:readU32()
+	if not ret then return false end
+	return true, faction_guid, player_guid, pool_id
+end
 
-
+function unpack_scened_send_faction_bossdefense_leave( pkt )
+	local ret, faction_guid,player_guid, index, pool_id, hp
+	ret, faction_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, player_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, index = pkt:readU32()
+	if not ret then return false end
+	ret, pool_id = pkt:readU32()
+	if not ret then return false end
+	ret, hp = pkt:readU32()
+	if not ret then return false end
+	return true, faction_guid,player_guid, index, pool_id, hp
+end
 
 
 

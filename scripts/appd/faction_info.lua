@@ -3210,6 +3210,11 @@ function FactionInfo:OnMainHallLvUp(level)
 	for id,info in pairsByKeys(tb_faction_building) do
 		if info.unlock == level then
 			self:AddBuildingId(id)
+			
+			--活动大厅解锁时处理
+			if math.floor(id/100) == FACTION_BUILDING_TYPE_EVENT then
+				self:ResetAllBossDenfense()
+			end
 		end
 	end
 	
@@ -4026,6 +4031,311 @@ end
 
 -----------------------------------------家族礼物-----------------------------------------------
 
+-----------------------------------------家族首领挑战-----------------------------------------------
+--怪物池id
+function FactionInfo:GetBossDenfensePoolId(index)
+	return self:GetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_POOL_ID)
+end
+
+function FactionInfo:SetBossDenfensePoolId(index,value)
+	self:SetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_POOL_ID,value)
+end
+
+--怪物当前Hp
+function FactionInfo:GetBossDenfenseHp(index)
+	return self:GetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_HP)
+end
+
+function FactionInfo:SetBossDenfenseHp(index,value)
+	self:SetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_HP,value)
+end
+
+--怪物最大Hp
+function FactionInfo:GetBossDenfenseMaxHp(index)
+	return self:GetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_MAX_HP)
+end
+
+function FactionInfo:SetBossDenfenseMaxHp(index,value)
+	self:SetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_MAX_HP,value)
+end
+
+--怪物状态
+function FactionInfo:GetBossDenfenseStatus(index)
+	return self:GetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_STATUS)
+end
+
+function FactionInfo:SetBossDenfenseStatus(index,value)
+	self:SetUInt32(FACTION_INT_FIELD_BOSSDENFENSE_START + index * MAX_FACTION_BOSSDEFENSE + FACTION_INT_BOSSDEFENSE_STATUS,value)
+end
+
+--怪物输出记录
+function FactionInfo:GetBossDenfenseMemberDamage(factionData,index,member_index)
+	return factionData:GetUInt32(FACTION_DATA_INT_FIELD_BOSSDEFENSE_DAMAGE_START + index * MAX_FACTION_MAMBER_COUNT + member_index)
+end
+
+function FactionInfo:SetBossDenfenseMemberDamage(factionData,index,member_index,value)
+	factionData:SetUInt32(FACTION_DATA_INT_FIELD_BOSSDEFENSE_DAMAGE_START + index * MAX_FACTION_MAMBER_COUNT + member_index,value)
+end
+
+function FactionInfo:AddBossDenfenseMemberDamage(factionData,index,member_index,value)
+	factionData:AddUInt32(FACTION_DATA_INT_FIELD_BOSSDEFENSE_DAMAGE_START + index * MAX_FACTION_MAMBER_COUNT + member_index,value)
+end
+
+--local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
+--local factionData = app.objMgr:getObj(data_guid)
+
+--重置
+function FactionInfo:ResetAllBossDenfense()
+	local building_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT)
+	if building_lv == 0 then
+		outFmtDebug("ResetAllBossDenfense building lv is 0")
+		return
+	end
+	local base_config = tb_faction_bossdefense_base[building_lv]
+	if not base_config then
+		outFmtDebug("ResetAllBossDenfense building lv:%d config not exist",building_lv)
+		return
+	end
+	local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:getObj(data_guid)
+	for index = 0, MAX_FACTION_BOSSDEFENSE_COUNT - 1 do
+		local point_config = tb_faction_bossdefense_point[index + 1]
+		if not base_config then
+			outFmtDebug("ResetAllBossDenfense point id:%d config not exist",index + 1)
+			return
+		end
+		local pool_id = 0
+		if point_config.type == 1 then
+			local pool = base_config.boss_pool
+			pool_id = pool[randInt(1,#pool)]
+		elseif point_config.type == 2 then
+			local pool = base_config.elite_pool
+			pool_id = pool[randInt(1,#pool)]
+		end
+		local pool_config = tb_faction_bossdefense_pool[pool_id]
+		if not pool_config then
+			outFmtDebug("ResetAllBossDenfense pool id:%d config not exist",pool_id)
+			return
+		end
+		local entry_config = tb_creature_template[pool_config.entry]
+		if not entry_config then
+			outFmtDebug("ResetAllBossDenfense creature entry:%d config not exist",pool_config.entry)
+			return
+		end
+		
+		
+		
+		local max_hp = 0
+		for _,v in pairs(entry_config.pro) do
+			if v[1] == 1 then
+				max_hp = v[2]
+			end
+		end
+		
+		if max_hp <= 0 then
+			outFmtDebug("ResetAllBossDenfense creature hp:%d <= 0",max_hp)
+			return
+		end
+		
+		self:SetBossDenfensePoolId(index,pool_id)
+		self:SetBossDenfenseHp(index,max_hp)
+		self:SetBossDenfenseMaxHp(index,max_hp)
+		self:SetBossDenfenseStatus(index,0)
+		
+		for member_index = 0,MAX_FACTION_MAMBER_COUNT - 1 do
+			self:SetBossDenfenseMemberDamage(factionData,index,member_index,0)
+		end
+	end
+	self:printAllBoss()
+end
+
+function FactionInfo:printAllBoss()
+	for index = 0, MAX_FACTION_BOSSDEFENSE_COUNT - 1 do
+		local id = self:GetBossDenfensePoolId(index)
+		local hp = self:GetBossDenfenseHp(index)
+		local maxhp = self:GetBossDenfenseMaxHp(index)
+		local status = self:GetBossDenfenseStatus(index)
+		
+		outFmtDebug("index:%d,pool_id:%d, hp:%d, maxhp:%d,status:%d",index,id,hp,maxhp,status)
+	end
+	outFmtDebug("end")
+end
+
+--开始挑战(player,index)
+function FactionInfo:BossDenfenseChallenge(player,index)
+	if index < 0 or index > MAX_FACTION_BOSSDEFENSE_COUNT - 1 then
+		outFmtDebug("BossDenfenseChallenge bad index %d",index)
+		return
+	end
+	if player:GetFactionBossDefenseTickets() <= 0 then
+		outFmtDebug("BossDenfenseChallenge player tickets not enough")
+		return
+	end
+	if self:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT) <= 0 then
+		outFmtDebug("BossDenfenseChallenge building  not active")
+		return
+	end
+	local status = self:GetBossDenfenseStatus(index)
+	if status == 1 or status == 2 then
+		outFmtDebug("BossDenfenseChallenge status:%d can not challenge",status)
+		return
+	end
+	if tonumber(os.date("%H")) == 11 and tonumber(os.date("%M")) >= 50 then
+		player:CallOptResult(OPERTE_TYPE_FACTION,OPERTE_TYPE_FACTION_BOSSDEFENSE_TIME_ERROR)
+		outFmtDebug("BossDenfenseChallenge time not avaliable")
+		return
+	end
+	--传送 参数 guid index entry hp
+	local point_config = tb_faction_bossdefense_point[index + 1]
+	local map_id = point_config.map_id
+	local x = point_config.born_pos[1]
+	local y = point_config.born_pos[2]
+	local pool_id = self:GetBossDenfensePoolId(index)
+	local hp = self:GetBossDenfenseHp(index)
+	local builfing_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT)
+	local generalId = string.format("%s|%s|%d|%d|%d|%d",player:GetGuid(),self:GetGuid(),builfing_lv,index,pool_id,hp)
+	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, map_id, generalId)
+	
+	player:SubFactionBossDefenseTickets(1)
+	--outFmtDebug("BossDenfenseChallenge Tickets %d",player:GetFactionBossDefenseTickets(1))
+	self:SetBossDenfenseStatus(index,1)
+end
+
+--击杀结算(player_guid,index,hp)
+function FactionInfo:OnBossDenfenseChallengeKill(player_guid,pool_id)
+	--[[
+	local player = app.objMgr:getObj(player_guid)
+	if not player then
+		outFmtError("player offline !!!")
+		return
+	end
+	 
+	local pool_config = tb_faction_bossdefense_pool[pool_id]
+	local drop_id = pool_config.kill_drop
+	local dict = {}
+	DoRandomDrop(drop_id, dict)
+	local rewardDict = {}
+	for itemId, value in pairs(dict) do
+		table.insert(rewardDict, {itemId, value})
+	end
+	
+	player:AppdAddItems(rewardDict, MONEY_CHANGE_FACTION_BOSSDEFENSE, LOG_ITEM_OPER_TYPE_FACTION_BOSSDEFENSE)
+	--]]
+end
+
+--结束结算(player_guid,index,hp)
+function FactionInfo:OnBossDenfenseChallengeFinish(player_guid,index,pool_id,hp)
+	local member_index = self:FindPlayerIndex(player_guid)
+	local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:getObj(data_guid)
+	--[[
+	--发送参与奖励 邮件
+	local pool_config = tb_faction_bossdefense_pool[pool_id]
+	local drop_id = pool_config.join_drop
+	local dict = {}
+	
+	DoRandomDrop(drop_id, dict)
+	local item_str = ""
+	for itemId, value in pairs(dict) do
+		if item_str == "" then
+			item_str = item_str..itemId..','..value
+		else
+			item_str = item_str..','..itemId..','..value
+		end
+	end
+	local mail_name = pool_config.mail_name
+	local mail_desc = pool_config.mail_desc
+	AddGiftPacksData(player_guid,0,4,os.time(),os.time() + 86400*30, mail_name, mail_desc,item_str, SYSTEM_NAME)
+	--]]
+	
+	
+	--统计伤害
+	local cur_hp = self:GetBossDenfenseHp(index)
+	local damage = cur_hp - hp
+	if damage > 0 then
+		self:AddBossDenfenseMemberDamage(factionData,index,member_index,damage)
+	end
+	--变更boss状态--检测是否全部击杀
+	if hp == 0 then
+		self:SetBossDenfenseHp(index,0)
+		self:SetBossDenfenseStatus(index,2)
+		self:CheckBossDenfenseAllClear()
+	else
+		self:SetBossDenfenseHp(index,hp)
+		self:SetBossDenfenseStatus(index,0)
+	end
+	
+	
+end
+
+
+--检测是否全部击杀
+function FactionInfo:CheckBossDenfenseAllClear()
+	for index = 0, MAX_FACTION_BOSSDEFENSE_COUNT - 1 do
+		local status = self:GetBossDenfenseStatus(index)
+		if status ~= 2 then
+			return
+		end
+	end
+	local building_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT)
+	local base_config = tb_faction_bossdefense_base[building_lv]
+	local clear_reward = base_config.clear_reward
+	local item_str = ""
+	for _, v in pairs(clear_reward) do
+		if item_str == "" then
+			item_str = item_str..v[1]..','..v[2]
+		else
+			item_str = item_str..','..v[1]..','..v[2]
+		end
+	end
+	local mail_name = base_config.mail_name
+	local mail_desc = base_config.mail_desc
+	--全体成员发送全清奖励 邮件
+	for i=0, MAX_FACTION_MAMBER_COUNT - 1 do
+		local Guid = self:GetFactionMemberGuid(i)
+		if Guid ~= "" and Guid ~= nil then
+			AddGiftPacksData(Guid,0,4,os.time(),os.time() + 86400*30, mail_name, mail_desc,item_str, SYSTEM_NAME)
+		end
+	end
+	
+end
+
+--清除玩家输出信息(player_guid)
+function FactionInfo:ClearBossDenfensePlayerDamage(player_guid)
+	local member_index = self:FindPlayerIndex(player_guid)
+	local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:getObj(data_guid)
+	for index = 0, MAX_FACTION_BOSSDEFENSE_COUNT - 1 do
+		self:SetBossDenfenseMemberDamage(factionData,index,member_index,0)
+	end
+end
+
+--获取输出排行榜
+function FactionInfo:GetBossDenfenseDamageList(player,index)
+	local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
+	local factionData = app.objMgr:getObj(data_guid)
+	local damage_table = {}
+	for member_index = 0, MAX_FACTION_MAMBER_COUNT - 1 do
+		local damage = self:GetBossDenfenseMemberDamage(factionData,index,member_index)
+		if damage > 0 then
+			table.insert(damage_table,{member_index,damage})
+		end
+	end
+	table.sort(damage_table, function(a, b) return a[2] < b[2] end)
+	
+	--返回结果
+	local list = {}
+	for _,v in ipairs(damage_table) do
+	--奖励通知
+		local stru = mass_boss_rank_info_t.new()
+		stru.name	= self:GetFactionMemberName(value[1])
+		stru.dam 		= v[2]
+		table.insert(list, stru)
+	end
+	player:call_show_faction_bossdefense_damage_list(list)
+end
+
+-----------------------------------------家族首领挑战结束-----------------------------------------------
 
 
 function encodeSimpleInfo(faction_guid)

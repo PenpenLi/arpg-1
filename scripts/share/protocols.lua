@@ -335,6 +335,8 @@ CMSG_MERIDIAN_PRACTISE		= 366	-- /*经脉修炼*/
 CMSG_ADD_MERIDIAN_EXP		= 367	-- /*加经脉修炼经验值*/	
 CMSG_RAISE_MOUNT_LEVEL_BASE		= 368	-- /*提升坐骑等级*/	
 CMSG_ACTIVE_MOUNT		= 369	-- /*解锁坐骑*/	
+SMSG_SHOW_FACTION_BOSSDEFENSE_DAMAGE_LIST		= 370	-- /*家族领主挑战输出排行*/	
+SMSG_SEND_INSTANCE_RESULT		= 375	-- /*副本结果*/	
 
 
 ---------------------------------------------------------------------
@@ -12003,6 +12005,100 @@ function Protocols.unpack_active_mount (pkt)
 end
 
 
+-- /*家族领主挑战输出排行*/	
+function Protocols.pack_show_faction_bossdefense_damage_list ( list)
+	local output = Packet.new(SMSG_SHOW_FACTION_BOSSDEFENSE_DAMAGE_LIST)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*家族领主挑战输出排行*/	
+function Protocols.call_show_faction_bossdefense_damage_list ( playerInfo, list)
+	local output = Protocols.	pack_show_faction_bossdefense_damage_list ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*家族领主挑战输出排行*/	
+function Protocols.unpack_show_faction_bossdefense_damage_list (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = mass_boss_rank_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*副本结果*/	
+function Protocols.pack_send_instance_result ( state ,cd ,list)
+	local output = Packet.new(SMSG_SEND_INSTANCE_RESULT)
+	output:writeByte(state)
+	output:writeByte(cd)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*副本结果*/	
+function Protocols.call_send_instance_result ( playerInfo, state ,cd ,list)
+	local output = Protocols.	pack_send_instance_result ( state ,cd ,list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*副本结果*/	
+function Protocols.unpack_send_instance_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.state = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.cd = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -12330,6 +12426,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_add_meridian_exp = self.call_add_meridian_exp
 	playerInfo.call_raise_mount_level_base = self.call_raise_mount_level_base
 	playerInfo.call_active_mount = self.call_active_mount
+	playerInfo.call_show_faction_bossdefense_damage_list = self.call_show_faction_bossdefense_damage_list
+	playerInfo.call_send_instance_result = self.call_send_instance_result
 end
 
 local unpack_handler = {
@@ -12654,6 +12752,8 @@ local unpack_handler = {
 [CMSG_ADD_MERIDIAN_EXP] =  Protocols.unpack_add_meridian_exp,
 [CMSG_RAISE_MOUNT_LEVEL_BASE] =  Protocols.unpack_raise_mount_level_base,
 [CMSG_ACTIVE_MOUNT] =  Protocols.unpack_active_mount,
+[SMSG_SHOW_FACTION_BOSSDEFENSE_DAMAGE_LIST] =  Protocols.unpack_show_faction_bossdefense_damage_list,
+[SMSG_SEND_INSTANCE_RESULT] =  Protocols.unpack_send_instance_result,
 
 }
 

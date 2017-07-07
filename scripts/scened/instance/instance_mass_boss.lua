@@ -227,7 +227,8 @@ function InstanceMassBoss:sendReward()
 			PlayerAddRewards(unit_player, dict, MONEY_CHANGE_MASS_BOSS, LOG_ITEM_OPER_TYPE_MASS_BOSS)
 			-- 扫荡的结果发送
 			local list = Change_To_Item_Reward_Info(dict, true)
-			playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_MASS_BOSS, 0, 0, 0, list)
+			
+			playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list)
 		end
 	end
 end

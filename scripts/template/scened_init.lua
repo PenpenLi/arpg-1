@@ -114,7 +114,12 @@ require("template.tables.tb_faction_boss")
 require("template.tables.tb_faction_boss_reward")
 require("template.tables.tb_faction_monster")
 
+require("template.tables.tb_faction_bossdefense_base")
+require("template.tables.tb_faction_bossdefense_point")
+require("template.tables.tb_faction_bossdefense_pool")
 
+require("template.tables.tb_faction_tower_base")
+require("template.tables.tb_faction_tower_floor")
 
 -- 世界冒险
 require("template.tables.tb_risk_base")

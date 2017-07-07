@@ -276,6 +276,7 @@ function load_lua_scripts()
 		{'修炼场'				,'scened/instance/instance_xiulianchang'},
 		{'原地副本0'			,'scened/instance/instance_remind_0'},
 		{'家族场景'				,'scened/instance/instance_faction'},
+		{'家族首领挑战'			,'scened/instance/instance_faction_bossdefense'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -341,6 +342,7 @@ INSTANCE_SCRIPT_TABLE = {
 	[3013] = InstanceKuafuGroup,
 	[3014] = InstanceKuafuGroup,
 	[3015] = InstanceKuafuGroup,
+	[3016] = InstanceFactionBossDefense,
 	
 	[4001] = InstanceRemind0,
 	[4002] = InstanceRemind0,
