@@ -184,11 +184,11 @@ hanlders[CMSG_STOREHOUSE_EXCHANGE] = PlayerInfo.Handle_Storehouse_Exchange
 hanlders[CMSG_STOREHOUSE_DESTROY] = PlayerInfo.Handle_Storehouse_Destroy
 
 
-hanlders[CMSG_SEND_FACTION_GIFT] = PlayerInfo.Handle_Send_Faction_Gift
-hanlders[CMSG_GET_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_Faction_Gift_Exreward
-hanlders[CMSG_GET_ALL_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_All_Faction_Gift_Exreward
+--hanlders[CMSG_SEND_FACTION_GIFT] = PlayerInfo.Handle_Send_Faction_Gift
+--hanlders[CMSG_GET_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_Faction_Gift_Exreward
+--hanlders[CMSG_GET_ALL_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_All_Faction_Gift_Exreward
 
-hanlders[CMSG_GET_FACTION_GIFT_RANK_PAGE] = PlayerInfo.Handle_Get_Faction_Gift_Rank_Page
+--hanlders[CMSG_GET_FACTION_GIFT_RANK_PAGE] = PlayerInfo.Handle_Get_Faction_Gift_Rank_Page
 
 hanlders[CMSG_DIVINE_FORGE] = PlayerInfo.Handle_Divine_Forge
 hanlders[CMSG_DIVINE_ADVANCE] = PlayerInfo.Handle_Divine_Advance
@@ -207,6 +207,10 @@ hanlders[CMSG_WINGS_ACTIVE] = PlayerInfo.Handle_Wings_Active
 hanlders[CMSG_WINGS_BLESS] = PlayerInfo.Handle_Wings_Bless
 hanlders[CMSG_WINGS_RANKUP] = PlayerInfo.Handle_Wings_RankUp
 hanlders[CMSG_WINGS_STRENGTH] = PlayerInfo.Handle_Wings_Strength
+
+--装备
+hanlders[CMSG_EQUIPDEVELOP_OPERATE] = PlayerInfo.Handle_Equipdevelop_Operate
+
 --
 hanlders[CMSG_GROUP_INSTANCE_MATCH] = PlayerInfo.Handle_Group_Instance_Match
 hanlders[CMSG_BUY_GROUP_INSTANCE_TIMES] = PlayerInfo.Handle_Buy_Group_Instance_Times
@@ -218,5 +222,18 @@ hanlders[CMSG_ADD_MERIDIAN_EXP] = PlayerInfo.Handle_Add_Meridian_Exp
 
 hanlders[CMSG_RAISE_MOUNT_LEVEL_BASE] = PlayerInfo.Handle_Raise_Mount_Level_Base
 hanlders[CMSG_ACTIVE_MOUNT]	= PlayerInfo.Handle_Active_Mount
+
+hanlders[CMSG_MATCH_SINGLE_PVP] = PlayerInfo.Handle_Match_Single_PVP
+
+hanlders[CMSG_BUY_MATCH_SINGLE_PVP_TIMES] = PlayerInfo.Handle_Buy_Match_Single_PVP_Times
+hanlders[CMSG_PICK_MATCH_SINGLE_PVP_EXTRA_REWARD] = PlayerInfo.Handle_Pick_Match_Single_PVP_Extra_Reward
+
+hanlders[CMSG_ACTIVE_APPEARANCE] = PlayerInfo.Handle_Active_Appearance
+hanlders[CMSG_EQUIP_APPEARANCE]  = PlayerInfo.Handle_Equip_Appearance
+hanlders[CMSG_CANCEL_EQUIP_APPEARANCE] = PlayerInfo.Handle_Cancel_Equip_Appearance
+
+hanlders[CMSG_UNLOCK_TITLE] = PlayerInfo.Handle_Unlock_title
+
+hanlders[CMSG_RENAME] = PlayerInfo.Handle_Rename
 
 return hanlders

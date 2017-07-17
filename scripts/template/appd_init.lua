@@ -37,6 +37,15 @@ require("template.tables.tb_gem_mul")
 require("template.tables.tb_gem_pos")
 require("template.tables.tb_gem_rate")
 
+--装备养成表
+require("template.tables.tb_equipdevelop_strength")
+require("template.tables.tb_equipdevelop_refine")
+require("template.tables.tb_equipdevelop_gem_part")
+require("template.tables.tb_equipdevelop_gem")
+require("template.tables.tb_equipdevelop_washattrs")
+require("template.tables.tb_equipdevelop_bonus")
+
+
 --神兵表
 require("template.tables.tb_divine_base")
 require("template.tables.tb_divine_streng")
@@ -84,6 +93,10 @@ require("template.tables.tb_faction_bossdefense_point")
 require("template.tables.tb_faction_bossdefense_pool")
 require("template.tables.tb_faction_tower_base")
 require("template.tables.tb_faction_tower_floor")
+
+require("template.tables.tb_faction_skill_building")
+require("template.tables.tb_faction_skill_base")
+require("template.tables.tb_faction_skill_lvup")
 
 
 -----------帮派权限------------
@@ -206,6 +219,18 @@ require("template.tables.tb_meridian_source")
 
 -- 排名赛
 require("template.tables.tb_single_pvp_base")
+require("template.tables.tb_single_pvp_grade")
+require("template.tables.tb_single_pvp_robot")
+require("template.tables.tb_single_pvp_extra")
+require("template.tables.tb_single_pvp_times")
+
+require("template.tables.tb_appearance_info")
+require("template.tables.tb_appearance_pokedex")
+
+require("template.tables.tb_char_info")
+
+require("template.tables.tb_battle_force")
+require("template.tables.tb_rename_info")
 
 --- 数据预处理
 require("template.tabset")

@@ -119,11 +119,6 @@ function InstanceVIP:OnRefreshBoss(player)
 	creatureLib.ModifyThreat(creature, player, self.THREAT_V)
 end
 
---当玩家加入后触发
-function InstanceVIP:OnAfterJoinPlayer(player)
-	InstanceInstBase.OnAfterJoinPlayer(self, player)
-end
-
 --当玩家死亡后触发()
 function InstanceVIP:OnPlayerDeath(player)
 	-- 如果状态已经改变, 即使死了也不再更新时间

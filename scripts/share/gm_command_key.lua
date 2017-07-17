@@ -149,6 +149,15 @@ function GetGmCommandKey(gm_str)
 		return GM_COMMAND_UNSET_OTHER_TAG
 	elseif(gm_str == '@分线' or gm_str == '@subline')then
 		return GM_COMMAND_SUBLINE
+		
+	elseif(gm_str == '@技能建筑' or gm_str == '@jnjz')then
+		return 993
+	elseif(gm_str == '@家族成员' or gm_str == '@jzcy')then
+		return 994
+	elseif(gm_str == '@装备养成' or gm_str == '@zbyc')then
+		return 995
+	elseif(gm_str == '@远征' or gm_str == '@tower')then
+		return 996
 	elseif(gm_str == '@家族商店' or gm_str == '@jzsd')then
 		return 997
 	elseif(gm_str == '@整理' or gm_str == '@zlbb')then

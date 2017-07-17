@@ -113,5 +113,12 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		self:call_offline_reward_result (sell, data, 0, 0, list)
 	elseif SCENED_APPD_ENTER_MASS_BOSS_INSTANCE == ntype then
 		self:checkMassBossMapTeleport(data)
+	elseif SCENED_APPD_FACTION_TOWER_WIN == ntype then
+		local faction = app.objMgr:getObj(self:GetFactionId())
+		if faction then
+			faction:OnTowerTodayFloorUpdate(self,data)
+		end
+	elseif SCENED_APPD_SINGLE_PVP_RESULT == ntype then
+		self:OnProcessSingleMatchResult(data, str)
 	end
 end

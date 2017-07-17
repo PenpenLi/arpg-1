@@ -166,35 +166,8 @@ end
 function InstanceFieldBase:DoIsFriendly(killer_ptr, target_ptr)
 	local killerInfo = UnitInfo:new{ptr = killer_ptr}
 	local targetInfo = UnitInfo:new{ptr = target_ptr}
-	
-	if Instance_base.DoIsFriendly(self, killer_ptr, target_ptr) == 0 then
-		return 0
-	end
-	
-	-- 先判断
-	local ret = true
-	if killerInfo:GetTypeID() == TYPEID_PLAYER then
-		if targetInfo:GetTypeID() == TYPEID_PLAYER then
-			local killerMode = killerInfo:GetBattleMode()
-			local targetMode = targetInfo:GetBattleMode()
-			
-			local mask = tb_battle_mode[killerMode+1].mask
-			local battleMask = targetInfo:generateBattleMask(killerInfo)
-	
-			ret = bit.band(mask, battleMask) == 0
-			
-			-- 如果都是友好的 且 我是自卫反击模式
-			if ret then
-				if killerMode == SELF_DEFENSE_MODE and killerInfo:GetSelfProtectedUIntGuid() == targetInfo:GetIntGuid() and targetMode ~= PEACE_MODE and targetMode ~= SELF_DEFENSE_MODE then
-					ret = false
-				end
-			end
-		end
-	end
-	
-	if ret then
-		return 1
-	end
+	-- TODO: 从新做
+
 	return 0
 end
 

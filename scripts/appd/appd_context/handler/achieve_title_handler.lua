@@ -71,3 +71,21 @@ function PlayerInfo:Handle_Pick_Quest_Daily2(pkt)
 	end
 	self:OnPickDaily2Quest(indx)
 end
+
+
+-- 道具解锁称号
+function PlayerInfo:Handle_Unlock_title(pkt)
+	local indx = pkt.indx
+	
+	self:ItemUnlockTitle(indx)
+end
+
+
+function PlayerInfo:Handle_Rename(pkt)
+	local name = pkt.name
+	local costs = self:GetRenameCost()
+	-- 判断钱够不
+	if self:checkMoneyEnoughs(costs) then
+		call_opt_login_check_name(self:GetGuid(), name)
+	end
+end

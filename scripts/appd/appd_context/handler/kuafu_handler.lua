@@ -179,6 +179,8 @@ function PlayerInfo:Handle_Kuafu_3v3_Cancel_Match(pkt)
 		self:OnCancelWorldXianfuMatchBeforeOffline()
 	elseif type == KUAFU_TYPE_GROUP_INSTANCE then
 		self:OnCancelGroupInstanceMatchBeforeOffline()
+	elseif type == MATCH_TYPE_LOCAL_SINGLE_PVP then
+		self:OnCancelLocalSinglePVPMatchBeforeOffline()
 	end
 end
 
@@ -341,5 +343,89 @@ function PlayerInfo:Handle_Group_Instance_Match(pkt)
 	if rt then
 		-- 开始匹配
 		self:call_kuafu_match_start(KUAFU_TYPE_GROUP_INSTANCE)
+	end
+end
+
+function PlayerInfo:Handle_Match_Single_PVP(pkt)
+
+	if not self:isInPvpOpenTime() then
+		return
+	end
+	
+	local instMgr = self:getInstanceMgr()
+	if instMgr:GetQualifyDailyTimes() < 1 then
+		return
+	end
+	
+	local rt = self:OnLocalSinglePVPMatch()
+	if rt then
+		self:call_kuafu_match_start(MATCH_TYPE_LOCAL_SINGLE_PVP)
+	end
+end
+
+function PlayerInfo:isInPvpOpenTime()
+	local dayStart = GetTodayStartTimestamp()
+	local now = os.time()
+	for _, info in pairs(tb_single_pvp_base[ 1 ].opentime) do
+		local st = info[ 1 ] * 3600 + info[ 2 ] * 60
+		local ed = info[ 3 ] * 3600 + info[ 4 ] * 60
+		if now >= dayStart + st and now <= dayStart + ed then
+			return true
+		end
+	end
+	
+	return false
+end
+
+function PlayerInfo:Handle_Buy_Match_Single_PVP_Times(pkt)
+	local cnt = pkt.cnt
+	
+	if cnt <= 0 then
+		return
+	end
+	
+	local instMgr = self:getInstanceMgr()
+	-- 购买次数不能超过上限
+	local buyed = instMgr:GetQualifyBuyCount()
+	if buyed + cnt > #tb_single_pvp_times then
+		return
+	end
+	
+	-- 次数满了不能购买
+	local curr = instMgr:GetQualifyDailyTimes()
+	if cnt + curr > tb_single_pvp_base[ 1 ].dailyTimes then
+		return
+	end
+		
+	local cost = {}
+	for i = 1, cnt do
+		local config = tb_single_pvp_times[buyed+i]
+		for _, rinfo in pairs(config.cost) do
+			AddTempInfoIfExist(cost, rinfo[ 1 ], rinfo[ 2 ])
+		end
+	end
+	
+	if not self:costMoneys(MONEY_CHANGE_SINGLE_PVP, cost, 1) then
+		return
+	end
+	
+	instMgr:AddQualifyBuyCount(cnt)
+	instMgr:AddQualifyDailyTimes(cnt)
+end
+
+function PlayerInfo:Handle_Pick_Match_Single_PVP_Extra_Reward(pkt)
+	local id = pkt.id
+	
+	if not tb_single_pvp_extra[id] then
+		return
+	end
+	
+	local instMgr = self:getInstanceMgr()
+	if instMgr:IsQualifyExtraObtain(id-1) and not instMgr:IsQualifyExtraPicked(id-1) then
+		instMgr:SetQualifyExtraPicked(id-1)
+		local dict = {}
+		DoRandomDrop(tb_single_pvp_extra[id].dropId, dict)
+		local rewardDict = changeTableToList(dict)
+		self:AppdAddItems(rewardDict, MONEY_CHANGE_SINGLE_PVP, LOG_ITEM_OPER_TYPE_SINGLE_PVP)
 	end
 end

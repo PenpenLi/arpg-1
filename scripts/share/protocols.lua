@@ -336,7 +336,17 @@ CMSG_ADD_MERIDIAN_EXP		= 367	-- /*加经脉修炼经验值*/
 CMSG_RAISE_MOUNT_LEVEL_BASE		= 368	-- /*提升坐骑等级*/	
 CMSG_ACTIVE_MOUNT		= 369	-- /*解锁坐骑*/	
 SMSG_SHOW_FACTION_BOSSDEFENSE_DAMAGE_LIST		= 370	-- /*家族领主挑战输出排行*/	
+SMSG_SHOW_FACTION_TOWER_SWEEP_LIST		= 371	-- /*家族无尽远征扫荡结果*/	
 SMSG_SEND_INSTANCE_RESULT		= 375	-- /*副本结果*/	
+CMSG_MATCH_SINGLE_PVP		= 376	-- /*匹配单人pvp*/	
+CMSG_BUY_MATCH_SINGLE_PVP_TIMES		= 377	-- /*购买单人pvp次数*/	
+CMSG_PICK_MATCH_SINGLE_PVP_EXTRA_REWARD		= 378	-- /*领取单人pvp额外奖励*/	
+CMSG_EQUIPDEVELOP_OPERATE		= 380	-- /*装备养成操作*/	
+CMSG_ACTIVE_APPEARANCE		= 381	-- /*激活外观*/	
+CMSG_EQUIP_APPEARANCE		= 382	-- /*装备外观*/	
+CMSG_CANCEL_EQUIP_APPEARANCE		= 383	-- /*取消装备外观*/	
+CMSG_RENAME		= 384	-- /*改名*/	
+CMSG_UNLOCK_TITLE		= 385	-- /*道具解锁称号*/	
 
 
 ---------------------------------------------------------------------
@@ -12047,11 +12057,9 @@ function Protocols.unpack_show_faction_bossdefense_damage_list (pkt)
 end
 
 
--- /*副本结果*/	
-function Protocols.pack_send_instance_result ( state ,cd ,list)
-	local output = Packet.new(SMSG_SEND_INSTANCE_RESULT)
-	output:writeByte(state)
-	output:writeByte(cd)
+-- /*家族无尽远征扫荡结果*/	
+function Protocols.pack_show_faction_tower_sweep_list ( list)
+	local output = Packet.new(SMSG_SHOW_FACTION_TOWER_SWEEP_LIST)
 	output:writeI16(#list)
 	for i = 1,#list,1
 	do
@@ -12060,9 +12068,55 @@ function Protocols.pack_send_instance_result ( state ,cd ,list)
 	return output
 end
 
+-- /*家族无尽远征扫荡结果*/	
+function Protocols.call_show_faction_tower_sweep_list ( playerInfo, list)
+	local output = Protocols.	pack_show_faction_tower_sweep_list ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*家族无尽远征扫荡结果*/	
+function Protocols.unpack_show_faction_tower_sweep_list (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = item_reward_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
 -- /*副本结果*/	
-function Protocols.call_send_instance_result ( playerInfo, state ,cd ,list)
-	local output = Protocols.	pack_send_instance_result ( state ,cd ,list)
+function Protocols.pack_send_instance_result ( state ,cd ,list ,type ,data)
+	local output = Packet.new(SMSG_SEND_INSTANCE_RESULT)
+	output:writeByte(state)
+	output:writeByte(cd)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	output:writeByte(type)
+	output:writeUTF(data)
+	return output
+end
+
+-- /*副本结果*/	
+function Protocols.call_send_instance_result ( playerInfo, state ,cd ,list ,type ,data)
+	local output = Protocols.	pack_send_instance_result ( state ,cd ,list ,type ,data)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -12092,6 +12146,291 @@ function Protocols.unpack_send_instance_result (pkt)
 			return false
 		end
 		table.insert(param_table.list,stru)
+	end
+	ret,param_table.type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.data = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*匹配单人pvp*/	
+function Protocols.pack_match_single_pvp (  )
+	local output = Packet.new(CMSG_MATCH_SINGLE_PVP)
+	return output
+end
+
+-- /*匹配单人pvp*/	
+function Protocols.call_match_single_pvp ( playerInfo )
+	local output = Protocols.	pack_match_single_pvp (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*匹配单人pvp*/	
+function Protocols.unpack_match_single_pvp (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*购买单人pvp次数*/	
+function Protocols.pack_buy_match_single_pvp_times ( cnt)
+	local output = Packet.new(CMSG_BUY_MATCH_SINGLE_PVP_TIMES)
+	output:writeByte(cnt)
+	return output
+end
+
+-- /*购买单人pvp次数*/	
+function Protocols.call_buy_match_single_pvp_times ( playerInfo, cnt)
+	local output = Protocols.	pack_buy_match_single_pvp_times ( cnt)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*购买单人pvp次数*/	
+function Protocols.unpack_buy_match_single_pvp_times (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.cnt = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*领取单人pvp额外奖励*/	
+function Protocols.pack_pick_match_single_pvp_extra_reward ( id)
+	local output = Packet.new(CMSG_PICK_MATCH_SINGLE_PVP_EXTRA_REWARD)
+	output:writeByte(id)
+	return output
+end
+
+-- /*领取单人pvp额外奖励*/	
+function Protocols.call_pick_match_single_pvp_extra_reward ( playerInfo, id)
+	local output = Protocols.	pack_pick_match_single_pvp_extra_reward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取单人pvp额外奖励*/	
+function Protocols.unpack_pick_match_single_pvp_extra_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*装备养成操作*/	
+function Protocols.pack_equipdevelop_operate ( opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	local output = Packet.new(CMSG_EQUIPDEVELOP_OPERATE)
+	output:writeByte(opt_type)
+	output:writeI16(reserve_int1)
+	output:writeI16(reserve_int2)
+	output:writeUTF(reserve_str1)
+	output:writeUTF(reserve_str2)
+	return output
+end
+
+-- /*装备养成操作*/	
+function Protocols.call_equipdevelop_operate ( playerInfo, opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	local output = Protocols.	pack_equipdevelop_operate ( opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*装备养成操作*/	
+function Protocols.unpack_equipdevelop_operate (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.opt_type = input:readByte()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_int1 = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_int2 = input:readU16()
+	if not ret then
+		return false
+	end
+	ret,param_table.reserve_str1 = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.reserve_str2 = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*激活外观*/	
+function Protocols.pack_active_appearance ( id)
+	local output = Packet.new(CMSG_ACTIVE_APPEARANCE)
+	output:writeI16(id)
+	return output
+end
+
+-- /*激活外观*/	
+function Protocols.call_active_appearance ( playerInfo, id)
+	local output = Protocols.	pack_active_appearance ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*激活外观*/	
+function Protocols.unpack_active_appearance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*装备外观*/	
+function Protocols.pack_equip_appearance ( id)
+	local output = Packet.new(CMSG_EQUIP_APPEARANCE)
+	output:writeI16(id)
+	return output
+end
+
+-- /*装备外观*/	
+function Protocols.call_equip_appearance ( playerInfo, id)
+	local output = Protocols.	pack_equip_appearance ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*装备外观*/	
+function Protocols.unpack_equip_appearance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*取消装备外观*/	
+function Protocols.pack_cancel_equip_appearance ( type)
+	local output = Packet.new(CMSG_CANCEL_EQUIP_APPEARANCE)
+	output:writeByte(type)
+	return output
+end
+
+-- /*取消装备外观*/	
+function Protocols.call_cancel_equip_appearance ( playerInfo, type)
+	local output = Protocols.	pack_cancel_equip_appearance ( type)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*取消装备外观*/	
+function Protocols.unpack_cancel_equip_appearance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.type = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*改名*/	
+function Protocols.pack_rename ( name)
+	local output = Packet.new(CMSG_RENAME)
+	output:writeUTF(name)
+	return output
+end
+
+-- /*改名*/	
+function Protocols.call_rename ( playerInfo, name)
+	local output = Protocols.	pack_rename ( name)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*改名*/	
+function Protocols.unpack_rename (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*道具解锁称号*/	
+function Protocols.pack_unlock_title ( indx)
+	local output = Packet.new(CMSG_UNLOCK_TITLE)
+	output:writeByte(indx)
+	return output
+end
+
+-- /*道具解锁称号*/	
+function Protocols.call_unlock_title ( playerInfo, indx)
+	local output = Protocols.	pack_unlock_title ( indx)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*道具解锁称号*/	
+function Protocols.unpack_unlock_title (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.indx = input:readByte()
+	if not ret then
+		return false
 	end
 
 	return true,param_table	
@@ -12427,7 +12766,17 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_raise_mount_level_base = self.call_raise_mount_level_base
 	playerInfo.call_active_mount = self.call_active_mount
 	playerInfo.call_show_faction_bossdefense_damage_list = self.call_show_faction_bossdefense_damage_list
+	playerInfo.call_show_faction_tower_sweep_list = self.call_show_faction_tower_sweep_list
 	playerInfo.call_send_instance_result = self.call_send_instance_result
+	playerInfo.call_match_single_pvp = self.call_match_single_pvp
+	playerInfo.call_buy_match_single_pvp_times = self.call_buy_match_single_pvp_times
+	playerInfo.call_pick_match_single_pvp_extra_reward = self.call_pick_match_single_pvp_extra_reward
+	playerInfo.call_equipdevelop_operate = self.call_equipdevelop_operate
+	playerInfo.call_active_appearance = self.call_active_appearance
+	playerInfo.call_equip_appearance = self.call_equip_appearance
+	playerInfo.call_cancel_equip_appearance = self.call_cancel_equip_appearance
+	playerInfo.call_rename = self.call_rename
+	playerInfo.call_unlock_title = self.call_unlock_title
 end
 
 local unpack_handler = {
@@ -12753,7 +13102,17 @@ local unpack_handler = {
 [CMSG_RAISE_MOUNT_LEVEL_BASE] =  Protocols.unpack_raise_mount_level_base,
 [CMSG_ACTIVE_MOUNT] =  Protocols.unpack_active_mount,
 [SMSG_SHOW_FACTION_BOSSDEFENSE_DAMAGE_LIST] =  Protocols.unpack_show_faction_bossdefense_damage_list,
+[SMSG_SHOW_FACTION_TOWER_SWEEP_LIST] =  Protocols.unpack_show_faction_tower_sweep_list,
 [SMSG_SEND_INSTANCE_RESULT] =  Protocols.unpack_send_instance_result,
+[CMSG_MATCH_SINGLE_PVP] =  Protocols.unpack_match_single_pvp,
+[CMSG_BUY_MATCH_SINGLE_PVP_TIMES] =  Protocols.unpack_buy_match_single_pvp_times,
+[CMSG_PICK_MATCH_SINGLE_PVP_EXTRA_REWARD] =  Protocols.unpack_pick_match_single_pvp_extra_reward,
+[CMSG_EQUIPDEVELOP_OPERATE] =  Protocols.unpack_equipdevelop_operate,
+[CMSG_ACTIVE_APPEARANCE] =  Protocols.unpack_active_appearance,
+[CMSG_EQUIP_APPEARANCE] =  Protocols.unpack_equip_appearance,
+[CMSG_CANCEL_EQUIP_APPEARANCE] =  Protocols.unpack_cancel_equip_appearance,
+[CMSG_RENAME] =  Protocols.unpack_rename,
+[CMSG_UNLOCK_TITLE] =  Protocols.unpack_unlock_title,
 
 }
 

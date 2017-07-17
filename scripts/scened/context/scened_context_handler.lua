@@ -6,6 +6,12 @@ function ScenedContext:Hanlde_Change_Battle_Mode( pkt )
 	local mode = pkt.mode
 	local prev = self:GetBattleMode()
 	
+	local mapid = unitLib.GetMapID(self.ptr)
+	-- 是否允许切换战斗
+	if tb_map[mapid].allowChangeMode == 0 then
+		return
+	end
+	
 	-- 判断传过来的传过来的参数合法性
 	if mode < 0 or mode >= MAX_BATTLE_MODE or mode == prev then
 		return
@@ -23,7 +29,7 @@ function ScenedContext:Hanlde_Change_Battle_Mode( pkt )
 	
 	-- 如果在战斗中不能切换和平模式
 	local status = playerLib.GetPlayeCurFightStatus(self.ptr)
-	if status == COMBAT_STATE_ENTER and mode == curr then
+	if status == COMBAT_STATE_ENTER and mode == PEACE_MODE then
 		self:CallOptResult(OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE, BATTLE_MODE_OPERTE_PEACE_MODE_DENY)
 		return
 	end
@@ -36,9 +42,6 @@ function ScenedContext:Hanlde_Change_Battle_Mode( pkt )
 			self:CallOptResult(OPERTE_TYPE_CHANGE_BATTLE_MODE_LOSE, BATTLE_MODE_OPERTE_PEACE_MODE_IN_CD)
 			return
 		end
-	else
-		-- 删除死亡保护
-		unitLib.RemoveBuff(self.ptr, BUFF_DEATH_PROTECTED)
 	end
 		
 	self:SetBattleMode(mode)

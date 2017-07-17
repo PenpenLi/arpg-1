@@ -51,6 +51,8 @@ function AppItemInstance:getItemCalculAttr( item ,attrs)
 	local playerInfo = self:getOwner()
 	local spellMgr = playerInfo:getSpellMgr()
 	
+	--Ttab(attrs)
+	--[[
 	-- 加强化属性
 	local strongLv = spellMgr:getStrengLev(pos)
 	if strongLv > 0 then
@@ -59,16 +61,7 @@ function AppItemInstance:getItemCalculAttr( item ,attrs)
 		mergeAttrs(attrs, pros)
 	end
 
-	--添加附加属性
-	local func = function (key,val)
-		if not attrs[key] then
-			attrs[key] = 0
-		end
-		attrs[key] = attrs[key] + val
-	end
-
-	item:forEachBaseAttr(func)
-	--Ttab(attrs)
+	
 	
 	-- 宝石属性
 	local gemtype = tb_gem_pos[pos].gemtype
@@ -80,6 +73,36 @@ function AppItemInstance:getItemCalculAttr( item ,attrs)
 			mergeAttrs(attrs, pros)
 		end
 	end
+	--]]
+	--装备养成 部位属性 装备属性*精炼倍率 
+	local refine_rank = spellMgr:GetEquipDevelopRefineRank(pos - 1)
+	local refine_star = spellMgr:GetEquipDevelopRefineStar(pos - 1)
+	local refine_config = tb_equipdevelop_refine[pos*10000+refine_rank*100+refine_star]
+	local refine_scale = 1
+	if refine_config then
+		refine_scale = (100 + refine_config.improve) /100
+	end
+	
+	-- 装备基础属性*精炼倍率 
+	local array = item_tempate.basic_properties
+	local props = {}
+	for i,prop in pairs(array) do
+		table.insert(props,{prop[1],math.floor(prop[2] * refine_scale)})
+	end
+	
+	--添加附加属性 *精炼倍率 
+	local func = function (key,val)
+		if not attrs[key] then
+			attrs[key] = 0
+		end
+		attrs[key] = attrs[key] + math.floor(val * refine_scale)
+	end
+
+	item:forEachBaseAttr(func)
+	
+	mergeAttrs(attrs, props)
+
+	
 end
 
 --物品属性重算
@@ -104,6 +127,7 @@ function AppItemInstance:itemCalculAttr( attrs )
 	
 	local playerInfo = self:getOwner()
 	local spellMgr = playerInfo:getSpellMgr()
+	--[[
 	-- 全身强化属性
 	local mulId = spellMgr:getStrengMul()
 	if tb_strengthen_mul[mulId] then
@@ -117,7 +141,49 @@ function AppItemInstance:itemCalculAttr( attrs )
 		local pros = tb_gem_mul[gemMulId].mulpro
 		mergeAttrs(attrs, pros)
 	end
+	--]]
 	
+	
+	--todo 新装备养成 强化属性 宝石属性 全身奖励
+	for pos = 1,EQUIPMENT_COUNT do
+		local strength_lv = spellMgr:GetEquipDevelopStrengthLv(pos - 1)
+		if tb_equipdevelop_strength[pos * 1000 + strength_lv] then
+			local props = tb_equipdevelop_strength[pos * 1000 + strength_lv].props
+			mergeAttrs(attrs, props)
+		end
+		
+		local gem_part_config = tb_equipdevelop_gem_part[pos]
+		local gem_count = #(gem_part_config.gem_array)
+		for gem_index = 0,gem_count -1 do
+			local gem_type = gem_part_config.gem_array[gem_index + 1]
+			local gem_level = spellMgr:GetEquipDevelopGemLv(pos - 1,gem_index)
+			local gem_config = tb_equipdevelop_gem[gem_type * 1000 + gem_level]
+			if gem_config then
+				local props = gem_config.props
+				mergeAttrs(attrs, props)
+			end
+		end
+	end
+	
+	local bonus_strength_lv = spellMgr:GetEquipDevelopBonusStrengthLv()
+	if tb_equipdevelop_bonus[1*100 + bonus_strength_lv] then
+		local props = tb_equipdevelop_bonus[1*100 + bonus_strength_lv].props
+		mergeAttrs(attrs, props)
+	end
+	
+	local bonus_refine_lv = spellMgr:GetEquipDevelopBonusRefineLv()
+	if tb_equipdevelop_bonus[2*100 + bonus_refine_lv] then
+		local props = tb_equipdevelop_bonus[2*100 + bonus_refine_lv].props
+		mergeAttrs(attrs, props)
+	end
+	
+	local bonus_gem_lv = spellMgr:GetEquipDevelopBonusGemLv()
+	if tb_equipdevelop_bonus[3*100 + bonus_gem_lv] then
+		local props = tb_equipdevelop_bonus[3*100 + bonus_gem_lv].props
+		mergeAttrs(attrs, props)
+	end
+	
+	outFmtInfo("bonus %d %d %d",bonus_strength_lv,bonus_refine_lv,bonus_gem_lv)
 	return attrs
 end
 

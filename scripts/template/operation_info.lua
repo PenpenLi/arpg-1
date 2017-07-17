@@ -366,6 +366,9 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==BAG_RESULT_USE_ITEMS_SUCCESS)then
 			return "ShowOperationFailed OPRATE_TYPE_BAG包裹 - BAG_RESULT_USE_ITEMS_SUCCESS物品使用成功 - " .. data 
 		end
+		if (reason ==BAG_RESULT_BAG_FULL_SEND_MAIL)then
+			return "ShowOperationFailed OPRATE_TYPE_BAG包裹 - BAG_RESULT_BAG_FULL_SEND_MAIL包裹已满 发送邮箱提示 - " .. data 
+		end
 		return "未知错误1  OPRATE_TYPE_BAG " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_TRADE)then

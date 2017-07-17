@@ -8,6 +8,16 @@ function PlayerInfo:SetResetDailyTime  (index,val)
 	self:SetUInt32(PLAYER_APPD_INT_FIELD_RESET_DALIY+index,val)
 end
 
+-- 获得最近一周更新的时间点
+function PlayerInfo:GetResetWeekTime()
+	return self:GetUInt32(PLAYER_APPD_INT_FIELD_RESET_WEEK)
+end
+
+--设置最近一周更新的时间点
+function PlayerInfo:SetResetWeekTime(val)
+	self:SetUInt32(PLAYER_APPD_INT_FIELD_RESET_WEEK, val)
+end
+
 --每小时重置一次，看要做什么
 function PlayerInfo:DoResetDaily  ()
 	local itemMgr = self:getItemMgr()
@@ -33,6 +43,13 @@ function PlayerInfo:DoResetDaily  ()
 		--重置下标时间设置下
 		self:SetResetDailyTime(12,os.time())
 	end
+
+	-- 每周重置
+	if self:IsWeeklyReset(self:GetResetWeekTime()) then
+		self:resetWeeklyInfo()
+		self:SetResetWeekTime(os.time())
+	end
+	
 	--每日累加登陆次数
 	local limit_acti = self:getLimitActivityInfo()
 	if limit_acti then
@@ -75,6 +92,9 @@ end
 
 --是否已经跨过周日0点了
 function PlayerInfo:IsWeeklyReset  ( last_zero_reset_time)
+	if last_zero_reset_time == 0 then
+		return true
+	end
 	local last_reset_time = last_zero_reset_time --上一次重置的0点时间戳
 	local nowtime = os.time()
 	--算出上次的周日24点的时间戳
@@ -120,4 +140,12 @@ function PlayerInfo:onRealReset()
 	self:OnResetGroupInstanceDayTimes()
 	
 	self:OnResetMeridianDayTimes()
+	
+	self:DailyResetTowerFlag()
+	
+	self:OnResetLocalSinglePVPDayTimes()
+end
+
+function PlayerInfo:resetWeeklyInfo()
+	self:OnResetLocalSinglePVPWeekInfo()
 end

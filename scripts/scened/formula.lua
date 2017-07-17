@@ -14,6 +14,13 @@ function DosometingScript(player)
 	
 end
 
+-- PVP战斗死亡的逻辑
+function OnPVPKilled(killer, target)
+	local killerInfo = UnitInfo:new{ptr = killer}
+	-- 加仇人列表
+	playerLib.SendToAppdDoSomething(target, SCENED_APPD_ADD_ENEMY, 1, killerInfo:GetPlayerGuid())
+end
+
 --玩家PVP时目标方的一些处理
 function DOPlayerPvP(player,target)
 	--[[
@@ -24,6 +31,10 @@ function DOPlayerPvP(player,target)
 		假如当前为和平模式，则切换为自卫模式
 	]]
 	
+	local targetInfo = UnitInfo:new {ptr = target}
+	if targetInfo:isPeaceMode() then
+		targetInfo:ChangeToFamilyMode()
+	end
 	
 	local mapid = unitLib.GetMapID(target)
 	local map_ptr = unitLib.GetMap(target)

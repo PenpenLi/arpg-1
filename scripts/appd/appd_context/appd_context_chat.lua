@@ -358,6 +358,72 @@ function PlayerInfo:GmCommand(str)
 			temp = temp..','..tokens[i]
 		end
 		call_opt_command(0, 0, temp)
+	elseif(gm_key == 993)then
+		local faction = app.objMgr:getObj(self:GetFactionId())
+		if faction == nil then
+			return
+		end
+		local building_id = 500 + faction:GetBuildingLvByType(FACTION_BUILDING_TYPE_SKILL)
+		if faction:GetBuildingLvByType(FACTION_BUILDING_TYPE_SKILL) == 5 then
+			return
+		end
+		faction:ReplaceBuildingId(building_id,building_id + 1)
+		faction:ResetAllMemberFactionSkill()
+	elseif(gm_key == 994)then
+		local pkt = {}
+		pkt.opt_type = tonumber(tokens[2])
+		pkt.reserve_int1 = tonumber(tokens[3])
+		pkt.reserve_int2 = tonumber(tokens[4])
+		pkt.reserve_str1 = tokens[5]
+		pkt.reserve_str2 = ""
+		self:Handle_Faction_People(pkt)
+	elseif(gm_key == 995)then
+		local pkt = {}
+		pkt.opt_type = tonumber(tokens[2])
+		pkt.reserve_int1 = tonumber(tokens[3])
+		pkt.reserve_int2 = tonumber(tokens[4])
+		pkt.reserve_str1 = tokens[5]
+		pkt.reserve_str2 = ""
+		if pkt.opt_type == 1 or pkt.opt_type == 2 or pkt.opt_type == 3 then
+			for i = 10,1,-1 do
+				pkt.reserve_int1 = i
+				self:Handle_Equipdevelop_Operate(pkt)
+			end
+		elseif pkt.opt_type == 4 or pkt.opt_type == 5 then
+			for i = 10,1,-1 do
+				pkt.reserve_int1 = i
+				for j = 1,3 do
+					pkt.reserve_int2 = j
+					self:Handle_Equipdevelop_Operate(pkt)
+				end
+			end
+			
+		elseif pkt.opt_type == 6 or pkt.opt_type == 7 then
+			local itemMgr = self:getItemMgr()
+			local item = itemMgr:getBagItemByPos(BAG_TYPE_EQUIP,pkt.reserve_int1)
+			if item then
+				outFmtInfo("#################### %s",item:getGuid())
+				pkt.reserve_str1 = item:getGuid()
+			end
+			self:Handle_Equipdevelop_Operate(pkt)
+		else
+			self:Handle_Equipdevelop_Operate(pkt)
+		end
+		
+		
+	elseif(gm_key == 996)then		-- @远征 最高层数
+		local faction = app.objMgr:getObj(self:GetFactionId())
+		if faction == nil then
+			return
+		end
+		local floor = tonumber(tokens[2]) or 5
+		faction:SetFactionTowerTodayTopFloor(floor)
+		faction:SetFactionTowerTodayTopIcon(1)
+		faction:SetFactionTowerTodayTopForce(randInt(1,500000))
+		faction:SetFactionTowerTodayTopName("名字名字"..randInt(1,50))
+		
+		self:SetFactionBossDefenseTickets(10)
+	
 	elseif(gm_key == 997)then		-- @家族商店刷新
 		local faction_guid = self:GetFactionId()
 		if faction_guid == "" then
@@ -459,11 +525,20 @@ function PlayerInfo:GmCommand(str)
 		
 		--self:MatchGroupInstance(1)
 		--self:OnBuyGroupInstanceTicket(1)
-		self:SetFactionBossDefenseTickets(10)
+		--self:SetFactionBossDefenseTickets(10)
 		local pkt4 = {}
 		pkt4.opt_type = FACTION_MANAGER_TYPE_BOSSDEFENSE_CHALLENGE
 		pkt4.reserve_int1 = 1
-		self:Handle_Faction_People(pkt4)
+		--self:Handle_Faction_People(pkt4)
+		
+		local pkt5 = {}
+		--pkt5.opt_type = FACTION_MANAGER_TYPE_TOWER_CHALLENGE
+		pkt5.opt_type = FACTION_MANAGER_TYPE_TOWER_SWEEP
+		--pkt5.opt_type = FACTION_MANAGER_TYPE_TOWER_CHEST
+		pkt5.reserve_int1 = 1
+		--self:Handle_Faction_People(pkt5)
+		
+		self:ItemUnlockTitle(tonumber(tokens[2]))
 		
 	else
 		--[[

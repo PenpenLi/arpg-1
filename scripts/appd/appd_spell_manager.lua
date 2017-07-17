@@ -1,5 +1,3 @@
---技能管理器
-
 local AppSpellMgr = class("AppSpellMgr", BinLogObject)
 
 function AppSpellMgr:ctor()
@@ -1046,6 +1044,178 @@ function AppSpellMgr:getGemMul()
 	return self:GetUInt32(SPELL_GEM_ALLMUL)
 end
 ----------------------------------------------强化宝石结束-------------------------------------------
+
+
+-------------------------------装备养成开始-------------------------------------------
+--
+--强化lv
+function AppSpellMgr:GetEquipDevelopStrengthLv(index)
+	return self:GetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_STRENGTH_LV,0)
+end
+
+function AppSpellMgr:SetEquipDevelopStrengthLv(index,value)
+	self:SetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_STRENGTH_LV,0,value)
+end
+
+--精炼阶数
+function AppSpellMgr:GetEquipDevelopRefineRank(index)--技能管理器
+	return self:GetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_REFINE_LV,0)
+end
+
+function AppSpellMgr:SetEquipDevelopRefineRank(index,value)
+	self:SetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_REFINE_LV,0,value)
+end
+
+--精炼星数
+function AppSpellMgr:GetEquipDevelopRefineStar(index)
+	return self:GetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_REFINE_LV,1)
+end
+
+function AppSpellMgr:SetEquipDevelopRefineStar(index,value)
+	self:SetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_REFINE_LV,1,value)
+end
+
+
+--镶嵌等级
+function AppSpellMgr:GetEquipDevelopGemLv(index,gem_index)
+	local res1 = gem_index%2
+	local res2 = math.floor(gem_index/2)
+	
+	return self:GetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_GEM_LV_START + res2,res1,1)
+end
+
+function AppSpellMgr:SetEquipDevelopGemLv(index,gem_index,value)
+	local res1 = gem_index%2
+	local res2 = math.floor(gem_index/2)
+	
+	self:SetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_GEM_LV_START + res2,res1,value)
+end
+
+--奖励lv
+function AppSpellMgr:GetEquipDevelopBonusStrengthLv()
+	return self:GetByte(SPELL_INT_FIELD_EQUIPDEVELOP_BONUS_LV,0)
+end
+
+function AppSpellMgr:SetEquipDevelopBonusStrengthLv(value)
+	self:SetByte(SPELL_INT_FIELD_EQUIPDEVELOP_BONUS_LV,0,value)
+end
+
+function AppSpellMgr:GetEquipDevelopBonusRefineLv()
+	return self:GetByte(SPELL_INT_FIELD_EQUIPDEVELOP_BONUS_LV,1)
+end
+
+function AppSpellMgr:SetEquipDevelopBonusRefineLv(value)
+	self:SetByte(SPELL_INT_FIELD_EQUIPDEVELOP_BONUS_LV,1,value)
+end
+
+function AppSpellMgr:GetEquipDevelopBonusGemLv()
+	return self:GetByte(SPELL_INT_FIELD_EQUIPDEVELOP_BONUS_LV,2)
+end
+
+function AppSpellMgr:SetEquipDevelopBonusGemLv(value)
+	self:SetByte(SPELL_INT_FIELD_EQUIPDEVELOP_BONUS_LV,2,value)
+end
+
+
+--洗炼属性结果 guid | num | attr_id | value | qua
+function AppSpellMgr:GetEquipDevelopWashAttrsInfo()
+	return self:GetStr(SPELL_STRING_FIELD_EQUIPDEVELOP_WASHATTRS_INFO)
+end
+
+function AppSpellMgr:SetEquipDevelopWashAttrsInfo(value)
+	self:SetStr(SPELL_STRING_FIELD_EQUIPDEVELOP_WASHATTRS_INFO,value)
+end
+
+----------------------------------------------装备养成结束-------------------------------------------
+
+--------------------------------------
+
+function AppSpellMgr:activeAppearance(id)
+	for i = SPELL_INT_FIELD_APPEARANCE_START, SPELL_INT_FIELD_APPEARANCE_END-1 do
+		if self:GetUInt32(i) == 0 then
+			self:SetUInt32(i, id)
+			break
+		end
+	end
+end
+
+function AppSpellMgr:GetActiveAppearance()
+	local dict = {}
+	for i = SPELL_INT_FIELD_APPEARANCE_START, SPELL_INT_FIELD_APPEARANCE_END-1 do
+		local id = self:GetUInt32(i)
+		if id > 0 then
+			dict[ id ] = 1
+		end
+	end
+	
+	return dict
+end
+
+function AppSpellMgr:calcAppearanceAttr(attrs, attrsRate, id1, id2)
+	local player = self:getOwner()
+	
+	CalAppearanceAttrByApprId(attrsRate, id1)
+	CalAppearanceAttrByApprId(attrsRate, id2)
+	
+	local apprDict	= self:GetActiveAppearance()
+	local gender	= player:GetGender()
+	local pokedice	= tb_char_info[gender].waiguantj
+	for _, pokedex in ipairs(pokedice) do
+		if isPokedexActive(apprDict, pokedex) then
+			CalAppearanceAttrByPokedexId(attrs, pokedex)
+		end
+	end
+end
+
+function isPokedexActive(apprDict, id)
+	local exterior = tb_appearance_pokedex[ id ].exterior
+	for _, apprId in ipairs(exterior) do
+		if not apprDict[apprId] then
+			return false
+		end
+	end
+	
+	return true
+end
+
+function CalAppearanceAttrByApprId(dict, id)
+	if id == 0 then
+		return
+	end
+	
+	local config = tb_appearance_info[id]
+	local list = MergeAttrKeysAndValues(config.attrKeys, config.attrValues)
+	
+	for _, info in ipairs(list) do
+		local key = info[ 1 ]
+		local val = info[ 2 ]
+		if not dict[key] then
+			dict[key] = 0
+		end
+		dict[key] = dict[key] + val
+	end
+end
+
+function CalAppearanceAttrByPokedexId(dict, id)
+	if id == 0 then
+		return
+	end
+	
+	local config = tb_appearance_pokedex[ id ]
+	local list = MergeAttrKeysAndValues(config.attrKeys, config.attrValues)
+	
+	for _, info in ipairs(list) do
+		local key = info[ 1 ]
+		local val = info[ 2 ]
+		if not dict[key] then
+			dict[key] = 0
+		end
+		dict[key] = dict[key] + val
+	end
+end
+
+-----------------------------------------------
+
 
 -- 获得玩家guid
 function AppSpellMgr:getPlayerGuid()

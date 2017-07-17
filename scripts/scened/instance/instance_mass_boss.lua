@@ -80,13 +80,6 @@ function InstanceMassBoss:onRefreshBoss()
 	end
 end
 
-function InstanceMassBoss:DoIsMate(killer_ptr, target_ptr)
-	if killer_ptr and target_ptr and GetFactionGuid(killer_ptr) == GetFactionGuid(target_ptr) then
-		return true
-	end
-	return false
-end
-
 -- 世界BOSS结束了
 function InstanceMassBoss:IsEnd()
 	return self:GetMapQuestEndTime() > 0 and self:GetMapQuestEndTime() <= os.time()
@@ -124,21 +117,14 @@ function InstanceMassBoss:OnJoinPlayer(player)
 	
 	local id = self:GetMassBossId()
 	InstanceMassBoss.enterCount[ id ] = InstanceMassBoss.enterCount[ id ] + 1
+	playerInfo:ChangeToFamilyMode()
 end
 
 --当玩家离开时触发
 function InstanceMassBoss:OnLeavePlayer( player, is_offline)
+	InstanceInstBase.OnLeavePlayer(self, player, is_offline)
 	local id = self:GetMassBossId()
 	InstanceMassBoss.enterCount[ id ] = InstanceMassBoss.enterCount[ id ] - 1
-end
-
---当玩家加入后触发
-function InstanceMassBoss:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(self, player)
-	
-	local playerInfo = UnitInfo:new{ptr = player}
-	-- 进城修改模式
-	playerInfo:ChangeToPeaceModeAfterTeleport()
 end
 
 -- 当玩家死亡后
@@ -234,7 +220,7 @@ function InstanceMassBoss:sendReward()
 			-- 扫荡的结果发送
 			local list = Change_To_Item_Reward_Info(dict, true)
 			
-			playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list)
+			playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list, INSTANCE_SUB_TYPE_MASS_BOSS, '')
 		end
 	end
 end

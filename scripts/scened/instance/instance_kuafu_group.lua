@@ -163,7 +163,7 @@ function InstanceKuafuGroup:SendInstanceResult()
 
 		-- 扫荡的结果发送
 		local list = Change_To_Item_Reward_Info(rewardDict, true)
-		playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list)
+		playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list, INSTANCE_SUB_TYPE_KUAFU_GROUP, '')
 		
 	end
 end
@@ -225,6 +225,8 @@ function InstanceKuafuGroup:OnJoinPlayer(player)
 		self:SetStr(strstart + KUAFU_GROUP_INSTANCE_PLAYER_GUID, playerInfo:GetPlayerGuid())
 		
 		self:SetByte(intstart + KUAFU_GROUP_INSTANCE_PLAYER_DAED_TIMES, 0, 0)
+		
+		playerInfo:SetToGroupMode('1')
 	end
 end
 
@@ -256,11 +258,6 @@ function InstanceKuafuGroup:findIndexByName(name)
 	end
 	
 	return -1
-end
-
---当玩家加入后触发
-function InstanceKuafuGroup:OnAfterJoinPlayer(player)
-	InstanceInstBase.OnAfterJoinPlayer(self, player)
 end
 
 --当玩家死亡后触发()
@@ -319,13 +316,6 @@ function InstanceKuafuGroup:GetCostTimeCD(playerInfo)
 	end
 	
 	return 0
-end
-
-function InstanceKuafuGroup:DoIsMate(killer_ptr, target_ptr)
-	if killer_ptr and target_ptr and GetUnitTypeID(killer_ptr) == TYPEID_PLAYER and GetUnitTypeID(target_ptr) == TYPEID_PLAYER then
-		return true
-	end
-	return false
 end
 
 -- 获取死亡次数

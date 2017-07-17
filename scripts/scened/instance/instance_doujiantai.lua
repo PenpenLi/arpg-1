@@ -121,7 +121,6 @@ function InstanceDoujiantai:OnJoinPlayer(player)
 	local playerInfo = UnitInfo:new{ptr = player}
 	if not playerInfo:IsAlive() or self:GetMapState() ~= self.STATE_START then
 		--死亡了还进来，直接弹出去
-		local login_fd = serverConnList:getLogindFD()
 		mapLib.ExitInstance(self.ptr, player)
 		self:SetMapState(self.STATE_FAIL)
 		return
@@ -133,6 +132,7 @@ end
 
 --当玩家离开时触发
 function InstanceDoujiantai:OnLeavePlayer( player, is_offline)
+	InstanceInstBase.OnLeavePlayer(self, player, is_offline)
 	self:RemoveTimeOutCallback(self.Leave_Callback)
 	if self:GetMapState() == self.STATE_START then
 		self:OnFightResult(player, GlobalCounter.LOSE)

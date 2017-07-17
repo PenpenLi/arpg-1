@@ -494,6 +494,7 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	elseif opt_type == FACTION_MANAGER_TYPE_DONATE_GIFT_EXCHANGE then
 		faction:FactionDonateGiftExchange(self,reserve_int1)
 		
+	--[[
 	--查看礼物列表
 	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_PAGE then
 		if(not factionData)then
@@ -557,12 +558,25 @@ function PlayerInfo:Handle_Faction_People( pkt )
 			return
 		end
 		faction:ReplyFactionGift(factionData,self,reserve_int1,reserve_int2,reserve_str1)
-		
+	--]]
 	elseif opt_type == FACTION_MANAGER_TYPE_BOSSDEFENSE_CHALLENGE then
 		faction:BossDenfenseChallenge(self,reserve_int1)
 		
 	elseif opt_type == FACTION_MANAGER_TYPE_BOSSDEFENSE_DAMAGE_LIST then
 		faction:GetBossDenfenseDamageList(self,reserve_int1)
+		
+	elseif opt_type == FACTION_MANAGER_TYPE_TOWER_CHALLENGE then
+		faction:TowerChallenge(self)
+		
+	elseif opt_type == FACTION_MANAGER_TYPE_TOWER_SWEEP then
+		faction:TowerSweep(self)
+		
+	elseif opt_type == FACTION_MANAGER_TYPE_TOWER_CHEST then
+		faction:OpenTowerChest(self,reserve_int1)
+		
+	elseif opt_type == FACTION_MANAGER_TYPE_SKILL_LVUP then
+		faction:FactionSkillLvup(self,reserve_int1)
+		
 		
 	end
 	
@@ -605,7 +619,7 @@ end
 
 
 
-
+--[[
 --帮派部分
 --赠送礼物 (item_table)
 --send_faction_gift  --增加未感谢计数 1
@@ -740,6 +754,6 @@ function PlayerInfo:Handle_Get_Faction_Gift_Rank_Page(pkt)
 	
 	--outFmtDebug("==========after send")
 end
-
+--]]
 
 

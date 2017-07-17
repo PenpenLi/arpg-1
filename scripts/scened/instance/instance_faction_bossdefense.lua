@@ -29,6 +29,7 @@ end
 
 function InstanceFactionBossDefense:SetPoolId(val)
 	self:SetUInt32(FACTION_BOSSDEFENSE_INSTANCE_FIELD_POOL_ID, val) 
+	self:SetUInt32(MAP_INT_FIELD_RESERVE2, val)
 end
 
 --怪物hp
@@ -64,7 +65,12 @@ end
 
 --初始化脚本函数
 function InstanceFactionBossDefense:OnInitScript(  )
-	Instance_base.OnInitScript(self)					--调用基类
+	-- 不让重复初始化
+	if self:isInstanceInit() then
+		return
+	end
+	self:SetInstanceInited()
+	InstanceInstBase.OnInitScript(self)					--调用基类
 	self:parseGeneralId()
 	
 	
@@ -114,6 +120,11 @@ function InstanceFactionBossDefense:parseGeneralId()
 	self:AddTimeOutCallback('OnMosterReset', os.time() + 1)
 	--outFmtInfo('============================= %s', tostring(guid))
 	--self:SetFactionGuid(guid)
+	
+	-- 刷新任务
+	local mapQuest = pool_config.quests[1]
+	-- 加副本任务
+	InstanceInstBase.OnAddQuests(self, {mapQuest})
 end
 
 function InstanceFactionBossDefense:DoMapBuffBonus(unit)
@@ -148,7 +159,7 @@ end
 
 --玩家加入地图
 function InstanceFactionBossDefense:OnJoinPlayer(player)
-	Instance_base.OnJoinPlayer(self, player)
+	InstanceInstBase.OnJoinPlayer(self, player)
 	local playerInfo = UnitInfo:new{ptr = player}
 	if not playerInfo:IsAlive() or self:GetMapState() ~= self.STATE_START then
 		--死亡了还进来，直接弹出去
@@ -159,8 +170,7 @@ function InstanceFactionBossDefense:OnJoinPlayer(player)
 	
 	playerInfo:ModifyHealth(playerInfo:GetMaxHealth())
 	
-	
-	
+	playerInfo:ChangeToFamilyMode()
 end
 
 function InstanceFactionBossDefense:OnMosterReset()
@@ -178,12 +188,13 @@ end
 
 --当玩家离开时触发
 function InstanceFactionBossDefense:OnLeavePlayer( player, is_offline)
+	InstanceInstBase.OnLeavePlayer(self, player, is_offline)
 	self:OnBossDefenseLeave()
 	unitLib.RemoveBuff(player,BUFF_ALLATTR)
 	
 	if self:GetMapState() == self.STATE_START then
 		if player then
-			self:OnJoinReward(player)
+			--self:OnJoinReward(player)
 		end
 		return
 	end
@@ -205,8 +216,14 @@ function InstanceFactionBossDefense:DoRespawn( player,cur_map_id,respwan_map,res
 end
 
 --击杀boss 处理击杀奖励
-function InstanceFactionBossDefense:OnBossDefenseWin(player)
+function InstanceFactionBossDefense:OnBossDefenseWin()
 	local pool_id = self:GetPoolId()
+	local allPlayers = mapLib.GetAllPlayer(self.ptr)
+	
+	if not allPlayers[1] then
+		return
+	end
+	local player = allPlayers[1]
 	
 	--call_appd_faction_bossdefense_win(faction_guid,player_guid,pool_id)
 	local pool_config = tb_faction_bossdefense_pool[pool_id]
@@ -221,7 +238,7 @@ function InstanceFactionBossDefense:OnBossDefenseWin(player)
 	-- 扫荡的结果发送
 	local list = Change_To_Item_Reward_Info(dict, true)
 	
-	playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list)
+	playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list,INSTANCE_SUB_TYPE_FACTION_BOSSDEFENSE,"")
 end
 
 --离开 处理结果
@@ -250,7 +267,7 @@ function InstanceFactionBossDefense:OnJoinReward(player)
 	-- 扫荡的结果发送
 	local list = Change_To_Item_Reward_Info(dict, true)
 	
-	playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list)
+	playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list,INSTANCE_SUB_TYPE_FACTION_BOSSDEFENSE,"")
 end
 
 -----------------------------------------------------------------------------
@@ -265,7 +282,18 @@ function AI_faction_bossdefense:JustDied( map_ptr,owner,killer_ptr )
 	
 	local instanceInfo = InstanceFactionBossDefense:new{ptr = map_ptr}
 	instanceInfo:SetMapState(instanceInfo.STATE_FINISH)
-	instanceInfo:OnBossDefenseWin(killer_ptr)
+	instanceInfo:OnBossDefenseWin()
+	
+	
+	-- 更新杀怪进度
+	local ownerInfo = UnitInfo:new {ptr = owner}
+	local entry = ownerInfo:GetEntry()
+	local updated = instanceInfo:OneMonsterKilled(entry)
+	
+	-- 更新进度
+	if updated then
+		--instanceInfo:AfterProcessUpdate(killer_ptr)
+	end
 	
 	return 0
 end

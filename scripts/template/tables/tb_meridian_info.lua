@@ -10,7 +10,7 @@ tb_meridian_info = {
 	--  attrValues:array 穴位总属性值
 	--  costExp:int 升级本级消耗的活力
 	--  costMoney:array 突破消耗的银币
-	[0] = {id = 0, currAttr = {}, attrKeys = {1,2,3,4,5}, attrValues = {1,1,1,1,1}, costExp = 0, costMoney = {}},
+	[0] = {id = 0, currAttr = {}, attrKeys = {1,2,3,4,5}, attrValues = {0,0,0,0,0}, costExp = 0, costMoney = {}},
 	[1] = {id = 1, currAttr = {1,10}, attrKeys = {1,2,3,4,5}, attrValues = {11,1,1,1,1}, costExp = 10, costMoney = {}},
 	[2] = {id = 2, currAttr = {2,10}, attrKeys = {1,2,3,4,5}, attrValues = {11,11,1,1,1}, costExp = 20, costMoney = {}},
 	[3] = {id = 3, currAttr = {3,10}, attrKeys = {1,2,3,4,5}, attrValues = {11,11,11,1,1}, costExp = 30, costMoney = {}},

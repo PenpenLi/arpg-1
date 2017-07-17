@@ -1434,3 +1434,44 @@ send_instance_result,s2c,375,/*副本结果*/,STATUS_NEVER,False
 	state,uint8,False,/*副本状态(249:副本失败,250:副本通关,251:副本未通关)*/
 	cd,uint8,False,/*副本cd*/
 	list,item_reward_info,True,/*道具列表*/
+	type,uint8,False,/*副本类型*/
+	data,String,False,/*额外数据*/
+
+#
+match_single_pvp,c2s,376,/*匹配单人pvp*/,STATUS_NEVER,False
+
+#
+buy_match_single_pvp_times,c2s,377,/*购买单人pvp次数*/,STATUS_NEVER,False
+	cnt,uint8,False,/*购买次数*/
+
+#
+pick_match_single_pvp_extra_reward,c2s,378,/*领取单人pvp额外奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*领取序号*/
+
+#
+equipdevelop_operate,c2s,380,/*装备养成操作*/,STATUS_NEVER,False
+	opt_type,uint8,False,/*操作类型*/
+	reserve_int1,uint16,False,/*预留int值1*/
+	reserve_int2,uint16,False,/*预留int值2*/
+	reserve_str1,String,False,/*预留string值1*/
+	reserve_str2,String,False,/*预留string值2*/
+
+#
+active_appearance,c2s,381,/*激活外观*/,STATUS_NEVER,False
+	id,uint16,False,/*外观id*/
+
+#
+equip_appearance,c2s,382,/*装备外观*/,STATUS_NEVER,False
+	id,uint16,False,/*外观id*/
+	
+#
+cancel_equip_appearance,c2s,383,/*取消装备外观*/,STATUS_NEVER,False
+	type,uint8,False,/*外观类型*/
+
+#
+rename,c2s,384,/*改名*/,STATUS_NEVER,False
+	name,String,False,/*修改的名称*/
+
+#
+unlock_title,c2s,385,/*道具解锁称号*/,STATUS_NEVER,False
+	indx,uint8,False,/*称号id*/

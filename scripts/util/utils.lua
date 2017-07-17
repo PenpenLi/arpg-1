@@ -219,47 +219,20 @@ function changeTableStruct(dict)
 end
 
 
--- PlayerInfo的属性换算战力
-local UnitInfo_Battle_Point_Rate = {
-	[EQUIP_ATTR_MAX_HEALTH] = 2,	--最大生命
-	[EQUIP_ATTR_DAMAGE] = 2,	--攻击力
-	[EQUIP_ATTR_ARMOR] = 2,	--防御力
-	[EQUIP_ATTR_HIT] = 2,	--命中
-	[EQUIP_ATTR_MISS] = 2,	--闪避
-	[EQUIP_ATTR_CRIT] = 2,	--暴击
-	[EQUIP_ATTR_TOUGH] = 2,	--坚韧
-	[EQUIP_ATTR_ATTACK_SPEED] = 2,	--攻击速度
-	[EQUIP_ATTR_MOVE_SPEED] = 0,	--移动速度
-	[EQUIP_ATTR_IGNORE_ARMOR] = 2,	--忽视防御
-	[EQUIP_ATTR_IGNORE_MISS] = 2,	--忽视闪避
-	[EQUIP_ATTR_RECOVERY] = 2,	--生命值回复
-	[EQUIP_ATTR_DAMAGE_AMPLIFY_RATE] = 2,	--伤害加深(万分比)
-	[EQUIP_ATTR_DAMAGE_RESIST_RATE] = 2,	--伤害减免(万分比)
-	[EQUIP_ATTR_DAMAGE_RETURN_RATE] = 2,	--反弹伤害(万分比)
-	[EQUIP_ATTR_VAMPIRIC_RATE] = 2,	--吸血光环(万分比)
-	[EQUIP_ATTR_RECOVERY_RATE] = 2,	--回复效率(万分比)
-	[EQUIP_ATTR_CRIT_RATE] = 2,	--暴击率(万分比)
-	[EQUIP_ATTR_CRIT_RESIST_RATE] = 2,	--抗暴率(万分比)
-	[EQUIP_ATTR_CRIT_DAM_RATE] = 2,	--暴击伤害倍数(万分比)
-	[EQUIP_ATTR_CRIT_RESIST_DAM_RATE] = 2,	--降暴伤害倍数(万分比)
-	[EQUIP_ATTR_HIT_RATE] = 2,	--命中率(万分比)
-	[EQUIP_ATTR_MISS_RATE] = 2,	--闪避率(万分比)
-	[EQUIP_ATTR_STUN_RATE] = 2,	--眩晕
-	[EQUIP_ATTR_ROOTS_RATE] = 2,	--定身
-	[EQUIP_ATTR_SILENCE_RATE] = 2,	--沉默
-	[EQUIP_ATTR_CHAOS_RATE] = 2,	--混乱
-	[EQUIP_ATTR_CHARM_RATE] = 2,	--魅惑
-	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = 2,	--控制增强
-	[EQUIP_ATTR_CONTROL_RESIST_RATE] = 2,	--控制减免
-}
-
-
+function changeTableToList(dict)
+	local list = {}
+	for key, value in pairs(dict) do
+		table.insert(list, {key, value})
+	end
+	
+	return list
+end
 
 -- 计算战斗力
 function DoAnyOneCalcForce(attrDict)
 	local battlePoint = 0
 	for attrId, value in pairs(attrDict) do
-		battlePoint = battlePoint + value * UnitInfo_Battle_Point_Rate[attrId]
+		battlePoint = battlePoint + value * tb_battle_force[attrId].rate
 	end
 	
 	return battlePoint
@@ -267,8 +240,7 @@ end
 function DoAnyOneCalcForceByAry(attrAy)
 	local battlePoint = 0
 	for k, v in pairs(attrAy) do
-		--battlePoint = battlePoint + value * UnitInfo_Battle_Point_Rate[attrId]
-		battlePoint = battlePoint + v[2] * UnitInfo_Battle_Point_Rate[v[1]]
+		battlePoint = battlePoint + v[2] * tb_battle_force[v[1]].rate
 	end
 	
 	return battlePoint
@@ -592,7 +564,7 @@ attrKeys = {
 
 -- 得到属性对应的区间所所表示的颜色
 function GetAttrQuality(val, a, b)
-	local qualitySize = 6
+	local qualitySize = 5
 	local attrQuality = {a}
 	
 	local diff = (b - a) / qualitySize

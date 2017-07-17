@@ -16,6 +16,29 @@ function UnitInfo:ctor( )
 	end
 end
 
+function UnitInfo:unitCalcQueueIndx()
+	local score = self:unitGetQualifyScore()
+	local indx = #tb_single_pvp_grade	
+	for i = 1, #tb_single_pvp_grade do
+		local range = tb_single_pvp_grade[ i ].range
+		if score >= range[ 1 ] and score <= range[ 2 ] then
+			indx = i
+		end
+	end
+	
+	return indx
+end
+
+function GetUnitName(unit_ptr)
+	return binLogLib.GetStr(unit_ptr, BINLOG_STRING_FIELD_NAME)
+end
+
+-- 获得排位赛积分
+function UnitInfo:unitGetQualifyScore()
+	return self:GetPlayerUInt32(PLAYER_INT_FIELD_QUALIFY_SCORE)
+end
+
+
 
 --获得通关状态
 function UnitInfo:isGroupInstanceClearFlag(val)
@@ -1393,9 +1416,16 @@ function GetUnitTypeID(spirit)
 	return binLogLib.GetByte(spirit, UNIT_FIELD_BYTE_0, 0)
 end
 
+-- 获得帮派的guid
 function GetFactionGuid(player_ptr)
 	local player_data_ptr = playerLib.GetSession(player_ptr)
 	return binLogLib.GetStr(player_data_ptr, PLAYER_STRING_FIELD_FACTION_GUID)
+end
+
+-- 获得组队模式的id
+function GetGroupModeId(player_ptr)
+	local player_data_ptr = playerLib.GetSession(player_ptr)
+	return binLogLib.GetStr(player_data_ptr, PLAYER_STRING_FIELD_GROUP_PEACE_ID)
 end
 
 function GetPlayerGuid(player_ptr)
@@ -1545,6 +1575,11 @@ function UnitInfo:GetBattleMode()
 	return self:GetPlayerUInt16(PLAYER_FIELD_NOTORIETY, 0)
 end
 
+function unitGetBattleMode(player_ptr)
+	local player_data_ptr = playerLib.GetSession(player_ptr)
+	return binLogLib.GetUInt16(player_data_ptr, PLAYER_FIELD_NOTORIETY, 0)
+end
+
 -- 设置战斗模式
 function UnitInfo:SetBattleMode(value)
 	self:SetPlayerUInt16(PLAYER_FIELD_NOTORIETY, 0, value)
@@ -1552,9 +1587,18 @@ end
 
 -- 变成和平模式
 function UnitInfo:ChangeToPeaceModeAfterTeleport()
-	if self:GetBattleMode() ~= WICKED_MODE then
-		self:SetBattleMode(PEACE_MODE)
-	end
+	self:SetBattleMode(PEACE_MODE)
+end
+
+-- 变成组队模式
+function UnitInfo:SetToGroupMode(groupId)
+	self:SetBattleMode(GROUP_MODE)
+	self:SetPlayerStr(PLAYER_STRING_FIELD_GROUP_PEACE_ID, groupId)
+end
+
+-- 变成家族模式
+function UnitInfo:ChangeToFamilyMode()
+	self:SetBattleMode(FAMILY_MODE)
 end
 
 -- 获得恶名值
@@ -1567,58 +1611,15 @@ function UnitInfo:isPeaceMode()
 	return self:GetBattleMode() == PEACE_MODE
 end
 
--- 是否是全体模式
-function UnitInfo:isAllMode()
-	return self:GetBattleMode() == ALL_MODE
-end
-
 -- 设置恶名值
 function UnitInfo:SetNotoriety(value)
 	self:SetPlayerUInt16(PLAYER_FIELD_NOTORIETY, 1, value)
 end
 
--- 获得自卫反击的GUID
-function UnitInfo:GetSelfProtectedUIntGuid()
-	return self:GetUInt32(UNIT_FIELD_SELF_DEFENSE_GUID)
-end
 
--- 设置自卫反击的GUID
-function UnitInfo:SetSelfProtectedUIntGuid(uintGuid)
-	self:SetUInt32(UNIT_FIELD_SELF_DEFENSE_GUID, uintGuid)
-end
 
--- 修改恶名值
-function UnitInfo:ModifyNotoriety(value)
-	local prev = self:GetNotoriety()
-	local curr = prev + value
-	if curr < 0 then curr = 0 end
-	if curr > config.evil_max_value then curr = config.evil_max_value end
-	
-	-- 把自卫反击的对象消掉
-	if self:GetSelfProtectedUIntGuid() > 0 then
-		self:SetSelfProtectedUIntGuid(0)
-	end
-	
-	if prev ~= curr then
-		self:SetNotoriety(curr)
-		-- 有恶名值的玩家被杀掉经验
-		if curr < prev then
-			if prev > 0 then
-				local rate = tb_battle_killed_drop[prev].rate
-				playerLib.LostExpOnDead(self.ptr, rate)
-			end
-		end
-		-- 从恶人模式到和平模式
-		if prev == config.evil_max_value then
-			self:SetBattleMode(PEACE_MODE)
-			return
-		end
-		-- 从其他模式到恶人模式
-		if curr == config.evil_max_value then
-			self:SetBattleMode(WICKED_MODE)
-			return
-		end
-	end
+function UnitInfo:GetGroupModeId()
+	return self:GetPlayerStr(PLAYER_STRING_FIELD_GROUP_PEACE_ID)
 end
 
 -- 模式转换
@@ -2004,28 +2005,6 @@ function calLevelHp(level)
 	end
 	return 100
 end
-
--- PVP战斗死亡的逻辑
-function OnPVPKilled(killer, target)
-	local killerInfo = UnitInfo:new{ptr = killer}
-	local targetInfo = UnitInfo:new{ptr = target}
-		
-	-- 如果targetInfo为和平模式,
-	if targetInfo:isPeaceMode() then
-		-- killer, 是全体模式的恶名值+1
-		if killerInfo:isAllMode() then
-			killerInfo:ModifyNotoriety(1)
-			
-			playerLib.SetNeedProtectBuff(targetInfo.ptr)
-		end
-	end
-	-- target, 恶名值-1
-	targetInfo:ModifyNotoriety(-1)
-	
-	-- 加仇人列表
-	playerLib.SendToAppdDoSomething(target, SCENED_APPD_ADD_ENEMY, 1, killerInfo:GetPlayerGuid())
-end
-
 
 --通过原点和半径获取随机点坐标(b:为true时，为在地图内可在打码区，为false时，为玩家可到区域非打码区)
 function GetRandPosByRadius(map_ptr, x, y, r, b)

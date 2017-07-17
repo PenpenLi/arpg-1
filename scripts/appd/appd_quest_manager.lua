@@ -70,6 +70,8 @@ function AppQuestMgr:addTitle(id)
 		else
 			self:SetUInt32(tid + TITLE_FIELD_TIME,0)
 		end
+		local owner = self:getOwner()
+		owner:RecalcAttrAndBattlePoint()
 		return true
 	end
 	
@@ -82,6 +84,8 @@ function AppQuestMgr:addTitle(id)
 			else
 				self:SetUInt32(i + TITLE_FIELD_TIME,0)
 			end
+			local owner = self:getOwner()
+			owner:RecalcAttrAndBattlePoint()
 			return true
 		end
 	end
@@ -106,21 +110,23 @@ function AppQuestMgr:initTitle(idx)
 	end
 end
 
---称号装备重算
+--称号装备重算 修改为计算所有拥有称号属性
 function AppQuestMgr:calculTitleAttr(attrs)
+	local allForce = 0
+	for i=QUEST_FIELD_TITLE_START,QUEST_FIELD_TITLE_END-1,MAX_TITLE_FIELD do
+		local title_id = self:GetUInt16(i,0)
+		if title_id ~= 0 then
+			local config = tb_title_base[title_id].prop
+			local baseForce = DoAnyOneCalcForceByAry(config)
+			allForce = allForce + baseForce
+			for i=1,#config do
+				attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
+			end
+		end
+	end
 	
 	local owner = self:getOwner()
-	local equtitle = owner:GetTitle()
-	if equtitle == 0 then
-		return
-	end
-	
-	local config = tb_title_base[equtitle].prop
-	
-	for i=1,#config do
-		attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
-	end
-
+	owner:SetTitleForce(allForce)
 end
 --检测失效称号
 function AppQuestMgr:removeExpireTitle()
@@ -137,6 +143,7 @@ function AppQuestMgr:removeExpireTitle()
 				if cur == id then
 					owner:SetTitle(0)
 				end
+				owner:RecalcAttrAndBattlePoint()
 			end
 		end
 	end

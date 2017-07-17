@@ -934,6 +934,7 @@ function FactionInfo:MemberAdd( player, isInvited)
 	self:AddMemberCount(1)
 	player:SetFactionId(self:GetGuid())
 	player:SetFactionName(self:GetName())
+	player:UpdateFactionSkill()
 	
 	-- 添加监听
 	app.objMgr:callAddWatch(player:GetSessionId(), self:GetGuid())
@@ -958,7 +959,7 @@ function FactionInfo:FactionExit(player)
 		-- 踢掉排名 (帮派等级)
 		rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 		-- TODO:魅力的踢掉
-		rankInsertTask(self:GetGuid(), RANK_TYPE_CHARM)
+		-- rankInsertTask(self:GetGuid(), RANK_TYPE_CHARM)
 	else
 		self:FactionQuit(player)
 	end
@@ -983,11 +984,12 @@ function FactionInfo:FactionQuit( player,is_merge)
 	self:RemoveChallengeBossTotalRankByGuid(player_guid)
 	self:DoChangeMemberOpt(index)
 	
-	self:DelGiftInfo(player_guid)
+	--self:DelGiftInfo(player_guid)
 	if is_merge == nil then
 		--self:AddEvent(player:GetGuid(), player:GetName(), FACTION_EVENT_TYPE_SUB_MEMBER)
 	end
 	player:ClearBuyedFactionShopItem()
+	player:UpdateFactionSkill()
 	
 	-- 成员退出
 	-- 如果在帮派场景的强制传送到冒险世界
@@ -1914,13 +1916,15 @@ function FactionInfo:ResetFaction()
 	self:SetTokenBuyCount(0)
 	self:SetTokenPointsCount(0)
 	
-	self:DailyResetGift()
+	--self:DailyResetGift()
+	
+	self:DailyResetTower()
 	
 end
 
 function FactionInfo:ResetFactionWeek()
 	
-	self:ClearGiftWeekPoint()
+	--self:ClearGiftWeekPoint()
 	
 end
 
@@ -3189,6 +3193,10 @@ function FactionInfo:UpdateBuildingProcess()
 		self:RefreshShop()
 		rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 	end
+	--家族技能建筑升级
+	if building_type == FACTION_BUILDING_TYPE_SKILL then
+		self:ResetAllMemberFactionSkill()
+	end
 	
 	--其他...
 	
@@ -3215,6 +3223,9 @@ function FactionInfo:OnMainHallLvUp(level)
 			if math.floor(id/100) == FACTION_BUILDING_TYPE_EVENT then
 				self:ResetAllBossDenfense()
 			end
+			if math.floor(id/100) == FACTION_BUILDING_TYPE_SKILL then
+				self:ResetAllMemberFactionSkill()
+			end
 		end
 	end
 	
@@ -3227,7 +3238,7 @@ end
 -----------------------------------------家族建筑-----------------------------------------------
 
 -----------------------------------------家族礼物-----------------------------------------------
-
+--todo 删除家族礼物功能
 --礼物周榜   --guid ,周计数, 未处理礼物计数
 function FactionInfo:SetGiftWeekPoint(index,value)
 	self:SetUInt32(FACTION_INT_FIELD_GIFT_WEEK_POINT_START + index,value)
@@ -4328,7 +4339,7 @@ function FactionInfo:GetBossDenfenseDamageList(player,index)
 	for _,v in ipairs(damage_table) do
 	--奖励通知
 		local stru = mass_boss_rank_info_t.new()
-		stru.name	= self:GetFactionMemberName(value[1])
+		stru.name	= self:GetFactionMemberName(v[1])
 		stru.dam 		= v[2]
 		table.insert(list, stru)
 	end
@@ -4336,6 +4347,296 @@ function FactionInfo:GetBossDenfenseDamageList(player,index)
 end
 
 -----------------------------------------家族首领挑战结束-----------------------------------------------
+
+-----------------------------------------家族无尽远征开始-----------------------------------------------
+
+--成员今日层数
+function FactionInfo:GetFactionMemberTowerTodayFloor(pos)
+	return self:GetUInt32(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_TOWER_TODAY_FLOOR)
+end
+
+
+function FactionInfo:SetFactionMemberTowerTodayFloor(pos,val)
+	self:SetUInt32(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_TOWER_TODAY_FLOOR,val)
+end
+
+--今日最高通关者 层数
+function FactionInfo:GetFactionTowerTodayTopFloor()
+	return self:GetUInt32(FACTION_INT_FIELD_TOWER_TODAY_TOP_FLOOR)
+end
+
+
+function FactionInfo:SetFactionTowerTodayTopFloor(val)
+	self:SetUInt32(FACTION_INT_FIELD_TOWER_TODAY_TOP_FLOOR,val)
+end
+
+--今日最高通关者 头像
+function FactionInfo:GetFactionTowerTodayTopIcon()
+	return self:GetUInt32(FACTION_INT_FIELD_TOWER_TODAY_TOP_ICON)
+end
+
+
+function FactionInfo:SetFactionTowerTodayTopIcon(val)
+	self:SetUInt32(FACTION_INT_FIELD_TOWER_TODAY_TOP_ICON,val)
+end
+
+--今日最高通关者 战力
+function FactionInfo:GetFactionTowerTodayTopForce()
+	return self:GetDouble(FACTION_INT_FIELD_TOWER_TODAY_TOP_FORCE)
+end
+
+
+function FactionInfo:SetFactionTowerTodayTopForce(val)
+	self:SetDouble(FACTION_INT_FIELD_TOWER_TODAY_TOP_FORCE,val)
+end
+
+--今日最高通关者 名称
+function FactionInfo:GetFactionTowerTodayTopName()
+	return self:GetStr(FACTION_STRING_FIELD_TOWER_TODAY_TOP_NAME)
+end
+
+
+function FactionInfo:SetFactionTowerTodayTopName(val)
+	self:SetStr(FACTION_STRING_FIELD_TOWER_TODAY_TOP_NAME,val)
+end
+
+--每日重置
+function FactionInfo:DailyResetTower()
+	for index = 0,MAX_FACTION_MAMBER_COUNT - 1 do
+		self:SetFactionMemberTowerTodayFloor(index,0)
+	end
+	self:SetFactionTowerTodayTopFloor(0)
+	self:SetFactionTowerTodayTopIcon(0)
+	self:SetFactionTowerTodayTopForce(0)
+	self:SetFactionTowerTodayTopName("")
+end
+
+--挑战 (player )
+--传送参数(floor,buff,debuff)
+function FactionInfo:TowerChallenge(player)
+	local building_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT)
+	if building_lv <= 0 then
+		outFmtDebug("BossDenfenseChallenge building  not active")
+		return
+	end
+	local base_config = tb_faction_tower_base[building_lv]
+	if not base_config then
+		outFmtDebug("TowerChallenge building lv %d not exist",building_lv)
+		return
+	end
+	local floor = player:GetFactionTowerClearFloor() + 1
+	local floor_config = tb_faction_tower_floor[floor]
+	if not floor_config then
+		outFmtDebug("TowerChallenge floor %d not exist",floor)
+		return
+	end
+	local clear_count = self:GetTowerFloorClearCount(floor)
+	local buff_id = base_config.buffeffect_id
+	local debuff_id = 0
+	if clear_count > 0 then
+		debuff_id = base_config.enemy_weaken_buffeffect_id[clear_count]
+		if not debuff_id then
+			debuff_id = base_config.enemy_weaken_buffeffect_id[#(base_config.enemy_weaken_buffeffect_id)]
+		end
+	end
+	local map_id = floor_config.map_id
+	local x = floor_config.born_pos[1]
+	local y = floor_config.born_pos[2]
+	local generalId = string.format("%d|%d|%d|%d|%s",floor,buff_id,debuff_id,os.time(),player:GetGuid())
+	
+	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, map_id, generalId)
+	
+end
+
+--统计某层通关人数
+function FactionInfo:GetTowerFloorClearCount(floor)
+	local count = 0
+	for index = 0, MAX_FACTION_MAMBER_COUNT -1 do
+		if self:GetFactionMemberTowerTodayFloor(index) >= floor then
+			count = count + 1
+		end
+	end
+	return count
+end
+
+--扫荡 (player )
+function FactionInfo:TowerSweep(player)
+	if player:GetFactionTowerSweepFlag() then
+		outFmtDebug("TowerSweep sweep flag true already sweeped")
+		return
+	end
+	local building_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT)
+	if building_lv <= 0 then
+		outFmtDebug("BossDenfenseChallenge building  not active")
+		return
+	end
+	local base_config = tb_faction_tower_base[building_lv]
+	if not base_config then
+		outFmtDebug("TowerChallenge building lv %d not exist",building_lv)
+		return
+	end
+	
+	local clear_floor = player:GetFactionTowerClearFloor()
+	if clear_floor == 0 then
+		outFmtDebug("TowerSweep clear floor = 0")
+		return
+	end
+	
+	player:SetFactionTowerSweepFlag()
+	self:OnTowerTodayFloorUpdate(player,clear_floor)
+	local rewardDict = {}
+	for floor = 1,clear_floor do
+		local floor_config = tb_faction_tower_floor[floor]
+		if floor_config then
+			local drop_id = floor_config.sweep_dropid
+			local dict = {}
+			DoRandomDrop(drop_id, dict)
+			for item_id,num in pairs(dict) do
+				table.insert(rewardDict,{item_id,num})
+			end
+		end
+	end
+	
+	player:AppdAddItems(rewardDict, MONEY_CHANGE_FACTION_TOWER, LOG_ITEM_OPER_TYPE_FACTION_TOWER)
+	--发送rewardDict给前端
+	local list = {}
+	for _,v in ipairs(rewardDict) do
+	--奖励通知
+		local stru = item_reward_info_t.new()
+		stru.item_id	= v[1]
+		stru.num 		= v[2]
+		table.insert(list, stru)
+	end
+	--player:call_show_faction_tower_sweep_list(list)
+	protocols.call_sweep_instance_reward ( player, INSTANCE_SUB_TYPE_FACTION_TOWER, 0, 0, 0, list)
+end
+
+--挑战结束 更新排行 (player, floor)
+function FactionInfo:OnTowerTodayFloorUpdate(player,floor)
+	local clear_floor = player:GetFactionTowerClearFloor()
+	if floor > clear_floor then
+		player:SetFactionTowerClearFloor(floor)
+	end
+	
+	local index = self:FindPlayerIndex(player:GetGuid())
+	local today_floor = self:GetFactionMemberTowerTodayFloor(index)
+	if floor > today_floor then
+		self:SetFactionMemberTowerTodayFloor(index,floor)
+	end
+	
+	local today_max_floor = self:GetFactionTowerTodayTopFloor()
+	if floor > today_max_floor then
+		self:SetFactionTowerTodayTopFloor(floor)
+		self:SetFactionTowerTodayTopIcon(player:GetHead())
+		self:SetFactionTowerTodayTopForce(player:GetForce())
+		self:SetFactionTowerTodayTopName(player:GetName())
+	end
+end
+
+--领取福利宝箱 (player, chest_index)
+function FactionInfo:OpenTowerChest(player, chest_index)
+	if player:GetFactionTowerChestFlag(chest_index) then
+		outFmtDebug("OpenTowerChest chest flag true already opened")
+		return
+	end
+	
+	local building_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_EVENT)
+	if building_lv <= 0 then
+		outFmtDebug("BossDenfenseChallenge building  not active")
+		return
+	end
+	local base_config = tb_faction_tower_base[building_lv]
+	if not base_config then
+		outFmtDebug("TowerChallenge building lv %d not exist",building_lv)
+		return
+	end
+	local need_floor = base_config.chest_floor[chest_index]
+	if not need_floor then
+		outFmtDebug("TowerChallenge top floor small %d than need %d",self:GetFactionTowerTodayTopFloor(),need_floor)
+		return
+	end
+	if self:GetFactionTowerTodayTopFloor() < need_floor then
+		outFmtDebug("TowerChallenge top floor small %d than need %d",self:GetFactionTowerTodayTopFloor(),need_floor)
+		return
+	end
+	
+	local rewardDict = {}
+	local drop_id = base_config.chest_drop[chest_index]
+	if not drop_id then
+		outFmtDebug("TowerChallenge drop_id not exist in chest index %d",chest_index)
+		return
+	end
+	
+	local dict = {}
+	DoRandomDrop(drop_id, dict)
+	for item_id,num in pairs(dict) do
+		table.insert(rewardDict,{item_id,num})
+	end
+	
+	player:SetFactionTowerChestFlag(chest_index)
+	
+	player:AppdAddItems(rewardDict, MONEY_CHANGE_FACTION_TOWER, LOG_ITEM_OPER_TYPE_FACTION_TOWER)
+	
+end
+
+-----------------------------------------家族无尽远征结束-----------------------------------------------
+
+-----------------------------------------家族技能开始-----------------------------------------------
+
+--成员学习技能
+function FactionInfo:FactionSkillLvup(player,id)
+	local building_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_SKILL)
+	local level_limit = tb_faction_skill_building[building_lv].level_limit
+	local buildIng_need_lv = tb_faction_skill_base[id].unlock_level
+	local skill_id = tb_faction_skill_base[id].skill_id
+	local learn_lv = player:GetFactionSkillLearnLv(id)
+	
+	if buildIng_need_lv > building_lv then
+		outFmtDebug("FactionSkillLvup building lv not enough")
+		return
+	end
+	
+	if learn_lv >= level_limit then
+		outFmtDebug("FactionSkillLvup skill lv can not lvup more")
+		return
+	end
+	
+	local config = tb_faction_skill_lvup[id*1000 + learn_lv + 1]
+	if not config then
+		outFmtDebug("FactionSkillLvup skill lv max  can not lvup")
+		return
+	end
+	local cost = config.cost
+	if not player:hasAllItems(cost) then
+		outFmtDebug("FactionSkillLvup resouse not enough")
+		return
+	end
+	
+	if player:useAllItems(MONEY_CHANGE_FACTIONSKILL,cost) then
+		player:SetFactionSkillLearnLv(id,learn_lv + 1)
+		player:SetFactionSkillNowLv(id,learn_lv + 1)
+		player:updatePassive(skill_id,learn_lv + 1)
+		
+		player:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_FACTIONSKILL_LVUP)
+		
+		outFmtDebug("OnFactionSkillBuildingLvChange skill %d lv %d",skill_id,learn_lv + 1)
+	end
+	
+	
+end
+
+function FactionInfo:ResetAllMemberFactionSkill()
+	local allPlayer = self:GetFactionAllMemberPtr()
+	for _,player in pairs(allPlayer) do
+		if player then
+			player:UpdateFactionSkill()
+		end
+	end
+end
+
+
+
+-----------------------------------------家族技能结束-----------------------------------------------
 
 
 function encodeSimpleInfo(faction_guid)

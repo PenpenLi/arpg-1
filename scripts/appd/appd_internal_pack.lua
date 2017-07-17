@@ -268,6 +268,18 @@ function unpack_scened_send_faction_bossdefense_leave( pkt )
 	return true, faction_guid,player_guid, index, pool_id, hp
 end
 
+function unpack_logind_send_rename_check_result(pkt)
+	local ret, player_guid, available, realName
+	
+	ret, player_guid = pkt:readUTF()
+	if not ret then return false end
+	ret, available = pkt:readU32()
+	if not ret then return false end
+	ret, realName = pkt:readUTF()
+	if not ret then return false end
+	
+	return true, player_guid, available, realName
+end
 
 
 --通知场景服给玩家加经验
@@ -370,6 +382,15 @@ function call_opt_login_teleport(guid, factionId, mapId, x, y, generalId)
 	pkt:writeU32(x)
 	pkt:writeU32(y)
 	pkt:writeUTF(generalId)
+	app:sendToLogind(pkt)
+	pkt:delete()
+end
+
+--场景服发起传送
+function call_opt_login_check_name(player_guid, name)
+	local pkt = Packet.new(INTERNAL_OPT_RENAME_CHECK)
+	pkt:writeUTF(player_guid)
+	pkt:writeUTF(name)
 	app:sendToLogind(pkt)
 	pkt:delete()
 end

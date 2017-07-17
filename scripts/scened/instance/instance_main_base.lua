@@ -12,10 +12,9 @@ function InstanceMainBase:OnInitScript(  )
 	Instance_base.OnInitScript(self) --调用基类
 end
 
---当玩家加入后触发
-function InstanceMainBase:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(self, player)
-	
+--玩家加入地图
+function InstanceMainBase:OnJoinPlayer(player)
+	Instance_base.OnJoinPlayer(self, player)
 	local playerInfo = UnitInfo:new{ptr = player}
 	-- 进城修改模式
 	playerInfo:ChangeToPeaceModeAfterTeleport()

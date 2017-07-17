@@ -22,14 +22,14 @@ config = {
 	--以下来自原来的配置文件
 	max_player_level = 100					,--最大等级
 	
-	new_player_protected_level = 30			,--新手保护最大等级
+	new_player_protected_level = 0			,--新手保护最大等级
 		
 	jump_cd = 4								,--跳cd
 	jump_max_distance = 15					,--最大跳跃距离
 	
 	nomal_attack_distance	= 4				,--默认攻击距离
 	
-	can_change_mode	= {PEACE_MODE, FAMILY_MODE, ALL_MODE} ,--允许手动切换的模式
+	can_change_mode	= {PEACE_MODE, FAMILY_MODE} ,--允许手动切换的模式
 	
 	peace_mode_cd = 60						,--和平模式CD(秒)
 	
@@ -277,6 +277,8 @@ function load_lua_scripts()
 		{'原地副本0'			,'scened/instance/instance_remind_0'},
 		{'家族场景'				,'scened/instance/instance_faction'},
 		{'家族首领挑战'			,'scened/instance/instance_faction_bossdefense'},
+		{'家族无尽远征'			,'scened/instance/instance_faction_tower'},
+		{'排名赛'				,'scened/instance/instance_qualify'},
 		--{'九重天脚本1'		,'scened/instance/instanceTower1'},
 		--{'九重天脚本2'		,'scened/instance/instanceTower2'},
 		--{'桃花迷阵脚本'		,'scened/instance/instanceTaoHua'},
@@ -343,6 +345,8 @@ INSTANCE_SCRIPT_TABLE = {
 	[3014] = InstanceKuafuGroup,
 	[3015] = InstanceKuafuGroup,
 	[3016] = InstanceFactionBossDefense,
+	[3017] = InstanceFactionTower,
+	[3018] = InstanceQualify,
 	
 	[4001] = InstanceRemind0,
 	[4002] = InstanceRemind0,

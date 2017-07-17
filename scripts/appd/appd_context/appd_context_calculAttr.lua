@@ -461,7 +461,7 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	-- 经脉
 	spellMgr:calcMeridianAttr(attrs)
 	printAttr("meridian ", attrs)
-	
+		
 	--称号
 	self:calculTitleAttr(attrs)
 	
@@ -475,6 +475,19 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	-- 获得玩家速度
 	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide())
 	attrs[EQUIP_ATTR_MOVE_SPEED] = speed
+	
+	-- 外观
+	local id1 = self:GetAppearance(0)
+	local id2 = self:GetAppearance(1)
+	local attrsRate = {}
+	spellMgr:calcAppearanceAttr(attrs, attrsRate, id1, id2)
+	for attrId, attrVal in pairs(attrsRate) do
+		if not attrs[attrId] then
+			attrs[attrId] = 0
+		end
+		attrs[attrId] = math.floor(attrs[attrId] * (100 + attrVal) / 100)
+	end
+	printAttr("appearance ", attrs)
 	
 	-- 算属性的战力
 	battleForce = battleForce + DoAnyOneCalcForce(attrs)

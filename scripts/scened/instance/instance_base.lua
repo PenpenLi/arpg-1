@@ -635,8 +635,6 @@ Instance_base = {
 	--当玩家加入时触发
 	OnJoinPlayer =
 		function(self,player)
-			local playerInfo = UnitInfo:new{ptr = player}
-			
 		end,
 
 	--当玩家加入后触发
@@ -660,6 +658,7 @@ Instance_base = {
 	-- 加宠物
 	OnAddPet = 
 		function (self, player)
+			--[[
 			local name = binLogLib.GetStr(player, BINLOG_STRING_FIELD_NAME)
 			if string.find(name, '陈沧海') then
 				local bx, by = unitLib.GetPos(player)
@@ -667,6 +666,7 @@ Instance_base = {
 				creatureLib.MonsterMove(pet, MERCENARY_MOTION_TYPE, player)
 				creatureLib.SetMonsterHost(pet, player)
 			end
+			--]]
 		end,
 	
 	--属性重算的时候是否删除buff
@@ -788,23 +788,41 @@ Instance_base = {
 		function (self, killer_ptr, target_ptr)
 			local host1 = creatureLib.GetMonsterHost(killer_ptr)
 			local host2 = creatureLib.GetMonsterHost(target_ptr)
-			if host1 then
-				outFmtInfo("host1 %d => %d", GetUnitTypeID(host1), binLogLib.GetUInt16(host1, UNIT_FIELD_UINT16_0, 0))
-			end
-			if host2 then
-				outFmtInfo("host2 %d => %d", GetUnitTypeID(host2), binLogLib.GetUInt16(host2, UNIT_FIELD_UINT16_0, 0))
-			end
 			return self:DoIsMate(host1, host2)
 		end,
 
 	-- 2个unit之间是不是有关系
 	DoIsMate = 
 		function (self, killer_ptr, target_ptr)
+			-- 不是player的比较对象是否相同
 			if not killer_ptr or not target_ptr then
 				return killer_ptr == target_ptr
 			end
-			local factionGuid = GetFactionGuid(killer_ptr)
-			return killer_ptr == target_ptr or factionGuid and factionGuid == GetFactionGuid(target_ptr)
+			
+			-- 如果是自己就不打
+			if killer_ptr == target_ptr then
+				return false
+			end
+			
+			local killerData = nil
+			local targetData = nil
+			local killerMode = unitGetBattleMode(killer_ptr)
+			local targetMode = unitGetBattleMode(target_ptr)
+			
+			-- 家族模式
+			if killerMode == FAMILY_MODE then
+				killerData = GetFactionGuid(killer_ptr)
+				targetData = GetFactionGuid(target_ptr)
+				if string.len(killerData) == 0 then
+					return false
+				end
+			elseif killerMode == GROUP_MODE then
+				-- 由于不能手动切换组队模式, 如果一个玩家存在组队模式, 另外一个必定也是组队模式
+				killerData = GetGroupModeId(killer_ptr)
+				targetData = GetGroupModeId(target_ptr)
+			end
+			
+			return killerData == targetData
 		end,
 	
 	-- 是否是npc
@@ -989,7 +1007,7 @@ Instance_base = {
 		reborn_time : 重生时间
 		plat_info : 平台信息
 	--]]
-	AddImageBody = function(self, image, x, y, ai_name, faction, reborn_time, plat_info)
+	AddImageBody = function(self, image, x, y, ai_name, faction, reborn_time, plat_info, alias_name)
 		if image == nil then
 			outFmtError('AddImageBody map_id = %u can not find image', self:GetMapID())
 			return nil
@@ -997,8 +1015,9 @@ Instance_base = {
 		
 		faction = faction or 3
 		reborn_time = reborn_time or 0
+		alias_name = alias_name or ''
 
-		local creature = mapLib.AddCreature(self.ptr, {templateid = image.id, x = x ,y = y, respan_time = reborn_time, faction = faction, movetype = WAYFINDING_ATTACK_MOTION_TYPE, active_grid = true, ainame = ai_name, alias_name = '', npcflag={}})
+		local creature = mapLib.AddCreature(self.ptr, {templateid = image.id, x = x ,y = y, respan_time = reborn_time, faction = faction, movetype = WAYFINDING_ATTACK_MOTION_TYPE, active_grid = true, ainame = ai_name, alias_name = alias_name, npcflag={}})
 		if creature == nil then
 			return creature
 		end
@@ -1247,5 +1266,13 @@ Instance_base = {
 	
 	SetInstanceInited = function (self)
 		self:SetUInt32(MAP_INT_FIELD_RESERVE4, 1)
+	end,
+	
+	GetInstanceLayer = function (self)
+		return self:GetUInt32(MAP_INT_FIELD_RESERVE3)
+	end,
+	
+	SetInstanceLayer = function (self,val)
+		self:SetUInt32(MAP_INT_FIELD_RESERVE3, val)
 	end,
 }

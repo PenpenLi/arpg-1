@@ -216,3 +216,33 @@ function PlayerInfo:DailyQuestReset()
 	local questMgr = self:getQuestMgr()
 	questMgr:OnDailyQuestReset()
 end
+
+--使用道具解锁称号
+function PlayerInfo:ItemUnlockTitle(id)
+	if self:HasTitle(id) then
+		outFmtDebug("ItemUnlockTitle title unlocked, can not unlock twice")
+		return
+	end
+	
+	local config = tb_title_base[id]
+	if not config then
+		outFmtDebug("ItemUnlockTitle title config error")
+		return
+	end
+	
+	if config.unlock_type ~= 2 then
+		outFmtDebug("ItemUnlockTitle title unlock type not itemunlock")
+		return
+	end
+	
+	if not self:hasAllItems(config.unlock_cost) then
+		outFmtDebug("ItemUnlockTitle resouse not enough")
+		return
+	end
+	
+	if self:useAllItems(MONEY_CHANGE_UNLOCKTITLE,config.unlock_cost) then
+		self:AddTitle(id)
+		
+		outFmtInfo("ItemUnlockTitle title unlock success")
+	end
+end

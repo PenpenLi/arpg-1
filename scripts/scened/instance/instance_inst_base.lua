@@ -59,11 +59,12 @@ end
 -- 副本失败退出
 function InstanceInstBase:instanceFail()
 	self:SetMapState(self.STATE_FAIL)
-	
+	local mapid = self:GetMapId()
+	local type = tb_map[mapid].inst_sub_type
 	local allPlayers = mapLib.GetAllPlayer(self.ptr)
 	for _, unit_player in ipairs(allPlayers) do
 		local playerInfo = UnitInfo:new {ptr = unit_player}
-		playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, {})
+		playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, {}, type, '')
 	end
 end
 
@@ -325,12 +326,19 @@ end
 
 -------------------------------------------------------------------------------------------
 
---当玩家加入后触发
-function InstanceInstBase:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(self, player)
+--玩家加入地图
+function InstanceInstBase:OnJoinPlayer(player)
+	Instance_base.OnJoinPlayer(self, player)
 	
 	local playerInfo = UnitInfo:new{ptr = player}
-	-- 进城修改模式
+	playerInfo:ChangeToPeaceModeAfterTeleport()
+end
+
+--当玩家离开时触发
+function InstanceInstBase:OnLeavePlayer( player, is_offline)
+	Instance_base.OnJoinPlayer(self, player, is_offline)
+	
+	local playerInfo = UnitInfo:new{ptr = player}
 	playerInfo:ChangeToPeaceModeAfterTeleport()
 end
 

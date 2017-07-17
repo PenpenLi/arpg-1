@@ -467,6 +467,31 @@ function PlayerInfo:Handle_Add_Meridian_Exp(pkt)
 	self:onAddMeridianExpItem(id)
 end
 
+function PlayerInfo:Handle_Equipdevelop_Operate(pkt)
+	local opt_type = pkt.opt_type			--操作类型
+	local reserve_int1 = pkt.reserve_int1   --预留int值1*/
+	local reserve_int2 = pkt.reserve_int2   --预留int值2*/
+	local reserve_str1 = pkt.reserve_str1   --预留string值1*/
+	local reserve_str2 = pkt.reserve_str2   --预留string值2*/
+	if opt_type == EQUIPDEVELOP_TYPE_STRENGTH_LVUP then
+		self:EquipDevelopStrength(reserve_int1,reserve_int2)
+	elseif opt_type == EQUIPDEVELOP_TYPE_REFINE_STAR_LVUP then
+		self:EquipDevelopRefineStarUp(reserve_int1)
+	elseif opt_type == EQUIPDEVELOP_TYPE_REFINE_RANK_LVUP then
+		self:EquipDevelopRefineRankUp(reserve_int1)
+	elseif opt_type == EQUIPDEVELOP_TYPE_GEM_ACTIVE then
+		self:EquipDevelopGemActive(reserve_int1,reserve_int2)
+	elseif opt_type == EQUIPDEVELOP_TYPE_GEM_LVUP then
+		self:EquipDevelopGemLvUp(reserve_int1,reserve_int2)
+	elseif opt_type == EQUIPDEVELOP_TYPE_WASHATTRS_WASH then
+		self:EquipDevelopWashAttrsWash(reserve_str1)
+	elseif opt_type == EQUIPDEVELOP_TYPE_WASHATTRS_SAVE then
+		self:EquipDevelopWashAttrsSave(reserve_str1)
+	elseif opt_type == EQUIPDEVELOP_TYPE_WASHATTRS_DEL then
+		self:EquipDevelopWashAttrsDel()
+	end
+end
+
 function PlayerInfo:Handle_Active_Mount(pkt)
 	local spellMgr = self:getSpellMgr()
 	-- 系统未激活 或者 坐骑已经激活
@@ -475,4 +500,73 @@ function PlayerInfo:Handle_Active_Mount(pkt)
 	end
 	
 	self:activeMount()
+end
+
+function PlayerInfo:Handle_Active_Appearance(pkt)
+	local id = pkt.id
+	--[[	
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) or spellMgr:getMountLevel() > 0 then
+		return
+	end
+	--]]
+	
+	-- 外观不存在
+	if not tb_appearance_info[ id ] then
+		return
+	end
+	
+	-- 是否匹配职业
+	if not table.find(tb_appearance_info[ id ].genders, self:GetGender()) then
+		return
+	end
+	
+	local spellMgr = self:getSpellMgr()
+	
+	-- 判断重复激活
+	local dict = spellMgr:GetActiveAppearance()
+	if dict[id] then
+		return
+	end
+	
+	local costs = tb_appearance_info[ id ].costs
+	if not self:useAllItems(MONEY_CHANGE_APPEARANCE, costs) then
+		return
+	end
+
+	spellMgr:activeAppearance(id)
+	self:RecalcAttrAndBattlePoint()
+end
+
+function PlayerInfo:Handle_Equip_Appearance(pkt)
+	local id = pkt.id
+	--[[
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) or spellMgr:getMountLevel() > 0 then
+		return
+	end
+	--]]
+	
+	-- 外观不存在
+	if not tb_appearance_info[ id ] then
+		return
+	end
+	
+	local spellMgr = self:getSpellMgr()
+	
+	-- 判断是否存在
+	local dict = spellMgr:GetActiveAppearance()
+	if not dict[id] then
+		return
+	end
+	
+	self:SetAppearance(id)
+	self:RecalcAttrAndBattlePoint()
+end
+
+function PlayerInfo:Handle_Cancel_Equip_Appearance(pkt)
+	local type = pkt.type
+	if type ~= 0 and type ~= 1 then
+		return
+	end
+	self:UnsetAppearance(type)
+	self:RecalcAttrAndBattlePoint()
 end

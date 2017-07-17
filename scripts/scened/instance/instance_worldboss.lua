@@ -202,13 +202,6 @@ function InstanceWorldBoss:OnTimer_UpdateRank()
 end
 
 
-function InstanceWorldBoss:DoIsMate(killer_ptr, target_ptr)
-	if GetUnitTypeID(killer_ptr) == TYPEID_PLAYER and GetUnitTypeID(target_ptr) == TYPEID_PLAYER then
-		return true
-	end
-	return false
-end
-
 function NotifyAllRankUpdate(map_ptr, rankInfo, rankList)
 	local allPlayers = mapLib.GetAllPlayer(map_ptr)
 	local tmp = {}
@@ -224,6 +217,10 @@ function NotifyAllRankUpdate(map_ptr, rankInfo, rankList)
 	end
 end
 
+
+function InstanceWorldBoss:OnLeavePlayer(player, isOffline)
+	InstanceInstBase.OnLeavePlayer(self, player, isOffline)
+end
 --玩家加入地图
 function InstanceWorldBoss:OnJoinPlayer(player)
 	
@@ -242,15 +239,6 @@ function InstanceWorldBoss:OnJoinPlayer(player)
 		mapLib.ExitInstance(self.ptr, player)
 		return
 	end
-end
-
---当玩家加入后触发
-function InstanceWorldBoss:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(self, player)
-	
-	local playerInfo = UnitInfo:new{ptr = player}
-	-- 进城修改模式
-	playerInfo:ChangeToPeaceModeAfterTeleport()
 end
 
 function InstanceWorldBoss:GetDeadTimes(playerInfo)

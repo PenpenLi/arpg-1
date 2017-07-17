@@ -62,6 +62,19 @@ function  DoGMScripts(player_ptr, gm_commands)
 			local faction = app.objMgr:getObj(factionGuid)
 			faction:ResetFaction()
 		end
+	elseif(tokens[1] == "@排位连胜")then
+		if tokens[2] then
+			local cnt = tonumber(tokens[ 2 ])
+			if cnt then
+				local instMgr = player:getInstanceMgr()
+				for i = 1, #tb_single_pvp_extra do
+					local wins = tb_single_pvp_extra[ i ].wins
+					if cnt >= wins then
+						instMgr:SetQualifyExtraObtain(i-1)
+					end
+				end
+			end
+		end
 	elseif(tokens[1] == "@选择主线")then
 		if tokens[2] then
 			local id = tonumber(tokens[ 2 ])
@@ -72,6 +85,23 @@ function  DoGMScripts(player_ptr, gm_commands)
 				end
 			end
 		end
+	elseif(tokens[1] == "@解锁外观")then
+		if tokens[2] then
+			local id = tonumber(tokens[ 2 ])
+			if id then
+				local pkt = {id = id}
+				player:Handle_Active_Appearance(pkt)
+			end
+		end
+	elseif(tokens[1] == "@装备外观")then
+		if tokens[2] then
+			local id = tonumber(tokens[ 2 ])
+			if id then
+				local pkt = {id = id}
+				player:Handle_Equip_Appearance(pkt)
+			end
+		end
+	
 	elseif(tokens[1] == "@增加修炼经验")then
 		if tokens[2] then
 			local val = tonumber(tokens[ 2 ])

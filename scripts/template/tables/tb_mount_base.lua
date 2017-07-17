@@ -15,5 +15,5 @@ tb_mount_base = {
 	[2] = {id = 2, mountID = 5102, skills = {11020}, traincost = {{102,200},{1401,1}}, addTrainExp = 150, trainIds = {1,2}, speed = 150},
 	[3] = {id = 3, mountID = 5103, skills = {11021}, traincost = {{102,400},{1401,1}}, addTrainExp = 200, trainIds = {1,2}, speed = 150},
 	[4] = {id = 4, mountID = 5104, skills = {11022}, traincost = {{102,600},{1401,1}}, addTrainExp = 300, trainIds = {1,2}, speed = 150},
-	[5] = {id = 5, mountID = 5105, skills = {11023}, traincost = {{102,800},{1401,1}}, addTrainExp = 500, trainIds = {1,2}, speed = 150},
+	[5] = {id = 5, mountID = 5105, skills = {}, traincost = {{102,800},{1401,1}}, addTrainExp = 500, trainIds = {1,2}, speed = 150},
 }

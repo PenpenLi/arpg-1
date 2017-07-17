@@ -269,6 +269,7 @@ function InstanceKuafuXianfu:OnJoinPlayer(player)
 		
 		-- 同步钱先
 		self:OnSyncMoney(playerInfo:GetPlayerGuid(), emptyIndex)
+		playerInfo:SetToGroupMode(playerInfo:GetPlayerGuid())
 	end
 end
 
@@ -284,11 +285,6 @@ function InstanceKuafuXianfu:findIndexByName(name)
 	end
 	
 	return -1
-end
-
---当玩家加入后触发
-function InstanceKuafuXianfu:OnAfterJoinPlayer(player)
-	InstanceInstBase.OnAfterJoinPlayer(self, player)
 end
 
 --当玩家死亡后触发()

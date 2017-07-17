@@ -130,5 +130,8 @@ require("template.tables.tb_mass_boss_base")
 require("template.tables.tb_mass_boss_info")
 require("template.tables.tb_mass_boss_loot")
 
+require("template.tables.tb_single_pvp_base")
+require("template.tables.tb_single_pvp_grade")
+require("template.tables.tb_single_pvp_robot")
 
 require("template.tables.tb_group_instance_base")

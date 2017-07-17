@@ -218,11 +218,6 @@ function InstanceWorldRisk:onBossLoot(player_ptr, dict)
 	self:SetMapState(self.STATE_FINISH)
 end
 
---当玩家加入后触发
-function InstanceWorldRisk:OnAfterJoinPlayer(player)
-	InstanceInstBase.OnAfterJoinPlayer(self, player)
-end
-
 --当玩家离开时触发
 function InstanceWorldRisk:OnLeavePlayer( player, is_offline)
 	if not is_offline then

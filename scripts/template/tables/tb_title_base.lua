@@ -9,7 +9,11 @@ tb_title_base = {
 	--  getinfo:string 条件描述
 	--  limtime:int 时限
 	--  prop:array 属性
-	[1] = {id = 1, name = "萌新", getinfo = "完成成就【初入江湖】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{5,1},{6,4},{7,1}}},
-	[2] = {id = 2, name = "神兵出世", getinfo = "完成成就【神兵爱好者】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}},
-	[3] = {id = 3, name = "神兵出世", getinfo = "完成成就【神兵爱好者1】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}},
+	--  unlock_type:int 解锁类型
+	--  unlock_cost:array 解锁消耗
+	[1] = {id = 1, name = "萌新", getinfo = "完成成就【初入江湖】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{5,1},{6,4},{7,1}}, unlock_type = 1, unlock_cost = {}},
+	[2] = {id = 2, name = "神兵出世", getinfo = "完成成就【神兵爱好者】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}, unlock_type = 1, unlock_cost = {}},
+	[3] = {id = 3, name = "神兵出世", getinfo = "完成成就【神兵爱好者1】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}, unlock_type = 1, unlock_cost = {}},
+	[4] = {id = 4, name = "兑换称号1", getinfo = "完成成就【神兵爱好者2】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}, unlock_type = 2, unlock_cost = {{201,5}}},
+	[5] = {id = 5, name = "兑换称号2", getinfo = "完成成就【神兵爱好者3】", limtime = 0, prop = {{1,162},{2,16},{3,5},{4,1},{10,10},{11,80}}, unlock_type = 2, unlock_cost = {{201,5}}},
 }

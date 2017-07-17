@@ -112,6 +112,7 @@ function AppdApp:InitCorn()
 		end)
 	end)
 	
+	--[[注释掉野外BOSS
 	-- 野外boss马上刷新通知
 	local fbconfig = tb_map_field_boss_time[ 1 ]
 		
@@ -121,6 +122,7 @@ function AppdApp:InitCorn()
 		
 		self:InitFieldBossCorn(H, M, fbconfig.noticestarttime, fbconfig.noticebosstime)
 	end
+	--]]
 	
 	-- 世界BOSS
 	local wbconfig = tb_worldboss_time[ 1 ]
@@ -156,6 +158,9 @@ function AppdApp:InitCorn()
 				end
 			end
 		end
+		
+		-- 进行排位赛匹配
+		OnProcessLocalSinglePVPMatch()
 	end)
 	
 	

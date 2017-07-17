@@ -132,6 +132,7 @@ function InstanceKuafu3v3:OnJoinPlayer(player)
 		self:SetByte(intStart + KUAFU_3V3_PLAYER_SHOW_INFO, 1, 100)
 		self:SetUInt16(intStart + KUAFU_3V3_PLAYER_SHOW_INFO, 1, playerInfo:GetLevel())
 		self:SetByte(intStart + KUAFU_3V3_PLAYER_SETTLEMENT, 2, playerInfo:GetVirtualCamp())
+		playerInfo:SetToGroupMode(''..playerInfo:GetVirtualCamp())
 	end
 end
 
@@ -147,22 +148,6 @@ function InstanceKuafu3v3:findIndexByName(name)
 	end
 	
 	return -1
-end
-
---当玩家加入后触发
-function InstanceKuafu3v3:OnAfterJoinPlayer(player)
-	InstanceInstBase.OnAfterJoinPlayer(self, player)
-end
-
-
-function InstanceKuafu3v3:DoIsMate(killer_ptr, target_ptr)
-	local killerInfo = UnitInfo:new{ptr = killer_ptr}
-	local targetInfo = UnitInfo:new{ptr = target_ptr}
-	
-	if killerInfo:GetVirtualCamp() == targetInfo:GetVirtualCamp() then
-		return true
-	end
-	return false
 end
 
 -- 是否某方阵营全部死亡

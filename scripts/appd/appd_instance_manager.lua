@@ -682,6 +682,114 @@ function AppInstanceMgr:ResetGroupInstanceDayTimes()
 	self:SetGroupInstanceChallengeCount(tb_group_instance_buy[1].daily_reset)
 end
 
+--------------------------------------排位赛-----------------------------------------
+
+-- 获得胜利次数
+function AppInstanceMgr:GetQualifyWins()
+	return self:GetUInt32(INSTANCE_INT_FIELD_QUALIFY_WINS)
+end
+
+-- 增加胜利次数
+function AppInstanceMgr:AddQualifyWins(val)
+	self:AddUInt32(INSTANCE_INT_FIELD_QUALIFY_WINS, val)
+end
+
+-- 重置胜利次数
+function AppInstanceMgr:ResetQualifyWins()
+	self:SetUInt32(INSTANCE_INT_FIELD_QUALIFY_WINS, 0)
+end
+
+-- 获得购买次数
+function AppInstanceMgr:GetQualifyBuyCount()
+	return self:GetUInt32(INSTANCE_INT_FIELD_QUALIFY_BUY_TIMES)
+end
+
+-- 增加购买次数
+function AppInstanceMgr:AddQualifyBuyCount(val)
+	self:AddUInt32(INSTANCE_INT_FIELD_QUALIFY_BUY_TIMES, val)
+end
+
+-- 重置购买次数
+function AppInstanceMgr:ResetQualifyBuyCount()
+	self:SetUInt32(INSTANCE_INT_FIELD_QUALIFY_BUY_TIMES, 0)
+end
+
+-- 获得每天次数
+function AppInstanceMgr:GetQualifyDailyTimes()
+	return self:GetUInt32(INSTANCE_INT_FIELD_QUALIFY_DAILY_TIMES)
+end
+
+-- 增加每天次数
+function AppInstanceMgr:AddQualifyDailyTimes(val)
+	self:AddUInt32(INSTANCE_INT_FIELD_QUALIFY_DAILY_TIMES, val)
+end
+
+-- 减少每天次数
+function AppInstanceMgr:SubQualifyDailyTimes()
+	if self:GetQualifyDailyTimes() > 0 then
+		self:SubUInt32(INSTANCE_INT_FIELD_QUALIFY_DAILY_TIMES, 1)
+	end
+end
+
+-- 设置每天次数
+function AppInstanceMgr:ResetQualifyDailyTimes()
+	local val = tb_single_pvp_base[ 1 ].dailyTimes
+	self:SetUInt32(INSTANCE_INT_FIELD_QUALIFY_DAILY_TIMES, val)
+end
+
+-- 获得额外奖励标志
+function AppInstanceMgr:IsQualifyExtraObtain(id)
+	return self:GetBit(INSTANCE_INT_FIELD_QUALIFY_EXTRA, id)
+end
+
+-- 设置额外奖励标志
+function AppInstanceMgr:SetQualifyExtraObtain(id)
+	self:SetBit(INSTANCE_INT_FIELD_QUALIFY_EXTRA, id)
+end
+
+-- 重置额外奖励标志
+function AppInstanceMgr:ResetQualifyExtra()
+	self:SetUInt32(INSTANCE_INT_FIELD_QUALIFY_EXTRA, 0)
+end
+
+-- 获得额外奖励领取标志
+function AppInstanceMgr:IsQualifyExtraPicked(id)
+	return self:GetBit(INSTANCE_INT_FIELD_QUALIFY_EXTRA_PICKED, id)
+end
+
+-- 设置额外奖励领取标志
+function AppInstanceMgr:SetQualifyExtraPicked(id)
+	self:SetBit(INSTANCE_INT_FIELD_QUALIFY_EXTRA_PICKED, id)
+end
+
+-- 重置额外奖励领取标志
+function AppInstanceMgr:ResetQualifyExtraPicked()
+	self:SetUInt32(INSTANCE_INT_FIELD_QUALIFY_EXTRA_PICKED, 0)
+end
+
+
+--- 排位赛挑战记录
+function AppInstanceMgr:AddQaulifyRecord(record)
+	local cursor = self:GetUInt32(INSTANCE_INT_FIELD_QUALIFY_CURSOR)
+	self:SetStr(cursor + INSTANCE_STR_FIELD_QUALIFY_RECORD_START, record)
+	cursor = cursor + 1
+	if cursor >= MAX_QUALIFY_RECORD_COUNT then
+		cursor = 0
+	end
+	self:SetUInt32(INSTANCE_INT_FIELD_QUALIFY_CURSOR, cursor)
+end
+
+function AppInstanceMgr:ResetQualifyDaily()
+	self:ResetQualifyDailyTimes()
+	self:ResetQualifyBuyCount()
+	self:ResetQualifyExtra()
+	self:ResetQualifyExtraPicked()
+	self:ResetQualifyWins()
+end
+
+-------------------------------------------------------------------------------
+
+
 
 -- 获得玩家guid
 function AppInstanceMgr:getPlayerGuid()

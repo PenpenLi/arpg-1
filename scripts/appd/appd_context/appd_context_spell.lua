@@ -1374,6 +1374,599 @@ function PlayerInfo:OnResetMeridianDayTimes()
 	end
 end
 
+
+------------------------------------装备养成开始----------------------------------------
+--强化 (pos,count) 
+function PlayerInfo:EquipDevelopStrength(pos,count)
+	count = count or 1
+	local spellMgr = self:getSpellMgr()
+	local index = pos - 1
+	local currLv = spellMgr:GetEquipDevelopStrengthLv(index)
+	
+	local playerLv = self:GetLevel()
+	
+	if currLv >= playerLv then
+		outFmtDebug("EquipDevelopStrength reach player level %d can not lvup",currLv)
+		return
+	end
+	
+	local item_cost = {}
+	local money_cost = {}
+	local up_level = 0
+	
+	local temp_item = {}
+	local temp_money = {}
+	
+	local tab = {}
+		
+	for i = 1,count do
+		if currLv + i > playerLv then
+			outFmtDebug("EquipDevelopStrength reach player level %d can not lvup",currLv + i)
+			break
+		end
+		local config = tb_equipdevelop_strength[pos * 1000 + currLv + i]
+		if not config then
+			outFmtDebug("EquipDevelopStrength reach top level %d can not lvup",currLv + i - 1)
+			break
+		end
+		
+		local item_list = {}
+		local money_list = {}
+		
+		for _,v in pairs(config.item_cost) do
+			if temp_item[v[1]] then
+				temp_item[v[1]] = temp_item[v[1]] + v[2]
+			else
+				temp_item[v[1]] = v[2]
+			end
+		end
+		
+		for _,v in pairs(config.money_cost) do
+			if temp_money[v[1]] then
+				temp_money[v[1]] = temp_money[v[1]] + v[2]
+			else
+				temp_money[v[1]] = v[2]
+			end
+		end
+		
+		for id,num in pairs(temp_item) do
+			table.insert(item_list,{id,num})
+		end
+		for id,num in pairs(temp_money) do
+			table.insert(money_list,{id,num})
+		end
+		
+		
+		local tf1,tab1 = self:checkMoneyEnoughIfUseGoldIngot(money_list)
+	--是否有足够的道具
+		local tf2 = self:hasMulItem(item_list)
+		
+		if tf1 and tf2 then
+			up_level = i
+			item_cost = clone(item_list)
+			money_cost = clone(money_list)
+			tab = clone(tab1)
+		else
+			outFmtError("EquipDevelopStrength strength resource not enough ,%s,%s",tf1,tf2)
+			break
+		end
+		
+	end
+	
+	if up_level == 0 then
+		outFmtError("EquipDevelopStrength strength can not to lvup")
+		return
+	end
+	
+	if self:useMulItem(item_cost) and self:costMoneys(MONEY_CHANGE_EQUIPDEVELOP,tab) then
+		spellMgr:SetEquipDevelopStrengthLv(index,currLv + up_level)
+		outFmtInfo("EquipDevelopStrength strength success")
+		
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_STRENGTH_SUCCESS)
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+		
+		--检测装备养成 奖励
+		self:UpdateEquipDevelopStrengthBonus(currLv + up_level)
+		--self:EquipDevelopGemActive(pos)
+		
+	end
+
+
+end
+
+
+--精炼升星 (pos)
+function PlayerInfo:EquipDevelopRefineStarUp(pos)
+	local spellMgr = self:getSpellMgr()
+	local index = pos - 1
+	local currRank = spellMgr:GetEquipDevelopRefineRank(index)
+	local currStar = spellMgr:GetEquipDevelopRefineStar(index)
+	
+	
+	local curr_config = tb_equipdevelop_refine[pos * 10000 + currRank * 100 + currStar]
+	if not curr_config then
+		outFmtDebug("EquipDevelopRefineStarUp curr_config not exist %d %d %d",pos,currRank,currStar)
+		return
+	end
+	
+	if curr_config.lvup_type ~= 1 then
+		outFmtDebug("EquipDevelopRefineStarUp curr_config can not star up %d %d %d",pos,currRank,currStar)
+		return
+	end
+	
+	local next_config = tb_equipdevelop_refine[pos * 10000 + currRank * 100 + currStar + 1]
+	if not next_config then
+		outFmtDebug("EquipDevelopRefineStarUp next_config not exist %d %d %d",pos,currRank,currStar + 1)
+		return
+	end
+	
+	local tf1,tab = self:checkMoneyEnoughIfUseGoldIngot(next_config.money_cost)
+	--是否有足够的道具
+	local tf2 = self:hasMulItem(next_config.item_cost)
+		
+	if not tf1 or not tf2 then
+		outFmtError("EquipDevelopRefineStarUp resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(next_config.item_cost) and self:costMoneys(MONEY_CHANGE_EQUIPDEVELOP,tab)then
+		local random = randInt(1,100)
+		if random <= next_config.chance then
+			spellMgr:SetEquipDevelopRefineStar(index,currStar + 1)
+			outFmtInfo("EquipDevelopRefineStarUp refine success")
+			
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_STAR_SUCCESS)
+			
+			-- 重算战斗力(当前和属性绑定在一起)
+			self:RecalcAttrAndBattlePoint()
+			
+			--检测装备养成 奖励
+			
+		else
+			outFmtInfo("EquipDevelopRefineStarUp refine fail")
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_STAR_FAIL)
+		end
+		
+	end
+end
+
+--精炼升阶 (pos)
+function PlayerInfo:EquipDevelopRefineRankUp(pos)
+	local spellMgr = self:getSpellMgr()
+	local index = pos - 1
+	local currRank = spellMgr:GetEquipDevelopRefineRank(index)
+	local currStar = spellMgr:GetEquipDevelopRefineStar(index)
+	
+	
+	local curr_config = tb_equipdevelop_refine[pos * 10000 + currRank * 100 + currStar]
+	if not curr_config then
+		outFmtDebug("EquipDevelopRefineRankUp curr_config not exist %d %d %d",pos,currRank,currStar)
+		return
+	end
+	
+	if curr_config.lvup_type ~= 2 then
+		outFmtDebug("EquipDevelopRefineRankUp curr_config can not rank up %d %d %d",pos,currRank,currStar)
+		return
+	end
+	
+	local next_config = tb_equipdevelop_refine[pos * 10000 + (currRank + 1)* 100 + currStar]
+	if not next_config then
+		outFmtDebug("EquipDevelopRefineRankUp next_config not exist %d %d %d",pos,currRank + 1,currStar)
+		return
+	end
+	
+	local tf1,tab = self:checkMoneyEnoughIfUseGoldIngot(next_config.money_cost)
+	--是否有足够的道具
+	local tf2 = self:hasMulItem(next_config.item_cost)
+	
+	if not tf1 or not tf2 then
+		outFmtError("EquipDevelopRefineRankUp resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(next_config.item_cost) and self:costMoneys(MONEY_CHANGE_EQUIPDEVELOP,tab)then
+		local random = randInt(1,100)
+		if random <= next_config.chance then
+			spellMgr:SetEquipDevelopRefineStar(index,0)
+			spellMgr:SetEquipDevelopRefineRank(index,currRank + 1)
+			outFmtInfo("EquipDevelopRefineRankUp refine rank success")
+			
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_RANK_SUCCESS)
+			
+			-- 重算战斗力(当前和属性绑定在一起)
+			self:RecalcAttrAndBattlePoint()
+			
+			--检测装备养成 奖励
+			self:UpdateEquipDevelopRefineBonus(currRank + 1)
+			--self:EquipDevelopGemActive(pos)
+		else
+			outFmtInfo("EquipDevelopRefineRankUp refine  rank fail")
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_RANK_FAIL)
+		end
+		
+	end
+end
+
+--激活宝石 (pos,gem_pos)
+function PlayerInfo:EquipDevelopGemActive(pos,gem_pos)
+	local spellMgr = self:getSpellMgr()
+	local index = pos - 1
+	local part_config = tb_equipdevelop_gem_part[pos]
+
+	local currLv = spellMgr:GetEquipDevelopGemLv(index,gem_pos - 1)
+	if currLv ~= 0 then
+		outFmtDebug("EquipDevelopGemActive gem lv ~= 0 can not active %d %d",pos,gem_pos)
+		return
+	end
+	
+	local gem_type = part_config.gem_array[gem_pos]
+	local unlock_strength_lv = part_config.unlock_strength_lv[gem_pos]
+	local unlock_refine_lv = part_config.unlock_refine_lv[gem_pos]
+	
+	if not gem_type or not unlock_strength_lv or not unlock_refine_lv then
+		outFmtDebug("EquipDevelopGemActive gem part config error %d %d",pos,gem_pos)
+		return
+	end
+	
+	local strength_lv = spellMgr:GetEquipDevelopStrengthLv(index)
+	local refine_rank = spellMgr:GetEquipDevelopRefineRank(index)
+	--local refine_star = spellMgr:GetEquipDevelopRefineStar(index)
+	
+	if strength_lv >= unlock_strength_lv and refine_rank >= unlock_refine_lv then
+		local next_config = tb_equipdevelop_gem[gem_type*1000+1]
+		local tf1,tab = self:checkMoneyEnoughIfUseGoldIngot(next_config.money_cost)
+		--是否有足够的道具
+		local tf2 = self:hasMulItem(next_config.item_cost)
+		
+		if not tf1 or not tf2 then
+			outFmtError("EquipDevelopGemActive resouce not enough")
+			return
+		end
+		
+		if self:useMulItem(next_config.item_cost) and self:costMoneys(MONEY_CHANGE_EQUIPDEVELOP,tab)then
+			spellMgr:SetEquipDevelopGemLv(index,gem_pos-1,1)
+			outFmtInfo("EquipDevelopGemActive gem active success")
+			
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_GEM_ACTIVE_SUCCESS)
+			
+			-- 重算战斗力(当前和属性绑定在一起)
+			self:RecalcAttrAndBattlePoint()
+			
+			--检测装备养成 奖励
+			self:UpdateEquipDevelopGemBonus(1)
+		end
+	else
+		outFmtError("EquipDevelopGemActive strength_lv refine_rank not enough")
+	end
+	
+end
+
+--升级宝石 (pos,gem_index)
+function PlayerInfo:EquipDevelopGemLvUp(pos,gem_pos)
+	local spellMgr = self:getSpellMgr()
+	local index = pos - 1
+	local currLv = spellMgr:GetEquipDevelopGemLv(index,gem_pos-1)
+	if currLv == 0 then
+		outFmtDebug("EquipDevelopGemLvUp gem lv == 0 can not lvup %d %d",pos,gem_pos)
+		return
+	end
+	
+	local gem_type = tb_equipdevelop_gem_part[pos].gem_array[gem_pos]
+	local next_config = tb_equipdevelop_gem[gem_type*1000+currLv+1]
+	if not next_config then
+		outFmtDebug("EquipDevelopGemLvUp gem lv is max can not lvup %d %d",pos,gem_pos)
+		return
+	end
+	
+	local tf1,tab = self:checkMoneyEnoughIfUseGoldIngot(next_config.money_cost)
+	--是否有足够的道具
+	local tf2 = self:hasMulItem(next_config.item_cost)
+	
+	if not tf1 or not tf2 then
+		outFmtError("EquipDevelopGemLvUp resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(next_config.item_cost) and self:costMoneys(MONEY_CHANGE_EQUIPDEVELOP,tab)then
+		
+		spellMgr:SetEquipDevelopGemLv(index,gem_pos-1,currLv + 1)
+		outFmtInfo("EquipDevelopGemLvUp gem lvup success")
+		
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_GEM_LVUP_SUCCESS)
+		
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+		
+		--检测装备养成 奖励
+		self:UpdateEquipDevelopGemBonus(currLv + 1)
+	end
+end
+
+--更新奖励等级 强化 ()
+function PlayerInfo:UpdateEquipDevelopStrengthBonus(new_lv)
+	local spellMgr = self:getSpellMgr()
+	local min_lv = -1
+	local curr_bonus_lv = spellMgr:GetEquipDevelopBonusStrengthLv()
+	local curr_bonus_config = tb_equipdevelop_bonus[1*100+curr_bonus_lv]
+	
+	if curr_bonus_lv ~= 0 and curr_bonus_config and new_lv <= curr_bonus_config.need_lv[2] then
+		outFmtInfo("UpdateEquipDevelopStrengthBonus bonus level not change")
+		return
+	end
+	
+	for index = 0,EQUIPMENT_COUNT - 1 do
+		local level = spellMgr:GetEquipDevelopStrengthLv(index)
+		if min_lv == -1 then
+			min_lv = level
+		else
+			
+			if level < min_lv then
+				min_lv = level
+			end
+		end
+		
+	end
+	
+	if min_lv <= 0 then
+		outFmtInfo("UpdateEquipDevelopStrengthBonus no bonus")
+		return
+	end
+	
+	for _,config in pairs(tb_equipdevelop_bonus) do
+		if config.type == 1 then
+			if min_lv >= config.need_lv[1] and min_lv <= config.need_lv[2] then
+				if curr_bonus_lv < config.level then
+					spellMgr:SetEquipDevelopBonusStrengthLv(config.level)
+					outFmtInfo("UpdateEquipDevelopStrengthBonus bonus level change %d",config.level)
+					self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_BONUS_STRENGTH)
+					-- 重算战斗力(当前和属性绑定在一起)
+					self:RecalcAttrAndBattlePoint()
+					return
+				else
+					outFmtInfo("UpdateEquipDevelopStrengthBonus bonus level not change")
+					return
+				end
+			end
+		end
+	end
+end
+
+--更新奖励等级 精炼 ()
+function PlayerInfo:UpdateEquipDevelopRefineBonus(new_lv)
+	local spellMgr = self:getSpellMgr()
+	local min_lv = -1
+	local curr_bonus_lv = spellMgr:GetEquipDevelopBonusRefineLv()
+	local curr_bonus_config = tb_equipdevelop_bonus[2*100+curr_bonus_lv]
+	
+	if curr_bonus_lv ~= 0 and curr_bonus_config and new_lv <= curr_bonus_config.need_lv[2] then
+		outFmtInfo("UpdateEquipDevelopRefineBonus bonus level not change")
+		return
+	end
+	
+	for index = 0,EQUIPMENT_COUNT - 1 do
+		local level = spellMgr:GetEquipDevelopRefineRank(index)
+		if min_lv == -1 then
+			min_lv = level
+		else
+			
+			if level < min_lv then
+				min_lv = level
+			end
+		end
+		
+	end
+	
+	if min_lv <= 0 then
+		outFmtInfo("UpdateEquipDevelopRefineBonus no bonus")
+		return
+	end
+	
+	for _,config in pairs(tb_equipdevelop_bonus) do
+		if config.type == 2 then
+			if min_lv >= config.need_lv[1] and min_lv <= config.need_lv[2] then
+				if curr_bonus_lv < config.level then
+					spellMgr:SetEquipDevelopBonusRefineLv(config.level)
+					outFmtInfo("UpdateEquipDevelopRefineBonus bonus level change %d",config.level)
+					self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_BONUS_REFINE)
+					-- 重算战斗力(当前和属性绑定在一起)
+					self:RecalcAttrAndBattlePoint()
+					return
+				else
+					outFmtInfo("UpdateEquipDevelopRefineBonus bonus level not change")
+					return
+				end
+			end
+		end
+	end
+end
+
+--更新奖励等级 镶嵌 () 等级总和
+function PlayerInfo:UpdateEquipDevelopGemBonus(new_lv)
+	local spellMgr = self:getSpellMgr()
+	local count = 0
+	local curr_bonus_lv = spellMgr:GetEquipDevelopBonusGemLv()
+	local curr_bonus_config = tb_equipdevelop_bonus[3*100+curr_bonus_lv]
+	
+	--[[
+	if curr_bonus_lv ~= 0 and curr_bonus_config and new_lv <= curr_bonus_config.need_lv[2] then
+		outFmtInfo("UpdateEquipDevelopGemBonus bonus level not change")
+		return
+	end
+	--]]
+	
+	for index = 0,EQUIPMENT_COUNT - 1 do
+		local gem_part_config = tb_equipdevelop_gem_part[index + 1]
+		local gem_count = #(gem_part_config.gem_array)
+		for gem_index = 0,gem_count -1 do
+			
+			local level = spellMgr:GetEquipDevelopGemLv(index,gem_index)
+			
+			count = count + level
+			
+		end
+	end
+	
+	if count <= 0 then
+		outFmtInfo("UpdateEquipDevelopGemBonus no bonus")
+		return
+	end
+	
+	for _,config in pairs(tb_equipdevelop_bonus) do
+		if config.type == 3 then
+			if count >= config.need_lv[1] and count <= config.need_lv[2] then
+				if curr_bonus_lv < config.level then
+					spellMgr:SetEquipDevelopBonusGemLv(config.level)
+					outFmtInfo("UpdateEquipDevelopGemBonus bonus level change %d",config.level)
+					self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_BONUS_GEM)
+					-- 重算战斗力(当前和属性绑定在一起)
+					self:RecalcAttrAndBattlePoint()
+					return
+				else
+					outFmtInfo("UpdateEquipDevelopGemBonus bonus level not change")
+					return
+				end
+			end
+		end
+	end
+end
+
+--选择装备进行洗炼 (equip_guid)
+function PlayerInfo:EquipDevelopWashAttrsWash(equip_guid)
+	local spellMgr = self:getSpellMgr()
+	local itemMgr = self:getItemMgr()
+	local item = itemMgr:getItemByGuid(equip_guid, BAG_TYPE_EQUIP)
+	if not item then
+		outFmtDebug("EquipDevelopWashAttrsWash item %s not exist",equip_guid)
+		return
+	end
+	
+	
+	
+	local entry = item:getEntry()
+	local item_tempate = tb_item_template[entry]
+	if not item_tempate then return end
+	
+	local washattrs_config = tb_equipdevelop_washattrs[item_tempate.pos * 100 + item_tempate.quality]
+	
+	if not washattrs_config then return end
+	
+	local tf1,tab = self:checkMoneyEnoughIfUseGoldIngot(washattrs_config.money_cost)
+	--是否有足够的道具
+	local tf2 = self:hasMulItem(washattrs_config.item_cost)
+	
+	if not tf1 or not tf2 then
+		outFmtError("EquipDevelopGemLvUp resouce not enough")
+		return
+	end
+	
+	if self:useMulItem(washattrs_config.item_cost) and self:costMoneys(MONEY_CHANGE_EQUIPDEVELOP,tab)then
+		local attr_config = item_tempate.forge_pro
+		local attr_length = item_tempate.forge_pro_max[1]
+		
+		if attr_length < 1 then return end
+		local ary = GetRandomIndexTable(#attr_config,attr_length)
+
+		local info = equip_guid..'|'..#ary..'|'..item_tempate.pos
+		for i = 1,#ary do
+			local idx = ary[i]
+			local attrInfo = attr_config[idx]
+			local attrId = attrInfo[ 1 ]
+			local a = attrInfo[ 2 ]
+			local b = attrInfo[ 3 ]
+			local val = randInt(a, b)
+			local qua = GetAttrQuality(val, a, b)
+			
+			--outFmtDebug("idx%d",idx)
+			--item:setAddAttr(self:getAddAttKey(,lev), )
+			--item:addBaseAttr(attrId, val, qua);
+			
+			info = info..'|'..attrId..'|'..val..'|'..qua
+		end
+		outFmtInfo("+++++++++++++++++++++++ %s",info)
+		spellMgr:SetEquipDevelopWashAttrsInfo(info)
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_WASHATTRS_WASH)
+	end
+	
+end
+
+--保存洗炼结果覆盖装备 (equip_guid)
+function PlayerInfo:EquipDevelopWashAttrsSave(equip_guid)
+	local spellMgr = self:getSpellMgr()
+	local itemMgr = self:getItemMgr()
+	local item = itemMgr:getItemByGuid(equip_guid, BAG_TYPE_EQUIP)
+	if not item then
+		outFmtDebug("EquipDevelopWashAttrsSave item %s not exist",equip_guid)
+		return
+	end
+	
+	local info = spellMgr:GetEquipDevelopWashAttrsInfo()
+	local tokens = string.split(info, "|")
+	if #tokens == 1 then
+		outFmtDebug("EquipDevelopWashAttrsSave item not washed")
+		return
+	end
+	
+	if tokens[1] ~= equip_guid then
+		outFmtDebug("EquipDevelopWashAttrsSave item not same equip cannot save %s  %s",tokens[1],equip_guid)
+		return
+	end
+	
+	itemMgr:clearBaseAtrr(item)
+	local count = tonumber(tokens[2])
+	
+	for i = 0,count - 1 do
+		local attrId = tonumber(tokens[4 + i * 3])
+		local val = tonumber(tokens[5 + i * 3])
+		local qua = tonumber(tokens[6 + i * 3])
+		
+		if attrId and val and qua then
+			item:addBaseAttr(attrId, val, qua)
+			outFmtInfo("EquipDevelopWashAttrsSave item attrs add %d %d %d ",attrId,val,qua)
+		end
+	end
+	itemMgr:resetItemForce(item)
+	
+	spellMgr:SetEquipDevelopWashAttrsInfo("")
+	outFmtInfo("EquipDevelopWashAttrsSave item attrs changed ")
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_WASHATTRS_SAVE)
+	-- 重算战斗力(当前和属性绑定在一起)
+	self:RecalcAttrAndBattlePoint()
+end
+
+function PlayerInfo:EquipDevelopWashAttrsDel()
+	local spellMgr = self:getSpellMgr()
+	spellMgr:SetEquipDevelopWashAttrsInfo("")
+	outFmtInfo("EquipDevelopWashAttrsSave item attrs give up ")
+end
+
+------------------------------------装备养成结束----------------------------------------
+
+function PlayerInfo:SetAppearance(id)
+	self:SetUInt16(PLAYER_INT_FIELD_APPEARANCE, tb_appearance_info[ id ].type, id)
+end
+
+function PlayerInfo:UnsetAppearance(type)
+	self:SetUInt16(PLAYER_INT_FIELD_APPEARANCE, type, 0)
+end
+
+function PlayerInfo:GetAppearance(type)
+	return self:GetUInt16(PLAYER_INT_FIELD_APPEARANCE, type)
+end
+
+function PlayerInfo:SetAppearanceWeaponForce(force)
+	self:SetUInt32(PLAYER_INT_FIELD_WEAPON_FORCE, force)
+end
+
+function PlayerInfo:SetAppearanceClothForce(force)
+	self:SetUInt32(PLAYER_INT_FIELD_CLOTH_FORCE, force)
+end
+
+function PlayerInfo:SetAppearancePokedexForce(force)
+	self:SetUInt32(PLAYER_INT_FIELD_POKEDEX_FORCE, force)
+end
+
 --[[
 -- 发送到场景服替换主动技能信息
 function PlayerInfo:Send2ScenedIllusion(illuId)

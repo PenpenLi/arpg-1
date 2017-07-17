@@ -277,6 +277,25 @@ local function on_scened_send_faction_bossdefense_leave( pkt )
 	faction:OnBossDenfenseChallengeFinish(player_guid,index,pool_id,hp)
 end
 
+local function on_logind_send_rename_check_result(pkt)
+	local ret, player_guid, available, realName = unpack_logind_send_rename_check_result(pkt)
+	if not ret then return end
+	
+	local playerInfo = app.objMgr:getObj(player_guid)
+	if not playerInfo then
+		return
+	end
+	
+	if available == 1 then
+		-- 判断扣钱逻辑
+		local costs = playerInfo:GetRenameCost()
+		if playerInfo:costMoneys(MONEY_CHANGE_RENAME, costs) then
+			playerInfo:AddRenameTimes()
+			playerInfo:SetName(realName)
+		end
+	end
+end
+
 local appdInsternalHanlders = {}
 appdInsternalHanlders[INTERNAL_OPT_USER_ITEM_RESULT] = on_scened_use_item_result
 appdInsternalHanlders[INTERNAL_OPT_LOOT_SELECT] = on_scened_loot_select
@@ -300,6 +319,7 @@ appdInsternalHanlders[INTERNAL_OPT_FACTION_UPDATE_TARGET_INFO] = on_scened_send_
 
 appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSSDEFENSE_WIN] = on_scened_send_faction_bossdefense_win
 appdInsternalHanlders[INTERNAL_OPT_FACTION_BOSSDEFENSE_LEAVE] = on_scened_send_faction_bossdefense_leave
+appdInsternalHanlders[INTERNAL_OPT_RENAME_CHECK_RESULT] = on_logind_send_rename_check_result
 
 
 --网络包处理方法

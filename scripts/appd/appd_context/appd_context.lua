@@ -78,11 +78,14 @@ function PlayerInfo:AppdAddItems(rewardDict, money_oper_type, item_oper_type, ti
 	times = times or 1
 	deadline = deadline or 0
 	showType = showType or 0
-	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, bagFullCategory)
-	-- 获得信息
+	
+		-- 获得信息
 	local dict = changeTableStruct(rewardDict)
 	local list = Change_To_Item_Reward_Info(dict)
 	self:call_item_notice (showType, list)
+	
+	self:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, times, deadline, bagFullCategory)
+
 end
 
 --[[
@@ -163,6 +166,7 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 			local name = tb_mail[data].name
 			local giftType = tb_mail[data].source
 			AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, itemConfig, SYSTEM_NAME)
+			self:CallOptResult(OPRATE_TYPE_BAG,BAG_RESULT_BAG_FULL_SEND_MAIL)
 		end
 		
 		-- 出售
@@ -712,6 +716,9 @@ function PlayerInfo:Login()
 	
 	-- 把跨服的信息清空
 	self:KuafuUnMarked()
+	
+	--初始化家族技能
+	self:UpdateFactionSkill()
 end
 
 --pk服玩家登陆做点啥
@@ -915,6 +922,21 @@ function PlayerInfo:useAllItems(moneyLog, costItemTable, multiple)
 	
 	self:costMoneys(moneyLog, resources, multiple)
 	self:useMulItem(items, multiple)
+	
+	return true
+end
+
+--检测多个物品
+function PlayerInfo:hasAllItems(costItemTable, multiple)
+	local resources, items, _ = AllItemsSplitResourceAndItemAndExp(costItemTable, multiple)
+	
+	if not self:checkMoneyEnoughs(resources, multiple) then
+		return false
+	end
+	
+	if not self:hasMulItem(items, multiple) then
+		return false
+	end
 	
 	return true
 end
@@ -1157,6 +1179,14 @@ function PlayerInfo:SetWingsForce(val)
 	local old = self:GetUInt32(PLAYER_INT_FIELD_WINGS_FORCE)
 	if old ~= val then
 		self:SetUInt32(PLAYER_INT_FIELD_WINGS_FORCE,val)
+	end
+end
+
+--设置称号战力
+function PlayerInfo:SetTitleForce(val)
+	local old = self:GetUInt32(PLAYER_INT_FIELD_TITLE_FORCE)
+	if old ~= val then
+		self:SetUInt32(PLAYER_INT_FIELD_TITLE_FORCE,val)
 	end
 end
 
@@ -1585,7 +1615,7 @@ function PlayerInfo:DailyResetFactionDonateGiftExchangeDailyCount()
 	self:SetFactionDonateGiftExchangeDailyCount(0)
 end
 
-
+--todo 删除家族礼物功能
 --玩家魅力值
 function PlayerInfo:SetPlayerCharmPoint(value)
 	self:SetDouble(PLAYER_INT_FILED_CHARM_POINT,value)
@@ -2077,6 +2107,131 @@ function PlayerInfo:ResetFactionBossDefenseTickets()
 	self:SetFactionBossDefenseTickets(base_config.challenge_times)
 end
 
+-------无尽远征
+--历史挑战层数
+function PlayerInfo:SetFactionTowerClearFloor(value)
+	self:SetUInt32(PLAYER_INT_FIELD_FACTION_TOWER_CLEAR_FLOOR,value)
+end
+
+function PlayerInfo:GetFactionTowerClearFloor()
+	return self:GetUInt32(PLAYER_INT_FIELD_FACTION_TOWER_CLEAR_FLOOR)
+end
+
+--扫荡flag
+function PlayerInfo:SetFactionTowerSweepFlag()
+	self:SetBit(PLAYER_INT_FIELD_FACTION_TOWER_FLAG,0)
+end
+
+function PlayerInfo:UnSetFactionTowerSweepFlag()
+	self:UnSetBit(PLAYER_INT_FIELD_FACTION_TOWER_FLAG,0)
+end
+
+function PlayerInfo:GetFactionTowerSweepFlag()
+	return self:GetBit(PLAYER_INT_FIELD_FACTION_TOWER_FLAG,0)
+end
+
+--奖励领取flag
+function PlayerInfo:SetFactionTowerChestFlag(index)
+	if index > 0 and index < 32 then
+		self:SetBit(PLAYER_INT_FIELD_FACTION_TOWER_FLAG,index)
+	end
+end
+
+function PlayerInfo:UnSetFactionTowerChestFlag(index)
+	if index > 0 and index < 32 then
+		self:UnSetBit(PLAYER_INT_FIELD_FACTION_TOWER_FLAG,index)
+	end
+end
+
+function PlayerInfo:GetFactionTowerChestFlag(index)
+	if index > 0 and index < 32 then
+		return self:GetBit(PLAYER_INT_FIELD_FACTION_TOWER_FLAG,index)
+	end
+	
+	return false
+end
+
+function PlayerInfo:DailyResetTowerFlag()
+	self:SetUInt32(PLAYER_INT_FIELD_FACTION_TOWER_FLAG,0)
+end
+
+
+------------------------------------------
+
+function PlayerInfo:GetRenameCost()
+	local times = self:GetUInt32(PLAYER_INT_FIELD_RENAME_TIMES) + 1
+	local indx = #tb_rename_info
+	for i = 1, #tb_rename_info do
+		local range = tb_rename_info[ i ].range
+		if times >= range[ 1 ] and (times <= range[ 2 ] or range[ 2 ] == -1) then
+			indx = i
+			break
+		end
+	end
+	return tb_rename_info[indx].costs
+end
+
+function PlayerInfo:AddRenameTimes()
+	self:AddUInt32(PLAYER_INT_FIELD_RENAME_TIMES, 1)
+end
+
+
+---------------------家族技能等级---------------------
+--已学习等级
+function PlayerInfo:GetFactionSkillLearnLv(id)
+	return self:GetUInt16(PLAYER_INT_FIELD_FACTION_SKILL_LV_START + id - 1,0)
+end
+
+function PlayerInfo:SetFactionSkillLearnLv(id,val)
+	self:SetUInt16(PLAYER_INT_FIELD_FACTION_SKILL_LV_START + id - 1, 0, val)
+end
+
+--当前生效等级
+function PlayerInfo:GetFactionSkillNowLv(id)
+	return self:GetUInt16(PLAYER_INT_FIELD_FACTION_SKILL_LV_START + id - 1,1)
+end
+
+function PlayerInfo:SetFactionSkillNowLv(id,val)
+	self:SetUInt16(PLAYER_INT_FIELD_FACTION_SKILL_LV_START + id - 1, 1, val)
+end
+
+--更新家族技能等级变化
+function PlayerInfo:UpdateFactionSkill()
+	local faction = app.objMgr:getObj(self:GetFactionId())
+	if faction == nil then
+		self:OnFactionSkillBuildingLvChange(0)
+		return
+	end
+	local building_lv = faction:GetBuildingLvByType(FACTION_BUILDING_TYPE_SKILL)
+	self:OnFactionSkillBuildingLvChange(building_lv)
+end
+
+--建筑等级改变 (建筑升级 成员加入 退出家族)
+--更新成员技能生效等级(building_lv)
+function PlayerInfo:OnFactionSkillBuildingLvChange(building_lv)
+	local level_limit = 0
+	if building_lv ~= 0 then
+		level_limit = tb_faction_skill_building[building_lv].level_limit
+	end
+	for id,config in pairs(tb_faction_skill_base) do
+		local learn_lv = self:GetFactionSkillLearnLv(id)
+		if config.unlock_level > building_lv then
+			self:SetFactionSkillNowLv(id,0)
+			self:updatePassive(config.skill_id,0)
+			--outFmtDebug("OnFactionSkillBuildingLvChange 1 skill %d lv %d",config.skill_id,0)
+		elseif learn_lv > level_limit then
+			self:SetFactionSkillNowLv(id,level_limit)
+			self:updatePassive(config.skill_id,level_limit)
+			--outFmtDebug("OnFactionSkillBuildingLvChange 2 skill %d lv %d",config.skill_id,level_limit)
+		else
+			self:SetFactionSkillNowLv(id,learn_lv)
+			self:updatePassive(config.skill_id,learn_lv)
+			--outFmtDebug("OnFactionSkillBuildingLvChange 3 skill %d lv %d",config.skill_id,learn_lv)
+		end
+	end
+end
+------------------------------------------
+
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()
 	self:KuafuMarked(0)
@@ -2129,6 +2284,7 @@ require("appd/appd_context/appd_context_kuafu")
 require("appd/appd_context/appd_context_world3v3")
 require("appd/appd_context/appd_context_xianfu")
 require("appd/appd_context/appd_context_group_instance")
+require("appd/appd_context/appd_context_local_single_pvp")
 require("appd/appd_context/appd_context_doujiantai")
 require("appd/appd_context/appd_context_module_unlock")
 require("appd/appd_context/appd_context_guide")

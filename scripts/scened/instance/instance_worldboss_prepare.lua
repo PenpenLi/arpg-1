@@ -7,6 +7,11 @@ function InstanceWorldBossP:ctor(  )
 	
 end
 
+--玩家加入地图
+function InstanceWorldBossP:OnJoinPlayer(player)
+	InstanceInstBase.OnJoinPlayer(self, player)
+end
+
 --当玩家离开时触发
 function InstanceWorldBossP:OnLeavePlayer( player, is_offline)
 	
@@ -22,22 +27,5 @@ function InstanceWorldBossP:OnInitScript(  )
 	self:SetMapEndTime(endTime)
 	self:SetUInt32(WORLDBOSS_FIELDS_WAIT_TIME, endTime)
 end
-
---当玩家加入后触发
-function InstanceWorldBossP:OnAfterJoinPlayer(player)
-	Instance_base.OnAfterJoinPlayer(self, player)
-	
-	local playerInfo = UnitInfo:new{ptr = player}
-	-- 进城修改模式
-	playerInfo:ChangeToPeaceModeAfterTeleport()
-end
-
-function InstanceWorldBossP:DoIsMate(killer_ptr, target_ptr)
-	if GetUnitTypeID(killer_ptr) == TYPEID_PLAYER and GetUnitTypeID(target_ptr) == TYPEID_PLAYER then
-		return true
-	end
-	return false
-end
-
 
 return InstanceWorldBossP

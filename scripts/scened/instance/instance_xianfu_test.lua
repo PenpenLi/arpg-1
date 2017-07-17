@@ -60,12 +60,6 @@ function InstanceXianfuTest:GetDummyCount()
 	return self:GetUInt32(XIANFU_TEST_DUMMY_COUNT)
 end
 
-function InstanceXianfuTest:DoIsMate(killer_ptr, target_ptr)
-	if killer_ptr == target_ptr and killer_ptr then
-		return true
-	end
-	return false
-end
 
 function InstanceXianfuTest:GetBoxid()
 	local hard = self:GetHard()
@@ -348,6 +342,8 @@ function InstanceXianfuTest:OnJoinPlayer(player)
 		self:SetStr(strstart + KUAFU_XIANFU_PLAYER_GUID, playerInfo:GetPlayerGuid())
 
 		self:SetDouble(intstart + KUAFU_XIANFU_PLAYER_SETTLEMENT,playerInfo:GetForce())
+		
+		playerInfo:ChangeToFamilyMode()
 	end
 end
 
@@ -363,11 +359,6 @@ function InstanceXianfuTest:findIndexByName(name)
 	end
 	
 	return -1
-end
-
---当玩家加入后触发
-function InstanceXianfuTest:OnAfterJoinPlayer(player)
-	InstanceInstBase.OnAfterJoinPlayer(self, player)
 end
 
 -- 仙府夺宝不加宠物
