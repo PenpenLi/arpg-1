@@ -347,6 +347,7 @@ CMSG_EQUIP_APPEARANCE		= 382	-- /*装备外观*/
 CMSG_CANCEL_EQUIP_APPEARANCE		= 383	-- /*取消装备外观*/	
 CMSG_RENAME		= 384	-- /*改名*/	
 CMSG_UNLOCK_TITLE		= 385	-- /*道具解锁称号*/	
+CMSG_SOCIAL_BUY_REVENGE_TIMES		= 386	-- /*购买复仇次数*/	
 
 
 ---------------------------------------------------------------------
@@ -12438,6 +12439,35 @@ function Protocols.unpack_unlock_title (pkt)
 end
 
 
+-- /*购买复仇次数*/	
+function Protocols.pack_social_buy_revenge_times ( count)
+	local output = Packet.new(CMSG_SOCIAL_BUY_REVENGE_TIMES)
+	output:writeByte(count)
+	return output
+end
+
+-- /*购买复仇次数*/	
+function Protocols.call_social_buy_revenge_times ( playerInfo, count)
+	local output = Protocols.	pack_social_buy_revenge_times ( count)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*购买复仇次数*/	
+function Protocols.unpack_social_buy_revenge_times (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.count = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -12777,6 +12807,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_cancel_equip_appearance = self.call_cancel_equip_appearance
 	playerInfo.call_rename = self.call_rename
 	playerInfo.call_unlock_title = self.call_unlock_title
+	playerInfo.call_social_buy_revenge_times = self.call_social_buy_revenge_times
 end
 
 local unpack_handler = {
@@ -13113,6 +13144,7 @@ local unpack_handler = {
 [CMSG_CANCEL_EQUIP_APPEARANCE] =  Protocols.unpack_cancel_equip_appearance,
 [CMSG_RENAME] =  Protocols.unpack_rename,
 [CMSG_UNLOCK_TITLE] =  Protocols.unpack_unlock_title,
+[CMSG_SOCIAL_BUY_REVENGE_TIMES] =  Protocols.unpack_social_buy_revenge_times,
 
 }
 

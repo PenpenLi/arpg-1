@@ -2232,6 +2232,110 @@ function PlayerInfo:OnFactionSkillBuildingLvChange(building_lv)
 end
 ------------------------------------------
 
+--复仇次数
+function PlayerInfo:GetRevengeTimes()
+	return self:GetUInt32(PLAYER_INT_FIELD_REVENGE_TIMES)
+end
+
+function PlayerInfo:SetRevengeTimes(val)
+	self:SetUInt32(PLAYER_INT_FIELD_REVENGE_TIMES, val)
+end
+
+--复仇次数
+function PlayerInfo:GetRevengeBuyTimes()
+	return self:GetUInt32(PLAYER_INT_FIELD_REVENGE_BUY_TIMES)
+end
+
+function PlayerInfo:SetRevengeBuyTimes(val)
+	self:SetUInt32(PLAYER_INT_FIELD_REVENGE_BUY_TIMES, val)
+end
+
+--每日重置次数
+function PlayerInfo:DailyResetRevengeTimes()
+	self:SetRevengeTimes(tb_enemy_revenge_base[1].daily_revenge_times)
+	self:SetRevengeBuyTimes(0)
+end
+
+
+--购买次数
+function PlayerInfo:BuyRevengeTimes(count)
+	if count <= 0 then
+		return
+	end
+	
+	local buy_count = self:GetRevengeBuyTimes()
+	local total_cost_table = {}
+	for i = buy_count + 1, buy_count + count do
+		local config = tb_enemy_revenge_buy[i]
+		if not config then
+			config = tb_enemy_revenge_buy[#tb_enemy_revenge_buy]
+		end
+		local cost = config.cost
+		for _,v in pairs(cost) do
+			if total_cost_table[v[1]] then
+				total_cost_table[v[1]] = total_cost_table[v[1]] + v[2]
+			else
+				total_cost_table[v[1]] = v[2]
+			end
+		end
+		
+	end
+	
+	local total_cost = {}
+	for k,v in pairs(total_cost_table) do
+		table.insert(total_cost,{k,v})
+	end
+	
+	if not self:hasAllItems(total_cost) then
+		return
+	end
+	
+	if self:useAllItems(MONEY_CHANGE_TYPE_STORE_BUY,total_cost) then
+		self:SetRevengeTimes(self:GetRevengeTimes() + count)
+		self:SetRevengeBuyTimes(self:GetRevengeBuyTimes() + count)
+	end
+end
+
+--复仇
+function PlayerInfo:TeleportToRevenge(guid)
+	--检测复仇对象是否有效
+	local socialMgr = self:getSocialMgr()
+	if socialMgr:getEnemyIndex(guid) == -1 then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_NOT_ENEMY)
+		return
+	end
+	--检测是否在线
+	local player = app.objMgr:getObj(guid)
+	if not player then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_ENEMY_OFFLINE)
+		return
+	end
+	
+	--检测是否可传送过去
+	local map_id = player:GetMapId()
+	local config = tb_map[map_id]
+	if config and config.type == MAP_TYPE_FIELD then
+		local times = self:GetRevengeTimes()
+		if times > 0 then
+			self:SetRevengeTimes(times - 1)
+			local x, y = player:GetPosition()
+			call_appd_teleport(self:GetScenedFD(),self:GetGuid(),x,y,map_id)
+		else
+			--次数不足
+				self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_REVENGE_TIMES_NOT_ENOUGH)
+			return
+		end
+		
+		
+	else
+		self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_ENEMY_NOT_IN_FIELD)
+		return
+	end
+	
+end
+
+------------------------------------------
+
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()
 	self:KuafuMarked(0)

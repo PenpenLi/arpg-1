@@ -584,6 +584,8 @@ end
 
 --更新玩家装备显示
 function PlayerInfo:UpdateEquipDisplay  ( pos)
+	
+--[[
 	local useFashion = self:GetBit(PLAYER_EXPAND_INT_USE_FASHION, pos)
 	
 	--时装优先
@@ -593,8 +595,9 @@ function PlayerInfo:UpdateEquipDisplay  ( pos)
 			return
 		end
 	end
+--]]
 	-- --看下普通位置
-	-- if(pos == EQUIPMENT_TYPE_MAIN_WEAPON)then
+	--if(pos == EQUIPMENT_TYPE_MAIN_WEAPON)then
 	-- --已穿戴的兵魂设置
 	-- for i = SHENBING_TYPE_TANLANGXING, MAX_SHENBING_TYPE - 1 do
 	-- if(self:GetShenBingWearFlags(i))then
@@ -605,6 +608,10 @@ function PlayerInfo:UpdateEquipDisplay  ( pos)
 	-- end
 	-- end
 	-- end
+	
+	if pos ~= EQUIPMENT_TYPE_MAIN_WEAPON then
+		return
+	end
 	
 	if (self:TrySetEquipment(pos, pos))then
 		return

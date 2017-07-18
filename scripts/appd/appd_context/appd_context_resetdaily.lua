@@ -144,6 +144,8 @@ function PlayerInfo:onRealReset()
 	self:DailyResetTowerFlag()
 	
 	self:OnResetLocalSinglePVPDayTimes()
+	
+	self:DailyResetRevengeTimes()
 end
 
 function PlayerInfo:resetWeeklyInfo()

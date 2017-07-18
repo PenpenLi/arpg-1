@@ -85,7 +85,7 @@ function PlayerInfo:Handle_Rename(pkt)
 	local name = pkt.name
 	local costs = self:GetRenameCost()
 	-- 判断钱够不
-	if self:checkMoneyEnoughs(costs) then
+	if self:hasAllItems(costs) then
 		call_opt_login_check_name(self:GetGuid(), name)
 	end
 end

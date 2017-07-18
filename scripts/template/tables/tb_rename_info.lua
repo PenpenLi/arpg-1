@@ -6,7 +6,7 @@
 tb_rename_info = {
 	--  id:int 序号
 	--  range:array 区间
-	--  costs:array 花费资源
-	[1] = {id = 1, range = {1,1}, costs = {{0,0}}},
-	[2] = {id = 2, range = {2,-1}, costs = {{0,200}}},
+	--  costs:array 花费道具
+	[1] = {id = 1, range = {1,1}, costs = {{1,0}}},
+	[2] = {id = 2, range = {2,-1}, costs = {{1,200}}},
 }

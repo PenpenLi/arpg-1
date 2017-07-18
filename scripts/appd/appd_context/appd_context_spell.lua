@@ -116,7 +116,7 @@ function PlayerInfo:activeBaseSpell(spellId, activeType)
 		return
 	end
 	
-	-- 等级是否满足条件
+	--[[-- 等级是否满足条件
 	local learnConfig = tb_learn_spell[spellId]
 	if learnConfig == nil then
 		outFmtError("spellId %d not in tb_learn_spell", spellId)
@@ -158,7 +158,7 @@ function PlayerInfo:activeBaseSpell(spellId, activeType)
 			outFmtError("sub resouce fail")
 			return
 		end
-	end
+	end--]]
 
 	-- 激活技能
 	spellMgr:activeBaseSpell(spellId)

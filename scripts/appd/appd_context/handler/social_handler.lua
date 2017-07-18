@@ -70,8 +70,12 @@ function PlayerInfo:Handle_Revenge_Enemy(pkt)
 		local targetPlayer = objs[data.callback_guid]
 		if not targetPlayer then return end
 		outFmtDebug("target player = %s", targetPlayer:GetGuid())
+		
+		
 	end
 	GetObjects(data)
+	
+	self:TeleportToRevenge(guid)
 end
 function PlayerInfo:Handle_Remove_Friend(pkt)
 	--outFmtDebug("del friend")
@@ -83,4 +87,9 @@ function PlayerInfo:Handle_Remove_Friend(pkt)
 end
 function PlayerInfo:Handler_Clear_Apply(pkt)
 	self:ClearApply()
+end
+
+function PlayerInfo:Handle_Buy_Revengr_Times(pkt)
+	local count = pkt.count
+	self:BuyRevengeTimes(count)
 end

@@ -1056,6 +1056,21 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==OPERTE_TYPE_SOCIAL_NO_MONEY)then
 			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - OPERTE_TYPE_SOCIAL_NO_MONEY元宝或者金币不足 - " .. data 
 		end
+		if (reason ==OPERTE_TYPE_SOCIAL_NOT_ENEMY)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - OPERTE_TYPE_SOCIAL_NOT_ENEMY对方不是仇人 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_SOCIAL_ENEMY_OFFLINE)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - OPERTE_TYPE_SOCIAL_ENEMY_OFFLINE对方处于离线中 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_SOCIAL_ENEMY_NOT_IN_FIELD)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - OPERTE_TYPE_SOCIAL_ENEMY_NOT_IN_FIELD对方不在野外 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_SOCIAL_REVENGE_TIMES_NOT_ENOUGH)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - OPERTE_TYPE_SOCIAL_REVENGE_TIMES_NOT_ENOUGH复仇传送次数不足 - " .. data 
+		end
+		if (reason ==OPERTE_TYPE_SOCIAL_RENAME_SUCCESS)then
+			return "ShowOperationFailed OPRATE_TYPE_ATHLETICS竞技 - OPERTE_TYPE_SOCIAL_RENAME_SUCCESS改名成功 - " .. data 
+		end
 		return "未知错误1  OPRATE_TYPE_ATHLETICS " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_XIANFU)then

@@ -58,6 +58,7 @@ end
 
 -- 怒气技能进阶
 function PlayerInfo:Handle_Upgrade_AngleSpell(pkt)
+	--[[
 	local spellId  = pkt.spellId
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
@@ -96,6 +97,7 @@ function PlayerInfo:Handle_Upgrade_AngleSpell(pkt)
 	end
 	
 	self:DoHandleUpgradeAngleSpell(spellId)
+	--]]
 end
 
 -- 申请升星坐骑

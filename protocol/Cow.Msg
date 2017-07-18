@@ -1475,3 +1475,9 @@ rename,c2s,384,/*改名*/,STATUS_NEVER,False
 #
 unlock_title,c2s,385,/*道具解锁称号*/,STATUS_NEVER,False
 	indx,uint8,False,/*称号id*/
+	
+
+#
+social_buy_revenge_times,c2s,386,/*购买复仇次数*/,STATUS_NEVER,False
+	count,uint8,False,/*次数*/
+	

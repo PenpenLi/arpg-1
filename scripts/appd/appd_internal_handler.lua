@@ -289,9 +289,10 @@ local function on_logind_send_rename_check_result(pkt)
 	if available == 1 then
 		-- 判断扣钱逻辑
 		local costs = playerInfo:GetRenameCost()
-		if playerInfo:costMoneys(MONEY_CHANGE_RENAME, costs) then
+		if playerInfo:useAllItems(MONEY_CHANGE_RENAME, costs) then
 			playerInfo:AddRenameTimes()
 			playerInfo:SetName(realName)
+			playerInfo:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_RENAME_SUCCESS)
 		end
 	end
 end

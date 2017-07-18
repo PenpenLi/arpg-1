@@ -71,6 +71,10 @@ require("template.tables.tb_map_trial")
 require("template.tables.tb_social_shop")
 require("template.tables.tb_social_familiay")
 require("template.tables.tb_social_num")
+require("template.tables.tb_enemy_revenge_buy")
+require("template.tables.tb_enemy_revenge_base")
+
+
 --帮派
 require("template.tables.tb_faction_base")
 require("template.tables.tb_faction_boss")

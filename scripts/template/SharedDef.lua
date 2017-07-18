@@ -10,8 +10,8 @@ ZHUCHENG_DITU_ID = 1	-- 主城地图ID
 ZHUCHENG_FUHUO_X = 118	-- 主城复活点
 ZHUCHENG_FUHUO_Y = 145	-- 主城复活点
 BORN_MAP = 1001	-- 出生地图
-BORN_X = 138	-- 出生坐标x 
-BORN_Y = 174	-- 出生坐标y
+BORN_X = 143	-- 出生坐标x 
+BORN_Y = 113	-- 出生坐标y
 BORN_OR = 2	-- 出生朝向
 BORN_LV = 1	-- 出生等级
 VIP_MAX_LEVEL = 10	-- vip最大等级
@@ -1731,6 +1731,8 @@ PLAYER_INT_FIELD_CLOTH_FORCE = 1756	--  衣服外观战力
 PLAYER_INT_FIELD_POKEDEX_FORCE = 1757	--  图鉴战力
 PLAYER_INT_FIELD_TITLE_FORCE = 1758	--  称号战力
 PLAYER_INT_FIELD_RENAME_TIMES = 1759	--  改名次数
+PLAYER_INT_FIELD_REVENGE_TIMES = 1760	-- 当日剩余复仇次数
+PLAYER_INT_FIELD_REVENGE_BUY_TIMES = 1761	-- 当日复仇购买次数
 -- ////////////////////////////////////////////////////////////////////////////////////////////////////////
 -- 字符串部分
 PLAYER_STRING_FIELD_ACCOUNT = 4	-- 账号

@@ -183,6 +183,7 @@ hanlders[CMSG_STOREHOUSE_EXCHANGE] = PlayerInfo.Handle_Storehouse_Exchange
 
 hanlders[CMSG_STOREHOUSE_DESTROY] = PlayerInfo.Handle_Storehouse_Destroy
 
+hanlders[CMSG_SOCIAL_BUY_REVENGE_TIMES] = PlayerInfo.Handle_Buy_Revengr_Times
 
 --hanlders[CMSG_SEND_FACTION_GIFT] = PlayerInfo.Handle_Send_Faction_Gift
 --hanlders[CMSG_GET_FACTION_GIFT_EXREWARD] = PlayerInfo.Handle_Get_Faction_Gift_Exreward
