@@ -1480,4 +1480,11 @@ unlock_title,c2s,385,/*道具解锁称号*/,STATUS_NEVER,False
 #
 social_buy_revenge_times,c2s,386,/*购买复仇次数*/,STATUS_NEVER,False
 	count,uint8,False,/*次数*/
+
+#
+enter_risk_instance,c2s,387,/*请求进入世界冒险副本*/,STATUS_NEVER,False
+
+#
+social_remove_enemy,c2s,388,/*删除仇人*/,STATUS_NEVER,False
+	guid,String,False,/*guid*/
 	

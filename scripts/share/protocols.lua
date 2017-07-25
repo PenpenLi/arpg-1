@@ -348,6 +348,8 @@ CMSG_CANCEL_EQUIP_APPEARANCE		= 383	-- /*取消装备外观*/
 CMSG_RENAME		= 384	-- /*改名*/	
 CMSG_UNLOCK_TITLE		= 385	-- /*道具解锁称号*/	
 CMSG_SOCIAL_BUY_REVENGE_TIMES		= 386	-- /*购买复仇次数*/	
+CMSG_ENTER_RISK_INSTANCE		= 387	-- /*请求进入世界冒险副本*/	
+CMSG_SOCIAL_REMOVE_ENEMY		= 388	-- /*删除仇人*/	
 
 
 ---------------------------------------------------------------------
@@ -12468,6 +12470,60 @@ function Protocols.unpack_social_buy_revenge_times (pkt)
 end
 
 
+-- /*请求进入世界冒险副本*/	
+function Protocols.pack_enter_risk_instance (  )
+	local output = Packet.new(CMSG_ENTER_RISK_INSTANCE)
+	return output
+end
+
+-- /*请求进入世界冒险副本*/	
+function Protocols.call_enter_risk_instance ( playerInfo )
+	local output = Protocols.	pack_enter_risk_instance (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求进入世界冒险副本*/	
+function Protocols.unpack_enter_risk_instance (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*删除仇人*/	
+function Protocols.pack_social_remove_enemy ( guid)
+	local output = Packet.new(CMSG_SOCIAL_REMOVE_ENEMY)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*删除仇人*/	
+function Protocols.call_social_remove_enemy ( playerInfo, guid)
+	local output = Protocols.	pack_social_remove_enemy ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*删除仇人*/	
+function Protocols.unpack_social_remove_enemy (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -12808,6 +12864,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_rename = self.call_rename
 	playerInfo.call_unlock_title = self.call_unlock_title
 	playerInfo.call_social_buy_revenge_times = self.call_social_buy_revenge_times
+	playerInfo.call_enter_risk_instance = self.call_enter_risk_instance
+	playerInfo.call_social_remove_enemy = self.call_social_remove_enemy
 end
 
 local unpack_handler = {
@@ -13145,6 +13203,8 @@ local unpack_handler = {
 [CMSG_RENAME] =  Protocols.unpack_rename,
 [CMSG_UNLOCK_TITLE] =  Protocols.unpack_unlock_title,
 [CMSG_SOCIAL_BUY_REVENGE_TIMES] =  Protocols.unpack_social_buy_revenge_times,
+[CMSG_ENTER_RISK_INSTANCE] =  Protocols.unpack_enter_risk_instance,
+[CMSG_SOCIAL_REMOVE_ENEMY] =  Protocols.unpack_social_remove_enemy,
 
 }
 

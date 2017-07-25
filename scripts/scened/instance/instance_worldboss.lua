@@ -1,4 +1,4 @@
-InstanceWorldBoss = class("InstanceWorldBoss", Instance_base)
+InstanceWorldBoss = class("InstanceWorldBoss", InstanceInstBase)
 local protocols = require('share.protocols')
 
 InstanceWorldBoss.Name = "InstanceWorldBoss"
@@ -7,11 +7,13 @@ InstanceWorldBoss.player_auto_respan = 5
 -- 所有线的排名
 InstanceWorldBoss.rankList = {}
 
+--[[
 -- 所有先的roll点最高值和获得者, 及开始时间和结束时间
 InstanceWorldBoss.rollList = {}
 
 -- 所有roll过的名字列表
 InstanceWorldBoss.rollNameList = {}
+--]]
 
 -- BOSS的血量
 InstanceWorldBoss.boss_hp = {}
@@ -32,10 +34,12 @@ function ClearWorldBossData(all)
 	InstanceWorldBoss.rankList = {}
 	InstanceWorldBoss.boss_hp = {}
 	InstanceWorldBoss.deathList = {}
+--[[	
 	if all == 1 then
 		InstanceWorldBoss.rollList = {}
 		InstanceWorldBoss.rollNameList = {}
 	end
+	--]]
 end
 
 -- 判断BOSS是否需要升级
@@ -55,7 +59,7 @@ function DoIfBOSSLevelUp()
 		globalValue:AddWorldBossLevel()
 	end
 end
-
+--[[
 -- roll宝箱
 function Roll_Treasure(playerInfo)
 	-- 所有roll过的名字列表
@@ -97,7 +101,7 @@ function Roll_Treasure(playerInfo)
 	
 	NotifyAllRollResult(map_ptr, gf, playerInfo:GetName(), isHighest, rollConfig[ 4 ], rollConfig[ 5 ])
 end
-
+--]]
 
 function InstanceWorldBoss:ctor(  )
 	
@@ -105,24 +109,127 @@ end
 
 
 --初始化脚本函数
-function InstanceWorldBoss:OnInitScript(  )
+function InstanceWorldBoss:OnInitScript()
+	-- 不让重复初始化
+	if self:isInstanceInit() then
+		return
+	end
+	self:SetInstanceInited()
+	
 	Instance_base.OnInitScript(self) --调用基类
 	
-	mapLib.DelTimer(self.ptr, 'OnTimer_RefreshBoss')
-	mapLib.DelTimer(self.ptr, 'OnTimer_UpdateRank')
-	-- 刷新BOSS 计时器
+	self:OnTaskStart()
+	self:AddCountDown()
 	
-	local boss = mapLib.AliasCreature(self.ptr, InstanceWorldBoss.WORLD_BOSS_NAME)
-	if not boss then
-		mapLib.AddTimer(self.ptr, 'OnTimer_RefreshBoss', config.world_boss_wait * 1000)
-		self:SetUInt32(WORLDBOSS_FIELDS_BORN_TIME, config.world_boss_wait)
-	end
+	-- 刷新BOSS 计时器
+	mapLib.AddTimer(self.ptr, 'OnTimer_RefreshBoss', tb_worldboss_time[ 1 ].waitCountdown * 1000)
 	
 	-- 刷新排名 计时器
 	mapLib.AddTimer(self.ptr, 'OnTimer_UpdateRank', 1000)
+end
+
+-- 活动正式开始
+function InstanceWorldBoss:OnTaskStart()
+	local waitTime = tb_worldboss_time[ 1 ].waitCountdown
+		
+	self:SetUInt32(WORLDBOSS_FIELDS_BORN_TIME, waitTime)
 	
-	-- 设置总结束时间
-	self:SetMapEndTime(os.time() + tb_worldboss_time[ 1 ].time_last * 60)
+	-- 任务开始时间
+	self:SetMapStartTime(os.time() + waitTime)
+		
+	local timestamp = os.time() + waitTime + tb_worldboss_time[ 1 ].time_last * 60
+	-- 加任务结束时间
+	self:SetMapQuestEndTime(timestamp)
+	-- 副本时间超时回调
+	self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
+end
+
+--当副本状态发生变化时间触发
+function InstanceWorldBoss:OnSetState(fromstate,tostate)
+	if tostate == self.STATE_FINISH or tostate == self.STATE_FAIL then
+		self:RemoveTimeOutCallback(self.Time_Out_Fail_Callback)
+		
+		--10s后结束副本
+		local timestamp = os.time() + InstanceDoujiantai.exit_time
+		
+		self:AddTimeOutCallback(self.Leave_Callback, timestamp)
+		self:SetMapEndTime(timestamp)
+	end
+end
+
+
+function InstanceWorldBoss:AddCountDown()
+	local timestamp = os.time() + tb_worldboss_time[ 1 ].waitCountdown
+	self:SetMapStartTime(timestamp)
+	self:AddTimeOutCallback("countdown", timestamp)
+end
+
+-- 倒计时结束
+function InstanceWorldBoss:countdown()
+	-- 符点刷新定时器
+	mapLib.AddTimer(self.ptr, 'OnBuffRefresh', tb_worldboss_time[ 1 ].interval * 1000)
+end
+
+-- 刷新buff
+function InstanceWorldBoss:OnBuffRefresh()
+	-- 处理刷新次数
+	local times = self:GetMapReserveValue1()
+	if times < tb_worldboss_time[ 1 ].times then
+		self:SetMapReserveValue1(times+1)
+	end
+	
+	-- 刷新把原来的先删掉
+	local allGameObjects = mapLib.GetAllGameObject(self.ptr)
+	for _, gameobject in pairs(allGameObjects) do
+		mapLib.RemoveWorldObject(self.ptr, gameobject)
+	end
+	
+	-- 刷新新的
+	local indice = GetRandomIndexTable(#tb_worldboss_time[ 1 ].buffRandomPos, tb_worldboss_time[ 1 ].randomCount)
+	for i = 1, #indice do
+		local indx = indice[ i ]
+		local pos = tb_worldboss_time[ 1 ].buffRandomPos[indx]
+		local buffIndx = randInt(1, #tb_worldboss_buff)
+		local entry =  tb_worldboss_buff[buffIndx].gameobject_id
+		mapLib.AddGameObject(self.ptr, entry, pos[ 1 ], pos[ 2 ], GO_GEAR_STATUS_END)
+	end
+	
+	return self:GetMapReserveValue1() < tb_worldboss_time[ 1 ].times
+end
+
+
+--使用游戏对象之前
+--返回1的话就继续使用游戏对象，返回0的话就不使用
+function InstanceWorldBoss:OnBeforeUseGameObject(user, go, go_entryid, posX, posY)
+	-- 如果已经死了 就不能捡了
+	if unitLib.HasBuff(user, BUFF_INVINCIBLE) then
+		return 0
+	end
+	
+	if Script_Gameobject_Pick_Check(user, go_entryid, posX, posY) then
+		return 1
+	end
+	return 0
+end
+
+--使用游戏对象
+--返回1的话成功使用游戏对象，返回0的话使用不成功
+function InstanceWorldBoss:OnUseGameObject(user, go, go_entryid, posX, posY)
+	-- 判断对应的是那种buff
+	for _, obj in ipairs(tb_worldboss_buff) do
+		if obj.gameobject_id == go_entryid then
+			local effectId = obj.buffEffect
+			local buffId = tb_buff_effect[effectId].buff_id
+			local duration = tb_buff_effect[effectId].duration
+			SpelladdBuff(user, buffId, user, effectId, duration)
+			break
+		end
+	end
+	
+	-- 需要删除对象
+	mapLib.RemoveWorldObject(self.ptr, go)
+	
+	return 1	
 end
 
 -- 世界BOSS结束了
@@ -133,7 +240,6 @@ end
 
 -- 刷新BOSS
 function InstanceWorldBoss:OnTimer_RefreshBoss()
-
 	if globalValue:IsWorldBossBorn() then
 		-- 刷BOSS		
 		local boss = mapLib.AliasCreature(self.ptr, InstanceWorldBoss.WORLD_BOSS_NAME)
@@ -235,7 +341,7 @@ function InstanceWorldBoss:OnJoinPlayer(player)
 	end
 	
 	-- 结束时间到就不让进了
-	if os.time() >= self:GetMapEndTime() or self:IsEnd() then
+	if os.time() >= self:GetMapQuestEndTime() or self:IsEnd() then
 		mapLib.ExitInstance(self.ptr, player)
 		return
 	end
@@ -353,7 +459,7 @@ function AI_WorldBoss:DamageTaken(owner, unit, damage)
 	
 	-- 进行排名
 	AddWorldBossDamage(lineNo, playerGuid, name, damage)
-	
+--[[	
 	-- 遍历是否需要进行roll点	
 	local prev = currHealth + damage
 	local rollId = -1
@@ -376,7 +482,7 @@ function AI_WorldBoss:DamageTaken(owner, unit, damage)
 		-- 准备roll点
 		instanceInfo:PrepareToRoll(rollId)
 	end
-	
+	--]]
 end
 
 -- 受到伤害后
@@ -391,7 +497,7 @@ function AI_WorldBoss:DamageDeal( owner, unit, damage)
 	end
 end
 
-
+--[[
 function NotifyAllRollResult(map_ptr, point, name, isHighest, cd, rollid)
 	local allPlayers = mapLib.GetAllPlayer(map_ptr)
 	for _, player in pairs(allPlayers) do
@@ -443,7 +549,7 @@ function InstanceWorldBoss:OnTimer_Roll(rollId)
 	
 	return false
 end
-
+--]]
 function AddWorldBossDamage(lineNo, playerGuid, name, damage)
 	if not InstanceWorldBoss.rankList[lineNo] then
 		InstanceWorldBoss.rankList[lineNo] = {}

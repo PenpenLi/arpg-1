@@ -65,14 +65,44 @@ end
 ---------------------------试炼塔-----------------------------
 -- 检测能否进入试炼塔副本
 function PlayerInfo:checkTrialMapTeleport()
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TRIAL)) then
+		return
+	end
 	local instMgr = self:getInstanceMgr()
-	--instMgr:checkIfCanEnterTrial()
+	instMgr:checkIfCanEnterTrial()
 end
 
 -- 通关关卡
 function PlayerInfo:passTrialInstance(id)
+	local instMgr = self:getInstanceMgr()
+	instMgr:passInstance(id)
 	
+	-- 设置试炼塔通关层数
+	if self:GetUInt32(PLAYER_FIELD_TRIAL_LAYERS) < id then
+		self:SetUInt32(PLAYER_FIELD_TRIAL_LAYERS, id)
+	end
+	-- 更新排名
+	rankInsertTask(self:GetGuid(), RANK_TYPE_TRIAL)
 end
+
+
+-- 一键扫荡
+function PlayerInfo:sweepTrial()
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TRIAL)) then
+		return
+	end
+	local instMgr = self:getInstanceMgr()
+	instMgr:sweepTrialInstance()
+end
+
+-- 重置试炼塔
+function PlayerInfo:resetTrial()
+	local instMgr = self:getInstanceMgr()
+	instMgr:resetTrialInstance()
+end
+
 
 -- 通关关卡
 function PlayerInfo:passResInstance(id)
@@ -88,10 +118,6 @@ function PlayerInfo:passWorldRiskInstance(id)
 end
 
 
--- 一键扫荡
-function PlayerInfo:sweepTrial()
-	
-end
 
 function PlayerInfo:sweepResInstance(id)
 	local vip = self:GetVIP()
@@ -101,12 +127,6 @@ function PlayerInfo:sweepResInstance(id)
 	end
 	local instMgr = self:getInstanceMgr()
 	instMgr:sweepResInstance(id)
-end
-
--- 重置试炼塔
-function PlayerInfo:resetTrial()
-	local instMgr = self:getInstanceMgr()
-	instMgr:resetTrialInstance()
 end
 
 
@@ -226,12 +246,10 @@ function DoWorldBossTeleport(playerDict, roomInfo)
 end
 
 function PlayerInfo:checkMassBossMapTeleport(id)
-	--[[
-	-- 系统未激活
-	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_VIP)) then
+	-- 模块没开 不让进
+	if not self:GetOpenMenuFlag(MODULE_BOSS, MODULE_BOSS_RISK_BOSS) then
 		return
 	end
-	--]]
 	local instMgr = self:getInstanceMgr()
 	instMgr:checkIfCanEnterMassBoss(id)
 end

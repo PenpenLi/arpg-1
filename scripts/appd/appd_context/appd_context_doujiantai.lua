@@ -163,15 +163,13 @@ function PlayerInfo:BuyDoujiantaiTime(num)
 		return
 	end
 	
-	local yb = 0
-	for i=1,num do
+	local cost = {}
+	for i = 1, num do
 		local idx = hasbuy + i
-		yb = yb + config[idx]
+		AddTempInfoIfExist(cost, config[idx][ 1 ], config[idx][ 2 ])
 	end
-	
-	local cost = {{MONEY_TYPE_GOLD_INGOT,yb}}
 
-	if not self:costMoneys(MONEY_CHANGE_DOUJIAN_BUY_TIMES, cost,1) then
+	if not self:useAllItems(MONEY_CHANGE_DOUJIAN_BUY_TIMES, cost, 1) then
 		self:CallOptResult(OPRATE_TYPE_DOUJIAN, DOUJIAN_OPERATE_NO_MONEY)
 		--元宝不足购买斗剑次数
 		return
@@ -188,14 +186,10 @@ function PlayerInfo:ClearDoujianCD()
 		return
 	end
 	
-	local config = tb_doujiantai_base[1]
-	
+	local config = tb_doujiantai_base[ 1 ]
 	local minute = math.ceil((cdtime - os.time())/60)
-	local yb = config.changeRate * minute
-	
-	local cost = {{MONEY_TYPE_GOLD_INGOT,yb}}
-	
-	if not self:costMoneys(MONEY_CHANGE_DOUJIAN_CLEARCD, cost,1) then
+	local cost = config.changeRate
+	if not self:useAllItems(MONEY_CHANGE_DOUJIAN_CLEARCD, cost, minute) then
 		self:CallOptResult(OPRATE_TYPE_DOUJIAN, DOUJIAN_OPERATE_NO_MONEY_CD)
 		--元宝不足不能清理CD
 		return

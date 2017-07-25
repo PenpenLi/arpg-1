@@ -16,7 +16,7 @@ function AppSocialMgr:addSocialItem(player,index,fam)
 	local gender = player:GetGender()
 	local vip = player:GetVIP()
 	local faction = player:GetFactionName()
-
+	local force = player:GetForce()
 
 	--图标 vip 等级
 	self:SetByte(index,0,gender)
@@ -28,6 +28,9 @@ function AppSocialMgr:addSocialItem(player,index,fam)
 	self:SetByte(index+1,2,1)
 	self:SetByte(index+1,3,1)
 	--self:SetUInt16(index+1,1,1)
+	
+	--战力
+	self:SetDouble(index+SOCIAL_FAMILIAR_FORCE,force)
 	--guid
 	self:SetStr(index,guid)
 	--name faction
@@ -106,6 +109,7 @@ function AppSocialMgr:resetItemInfo(index,needclear)
 			local vip = friend:GetVIP()
 			local name = friend:GetName()
 			local faction = friend:GetFactionName()
+			local force = friend:GetForce()
 			
 			local baseLev = self:GetUInt16(index,1)
 			if baseLev ~= level then
@@ -123,6 +127,10 @@ function AppSocialMgr:resetItemInfo(index,needclear)
 				self:SetStr(index+1,str)
 			end
 			
+			local baseforce = self:GetDouble(index+SOCIAL_FAMILIAR_FORCE)
+			if baseforce ~= force then
+				self:SetDouble(index+SOCIAL_FAMILIAR_FORCE,force)
+			end
 		end
 	end
 end
@@ -373,6 +381,24 @@ function AppSocialMgr:minHatredTimeIndex()
 	return idx
 
 end
+
+function AppSocialMgr:isEnemy(guid)
+	local idx = self:getEnemyIndex(guid)
+	if idx ~= -1 then
+		return true
+	end
+	return false
+end
+
+function AppSocialMgr:removeEnemy(guid)
+	local idx = self:getEnemyIndex(guid)
+	if idx ~= -1 then
+		self:clearSocialItem(idx)
+		self:setEnemyIndex(guid,-1)
+	end
+end
+
+
 --设置好友在线状态
 function AppSocialMgr:setFriendOnLine(guid,online)
 	local idx = self:getFriendIndex(guid)

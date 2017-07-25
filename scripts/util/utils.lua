@@ -130,7 +130,7 @@ function GetMoneyType(itemId)
 		print(debug.traceback())
 		return -1
 	end
-	local money_type = tb_item_template[itemId].money_type - 1
+	local money_type = tb_item_template[itemId].money_type
 	return money_type
 end
 
@@ -385,14 +385,14 @@ function _sort(list, lt, rt, comp, callback)
 	local midValue = list[mid]
 	
 	while (i <= j) do
-		while (comp(list[ i ], midValue)) do
+		while (i < mid and comp(list[ i ], midValue)) do
 			i = i + 1
 		end
-		while (comp(midValue, list[ j ])) do
+		while (mid < j and comp(midValue, list[ j ])) do
 			j = j - 1
 		end
 		if i <= j then
-			if callback then
+			if callback and i < j then
 				callback(list[ i ], list[ j ])
 			end
 			local tmp = list[ i ]

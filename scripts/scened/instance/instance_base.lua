@@ -625,11 +625,10 @@ Instance_base = {
 		-- 压成字符串
 		local reward = {}
 		for itemId, count in pairs(dict) do
-			table.insert(reward, itemId..":"..count)
+			reward[itemId] = count
 		end
-		local data = string.join(",", reward)
 		
-		return data
+		return reward
 	end,
 	
 	--当玩家加入时触发
@@ -783,7 +782,7 @@ Instance_base = {
 			return self:DoIsMate(host, target_ptr)
 		end,
 		
-	-- 检查生物攻击玩家
+	-- 检查生物攻击生物
 	CheckCreatureToCreature = 
 		function (self, killer_ptr, target_ptr)
 			local host1 = creatureLib.GetMonsterHost(killer_ptr)
@@ -801,14 +800,14 @@ Instance_base = {
 			
 			-- 如果是自己就不打
 			if killer_ptr == target_ptr then
-				return false
+				return true
 			end
 			
 			local killerData = nil
 			local targetData = nil
 			local killerMode = unitGetBattleMode(killer_ptr)
 			local targetMode = unitGetBattleMode(target_ptr)
-			
+				
 			-- 家族模式
 			if killerMode == FAMILY_MODE then
 				killerData = GetFactionGuid(killer_ptr)

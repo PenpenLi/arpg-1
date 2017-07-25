@@ -11,10 +11,10 @@ tb_doujiantai_base = {
 	--  joinTime:array 参与时间
 	--  dailytimes:int 每日次数
 	--  tryReward:array 挑战奖励
-	--  buyInfo:array 购买信息
+	--  buyInfo:array 购买花费列表
 	--  level:int 参与等级
 	--  refreshCountdown:int 刷新冷却时间
 	--  battleCountdown:array 挑战冷却时间
-	--  changeRate:int 1分钟需要的元宝数
-	[1] = {id = 1, bornPos = {{9,20},{72,20}}, cd = 3, last = 90, joinTime = {{0,0,23,59}}, dailytimes = 3, tryReward = {{8,50}}, buyInfo = {10,20,40,60,80}, level = 5, refreshCountdown = 5, battleCountdown = {0,0,10,30,60,120,180,240,300,300}, changeRate = 1},
+	--  changeRate:array 1分钟需要的资源数
+	[1] = {id = 1, bornPos = {{9,20},{72,20}}, cd = 3, last = 90, joinTime = {{0,0,23,59}}, dailytimes = 3, tryReward = {{8,50}}, buyInfo = {{1,10},{1,20},{1,30},{1,40},{1,50}}, level = 5, refreshCountdown = 5, battleCountdown = {0,100,100,30,60,120,180,240,300,300}, changeRate = {{1,1}}},
 }

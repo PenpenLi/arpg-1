@@ -13,6 +13,15 @@ function InstanceResGem:ctor(  )
 end
 
 
+-- 副本失败退出
+function InstanceResGem:instanceFail()
+	local state = self.STATE_FAIL
+	if self:CheckQuestAfterTargetUpdate() then
+		state = self.STATE_FINISH
+	end
+	self:SetMapState(state)
+end
+
 function InstanceResGem:InitRes(config)
 	outFmtDebug("gem----------------------- %d", #config.protectors)
 	-- 加晶石

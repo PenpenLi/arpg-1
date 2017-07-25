@@ -337,7 +337,6 @@ function InstanceFaction:DoIsFriendly(killer_ptr, target_ptr)
 
 	return 0
 end
-
 -----------------------------------------------------------------------------
 --------------------------------∞Ô≈…∂‡»Àboss ai------------------------------
 AI_faction_boss = class("AI_faction_boss", AI_Base)

@@ -147,9 +147,13 @@ function InstanceVIP:AfterProcessUpdate(player)
 		local playerInfo = UnitInfo:new{ptr = player}
 		local dropId = GetRewardIfGenderSensitive(tb_map_vip[id].rewards[hard], playerInfo:GetGender())
 
-		local data = self:RandomReward(player, {dropId})
+		local dict = self:RandomReward(player, {dropId})
 		
-		self:SetMapReward(data)
+		-- 扫荡的结果发送
+		local list = Change_To_Item_Reward_Info(dict, true)
+			
+		playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list, INSTANCE_SUB_TYPE_VIP, '')
+		
 		
 		-- 设置状态
 		self:SetMapState(self.STATE_FINISH)

@@ -5,6 +5,18 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 	local config   = tb_skill_base[spellId]
 	local spellMgr = self:getSpellMgr()
 	
+	if raiseType == RAISE_BASE_SKILL then
+		-- 系统未激活
+		if (not self:GetOpenMenuFlag(MODULE_SPELL, MODULE_SPELL_ALL)) then
+			return
+		end
+	elseif raiseType == RAISE_MOUNT_SKILL then
+		-- 系统未激活
+		if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_SKILL)) then
+			return
+		end
+	end
+	
 	-- 判断技能是否存在
 	if not self:isSpellExist(spellId) then
 		outFmtError("spellId %d not exist", spellId)
@@ -275,7 +287,7 @@ end
 
 function PlayerInfo:Handle_Raise_Mount_Level_Base(pkt)
 	-- 系统未激活
-	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) then
+	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_LEVEL)) then
 		return
 	end
 
@@ -406,6 +418,11 @@ end
 --法宝激活
 function PlayerInfo:Handle_Talisman_Active(pkt)
 	local id = pkt.id
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_DIVINE, MODULE_DIVINE_ALL)) then
+		return
+	end
+	
 	if tb_talisman_base[id] == nil then
 		outFmtError("table has no talisman id = %d", id)
 		return
@@ -442,6 +459,10 @@ end
 
 --神羽祝福
 function PlayerInfo:Handle_Wings_Bless(pkt)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_WING, MODULE_WING_UPGRADE)) then
+		return
+	end
 	self:WingsBless()
 end
 
@@ -452,14 +473,26 @@ end
 
 --神羽强化
 function PlayerInfo:Handle_Wings_Strength(pkt)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_WING, MODULE_WING_STRENGTH)) then
+		return
+	end
 	self:WingsStrength()
 end
 
 function PlayerInfo:Handle_Meridian_Practise(pkt)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_TCM, MODULE_TCM_ALL)) then
+		return
+	end
 	self:meridianPractise()
 end
 
 function PlayerInfo:Handle_Add_Meridian_Exp(pkt)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_TCM, MODULE_TCM_ALL)) then
+		return
+	end
 	local id = pkt.id
 
 	if not tb_meridian_item[ id ] then
@@ -476,16 +509,32 @@ function PlayerInfo:Handle_Equipdevelop_Operate(pkt)
 	local reserve_str1 = pkt.reserve_str1   --预留string值1*/
 	local reserve_str2 = pkt.reserve_str2   --预留string值2*/
 	if opt_type == EQUIPDEVELOP_TYPE_STRENGTH_LVUP then
+		-- 系统未激活
+		if (not self:GetOpenMenuFlag(MODULE_MIX, MODULE_MIX_STRENGTH)) then
+			return
+		end
 		self:EquipDevelopStrength(reserve_int1,reserve_int2)
 	elseif opt_type == EQUIPDEVELOP_TYPE_REFINE_STAR_LVUP then
+		-- 系统未激活
+		if (not self:GetOpenMenuFlag(MODULE_MIX, MODULE_MIX_POLISHED)) then
+			return
+		end
 		self:EquipDevelopRefineStarUp(reserve_int1)
 	elseif opt_type == EQUIPDEVELOP_TYPE_REFINE_RANK_LVUP then
 		self:EquipDevelopRefineRankUp(reserve_int1)
 	elseif opt_type == EQUIPDEVELOP_TYPE_GEM_ACTIVE then
+		-- 系统未激活
+		if (not self:GetOpenMenuFlag(MODULE_MIX, MODULE_MIX_GEM)) then
+			return
+		end
 		self:EquipDevelopGemActive(reserve_int1,reserve_int2)
 	elseif opt_type == EQUIPDEVELOP_TYPE_GEM_LVUP then
 		self:EquipDevelopGemLvUp(reserve_int1,reserve_int2)
 	elseif opt_type == EQUIPDEVELOP_TYPE_WASHATTRS_WASH then
+		-- 系统未激活
+		if (not self:GetOpenMenuFlag(MODULE_MIX, MODULE_MIX_WASH)) then
+			return
+		end
 		self:EquipDevelopWashAttrsWash(reserve_str1)
 	elseif opt_type == EQUIPDEVELOP_TYPE_WASHATTRS_SAVE then
 		self:EquipDevelopWashAttrsSave(reserve_str1)
@@ -506,14 +555,20 @@ end
 
 function PlayerInfo:Handle_Active_Appearance(pkt)
 	local id = pkt.id
-	--[[	
-	if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_UPGRADE)) or spellMgr:getMountLevel() > 0 then
-		return
-	end
-	--]]
-	
+
+
 	-- 外观不存在
 	if not tb_appearance_info[ id ] then
+		return
+	end
+	
+	local modules = MODULE_FASHION_WEAPON
+	if tb_appearance_info[ id ].type == 1 then
+		modules = MODULE_FASHION_CLOTHES
+	end
+	
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_FASHION, modules)) then
 		return
 	end
 	

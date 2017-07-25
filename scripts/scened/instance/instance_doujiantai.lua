@@ -56,6 +56,13 @@ function InstanceDoujiantai:SetCurrWins(val)
 	self:SetUInt16(DOUJIANTAI_FIELDS_INT_COMBAT_WIN_INFO, 1, val)
 end
 
+function InstanceDoujiantai:GetHistory()
+	return self:GetUInt16(DOUJIANTAI_FIELDS_INT_COMBAT_WIN_INFO, 0)
+end
+
+function InstanceDoujiantai:GetCurrWins()
+	return self:GetUInt16(DOUJIANTAI_FIELDS_INT_COMBAT_WIN_INFO, 1)
+end
 
 function InstanceDoujiantai:OnCreateCreature()
 	local rank = self:GetOtherRank()
@@ -112,6 +119,29 @@ function InstanceDoujiantai:OnSetState(fromstate,tostate)
 		
 		self:AddTimeOutCallback(self.Leave_Callback, timestamp)
 		self:SetMapEndTime(timestamp)
+		
+		local allPlayers = mapLib.GetAllPlayer(self.ptr)
+		local player = allPlayers[ 1 ]
+		if player then
+			local playerInfo = UnitInfo:new {ptr = player}
+			local dict = {}
+			for _, info in pairs(tb_doujiantai_base[ 1 ].tryReward) do
+				MergeSameTable(dict, info[ 1 ], info[ 2 ])
+			end
+			if tostate == self.STATE_FINISH then
+				if self:GetCurrWins() + 1 > self:GetHistory() then
+					local config = tb_doujiantai_combat_win[self:GetCurrWins()+1]
+					if config then
+						for _, info in pairs(config.reward) do
+							MergeSameTable(dict, info[ 1 ], info[ 2 ])
+						end
+					end
+				end
+			end
+			local list = Change_To_Item_Reward_Info(dict, true)
+			
+			playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list, INSTANCE_SUB_TYPE_DOUJIANTAI, '')
+		end
 	end
 end
 

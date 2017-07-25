@@ -204,7 +204,7 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 		
 		end		
 	end
-	
+--[[	
 	--开始交换位置流程啦
 	--如果可以叠加直接处理
 	if src_item and dst_item and src_item:canOverlay(dst_item) and dst_item:getCount() < src_temp.max_overlap then
@@ -222,7 +222,7 @@ function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
 		end
 		return true
 	end
-	
+	--]]
 	--源位置物品移到目的位置
 	if isRring and dst_pos == EQUIPMENT_TYPE_LRING then
 		dst_pos = EQUIPMENT_TYPE_RRING;

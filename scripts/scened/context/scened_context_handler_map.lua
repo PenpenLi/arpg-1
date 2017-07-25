@@ -49,4 +49,6 @@ OpcodeHandlerFuncTable[CMSG_QUERY_MASS_BOSS_INFO] = ScenedContext.Handle_Query_M
 
 OpcodeHandlerFuncTable[CMSG_QUERY_MASS_BOSS_RANK] = ScenedContext.Handle_Query_Mass_Boss_Rank
 
+OpcodeHandlerFuncTable[CMSG_ENTER_RISK_INSTANCE] = ScenedContext.Hanlde_Enter_Risk_Instance
+
 return OpcodeHandlerFuncTable

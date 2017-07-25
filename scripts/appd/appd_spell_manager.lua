@@ -799,6 +799,7 @@ function AppSpellMgr:SetWingsId(value)
 	self:SetUInt32(SPELL_WINGS_ID,value)
 	local owner = self:getOwner()
 	owner:SetUInt32(PLAYER_INT_FIELD_WINGS_RANK,math.floor(value/100))
+	owner:SetUInt32(PLAYER_INT_FIELD_WINGS_STAR,value%100)
 end
 --神羽强化等级
 function AppSpellMgr:GetWingsLevel()

@@ -13,6 +13,11 @@ end
 
 --初始化脚本函数
 function InstanceResBase:OnInitScript(  )
+	-- 不让重复初始化
+	if self:isInstanceInit() then
+		return
+	end
+	self:SetInstanceInited()
 	
 	InstanceInstBase.OnInitScript(self) --调用基类
 	
@@ -117,6 +122,20 @@ function InstanceResBase:OnSetState(fromstate,tostate)
 		
 		self:AddTimeOutCallback(self.Leave_Callback, timestamp)
 		self:SetMapEndTime(timestamp)
+		
+		local allPlayers = mapLib.GetAllPlayer(self.ptr)
+		local player = allPlayers[ 1 ]
+		if not player then
+			return
+		end
+		local playerInfo = UnitInfo:new {ptr = player}
+
+		if tostate == self.STATE_FAIL then
+			-- 失败了
+			playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, {}, INSTANCE_SUB_TYPE_RES, '')
+		else
+			self:SendResReward(player)
+		end
 	end
 end
 
@@ -263,29 +282,38 @@ end
 function InstanceResBase:AfterProcessUpdate(player)
 	-- 判断副本是否
 	if self:CheckQuestAfterTargetUpdate() then
-		local id = self:GetIndex()
-		-- 获得随机奖励dropIdTable
---		local dropIdTable = tb_map_trial[ id ].reward
-		local playerInfo = UnitInfo:new{ptr = player}
-		local idx = id * 100 + playerInfo:GetLevel()
-		--outFmtDebug("tb_instance_reward idx %d",idx)
-		local config = tb_instance_reward[idx]
-		local tab = {}
-		table.insert(tab,config.basereward[1])
-		local randomReward = config.randomreward
-		local rewardIdx = randInt(1, #randomReward)
-		table.insert(tab,randomReward[rewardIdx])
-		
-		local data = self:RandomReward(player, {}, tab)
-		
-		self:SetMapReward(data)
-		
-		-- 设置状态
 		self:SetMapState(self.STATE_FINISH)
-		
-		--发到应用服进行进入判断
-		playerLib.SendToAppdDoSomething(player, SCENED_APPD_PASS_RES_INSTANCE, id)
 	end
+end
+
+-- 副本失败退出
+function InstanceResBase:instanceFail()
+	self:SetMapState(self.STATE_FAIL)
+end
+
+function InstanceResBase:SendResReward(player)
+	local id = self:GetIndex()
+	-- 获得随机奖励dropIdTable
+--		local dropIdTable = tb_instance_trial[ id ].reward
+	local playerInfo = UnitInfo:new{ptr = player}
+	local idx = id * 100 + playerInfo:GetLevel()
+	--outFmtDebug("tb_instance_reward idx %d",idx)
+	local config = tb_instance_reward[idx]
+	local tab = {}
+	table.insert(tab,config.basereward[1])
+	local randomReward = config.randomreward
+	local rewardIdx = randInt(1, #randomReward)
+	table.insert(tab,randomReward[rewardIdx])
+	
+	local dict = self:RandomReward(player, {}, tab)
+	
+	-- 扫荡的结果发送
+	local list = Change_To_Item_Reward_Info(dict, true)
+		
+	playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list, INSTANCE_SUB_TYPE_RES, '')
+	
+	--发到应用服进行进入判断
+	playerLib.SendToAppdDoSomething(player, SCENED_APPD_PASS_RES_INSTANCE, id)
 end
 
 function InstanceResBase:MonsterDie(player)

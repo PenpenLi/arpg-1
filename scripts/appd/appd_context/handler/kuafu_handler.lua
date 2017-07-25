@@ -311,6 +311,10 @@ end
 
 
 function PlayerInfo:Handle_Group_Instance_Match(pkt)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TEAM)) then
+		return
+	end
 	local indx = pkt.indx
 	-- index是否正确
 	if indx < 1 or indx > #tb_group_instance_base then
@@ -347,7 +351,11 @@ function PlayerInfo:Handle_Group_Instance_Match(pkt)
 end
 
 function PlayerInfo:Handle_Match_Single_PVP(pkt)
-
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_ARENA, MODULE_ARENA_RANK)) then
+		return
+	end
+	
 	if not self:isInPvpOpenTime() then
 		return
 	end

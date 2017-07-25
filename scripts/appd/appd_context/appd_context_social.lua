@@ -177,20 +177,20 @@ function PlayerInfo:AddApplyFriend(friend)
 	--判断是不是好友
 	if socialMgr:isFriend(guid) then
 		--outFmtDebug("player is already friend, %s", guid)
-		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
+		friend:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ALREADY_FRIEND)
 		return false
 	end
 	--判断是不是自己
 	if self:GetName() == guid then
 		--outFmtDebug("you self is a friend, %s", guid)
-		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
+		friend:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
 		return false
 	end
 
 	--判断是不是已经在列表中
 	if socialMgr:isApply(guid) then
 		--outFmtDebug("player is already in apply, %s", guid)
-		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_HAS_SEND_ADD)
+		friend:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_HAS_SEND_ADD)
 		return false
 	end
 
@@ -340,4 +340,14 @@ end
 function PlayerInfo:isFriend(guid)
 	local socialMgr = self:getSocialMgr()
 	return socialMgr:isFriend(guid)
+end
+
+-- 删除好友
+function PlayerInfo:RemoveEnemy(guid)
+	local socialMgr = self:getSocialMgr()
+	if not socialMgr:isEnemy(guid) then
+		outFmtDebug("player is not enemy, %s", guid)
+		return false
+	end
+	socialMgr:removeEnemy(guid)
 end

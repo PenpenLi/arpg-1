@@ -18,7 +18,7 @@ require("share/tick_name")
 
 
 globalCounter:InitDoujiantaiRank()
-globalValue:UpdateFactionGiftRank()
+--globalValue:UpdateFactionGiftRank()
 -------------------------------------------------------------------------------
 --配置文件信息
 config = {
@@ -49,7 +49,7 @@ config = {
 	player_max_level = 100,					--玩家最大等级
 	
 	player_chat_world_level		= 1,		--玩家世界频道最低等级发言
-	player_chat_whisper_level	= 30,		--私聊最低等级限时
+	player_chat_whisper_level	= 1,		--私聊最低等级限时
 
 	update_firend_info_interval = 20,		--更新玩家好友资料间隔
 	update_detection_player_info = 10,		--轮询玩家数据间隔
@@ -86,6 +86,7 @@ config = {
 		CMSG_GET_LOGIN_ACTIVITY_REWARD,
 		CMSG_SMELTING_EQUIP,
 		CMSG_SOCIAL_BUY_REVENGE_TIMES,
+		CMSG_SOCIAL_REMOVE_ENEMY,
 		--CMSG_SEND_FACTION_GIFT,
 		--CMSG_GET_FACTION_GIFT_EXREWARD,
 		--CMSG_GET_ALL_FACTION_GIFT_EXREWARD,
@@ -335,7 +336,7 @@ function DoSetWaBaoTime()
 	--发送公告
 	onSendNotice(18)	
 end
-
+--[[
 local appd_faction_rank = {}
 --{queen_guid queen_name faction_guid faction_name guard_guid guard_name point icon}
 --机器人 guid = ""
@@ -564,4 +565,4 @@ function loadFactionInfo()
 end
 
 loadFactionInfo()
-
+--]]

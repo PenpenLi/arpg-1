@@ -156,6 +156,7 @@ config = {
 		CMSG_TRY_MASS_BOSS,			-- 挑战全民boss
 		CMSG_QUERY_MASS_BOSS_INFO,	-- 查询挑战人员个数
 		CMSG_QUERY_MASS_BOSS_RANK,	-- 查询排行榜
+		CMSG_ENTER_RISK_INSTANCE,
 
 		--CMSG_CHANGE_LINE,
 		--[[
@@ -259,6 +260,7 @@ function load_lua_scripts()
 		
 		
 		{'地图VIP副本脚本'		,'scened/instance/instance_vip'},
+		{'试炼塔副本脚本'		,'scened/instance/instance_trial'},
 		{'地图世界冒险副本脚本'	,'scened/instance/instance_worldrisk'},
 		
 		{'地图世界BOSS等待脚本'	,'scened/instance/instance_worldboss_prepare'},
@@ -298,64 +300,85 @@ end
 load_lua_scripts()
 
 -- 映射mapid和脚本关系
-INSTANCE_SCRIPT_TABLE = {
-	--TODO: 补全
-	[ 1 ] = InstanceMainBase,
-	[1001] = InstanceFieldBase,
-	[1002] = InstanceFieldBase,
-	[1003] = InstanceFieldBase,
-	[2001] = InstanceInstBase,
-	[2002] = InstanceInstBase,
-	[2003] = InstanceVIP,
-	[2004] = InstanceWorldRisk,
-	
-	[2016] = InstanceWorldBossP,
-	[2017] = InstanceWorldBoss,
-	[2011] = InstanceResBase,
-	[2012] = InstanceResZhenQi,
-	[2013] = InstanceResGold,
-	[2014] = InstanceResGold,
-	[2015] = InstanceResGem,
-	[2018] = InstanceXianfuTest,
-	
-	[2019] = InstanceMassBoss,
-	[2020] = InstanceMassBoss,
-	[2021] = InstanceMassBoss,
-	[2022] = InstanceMassBoss,
-	[2023] = InstanceMassBoss,
-	[2024] = InstanceMassBoss,
-	[2025] = InstanceMassBoss,
-	[2026] = InstanceMassBoss,
-	[2027] = InstanceMassBoss,
-	[2028] = InstanceMassBoss,	
+INSTANCE_SCRIPT_TABLE = {}
 
-	[3001] = InstanceDoujiantai,
-	[3002] = InstanceKuafu3v3,
-	[3003] = InstanceKuafuXianfu,
-	[3005] = InstanceXiulianchang,
+function onRangeMapping (mapIdInfo, clazz)
+	local paramType = type(mapIdInfo)
+	if paramType == "table" then
+		setMapScriptMappin(mapIdInfo[ 1 ], mapIdInfo[ 2 ], clazz)
+	elseif paramType == "number" then
+		setMapScriptMappin(mapIdInfo, mapIdInfo, clazz)
+	end
+end
+
+function setMapScriptMappin(a, b, clazz)
+	for mapid = a, b do
+		INSTANCE_SCRIPT_TABLE[mapid] = clazz
+	end
+end
+
+function initScriptTable()
+	--  mainCity:array 主城
+	onRangeMapping(tb_script_base[ 1 ].mainCity, InstanceMainBase)
 	
-	[3006] = InstanceKuafuGroup,
-	[3007] = InstanceKuafuGroup,
-	[3008] = InstanceKuafuGroup,
-	[3009] = InstanceKuafuGroup,
-	[3010] = InstanceKuafuGroup,
-	[3011] = InstanceKuafuGroup,
-	[3012] = InstanceKuafuGroup,
-	[3013] = InstanceKuafuGroup,
-	[3014] = InstanceKuafuGroup,
-	[3015] = InstanceKuafuGroup,
-	[3016] = InstanceFactionBossDefense,
-	[3017] = InstanceFactionTower,
-	[3018] = InstanceQualify,
+	--  field:array 野外
+	onRangeMapping(tb_script_base[ 1 ].field, InstanceFieldBase)
 	
-	[4001] = InstanceRemind0,
-	[4002] = InstanceRemind0,
-	[4003] = InstanceRemind0,
-	[4004] = InstanceRemind0,
-	[4005] = InstanceRemind0,
+	--  trial:int 试炼塔
+	onRangeMapping(tb_script_base[ 1 ].trial, InstanceTrial)
 	
-	[5001] = InstanceFaction,
-}
+	--  risk:array 世界冒险
+	onRangeMapping(tb_script_base[ 1 ].risk, InstanceWorldRisk)
+	
+	--  worldbossPrepare:int 世界BOSS等待
+	onRangeMapping(tb_script_base[ 1 ].worldbossPrepare, InstanceWorldBossP)
+	
+	--  worldboss:int 世界BOSS
+	onRangeMapping(tb_script_base[ 1 ].worldboss, InstanceWorldBoss)
+	
+	--  resExp:int 资源经验
+	onRangeMapping(tb_script_base[ 1 ].resExp, InstanceResBase)
+	
+	--  resQI:int 资源真气
+	onRangeMapping(tb_script_base[ 1 ].resQI, InstanceResZhenQi)
+	
+	--  resSoul:int 资源兽灵
+	onRangeMapping(tb_script_base[ 1 ].resSoul, InstanceResGold)
+
+	--  resGold:int 资源银币
+	onRangeMapping(tb_script_base[ 1 ].resGold, InstanceResGold)
+
+	--  resGem:int 资源宝石
+	onRangeMapping(tb_script_base[ 1 ].resGem, InstanceResGem)
+
+	--  massBoss:array 全民boss
+	onRangeMapping(tb_script_base[ 1 ].massBoss, InstanceMassBoss)
+	
+	--  doujiantai:int 斗剑台
+	onRangeMapping(tb_script_base[ 1 ].doujiantai, InstanceDoujiantai)
+	
+	--  kuafuGroup:array 跨服组队
+	onRangeMapping(tb_script_base[ 1 ].kuafuGroup, InstanceKuafuGroup)
+	
+	--  factionBossDefense:array 帮派boss防御
+	onRangeMapping(tb_script_base[ 1 ].factionBossDefense, InstanceFactionBossDefense)
+		
+	--  factionTower:array 帮派爬塔
+	onRangeMapping(tb_script_base[ 1 ].factionTower, InstanceFactionTower)
+	
+	--  faction:int 帮派地图
+	onRangeMapping(tb_script_base[ 1 ].faction, InstanceFaction)
+		
+	--  qualify:int 排位赛
+	onRangeMapping(tb_script_base[ 1 ].qualify, InstanceQualify)
+	
+	--  plot:array 剧情副本
+	onRangeMapping(tb_script_base[ 1 ].plot, InstanceRemind0)
+	
+	
+end
+
+initScriptTable()
 
 -- 复活点坐标
 function GetRespawnPos()

@@ -452,24 +452,8 @@ end
 function PlayerInfo:checkMoneyEnoughs(costTable, times)
 	times = times or 1
 	
-	-- 判断重复
-	local reps = {} 	
-	for _, res in pairs(costTable) do
-		if reps[res[ 1 ]] ~= nil then
-			outFmtError("designer has type invalid data")
-			return false
-		end
-		reps[res[ 1 ]] = 1
-	end
-	
-	-- 检测是否可扣
-	for _, res in pairs(costTable) do
-		if not self:checkMoneyEnough(res[ 1 ], res[ 2 ] * times) then
-			return false
-		end
-	end
-	
-	return true
+	local bool, _ = self:checkMoneyEnoughIfUseGoldIngot(costTable, times)
+	return bool
 end
 
 
@@ -534,17 +518,16 @@ function PlayerInfo:costMoneys(oper_type, costTable, times)
 	if times < 1 then
 		return false
 	end
-	-- 判断是否可扣除
-	if not self:checkMoneyEnoughs(costTable, times) then
-		return false
+	
+	local bool, realCostTable = self:checkMoneyEnoughIfUseGoldIngot(costTable, times)
+	if bool then
+		-- 实际扣除
+		for _, res in pairs(realCostTable) do
+			self:SubMoney(res[ 1 ], oper_type, res[ 2 ] * times)
+		end
 	end
 	
-	-- 实际扣除
-	for _, res in pairs(costTable) do
-		self:SubMoney(res[ 1 ], oper_type, res[ 2 ] * times)
-	end
-	
-	return true
+	return bool
 end
 
 --获取金钱数量
@@ -699,9 +682,9 @@ function PlayerInfo:Login()
 	globalSystemMail:checkIfHasSystemMail(self)
 	
 	--检查礼物离线更新
-	self:LoginUpdateGiftInfo()
+	--self:LoginUpdateGiftInfo()
 	--同步魅力值
-	self:LoginUpdateCharmPoint()
+	--self:LoginUpdateCharmPoint()
 	-- 检查奖励
 	self:CheckMatchReward()	
 	
@@ -1615,7 +1598,8 @@ function PlayerInfo:DailyResetFactionDonateGiftExchangeDailyCount()
 	self:SetFactionDonateGiftExchangeDailyCount(0)
 end
 
---todo 删除家族礼物功能
+--删除家族礼物功能
+--[[
 --玩家魅力值
 function PlayerInfo:SetPlayerCharmPoint(value)
 	self:SetDouble(PLAYER_INT_FILED_CHARM_POINT,value)
@@ -1876,8 +1860,8 @@ function PlayerInfo:GetFactionGiftExreward(count_id)
 	
 	local reward_table = {}
 	for _,v in pairs(item_table) do
-		if tb_faction_gift[v[1]] then
-			for _,reward_info in pairs(tb_faction_gift[v[1]].ex_reward) do
+		if tb_faction_gift[v[1] ] then
+			for _,reward_info in pairs(tb_faction_gift[v[1] ].ex_reward) do
 				table.insert(reward_table, {tonumber(reward_info[1]),reward_info[2]*v[2]})
 			end
 		end
@@ -1978,7 +1962,7 @@ function PlayerInfo:AddFactionGiftBeenThankCount(value)
 	
 	self:AddUInt32(PLAYER_INT_FIELD_FACTION_GIFT_BEEN_THANK_COUNT,value)
 end
-
+--]]
 
 ---------------------------------全民boss---------------------------------------
 function PlayerInfo:costMassBossTimes()

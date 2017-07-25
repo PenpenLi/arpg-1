@@ -93,7 +93,7 @@ function AppdApp:InitCorn()
 		self.objMgr:foreachAllFaction(function(faction)
 			faction:ResetFaction()
 		end)
-		SendFactionGiftRankReward()
+		--SendFactionGiftRankReward()
 	end)
 	
 	--12点重置
@@ -114,7 +114,7 @@ function AppdApp:InitCorn()
 	
 	--[[注释掉野外BOSS
 	-- 野外boss马上刷新通知
-	local fbconfig = tb_map_field_boss_time[ 1 ]
+	local fbconfig = tb_field_boss_time[ 1 ]
 		
 	for _, timeInfo in pairs(fbconfig.time) do
 		local H = timeInfo[ 1 ]

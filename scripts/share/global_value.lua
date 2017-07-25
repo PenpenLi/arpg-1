@@ -48,7 +48,7 @@ end
 
 -- 获得野外BOSS序号
 function GlobalValue:GetFieldBossIndex(mapid, lineNo)
-	local mapIndex = tb_map_field_boss[mapid].indx
+	local mapIndex = tb_field_boss[mapid].indx
 	return mapIndex * MAX_DEFAULT_LINE_COUNT + lineNo - 1
 end
 
@@ -72,7 +72,7 @@ function GlobalValue:ResetFieldBoss(mapid, lineNo)
 	-- 设置倒计时
 	self:SetUInt32(intStart + FIELD_BOSS_DATA_PROCESS_TYPE, FIELD_BOSS_PROCESS_START_COUNTDOWN)
 	-- 即将刷新的时间
-	self:SetUInt32(intStart + FIELD_BOSS_DATA_NEXT_BORN_TIME, os.time() + tb_map_field_boss_time[1].noticestarttime * 60)
+	self:SetUInt32(intStart + FIELD_BOSS_DATA_NEXT_BORN_TIME, os.time() + tb_field_boss_time[1].noticestarttime * 60)
 	-- 清空优先开启时间戳
 	--self:SetUInt32(intStart + FIELD_BOSS_DATA_PRIORITY_TIME, 0)
 	-- 清空优先开始玩家guid
@@ -365,7 +365,7 @@ end
 
 ------------------------------------------------------------------------
 --魅力排行记录信息
-
+--[[
 --上周魅力排行第一家族旗子
 function GlobalValue:SetGiftRankWinerFactionFlag(value)
 	self:SetUInt32(GLOBALVALUE_INT_FIELD_GIFT_RANK_WINER_FACTION_FLAG ,value)
@@ -436,5 +436,5 @@ function GlobalValue:UpdateFactionGiftRank()
 		self:AddFactionGiftRankCurRound(1)
 	end
 end
-
+--]]
 return GlobalValue

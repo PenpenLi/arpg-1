@@ -28,4 +28,7 @@ tb_learn_spell = {
 	[10028] = {id = 10028, playerLevel = 2, item = {}, resource = {}},
 	[10029] = {id = 10029, playerLevel = 3, item = {}, resource = {}},
 	[10030] = {id = 10030, playerLevel = 4, item = {}, resource = {}},
+	[10031] = {id = 10031, playerLevel = 10, item = {}, resource = {}},
+	[10023] = {id = 10023, playerLevel = 10, item = {}, resource = {}},
+	[10024] = {id = 10024, playerLevel = 10, item = {}, resource = {}},
 }

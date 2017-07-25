@@ -6,6 +6,12 @@ function PlayerInfo:Handle_Chat_Whisper( pkt )
 		return
 	end
 	
+	local socialMgr = self:getSocialMgr()
+	if not socialMgr:isFriend(guid) then
+		outFmtError("Handle_Chat_Whisper target not friend %s",guid)
+		return
+	end
+	
 	self:SendWhisperChat(guid, content)
 end
 

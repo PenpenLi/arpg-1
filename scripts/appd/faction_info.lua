@@ -929,7 +929,7 @@ function FactionInfo:MemberAdd( player, isInvited)
 	self:SetFactionMemberVipLevel(pos,is_vip)
 	--self:SetFactionMemberOnlineTime(pos,onlinetime)
 	self:SetFactionMemberIsOnline(pos,1)
-	self:SetFactionMemberCharm(pos,player:GetPlayerCharmPoint())
+	--self:SetFactionMemberCharm(pos,player:GetPlayerCharmPoint())
 	
 	self:AddMemberCount(1)
 	player:SetFactionId(self:GetGuid())
@@ -1247,7 +1247,7 @@ function FactionInfo:FactionAppoint( player, member_id,zhiwei)
 			self:SetFactionMemberIdentity(pos,FACTION_MEMBER_IDENTITY_QUNZHONG)
 			self:SetBangZhuName(self:GetFactionMemberName(member_pos))
 			self:SetBangZhuGuid(self:GetFactionMemberGuid(member_pos))
-			
+			--[[
 			--修改魅力排行
 			local pos = self:FindPlayerIndex(member_id)
 			
@@ -1282,7 +1282,7 @@ function FactionInfo:FactionAppoint( player, member_id,zhiwei)
 					end
 				end
 			end
-			
+			--]]
 		else
 			--print("aaaa")
 			return
@@ -3238,7 +3238,8 @@ end
 -----------------------------------------家族建筑-----------------------------------------------
 
 -----------------------------------------家族礼物-----------------------------------------------
---todo 删除家族礼物功能
+--删除家族礼物功能 faction部分注释 faction_handle注释 faction_data部分保留 global_value部分注释 cow_appd部分注释 appd_context部分注释 sharedef定义保留
+--[[
 --礼物周榜   --guid ,周计数, 未处理礼物计数
 function FactionInfo:SetGiftWeekPoint(index,value)
 	self:SetUInt32(FACTION_INT_FIELD_GIFT_WEEK_POINT_START + index,value)
@@ -3479,10 +3480,10 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 	local reward_table = {}
 	local faction_money = 0
 	for _,v in pairs(item_table) do
-		if tb_faction_gift[v[1]] then
-			point = point + tb_faction_gift[v[1]].point * v[2]
-			faction_money = faction_money +tb_faction_gift[v[1]].money * v[2]
-			for _,reward_info in pairs(tb_faction_gift[v[1]].reward) do
+		if tb_faction_gift[v[1] ] then
+			point = point + tb_faction_gift[v[1] ].point * v[2]
+			faction_money = faction_money +tb_faction_gift[v[1] ].money * v[2]
+			for _,reward_info in pairs(tb_faction_gift[v[1] ].reward) do
 				table.insert(reward_table, {reward_info[1],reward_info[2]*v[2]})
 				
 			end
@@ -3560,9 +3561,9 @@ function FactionInfo:SendFactionGift(factionData,player,item_table,msg,msg_type)
 	
 	--跑马灯
 	for _,v in pairs(item_table) do
-		if tb_faction_gift[v[1]] then
-			if tb_faction_gift[v[1]].notice_type == 1 then
-				player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_NOTICE,{player:GetName(),self:GetBangZhuName(),tb_item_template[v[1]].name,v[2]})
+		if tb_faction_gift[v[1] ] then
+			if tb_faction_gift[v[1] ].notice_type == 1 then
+				player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_GIFT_NOTICE,{player:GetName(),self:GetBangZhuName(),tb_item_template[v[1] ].name,v[2]})
 			end
 		end
 	end
@@ -3926,7 +3927,7 @@ function FactionInfo:ShowFactionGiftThankPage(factionData,player,page)
 	local rank_table = factionData:GetGiftRankListThank(player:GetGuid(),begin,tail)
 	
 	--打包发回客户端 smsg 5
-	--todo 添加smsg 5
+	添加smsg 5
 end
 
 --查看自己所有赠送记录
@@ -3939,7 +3940,7 @@ function FactionInfo:ShowFactionGiftSendPage(factionData,player,page)
 	local rank_table = factionData:GetGiftRankListSelf(player:GetGuid(),begin,tail)
 	
 	--打包发回客户端 smsg 6
-	--todo 添加smsg 6
+	添加smsg 6
 end
 
 --领取额外奖励
@@ -3978,9 +3979,9 @@ function FactionInfo:GetFactionGiftExreward(factionData,player,id)
 	
 	local reward_table = {}
 	for _,v in pairs(item_table) do
-		if tb_faction_gift[v[1]] then
-			point = point + tb_faction_gift[v[1]].point * v[2]
-			for _,reward_info in pairs(tb_faction_gift[v[1]].ex_reward) do
+		if tb_faction_gift[v[1] ] then
+			point = point + tb_faction_gift[v[1] ].point * v[2]
+			for _,reward_info in pairs(tb_faction_gift[v[1] ].ex_reward) do
 				table.insert(reward_table, {reward_info[1],reward_info[2]*v[2]})
 			end
 		end
@@ -4039,7 +4040,7 @@ function printAllRankTable(rank_table)
 	outFmtInfo("=========================================================")
 
 end
-
+--]]
 -----------------------------------------家族礼物-----------------------------------------------
 
 -----------------------------------------家族首领挑战-----------------------------------------------

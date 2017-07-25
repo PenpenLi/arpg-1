@@ -32,6 +32,10 @@ end
 
 -- 世界BOSS报名
 function PlayerInfo:Handle_World_Boss_Enroll(pkt)
+	-- 模块没开 不让进
+	if not self:GetOpenMenuFlag(MODULE_BOSS, MODULE_BOSS_WORLD_BOSS) then
+		return
+	end
 	onEnrole(self)
 end
 

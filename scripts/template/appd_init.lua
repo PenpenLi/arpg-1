@@ -65,7 +65,7 @@ require("template.tables.tb_wings_strength")
 
 --副本
 require("template.tables.tb_map_vip")
-require("template.tables.tb_map_trial")
+require("template.tables.tb_instance_trial")
 
 --社交
 require("template.tables.tb_social_shop")
@@ -81,7 +81,6 @@ require("template.tables.tb_faction_boss")
 require("template.tables.tb_faction_boss_reward")
 require("template.tables.tb_faction_creat")
 require("template.tables.tb_faction_donation")
-require("template.tables.tb_faction_icon")
 require("template.tables.tb_faction_monster")
 require("template.tables.tb_faction_shop")
 require("template.tables.tb_faction_zhiwei")
@@ -116,7 +115,7 @@ require("template.tables.tb_msg_text_type")
 
 -- 地图
 require("template.tables.tb_map")
-require("template.tables.tb_map_field_boss_time")
+require("template.tables.tb_field_boss_time")
 require("template.tables.tb_worldboss_time")
 require("template.tables.tb_instance_res")
 

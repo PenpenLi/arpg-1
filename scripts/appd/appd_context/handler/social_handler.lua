@@ -77,6 +77,18 @@ function PlayerInfo:Handle_Revenge_Enemy(pkt)
 	
 	self:TeleportToRevenge(guid)
 end
+
+function PlayerInfo:Handle_Remove_Enemy(pkt)
+	local guid = pkt.guid
+	outFmtDebug("del enemy %s",guid)
+
+	if not app.objMgr:IsPlayerGuid(guid) then
+		return
+	end
+	self:RemoveEnemy(guid)
+	outFmtDebug("del enemy finish %s",guid)
+end
+
 function PlayerInfo:Handle_Remove_Friend(pkt)
 	--outFmtDebug("del friend")
 	local guid = pkt.guid

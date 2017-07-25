@@ -54,11 +54,11 @@ require("template.tables.tb_battle_killed_drop")
 require("template.tables.tb_map")
 require("template.tables.tb_map_vip")
 require("template.tables.tb_drop_packet")
-require("template.tables.tb_map_trial")
+require("template.tables.tb_instance_trial")
 
 -- 野外BOSS
-require("template.tables.tb_map_field_boss")
-require("template.tables.tb_map_field_boss_time")
+require("template.tables.tb_field_boss")
+require("template.tables.tb_field_boss_time")
 
 -- 世界BOSS
 require("template.tables.tb_worldboss_base")
@@ -66,6 +66,7 @@ require("template.tables.tb_worldboss_roll")
 require("template.tables.tb_worldboss_rank_reward")
 require("template.tables.tb_worldboss_waitroom")
 require("template.tables.tb_worldboss_time")
+require("template.tables.tb_worldboss_buff")
 
 require("template.tables.tb_instance_res")
 require("template.tables.tb_instance_reward")
@@ -135,3 +136,5 @@ require("template.tables.tb_single_pvp_grade")
 require("template.tables.tb_single_pvp_robot")
 
 require("template.tables.tb_group_instance_base")
+
+require("template.tables.tb_script_base")

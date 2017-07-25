@@ -114,7 +114,7 @@ end
 -- 全局变量清理野外BOSS
 function OnClearFieldBoss()
 	outFmtInfo("====================== OnClearFieldBoss")
-	for mapid, _ in pairs(tb_map_field_boss) do
+	for mapid, _ in pairs(tb_field_boss) do
 		for lineNo = 1, MAX_DEFAULT_LINE_COUNT do
 			globalValue:ResetFieldBoss(mapid, lineNo)
 		end
@@ -124,7 +124,7 @@ end
 -- 全局变量刷新野外BOSS
 function OnRebornFieldBoss()
 	outFmtInfo("******************** OnRebornFieldBoss")
-	for mapid, _ in pairs(tb_map_field_boss) do
+	for mapid, _ in pairs(tb_field_boss) do
 		for lineNo = 1, MAX_DEFAULT_LINE_COUNT do
 			globalValue:BornFieldBoss(mapid, lineNo)
 		end

@@ -25,7 +25,7 @@ function InstanceFieldBase:IsFieldBossMap()
 	local mapid = self:GetMapId()
 	local lineNo = self:GetMapLineNo()
 	
-	return tb_map_field_boss[mapid] and lineNo > 0 and lineNo <= MAX_DEFAULT_LINE_COUNT
+	return tb_field_boss[mapid] and lineNo > 0 and lineNo <= MAX_DEFAULT_LINE_COUNT
 end
 
 
@@ -87,7 +87,7 @@ function InstanceFieldBase:OnTimer_CheckRefresh()
 		local bossName = self:GetBossAliasName()
 		local boss = mapLib.AliasCreature(self.ptr, bossName)
 		if not boss then
-			local bossConfig = tb_map_field_boss[mapid]
+			local bossConfig = tb_field_boss[mapid]
 			local entry = bossConfig.entry
 			local config = tb_creature_template[entry]
 			local creature = mapLib.AddCreature(self.ptr, {
@@ -109,8 +109,8 @@ function InstanceFieldBase:OnTimer_CheckRefresh()
 
 	-- 是否是宝箱出现
 	if globalValue:IsFieldBossTreasureOccur(mapid, lineNo) then
-		local posx = tb_map_field_boss[mapid].bossPosi[ 1 ]
-		local posy = tb_map_field_boss[mapid].bossPosi[ 2 ]
+		local posx = tb_field_boss[mapid].bossPosi[ 1 ]
+		local posy = tb_field_boss[mapid].bossPosi[ 2 ]
 		self:AddTreasure(posx, posy)
 		
 		return true
@@ -161,16 +161,6 @@ function InstanceFieldBase:OnTimer_Priority()
 	app:CallOptResult(self.ptr, OPERTE_TYPE_FIELD_BOSS, FIELD_BOSS_OPERTE_PROTECT, {tb_gameobject_template[self.Treasure_Entry].name})
 	return false
 end
-
-
-function InstanceFieldBase:DoIsFriendly(killer_ptr, target_ptr)
-	local killerInfo = UnitInfo:new{ptr = killer_ptr}
-	local targetInfo = UnitInfo:new{ptr = target_ptr}
-	-- TODO: 从新做
-
-	return 0
-end
-
 
 --当玩家被玩家杀掉时触发
 function InstanceFieldBase:OnPlayerKilled(player, killer)
@@ -257,7 +247,7 @@ function InstanceFieldBase:OnTimer_PickingTreasure(player)
 	-- 播放消息
 	-- 拾取宝箱
 	local playerInfo = UnitInfo:new {ptr = player}
-	local dropId = GetRewardIfGenderSensitive(tb_map_field_boss[mapid].dropTable, playerInfo:GetGender())
+	local dropId = GetRewardIfGenderSensitive(tb_field_boss[mapid].dropTable, playerInfo:GetGender())
 	local dict = {}
 	DoRandomDropTable({dropId}, dict)
 	PlayerAddRewards(player, dict)
