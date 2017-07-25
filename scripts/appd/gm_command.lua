@@ -500,7 +500,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 		local M = tonumber(tokens[ 3 ])
 		local a = tonumber(tokens[ 4 ])
 		local b = tonumber(tokens[ 5 ])
-		app:InitWorldBossCorn(H, M, 1, 15, 3)
+		app:InitWorldBossCorn(H, M, 2, 15, 3)
 		
 	elseif(tokens[1] == "@NA")then
 		--发放礼包

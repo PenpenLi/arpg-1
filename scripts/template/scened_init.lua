@@ -138,3 +138,5 @@ require("template.tables.tb_single_pvp_robot")
 require("template.tables.tb_group_instance_base")
 
 require("template.tables.tb_script_base")
+
+require("template.tables.tb_mail")

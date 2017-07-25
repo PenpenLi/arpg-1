@@ -194,6 +194,8 @@ function InstanceWorldBoss:OnBuffRefresh()
 		mapLib.AddGameObject(self.ptr, entry, pos[ 1 ], pos[ 2 ], GO_GEAR_STATUS_END)
 	end
 	
+	app:CallOptResult(self.ptr, OPRATE_TYPE_ATHLETICS, ATHLETICS_OPERATE_BUFF_OCCUR)
+	
 	return self:GetMapReserveValue1() < tb_worldboss_time[ 1 ].times
 end
 
@@ -390,6 +392,7 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 	-- 设置状态
 	globalValue:SetWorldBossEndInLine(lineNo)
 	instanceInfo:SetMapEndTime(os.time() + 12)
+	instanceInfo:SetMapState(instanceInfo.STATE_FINISH)
 	
 	-- 根据排名 发邮件
 	local rankInfo = InstanceWorldBoss.rankList[lineNo]
@@ -408,6 +411,21 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 			local player = mapLib.GetPlayerByPlayerGuid(map_ptr, playerGuid)
 			local mailEntry = GetMailEntryId(GIFT_PACKS_TYPE_WORLD_BOSS, i)
 			playerLib.SendToAppdDoSomething(player, SCENED_APPD_ADD_MAIL, mailEntry, tb_worldboss_rank_reward[ indx ].reward)
+			
+			local playerInfo = UnitInfo:new {ptr = player}
+			local items = tb_mail[mailEntry].items
+			local params = string.split(items, ',')
+			local dict = {}
+			for i = 1, #params, 2 do
+				local entry = tonumber(params[ i ])
+				local count = tonumber(params[i+1])
+				if entry and count then
+					dict[entry] = count
+				end
+			end
+			local list = Change_To_Item_Reward_Info(dict, true)
+			playerInfo:call_send_instance_result(instanceInfo:GetMapState(), instanceInfo.exit_time, list, INSTANCE_SUB_TYPE_WORLD_BOSS, '')
+			
 		end 
 	end
 	

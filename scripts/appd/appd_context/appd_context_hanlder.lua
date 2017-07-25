@@ -235,7 +235,7 @@ end
 function PlayerInfo:Handle_Smelting_Equip(pkt)
 	local pos_str = pkt.pos_str
 	-- 系统未激活
-	if (not self:GetOpenMenuFlag(MODULE_RONGLIAN, MODULE_RONGLIAN_ALL)) then
+	if (not self:GetOpenMenuFlag(MODULE_RONGLIAN, 1)) then
 		return
 	end
 	
