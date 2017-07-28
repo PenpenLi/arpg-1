@@ -538,7 +538,13 @@ function PlayerInfo:GmCommand(str)
 		pkt5.reserve_int1 = 1
 		--self:Handle_Faction_People(pkt5)
 		
-		self:ItemUnlockTitle(tonumber(tokens[2]))
+		--self:ItemUnlockTitle(tonumber(tokens[2]))
+		
+		self:getItemMgr().itemMgr:ForEachBagItem(BAG_TYPE_EQUIP
+, function(ptr)
+			local item = require("appd.appd_item").new(ptr)
+			outFmtInfo("=======================  %s, %s",tostring(item:getId()),item:toString())	
+		end)
 		
 	else
 		--[[

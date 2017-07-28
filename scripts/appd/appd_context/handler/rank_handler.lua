@@ -3,27 +3,27 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 	local guid = pkt.guid
 	local types = pkt.type
 	
-	local usenum = self:GetUInt32(PLAYER_FIELD_USE_RANK_LIKE)
+	local flag = self:GetBit(PLAYER_FIELD_USE_RANK_LIKE,types)
 	--outFmtDebug("day usenu %d",usenum)
-	if usenum >= MAX_RANK_LIKE then
+	if flag  then
 		--outFmtDebug("day max use like")
-		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_MAX_LIKE)
+		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_HAS_LIKE)
 		return
 	end
 	
 	local player
 	if types == RANK_TYPE_POWER or types == RANK_TYPE_MONEY or
-		types == RANK_TYPE_LEVEL or types == RANK_TYPE_DIVINE or
-		types == RANK_TYPE_MOUNT then
-		
-		if RankHasGuid(types,guid) == false then
+		types == RANK_TYPE_LEVEL --[[or types == RANK_TYPE_DIVINE or
+		types == RANK_TYPE_MOUNT--]] then
+		local flag , rank = RankHasGuid(types,guid)
+		if flag == false or rank < 1 or rank > 3 then
 			outFmtDebug("use is not in rank")
 			return
 		end
 		
 	elseif types == RANK_TYPE_FACTION then
-		
-		if RankHasGuid(types,guid) == false then
+		local flag , rank = RankHasGuid(types,guid)
+		if flag == false or rank < 1 or rank > 3 then
 			outFmtDebug("use is not in rank")
 			return
 		end
@@ -73,6 +73,9 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 			--更新到排行榜
 			UpdateRankLike(data.ranktype,data.callback_guid,like)
 			self:AddRankLikeResult(data.ranktype,data.callback_guid,like)
+			
+			local reward = tb_rank_like[1].reward
+			self:AppdAddItems(reward,MONEY_CHANGE_RANK_LIKE)
 		end
 		
 	end
@@ -112,8 +115,15 @@ function PlayerInfo:ApplyRankLike(types,guid)
 		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_HAS_LIKE)
 		return false
 	end
+	--[[
 	local usenum = self:GetUInt32(PLAYER_FIELD_USE_RANK_LIKE)
 	if usenum >= MAX_RANK_LIKE then
+		return false
+	end
+	--]]
+	
+	local flag = self:GetBit(PLAYER_FIELD_USE_RANK_LIKE,types)
+	if flag  then
 		return false
 	end
 	
@@ -122,8 +132,9 @@ function PlayerInfo:ApplyRankLike(types,guid)
 			local spkey = "\1"
 			local key = guid .. spkey .. types
 			self:SetStr(i,key)
-			usenum = usenum + 1
-			self:SetUInt32(PLAYER_FIELD_USE_RANK_LIKE,usenum)
+			--usenum = usenum + 1
+			--self:SetUInt32(PLAYER_FIELD_USE_RANK_LIKE,usenum)
+			self:SetBit(PLAYER_FIELD_USE_RANK_LIKE,types)
 			return true
 		end
 	end

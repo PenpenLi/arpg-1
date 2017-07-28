@@ -350,6 +350,8 @@ CMSG_UNLOCK_TITLE		= 385	-- /*道具解锁称号*/
 CMSG_SOCIAL_BUY_REVENGE_TIMES		= 386	-- /*购买复仇次数*/	
 CMSG_ENTER_RISK_INSTANCE		= 387	-- /*请求进入世界冒险副本*/	
 CMSG_SOCIAL_REMOVE_ENEMY		= 388	-- /*删除仇人*/	
+CMSG_GET_PLAYER_OVERVIEW		= 389	-- /*查看玩家详情*/	
+SMSG_SHOW_PLAYER_OVERVIEW		= 390	-- /*返回玩家详情*/	
 
 
 ---------------------------------------------------------------------
@@ -1676,6 +1678,36 @@ function mass_boss_rank_info_t:write( output )
 		self.dam = 0
 	end
 	output:writeDouble(self.dam)
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*装备信息*/
+
+equip_info_t = class('equip_info_t')
+
+function equip_info_t:read( input )
+
+	local ret
+	ret,self.equip = input:readUTFByLen(50)  --/*装备信息*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function equip_info_t:write( output )
+	if(self.equip == nil)then
+		self.equip = ''
+	end
+	output:writeUTFByLen(self.equip , 50 ) 
 	
 	return output
 end
@@ -12524,6 +12556,117 @@ function Protocols.unpack_social_remove_enemy (pkt)
 end
 
 
+-- /*查看玩家详情*/	
+function Protocols.pack_get_player_overview ( guid)
+	local output = Packet.new(CMSG_GET_PLAYER_OVERVIEW)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*查看玩家详情*/	
+function Protocols.call_get_player_overview ( playerInfo, guid)
+	local output = Protocols.	pack_get_player_overview ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*查看玩家详情*/	
+function Protocols.unpack_get_player_overview (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*返回玩家详情*/	
+function Protocols.pack_show_player_overview ( guid ,name ,equip ,force ,vip ,title ,gender ,coat ,weapon)
+	local output = Packet.new(SMSG_SHOW_PLAYER_OVERVIEW)
+	output:writeUTF(guid)
+	output:writeUTF(name)
+	output:writeI16(#equip)
+	for i = 1,#equip,1
+	do
+		equip[i]:write(output)
+	end
+	output:writeU32(force)
+	output:writeU32(vip)
+	output:writeU32(title)
+	output:writeU32(gender)
+	output:writeU32(coat)
+	output:writeU32(weapon)
+	return output
+end
+
+-- /*返回玩家详情*/	
+function Protocols.call_show_player_overview ( playerInfo, guid ,name ,equip ,force ,vip ,title ,gender ,coat ,weapon)
+	local output = Protocols.	pack_show_player_overview ( guid ,name ,equip ,force ,vip ,title ,gender ,coat ,weapon)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回玩家详情*/	
+function Protocols.unpack_show_player_overview (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.equip = {}
+	for i = 1,len,1
+	do
+		local stru = equip_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.equip,stru)
+	end
+	ret,param_table.force = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.vip = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.title = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.gender = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.coat = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.weapon = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -12866,6 +13009,8 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_social_buy_revenge_times = self.call_social_buy_revenge_times
 	playerInfo.call_enter_risk_instance = self.call_enter_risk_instance
 	playerInfo.call_social_remove_enemy = self.call_social_remove_enemy
+	playerInfo.call_get_player_overview = self.call_get_player_overview
+	playerInfo.call_show_player_overview = self.call_show_player_overview
 end
 
 local unpack_handler = {
@@ -13205,6 +13350,8 @@ local unpack_handler = {
 [CMSG_SOCIAL_BUY_REVENGE_TIMES] =  Protocols.unpack_social_buy_revenge_times,
 [CMSG_ENTER_RISK_INSTANCE] =  Protocols.unpack_enter_risk_instance,
 [CMSG_SOCIAL_REMOVE_ENEMY] =  Protocols.unpack_social_remove_enemy,
+[CMSG_GET_PLAYER_OVERVIEW] =  Protocols.unpack_get_player_overview,
+[SMSG_SHOW_PLAYER_OVERVIEW] =  Protocols.unpack_show_player_overview,
 
 }
 

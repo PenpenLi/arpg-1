@@ -30,10 +30,12 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 	elseif SCENED_APPD_ADD_ENEMY == ntype then
 		self:AddEnemy(str, data)
 	elseif SCENED_APPD_ADD_MAIL == ntype then
-		local desc = tb_mail[data].desc
-		local name = tb_mail[data].name
-		local giftType = tb_mail[data].source
-		AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, str, SYSTEM_NAME)
+		local mailInfo = string.split(str, '|')
+		local rewards = mailInfo[ 1 ]
+		local name = mailInfo[ 2 ]
+		local desc = mailInfo[ 3 ]
+		local giftType = tonumber(mailInfo[ 4 ])
+		AddGiftPacksData(self:GetGuid(),0,giftType,os.time(),os.time() + 86400*30, name, desc, rewards, SYSTEM_NAME)
 	elseif SCENED_APPD_KILL_MONSTER == ntype then
 		-- 成就
 		self:AddAchieve(QUEST_TARGET_TYPE_KILL_MONSTER_NUM, 1)

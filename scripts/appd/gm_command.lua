@@ -482,8 +482,14 @@ function  DoGMScripts(player_ptr, gm_commands)
 		if #tokens >= 2 then
 			toguid = tokens[2]
 		end
+		
+		local item = ""
+
+		if tokens[3] then
+			item = tokens[3]
+		end
 		--AddGiftPacksData(player:GetGuid(),0,GIFT_PACKS_TYPE_FRIEND,os.time(),os.time() + 86400*30,GIFT_MASSAGE_BAGUAZHEN.GIFT_NAME,GIFT_MASSAGE_BAGUAZHEN.GIFT_NAME,"2372,1,0,2322,1,0,2334,1,0,2344,1,0,254,1,0",player:GetName())
-		AddGiftPacksData(toguid,0,GIFT_PACKS_TYPE_ITEM_GIVE,os.time(),os.time() + 86400*30,"GIFT_NAME","小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比","50001,1,50003,10",player:GetName())
+		AddGiftPacksData(toguid,0,GIFT_PACKS_TYPE_ITEM_GIVE,os.time(),os.time() + 86400*30,"GIFT_NAME","小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比，小高是都比",item,player:GetName())
 	
 	elseif (tokens[1] == "@野外BOSS")then
 		local H = tonumber(tokens[ 2 ])
@@ -500,7 +506,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 		local M = tonumber(tokens[ 3 ])
 		local a = tonumber(tokens[ 4 ])
 		local b = tonumber(tokens[ 5 ])
-		app:InitWorldBossCorn(H, M, 2, 15, 3)
+		app:InitWorldBossCorn(H, M, tb_worldboss_time[ 1 ].enrolllast, 15, 3)
 		
 	elseif(tokens[1] == "@NA")then
 		--发放礼包

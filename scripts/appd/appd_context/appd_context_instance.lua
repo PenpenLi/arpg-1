@@ -197,6 +197,8 @@ function OnEnrollWorldBoss()
 	globalValue:AddWorldBossTimes()
 	-- 设置报名状态
 	globalValue:SetWorldBossState(WORLD_BOSS_PROCESS_ENROLL)
+	-- 设置报名时间
+	globalValue:SetEnrollTime()
 	--清理世界BOSS报名数据
 	ClearWorldBossEnrollData()
 end

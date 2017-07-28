@@ -341,19 +341,39 @@ function AppdApp:RankReward()
 	
 	--RANK_TYPE_FACTION
 	--FIXME
-	local ranktype = {RANK_TYPE_POWER,RANK_TYPE_LEVEL,RANK_TYPE_MONEY,RANK_TYPE_DIVINE,RANK_TYPE_MOUNT}
+	local ranktype = {RANK_TYPE_POWER,RANK_TYPE_LEVEL,RANK_TYPE_MOUNT,RANK_TYPE_WINGS}
 	
 	for i,rt in ipairs(ranktype) do
 		local tab = GetRankGuidTable(rt)
 		for k,v in ipairs(tab) do
-			local idx = (10 + i)*65536 + k
-			local config = tb_mail[idx]
+			local config = nil
+			
+			for idx = i * 10 + 1,i * 10 + 4 do
+				config = tb_rank_reward[idx]
+				
+				if config and k >= config.level[1] and k <= config.level[2] then
+					break
+				else
+					config = nil
+				end
+			end
 			
 			if config then
 				local desc = config.desc
 				local name = config.name
-				local giftType = config.source
-				AddGiftPacksData(v,0,giftType,os.time(),os.time() + 86400*30, name, desc, config.items, SYSTEM_NAME)
+				local giftType = 3
+				if rt == RANK_TYPE_FACTION then
+					local faction = app.objMgr:getObj(v)
+					if faction then
+						local guid = faction:GetBangZhuGuid()
+						AddGiftPacksData(guid,0,giftType,os.time(),os.time() + 86400*30, name, desc, config.reward
+, SYSTEM_NAME)
+					end
+				else
+					AddGiftPacksData(v,0,giftType,os.time(),os.time() + 86400*30, name, desc, config.reward
+, SYSTEM_NAME)
+				end
+				
 			end
 		end
 	end

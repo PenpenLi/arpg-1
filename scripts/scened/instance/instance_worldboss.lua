@@ -398,35 +398,33 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 	local rankInfo = InstanceWorldBoss.rankList[lineNo]
 	local indx = 1
 	for i = 1, #rankInfo do
-		local to = tb_worldboss_rank_reward[ indx ].id2
+		local range = tb_worldboss_rank_reward[indx].range
 		-- 不满足条件的往后移
-		if to > 0 and to < i then
+		if range[ 2 ] > 0 and range[ 2 ] < i then
 			indx = indx + 1
-		end 
+		end
 		
-		to = tb_worldboss_rank_reward[ indx ].id2
-		if i <= to then
-			local playerGuid = rankInfo[ i ][ 3 ]
-			--发到应用服发宝箱
-			local player = mapLib.GetPlayerByPlayerGuid(map_ptr, playerGuid)
-			local mailEntry = GetMailEntryId(GIFT_PACKS_TYPE_WORLD_BOSS, i)
-			playerLib.SendToAppdDoSomething(player, SCENED_APPD_ADD_MAIL, mailEntry, tb_worldboss_rank_reward[ indx ].reward)
-			
-			local playerInfo = UnitInfo:new {ptr = player}
-			local items = tb_mail[mailEntry].items
-			local params = string.split(items, ',')
-			local dict = {}
-			for i = 1, #params, 2 do
-				local entry = tonumber(params[ i ])
-				local count = tonumber(params[i+1])
-				if entry and count then
-					dict[entry] = count
-				end
+		local rankRewardConfig = tb_worldboss_rank_reward[indx]
+		local mailInfo = {rankRewardConfig.serverRewards, rankRewardConfig.name, rankRewardConfig.desc, GIFT_PACKS_TYPE_WORLD_BOSS}
+		local str = string.join("|", mailInfo)
+		local playerGuid = rankInfo[ i ][ 3 ]
+		--发到应用服发宝箱
+		local player = mapLib.GetPlayerByPlayerGuid(map_ptr, playerGuid)
+		playerLib.SendToAppdDoSomething(player, SCENED_APPD_ADD_MAIL, 0, str)
+		
+		local playerInfo = UnitInfo:new {ptr = player}
+		local items = rankRewardConfig.serverRewards
+		local params = string.split(items, ',')
+		local dict = {}
+		for i = 1, #params, 2 do
+			local entry = tonumber(params[ i ])
+			local count = tonumber(params[i+1])
+			if entry and count then
+				dict[entry] = count
 			end
-			local list = Change_To_Item_Reward_Info(dict, true)
-			playerInfo:call_send_instance_result(instanceInfo:GetMapState(), instanceInfo.exit_time, list, INSTANCE_SUB_TYPE_WORLD_BOSS, '')
-			
-		end 
+		end
+		local list = Change_To_Item_Reward_Info(dict, true)
+		playerInfo:call_send_instance_result(instanceInfo:GetMapState(), instanceInfo.exit_time, list, INSTANCE_SUB_TYPE_WORLD_BOSS, '')
 	end
 	
 	return 0

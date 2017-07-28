@@ -148,3 +148,8 @@ mass_boss_info,/*全民boss信息*/
 mass_boss_rank_info,/*全民boss排名*/
 	name,String,50,/*名称*/
 	dam,double,0,/*伤害*/
+
+#装备信息
+equip_info,/*装备信息*/
+	equip,String,50,/*装备信息*/
+	

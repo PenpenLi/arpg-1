@@ -1488,3 +1488,19 @@ enter_risk_instance,c2s,387,/*请求进入世界冒险副本*/,STATUS_NEVER,False
 social_remove_enemy,c2s,388,/*删除仇人*/,STATUS_NEVER,False
 	guid,String,False,/*guid*/
 	
+#
+get_player_overview,c2s,389,/*查看玩家详情*/,STATUS_NEVER,False
+	guid,String,False,/*玩家id*/
+	
+#
+show_player_overview,s2c,390,/*返回玩家详情*/,STATUS_NEVER,False
+	guid,String,False,/*玩家id*/
+	name,String,False,/*名称*/
+	equip,equip_info,True,/*装备*/
+	force,uint32,False,/*战力*/
+	vip,uint32,False,/*vip*/
+	title,uint32,False,/*称号*/
+	gender,uint32,False,/*性别*/
+	coat,uint32,False,/*外观*/
+	weapon,uint32,False,/*武器外观*/
+	

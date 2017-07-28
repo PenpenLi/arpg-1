@@ -222,6 +222,17 @@ function GlobalValue:SetWorldBossState(state)
 	self:SetUInt32(GLOBALVALUE_INT_FIELD_WORLD_BOSS_STATE, state)
 end
 
+function GlobalValue:SetEnrollTime()
+	if self:IsWorldBossEnroll() then
+		self:SetUInt32(GLOBALVALUE_INT_FIELD_WORLD_BOSS_LAST_ENROLL_TIME, os.time())
+	end
+end
+
+function GlobalValue:GetEnrollCountdown()
+	local lastEnrollTime = self:GetUInt32(GLOBALVALUE_INT_FIELD_WORLD_BOSS_LAST_ENROLL_TIME)
+	return tb_worldboss_time[ 1 ].enrolllast * 60 + lastEnrollTime - os.time()
+end
+
 -- 获得世界BOSS的次数
 function GlobalValue:GetWorldBossTimes()
 	return self:GetUInt32(GLOBALVALUE_INT_FIELD_WORLD_BOSS_TIMES)

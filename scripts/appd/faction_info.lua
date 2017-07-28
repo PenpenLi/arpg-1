@@ -116,6 +116,12 @@ end
 
 --设置成员战斗力
 function FactionInfo:SetFactionMemberForce(pos,val)
+	local old_val = self:GetFactionMemberForce(pos)
+	self:SubDouble(FACTION_INT_FIELD_TOTAL_FORCE,old_val)
+	self:AddDouble(FACTION_INT_FIELD_TOTAL_FORCE,val)
+	rankInsertTask(self:GetGuid(),RANK_TYPE_FACTION)
+	
+	outFmtDebug("faction total force %d",self:GetDouble(FACTION_INT_FIELD_TOTAL_FORCE))
 	self:SetDouble(FACTION_INT_FIELD_PLAYER+pos*MAX_FACTION_INT_MEMBER+FACTION_INT_MEMBER_FORCE,val)
 end
 
@@ -4638,7 +4644,6 @@ end
 
 
 -----------------------------------------家族技能结束-----------------------------------------------
-
 
 function encodeSimpleInfo(faction_guid)
 	

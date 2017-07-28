@@ -238,4 +238,5 @@ hanlders[CMSG_UNLOCK_TITLE] = PlayerInfo.Handle_Unlock_title
 
 hanlders[CMSG_RENAME] = PlayerInfo.Handle_Rename
 
+hanlders[CMSG_GET_PLAYER_OVERVIEW] = PlayerInfo.Handle_Get_Player_Overview
 return hanlders

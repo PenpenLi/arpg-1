@@ -244,6 +244,40 @@ function PlayerInfo:Handle_Smelting_Equip(pkt)
 
 end
 
+--查看角色详情
+function PlayerInfo:Handle_Get_Player_Overview(pkt)
+	local guid = pkt.guid
+	
+	if not app.objMgr:IsPlayerGuid(guid) then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_NOT_FIND)
+		return
+	end
+	local player = app.objMgr:getObj(guid)
+	
+	if player == nil then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_NOT_FIND)
+		return
+	end
+	
+	local equip = {}
+	player:getItemMgr().itemMgr:ForEachBagItem(BAG_TYPE_EQUIP
+, function(ptr)
+		local item = require("appd.appd_item").new(ptr)
+		local stru = equip_info_t .new()
+		stru.equip 	= item:toString()
+		table.insert(equip, stru)
+	end)
+	
+	local name = player:GetName()
+	local force = player:GetForce()
+	local vip = player:GetVIP()
+	local title = player:GetTitle()
+	local gender = player:GetGender()
+	local coat = player:GetUInt16(PLAYER_INT_FIELD_APPEARANCE, 1)
+	local weapon = player:GetUInt16(PLAYER_INT_FIELD_APPEARANCE, 0)
+	self:call_show_player_overview(guid,name,equip,force,vip,title,gender,coat,weapon)
+end
+
 --函数包路由表
 local OpcodeHandlerFuncTable = require 'appd.appd_context.appd_context_hanlder_map'
 

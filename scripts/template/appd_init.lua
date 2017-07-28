@@ -121,6 +121,9 @@ require("template.tables.tb_instance_res")
 
 -- 邮件
 require("template.tables.tb_mail")
+require("template.tables.tb_rank_reward")
+require("template.tables.tb_rank_like")
+
 
 --- 副本
 require("template.tables.tb_instance_reward")
