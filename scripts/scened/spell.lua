@@ -1348,9 +1348,8 @@ function onAddBuff(buffs, caster, target)
 		return
 	end
 	
-	for _, buffInfo in ipairs(buffs) do
-		local buffId = buffInfo[ 1 ]
-		local buffEffectId = buffInfo[ 2 ]
+	for _, buffEffectId in ipairs(buffs) do
+		local buffId = tb_buff_effect[buffEffectId].buff_id
 		local duration = tb_buff_effect[buffEffectId].duration
 		SpelladdBuff(target, buffId, caster, buffEffectId, duration)
 	end

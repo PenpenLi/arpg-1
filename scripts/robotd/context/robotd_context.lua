@@ -202,9 +202,11 @@ function PlayerInfo:RandomInt(limit)
 end
 
 function PlayerInfo:RandomString(str)
-	local indx = randInt(1, 2)
+	local indx = randInt(1, 3)
 	if indx == 2 then
 		str = ""
+	elseif indx == 3 then
+		str = "1"
 	end
 	return str
 end
@@ -839,6 +841,400 @@ function PathfindingGotoFailure(player, mapid)
 	local x, y = player:GetPos()
 	outFmtError("A player in (%d, %d) find path fail check %d.txt main road", x, y, mapid)
 end
+
+
+--2017.8.15
+--添加测试接口
+
+--
+function PlayerInfo:Send_Bag_Item_User()
+	local item_guid = RandomString(self:GetGuid)
+	local count = RandomInt(10)
+	self:call_bag_item_user (item_guid ,count)
+end
+
+--
+function PlayerInfo:Send_Bag_Item_Sell()
+	local item_guid = RandomString(self:GetGuid)
+	local count = RandomInt(10)
+	self:call_bag_item_sell(item_guid ,count)
+end
+
+--
+function PlayerInfo:Send_Bag_Item_Sort()
+	self:call_bag_item_sort()
+end
+
+--
+function PlayerInfo:Send_Finish_Now_Guide()
+	self:call_finish_now_guide()
+end
+
+--
+function PlayerInfo:Send_Get_Cultivation_Info()
+	self:call_get_cultivation_info()
+end
+
+--
+function PlayerInfo:Send_Get_Cultivation_Rivals_Info()
+	self:call_get_cultivation_rivals_info()
+end
+
+--
+function PlayerInfo:Send_Get_Cultivation_Reward()
+	self:call_get_cultivation_reward()
+end
+
+--
+function PlayerInfo:Send_Refresh_Cultivation_Rivals()
+	self:call_refresh_cultivation_rivals()
+end
+
+--
+function PlayerInfo:Send_Plunder_Cultivation_Rival()
+	local index = RandomInt(10)
+	self:call_plunder_cultivation_rival(index)
+end
+
+--
+function PlayerInfo:Send_Revenge_Cultivation_Rival()
+	local index = RandomInt(10)
+	self:call_revenge_cultivation_rival(index)
+end
+
+--
+function PlayerInfo:Send_Buy_Cultivation_Left_Plunder_Count()
+	local count = RandomInt(10)
+	self:call_buy_cultivation_left_plunder_count(count)
+end
+
+--
+function PlayerInfo:Send_Get_Login_Activity_Reward()
+	local count = RandomInt(10)
+	self:call_get_login_activity_reward(id)
+end
+
+--
+function PlayerInfo:Send_Smelting_Equip()
+	local pos_str = RandomString(self:GetGuid())
+	self:call_smelting_equip(pos_str)
+end
+
+--
+function PlayerInfo:Send_Social_Buy_Revenge_Times()
+	local count = RandomInt(10)
+	self:call_social_buy_revenge_times(count)
+end
+
+--
+function PlayerInfo:Send_Social_Remove_Enemy()
+	local guid = RandomString(self:GetGuid())
+	self:call_social_remove_enemy(guid)
+end
+
+--
+function PlayerInfo:Send_Get_Player_Overview()
+	local guid = RandomString(self:GetGuid())
+	self:call_get_player_overview(guid)
+end
+
+--
+function PlayerInfo:Send_Send_Faction_Invite()
+	local guid = RandomString(self:GetGuid())
+	self:call_send_faction_invite(guid)
+end
+
+--
+function PlayerInfo:Send_Buy_Vipgift()
+	local id = RandomInt(10)
+	self:call_buy_vipgift(id)
+end
+
+--
+function PlayerInfo:Send_Activity_Opt_Buy_Dailygift()
+	local act_id = RandomInt(10)
+	local index = RandomInt(10)
+	self:call_activity_opt_buy_dailygift(act_id ,index)
+end
+
+--
+function PlayerInfo:Send_Activity_Opt_Get_Rank_Process_Reward()
+	local act_id = RandomInt(10)
+	local index = RandomInt(10)
+	self:call_activity_opt_get_rank_process_reward(act_id ,index)
+end
+
+--
+function PlayerInfo:Send_Activity_Opt_Get_Rank_List()
+	local act_id = RandomInt(10)
+	self:call_activity_opt_get_rank_list(act_id)
+end
+
+--
+function PlayerInfo:Send_Activity_Opt_Buy_Limitgift()
+	local act_id = RandomInt(10)
+	local index = RandomInt(10)
+	self:call_activity_opt_buy_limitgift(act_id ,index)
+end
+
+--
+function PlayerInfo:Send_Welfare_Get_Recharge_Reward()
+	local id = RandomInt(10)
+	self:call_welfare_get_recharge_reward(id)
+end
+
+--
+function PlayerInfo:Send_Welfare_Get_Consume_Reward()
+	local id = RandomInt(10)
+	self:call_welfare_get_consume_reward(id)
+end
+
+--
+function PlayerInfo:Send_Welfare_Get_Sevenday_Reward()
+	local id = RandomInt(10)
+	self:call_welfare_get_sevenday_reward(id)
+end
+
+--
+function PlayerInfo:Send_Talisman_Active()
+	local id = RandomInt(10)
+	self:call_talisman_active(id)
+end
+
+--
+function PlayerInfo:Send_Talisman_Lvup()
+	local id = RandomInt(10)
+	self:call_talisman_lvup(id)
+end
+
+--
+function PlayerInfo:Send_Wings_Active()
+	self:call_wings_active()
+end
+
+--
+function PlayerInfo:Send_Wings_Bless()
+	self:call_wings_bless()
+end
+
+--
+function PlayerInfo:Send_Wings_Rankup()
+	self:call_wings_rankup()
+end
+
+--
+function PlayerInfo:Send_Wings_Strength()
+	self:call_wings_strength()
+end
+
+--
+function PlayerInfo:Send_Equipdevelop_Operate()
+	local opt_type = RandomInt(10)
+	local reserve_int1 = RandomInt(10)
+	local reserve_int2 = RandomInt(10)
+	local reserve_str1 = RandomString(self:GetGuid())
+	local reserve_str2 = RandomString(self:GetGuid())
+	self:call_equipdevelop_operate(opt_type ,reserve_int1 ,reserve_int2 ,reserve_str1 ,reserve_str2)
+end
+
+--
+function PlayerInfo:Send_Unlock_Title()
+	local indx = RandomInt(10)
+	self:call_unlock_title(indx)
+end
+
+--
+function PlayerInfo:Send_Rank_List_Query()
+	local call_back_id = RandomInt(10)
+	local rank_list_type = RandomInt(10)
+	local start_index = RandomInt(10)
+	local end_index = RandomInt(10)
+	self:call_rank_list_query(call_back_id ,rank_list_type ,start_index ,end_index)
+end
+
+--
+function PlayerInfo:Send_Query_Player_Info()
+	local guid = RandomString(self:GetGuid())
+	local flag = RandomInt(10)
+	local callback_id = RandomInt(10)
+	self:call_query_player_info( guid ,flag ,callback_id)
+end
+
+--
+function PlayerInfo:Send_Chat_Whisper()
+	local guid = RandomString(self:GetGuid())
+	local content = RandomString(self:GetGuid())
+	self:call_chat_whisper(guid ,content)
+end
+
+--
+function PlayerInfo:Send_Sync_Mstime_App()
+	local mstime_now = RandomInt(10)
+	local time_now = RandomInt(10)
+	local open_time = RandomInt(10)
+	self:call_sync_mstime_app(mstime_now ,time_now ,open_time)
+end
+
+--
+function PlayerInfo:Send_Pick_Daily2_Quest_Reward()
+	local indx = RandomInt(10)
+	self:call_pick_daily2_quest_reward(indx)
+end
+
+--
+function PlayerInfo:Send_Finish_Optional_Guide_Step()
+	local guide_id = RandomInt(10)
+	local step = RandomInt(10)
+	self:call_finish_optional_guide_step(guide_id ,step)
+end
+
+--
+function PlayerInfo:Send_Execute_Quest_Cmd_After_Accepted()
+	local indx = RandomInt(10)
+	self:call_execute_quest_cmd_after_accepted(indx)
+end
+
+--
+function PlayerInfo:Send_Storehouse_Hand_In()
+	local pos_str = RandomString(self:GetGuid())
+	self:call_storehouse_hand_in(pos_str)
+end
+
+--
+function PlayerInfo:Send_Storehouse_Exchange()
+	local pos = RandomInt(10)
+	self:call_storehouse_exchange(pos)
+end
+
+--
+function PlayerInfo:Send_Storehouse_Destroy()
+	local pos = RandomInt(10)
+	self:call_storehouse_destroy(pos)
+end
+
+--
+function PlayerInfo:Send_Buy_Mass_Boss_Times()
+	local cnt = RandomInt(10)
+	self:call_buy_mass_boss_times(cnt)
+end
+
+--
+function PlayerInfo:Send_Group_Instance_Match()
+	local indx = RandomInt(10)
+	self:call_group_instance_match(indx)
+end
+
+--
+function PlayerInfo:Send_Buy_Group_Instance_Times()
+	local count = RandomInt(10)
+	self:call_buy_group_instance_times(count)
+end
+
+--
+function PlayerInfo:Send_Meridian_Practise()
+	self:call_meridian_practise()
+end
+
+--
+function PlayerInfo:Send_Add_Meridian_Exp()
+	local id = RandomInt(10)
+	self:call_add_meridian_exp(id)
+end
+
+--
+function PlayerInfo:Send_Raise_Mount_Level_Base()
+	self:call_raise_mount_level_base()
+end
+
+--
+function PlayerInfo:Send_Active_Mount()
+	self:call_active_mount()
+end
+
+--
+function PlayerInfo:Send_Match_Single_Pvp()
+	self:call_match_single_pvp()
+end
+
+--
+function PlayerInfo:Send_Buy_Match_Single_Pvp_Times()
+	local cnt = RandomInt(10)
+	self:call_buy_match_single_pvp_times(cnt)
+end
+
+--
+function PlayerInfo:Send_Pick_Match_Single_Pvp_Extra_Reward()
+	local id = RandomInt(10)
+	self:call_pick_match_single_pvp_extra_reward(id)
+end
+
+--
+function PlayerInfo:Send_Active_Appearance()
+	local id = RandomInt(10)
+	self:call_active_appearance(id)
+end
+
+--
+function PlayerInfo:Send_Equip_Appearance()
+	local id = RandomInt(10)
+	self:call_equip_appearance(id)
+end
+
+--
+function PlayerInfo:Send_Cancel_Equip_Appearance()
+	local type = RandomInt(10)
+	self:call_cancel_equip_appearance(type)
+end
+
+--
+function PlayerInfo:Send_Draw_Lottery()
+	local actId = RandomInt(10)
+	local type = RandomInt(10)
+	self:call_draw_lottery(actId ,type)
+end
+
+--
+function PlayerInfo:Send_Rename()
+	local name = RandomString(self:GetGuid())
+	self:call_rename(name)
+end
+
+
+
+
+--
+function PlayerInfo:Send_Xianfu_Random_Respawn()
+	self:call_xianfu_random_respawn()
+end
+
+--
+function PlayerInfo:Send_Back_To_Famity()
+	self:call_back_to_famity()
+end
+
+--
+function PlayerInfo:Send_Pick_Offline_Reward()
+	self:call_pick_offline_reward()
+end
+
+--
+function PlayerInfo:Send_Query_Mass_Boss_Info()
+	local id = RandomInt(10)
+	self:call_query_mass_boss_info(id)
+end
+
+--
+function PlayerInfo:Send_Query_Mass_Boss_Rank()
+	local id = RandomInt(10)
+	self:call_query_mass_boss_rank(id)
+end
+
+--
+function PlayerInfo:Send_Enter_Risk_Instance()
+	self:call_enter_risk_instance()
+end
+
+
 
 
 

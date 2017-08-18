@@ -255,4 +255,20 @@ function checkNil(value)
 	end
 end
 
+function BinLogObject:swapUInt (indx1, indx2)
+	local val1 = self:GetUInt32(indx1)
+	local val2 = self:GetUInt32(indx2)
+	va11, val2 = swap(val1, val2)
+	self:SetUInt32(indx1, va11)
+	self:SetUInt32(indx2, val2)
+end
+
+function BinLogObject:swapStr (indx1, indx2)
+	local val1 = self:GetStr(indx1)
+	local val2 = self:GetStr(indx2)
+	va11, val2 = swap(val1, val2)
+	self:SetStr(indx1, va11)
+	self:SetStr(indx2, val2)
+end
+
 return BinLogObject

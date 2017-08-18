@@ -76,6 +76,13 @@ end
 
 function PlayerInfo:Handle_Buy_Group_Instance_Times(pkt)
 	local count = pkt.count
+	if count < 1 then
+		return
+	end
 	
 	self:OnBuyGroupInstanceTicket(count)
+end
+
+function PlayerInfo:Handle_Get_Risk_Reward(pkt)
+	globalCounter:getRiskRank(self)
 end

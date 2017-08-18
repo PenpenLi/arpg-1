@@ -75,7 +75,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 	elseif SCENED_APPD_XIANFU_PRACTISE == ntype then
 		self:AppdAddItems({{data, tonumber(str)}}, nil, LOG_ITEM_OPER_TYPE_XIANFU_PRACTISE)
 	elseif SCENED_APPD_ADD_OFFLINE_RISK_REWARD == ntype then
-		local items = string.split(str, "|")
+		--[[local items = string.split(str, "|")
 		local sell = 0
 		local itemMgr = self:getItemMgr()
 		local empty_count = itemMgr:getEmptyCount(BAG_TYPE_EQUIP_BAG)	--取出剩余位置个数
@@ -112,7 +112,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		self:AppdAddItems(rewardDict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE, nil, nil, nil, 3)
 		
 		local list = Change_To_Item_Reward_Info(dict)
-		self:call_offline_reward_result (sell, data, 0, 0, list)
+		self:call_offline_reward_result (sell, data, 0, 0, list)--]]
 	elseif SCENED_APPD_ENTER_MASS_BOSS_INSTANCE == ntype then
 		self:checkMassBossMapTeleport(data)
 	elseif SCENED_APPD_FACTION_TOWER_WIN == ntype then

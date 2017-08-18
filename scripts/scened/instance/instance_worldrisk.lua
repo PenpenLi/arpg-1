@@ -50,7 +50,7 @@ end
 
 -- 判断是否能退出副本
 function InstanceWorldRisk:DoPlayerExitInstance(player)
-	return 0
+	return 1
 end
 
 --玩家加入地图
@@ -216,6 +216,10 @@ function InstanceWorldRisk:onBossLoot(player_ptr, dict)
 	
 	-- 设置完成
 	self:SetMapState(self.STATE_FINISH)
+	
+	-- 扫荡的结果发送
+	local list = Change_To_Item_Reward_Info(dict, true)
+	playerInfo:call_send_instance_result(self:GetMapState(), self.exit_time, list, INSTANCE_SUB_TYPE_RISK, '')
 end
 
 --当玩家离开时触发

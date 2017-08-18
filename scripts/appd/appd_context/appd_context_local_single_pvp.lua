@@ -101,6 +101,9 @@ function OnLocalSinglePVPMatched(guid, key, now)
 	
 	local instMgr = playerInfo:getInstanceMgr()
 	instMgr:SubQualifyDailyTimes()
+	
+	playerInfo:AddActiveItem(VITALITY_TYPE_SINGLE_PVP)
+	playerInfo:onUpdatePlayerQuest(QUEST_TARGET_TYPE_JOIN_SINGLE_PVP, {})
 end
 
 -- 取消匹配组队副本
@@ -206,6 +209,8 @@ function PlayerInfo:OnProcessSingleMatchResult(result, fightName)
 		end
 		score = gradeConfig.win
 		self:AddQualifyScore(score)
+		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_SINGLE_PVP_WINS, {})
 	else
 		score = gradeConfig.lose
 		self:SubQualifyScore(score)

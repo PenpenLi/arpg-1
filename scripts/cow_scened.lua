@@ -20,7 +20,7 @@ globalValue:RandomStepWorldBossIfNeverDoes()
 --初始化一些东西，例如BUFF对游戏操作的限制 用数字的说明是一些特殊的东西
 config = {
 	--以下来自原来的配置文件
-	max_player_level = 100					,--最大等级
+	max_player_level = 200					,--最大等级
 	
 	new_player_protected_level = 0			,--新手保护最大等级
 		

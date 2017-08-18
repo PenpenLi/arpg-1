@@ -3,6 +3,9 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 	local spellId  = pkt.spellId
 	local raiseType = pkt.raiseType
 	local config   = tb_skill_base[spellId]
+	if not config then
+		return
+	end
 	local spellMgr = self:getSpellMgr()
 	
 	if raiseType == RAISE_BASE_SKILL then
@@ -15,6 +18,8 @@ function PlayerInfo:Handle_Raise_BaseSpell(pkt)
 		if (not self:GetOpenMenuFlag(MODULE_MOUNT, MODULE_MOUNT_SKILL)) then
 			return
 		end
+	else
+		return
 	end
 	
 	-- 判断技能是否存在
@@ -513,22 +518,45 @@ function PlayerInfo:Handle_Equipdevelop_Operate(pkt)
 		if (not self:GetOpenMenuFlag(MODULE_MIX, MODULE_MIX_STRENGTH)) then
 			return
 		end
+		if reserve_int1 < 1 or reserve_int1 > 10 or reserve_int2 <= 0 then
+			return
+		end
+		
 		self:EquipDevelopStrength(reserve_int1,reserve_int2)
 	elseif opt_type == EQUIPDEVELOP_TYPE_REFINE_STAR_LVUP then
 		-- 系统未激活
 		if (not self:GetOpenMenuFlag(MODULE_MIX, MODULE_MIX_POLISHED)) then
 			return
 		end
+		if reserve_int1 < 1 or reserve_int1 > 10 then
+			return
+		end
+		
 		self:EquipDevelopRefineStarUp(reserve_int1)
 	elseif opt_type == EQUIPDEVELOP_TYPE_REFINE_RANK_LVUP then
+		if reserve_int1 < 1 or reserve_int1 > 10 then
+			return
+		end
 		self:EquipDevelopRefineRankUp(reserve_int1)
 	elseif opt_type == EQUIPDEVELOP_TYPE_GEM_ACTIVE then
 		-- 系统未激活
 		if (not self:GetOpenMenuFlag(MODULE_MIX, MODULE_MIX_GEM)) then
 			return
 		end
+		if reserve_int1 < 1 or reserve_int1 > 10 then
+			return
+		end
+		if not tb_equipdevelop_gem_part[reserve_int1] or not tb_equipdevelop_gem_part[reserve_int1].gem_array[reserve_int2] then
+			return
+		end
 		self:EquipDevelopGemActive(reserve_int1,reserve_int2)
 	elseif opt_type == EQUIPDEVELOP_TYPE_GEM_LVUP then
+		if reserve_int1 < 1 or reserve_int1 > 10 then
+			return
+		end
+		if not tb_equipdevelop_gem_part[reserve_int1] or not tb_equipdevelop_gem_part[reserve_int1].gem_array[reserve_int2] then
+			return
+		end
 		self:EquipDevelopGemLvUp(reserve_int1,reserve_int2)
 	elseif opt_type == EQUIPDEVELOP_TYPE_WASHATTRS_WASH then
 		-- 系统未激活
@@ -591,6 +619,12 @@ function PlayerInfo:Handle_Active_Appearance(pkt)
 	end
 
 	spellMgr:activeAppearance(id)
+	if tb_appearance_info[ id ].type == 0 then
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WEAPON_ILLUSION_ACTIVE)
+	elseif tb_appearance_info[ id ].type == 1 then
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_CLOTH_ILLUSION_ACTIVE)
+	end
+	
 	self:RecalcAttrAndBattlePoint()
 end
 
@@ -616,6 +650,7 @@ function PlayerInfo:Handle_Equip_Appearance(pkt)
 	end
 	
 	self:SetAppearance(id)
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_FASHION_ILLUSION_SET)
 	self:RecalcAttrAndBattlePoint()
 end
 
@@ -625,5 +660,6 @@ function PlayerInfo:Handle_Cancel_Equip_Appearance(pkt)
 		return
 	end
 	self:UnsetAppearance(type)
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_FASHION_ILLUSION_UNSET)
 	self:RecalcAttrAndBattlePoint()
 end

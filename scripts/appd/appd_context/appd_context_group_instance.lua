@@ -190,6 +190,8 @@ function PlayerInfo:CheckGroupInstanceReward()
 				self:AppdAddItems(rewardDict, MONEY_CHANGE_KUAFU_GROUP_INSTANCE, LOG_ITEM_OPER_TYPE_GROUP_INSTANCE)
 				
 				self:onAddMeridianExpSource(MERIDIAN_EXP_SOURCE_GROUP_INSTANCE)
+				
+				self:AddActiveItem(VITALITY_TYPE_GROUP_INSTANCE)
 			end
 		end
 		

@@ -74,9 +74,9 @@ function PlayerInfo:shopBuyItem(id, count, timeid)
 		
 	end
 	
-	local baseCostTable
+	local baseCostTable = config.costResource
 	local itemendtime = 0
-	if #config.timeCostResource > 0 and timeid > 0 then
+--[[	if #config.timeCostResource > 0 and timeid > 0 then
 		
 		if not config.timeCostResource[timeid] then
 			return
@@ -90,9 +90,8 @@ function PlayerInfo:shopBuyItem(id, count, timeid)
 		table.insert(baseCostTable,timeitemtab)
 		
 		itemendtime = os.time() + config.timeCostResource[timeid][3] * 24 * 60 * 60
-	elseif timeid == 0 then
-		baseCostTable = config.costResource
-	else 
+	else--]]
+	if timeid ~= 0 then
 		return
 	end
 	

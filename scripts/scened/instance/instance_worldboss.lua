@@ -404,16 +404,33 @@ function AI_WorldBoss:JustDied( map_ptr,owner,killer_ptr )
 			indx = indx + 1
 		end
 		
-		local rankRewardConfig = tb_worldboss_rank_reward[indx]
-		local mailInfo = {rankRewardConfig.serverRewards, rankRewardConfig.name, rankRewardConfig.desc, GIFT_PACKS_TYPE_WORLD_BOSS}
-		local str = string.join("|", mailInfo)
 		local playerGuid = rankInfo[ i ][ 3 ]
 		--发到应用服发宝箱
 		local player = mapLib.GetPlayerByPlayerGuid(map_ptr, playerGuid)
+		local playerInfo = UnitInfo:new {ptr = player}
+		
+		
+		local rankRewardConfig = tb_worldboss_rank_reward[indx]
+		local items = rankRewardConfig.serverRewards
+		local factor = rankRewardConfig.factor / 100
+		
+		local level = playerInfo:GetLevel()
+		local lrc = tb_worldboss_rank_level_reward[ 1 ]
+		for k = 1, #tb_worldboss_rank_level_reward do
+			local levelRewardConfig = tb_worldboss_rank_level_reward[ k ]
+			if levelRewardConfig.levelRange[ 1 ] <= level and level <= levelRewardConfig.levelRange[ 2 ] then
+				lrc = levelRewardConfig
+				break
+			end
+		end
+		
+		items = string.format("%s,%d,%d", items, lrc.serverRewards[ 1 ], math.floor(factor * lrc.serverRewards[ 2 ]))
+		
+		local mailInfo = {items, rankRewardConfig.name, rankRewardConfig.desc, GIFT_PACKS_TYPE_WORLD_BOSS}
+		local str = string.join("|", mailInfo)
+		
 		playerLib.SendToAppdDoSomething(player, SCENED_APPD_ADD_MAIL, 0, str)
 		
-		local playerInfo = UnitInfo:new {ptr = player}
-		local items = rankRewardConfig.serverRewards
 		local params = string.split(items, ',')
 		local dict = {}
 		for i = 1, #params, 2 do

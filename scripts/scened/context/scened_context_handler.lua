@@ -647,7 +647,8 @@ function ScenedContext:Hanlde_Enter_Risk_Instance(pkt)
 	
 	local mapid = unitLib.GetMapID(self.ptr)
 	-- 是否允许传送
-	if mapid ~= toMapId and not self:makeEnterTest(toMapId) then
+	local subType = tb_map[mapid].inst_sub_type
+	if mapid ~= toMapId and subType > 0 and subType ~= INSTANCE_SUB_TYPE_RISK then
 --		outFmtError("Hanlde_Enter_VIP_Instance player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
 		return
 	end
@@ -811,7 +812,7 @@ function ScenedContext:Handle_Challange_Boss(pkt)
 		return
 	end
 	--]]
-	
+		
 	-- 判断是否能挑战boss
 	if not self:isCanChallengeRiskBoss() then
 		return
@@ -823,6 +824,10 @@ function ScenedContext:Handle_Challange_Boss(pkt)
 	end
 	
 	local bossSectionId = tb_risk_data[sectionId].relateId
+	-- 判断等级时候够
+	if self:GetLevel() < tb_risk_data[bossSectionId].level then
+		return
+	end
 	
 	if bossSectionId > 0 then
 		local config = tb_risk_data[bossSectionId]
@@ -945,7 +950,7 @@ function ScenedContext:Hanlde_Change_Line(pkt)
 end--]]
 
 function ScenedContext:Handle_Roll_WorldBoss_Treasure(pkt)
-	Roll_Treasure(self)
+	
 end
 
 function ScenedContext:Handle_Pick_Offline_Reward(pkt)

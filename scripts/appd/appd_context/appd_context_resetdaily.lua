@@ -146,6 +146,12 @@ function PlayerInfo:onRealReset()
 	self:OnResetLocalSinglePVPDayTimes()
 	
 	self:DailyResetRevengeTimes()
+	
+	DoActivityDataReset(self)
+	
+	self:LoginUpdateSevenDayProcess()
+	
+	self:DailyResetActive()
 end
 
 function PlayerInfo:resetWeeklyInfo()

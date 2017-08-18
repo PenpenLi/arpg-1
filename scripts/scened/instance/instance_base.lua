@@ -708,7 +708,7 @@ Instance_base = {
 	DoPlayerExitInstance = 
 		function(self, player)
 			local mapid = self:GetMapId()
-			if tb_map[mapid].type == MAP_TYPE_MAIN then
+			if tb_map[mapid].type == MAP_TYPE_MAIN or tb_map[mapid].type == MAP_TYPE_FIELD then
 				return 0
 			end
 			return 1	--返回1的话为正常退出，返回0则不让退出
@@ -859,17 +859,27 @@ Instance_base = {
 					end
 				else
 					-- 随机复活区域
-					local rebornPosList = tb_map[mapid].rebornPos
-					local a = GetRandomIndexTable(#rebornPosList, 1)
-					local pos = rebornPosList[a[ 1 ]]
-					local offsetX = randInt(-1, 1)
-					local offsetY = randInt(-1, 1)
-					
-					local toX = pos[ 1 ] + offsetX
-					local toY = pos[ 2 ] + offsetY
-					local lineNo = self:GetMapLineNo()
-					local generalId	= self:GetMapGeneralId()
-					playerLib.Teleport(unit_ptr, mapid, toX, toY, lineNo, generalId)
+					local rec = tb_map[mapid].rebornPos
+					if #rec == 4 then
+						local x1 = rec[ 1 ]
+						local y1 = rec[ 2 ]
+						local x2 = rec[ 3 ]
+						local y2 = rec[ 4 ]
+						
+						if x1 > x2 then
+							x1, x2 = swap(x1, x2)
+						end
+						
+						if y1 > y2 then
+							y1, y2 = swap(y1, y2)
+						end
+						
+						local toX = randInt(x1, x2)
+						local toY = randInt(y1, y2)
+						local lineNo = self:GetMapLineNo()
+						local generalId	= self:GetMapGeneralId()
+						playerLib.Teleport(unit_ptr, mapid, toX, toY, lineNo, generalId)
+					end
 				end
 				unitInfo:SetUseRespawnMapId(0)
 			end
@@ -1172,7 +1182,7 @@ Instance_base = {
 		end
 	
 		local type = self.STAND_UP_TYPE_COST_TIME
-		local value = self:GetCostTimeCD(playerInfo) - os.time()
+		local value = self:GetCostTimeCD(playerInfo)
 		if value == 0 then
 			type = self.STAND_UP_TYPE_COST_GOLD
 			value = self:GetCostGold(playerInfo)

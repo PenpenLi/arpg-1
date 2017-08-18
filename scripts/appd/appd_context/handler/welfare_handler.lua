@@ -51,6 +51,10 @@ function PlayerInfo:Handle_Welfare_ActiveGetback(pkt)
 		best = false
 	end
 	local num = pkt.num
+	
+	if num < 1 then
+		return
+	end
 	self:GetWelfareBackReward(type,best,num)
 end
 --一键找回奖励列表
@@ -73,3 +77,20 @@ function PlayerInfo:Handle_Welfare_All_Getback(pkt)
 	end
 	self:GetWelfareAllReward(best)
 end
+
+function PlayerInfo:Handle_Welfare_Get_Recharge_Reward(pkt)
+	local id = pkt.id
+	self:GetWelfareRechargeReward(id)
+end
+
+function PlayerInfo:Handle_Welfare_Get_Consume_Reward(pkt)
+	local id = pkt.id
+	self:GetWelfareConsumeReward(id)
+end
+
+function PlayerInfo:Handle_Welfare_Get_Sevenday_Reward(pkt)
+	local id = pkt.id
+	self:GetWelfareSevendayReward(id)
+end
+
+

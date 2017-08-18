@@ -111,8 +111,10 @@ function PlayerInfo:PlayerAddItems(rewardDict, money_oper_type, item_oper_type, 
 			local moneyType = GetMoneyType(itemId)
 			self:AddMoney(moneyType, money_oper_type, count)
 		elseif itemId == Item_Loot_Exp then
+			-- 应用服加个临时经验
+			self:AddAppdExp(count)
 			-- 加经验 发送到场景服
-			self:CallScenedDoSomething(APPD_SCENED_ADD_EXP, count)
+			-- self:CallScenedDoSomething(APPD_SCENED_ADD_EXP, count)
 		else
 			if tb_item_template[itemId] then
 				table.insert(itemDict, {itemId, count})
@@ -611,16 +613,19 @@ end
 
 -- 处理消费元宝统计
 function PlayerInfo:DoGlodConsumeStatistics ( val)
-	-- 添加七天内累计消费
-	local cur_tm = os.time()
-	if cur_tm <= DoHowLongKaiFuTime(7) then
-		local count = self:GetKfhdTotalConsumeNum()
-		count = count + val
-		if count > MAX_UINT32_NUM then
-			count = MAX_UINT32_NUM
-		end
-		self:SetKfhdTotalConsumeNum(count)
+	
+-- 累计消费
+--	local cur_tm = os.time()
+--	if cur_tm <= DoHowLongKaiFuTime(7) then
+	local count = self:GetConsumeSum()
+	count = count + val
+	if count > MAX_UINT32_NUM then
+		count = MAX_UINT32_NUM
 	end
+	self:SetConsumeSum(count)
+	
+	outFmtInfo("DoGlodConsumeStatistics  cur %d", self:GetConsumeSum())
+--	end
 end
 
 --获得角色创建时间
@@ -657,6 +662,8 @@ function PlayerInfo:Login()
 		return
 	end
 	
+	--活动数据初始化
+	DoActivityDataInitOnLogin(self)
 	
 	--0点重置	
 	self:DoResetDaily()
@@ -702,6 +709,16 @@ function PlayerInfo:Login()
 	
 	--初始化家族技能
 	self:UpdateFactionSkill()
+	
+	-- 发送开服时间
+	self:call_send_server_open_time(globalGameConfig:GetKaiFuShiJian())
+	
+	-- 
+	local logoutTime = self:GetUInt32(PLAYER_EXPAND_INT_LAST_LOGOUT_TIME)
+	if logoutTime > 0 then
+		local times = math.floor((os.time() - logoutTime) / 10)
+		self:onPickedOfflineRiskReward(times)
+	end
 end
 
 --pk服玩家登陆做点啥
@@ -753,6 +770,15 @@ end
 --获取充值总数
 function PlayerInfo:GetRechageSum ()
 	return self:GetUInt32(PLAYER_APPD_INT_FIELD_RECHARGE_SUM)
+end
+
+--消费总数
+function PlayerInfo:GetConsumeSum ()
+	return self:GetUInt32(PLAYER_APPD_INT_FIELD_CONSUME_SUM)
+end
+
+function PlayerInfo:SetConsumeSum (val)
+	self:SetUInt32(PLAYER_APPD_INT_FIELD_CONSUME_SUM,val)
 end
 
 --获取最后充值ID
@@ -2320,6 +2346,297 @@ end
 
 ------------------------------------------
 
+--vip礼包购买状态
+function PlayerInfo:GetVipGiftFlag(id)
+	return self:GetBit(PLAYER_INT_FIELD_VIPGIFT_FLAG,id)
+end
+
+function PlayerInfo:SetVipGiftFlag(id)
+	self:SetBit(PLAYER_INT_FIELD_VIPGIFT_FLAG, id)
+end
+
+--VIP礼包
+function PlayerInfo:BuyVipGift(id)
+	local config = tb_vip_base[id]
+	if not config then
+		return
+	end
+	if self:GetVipGiftFlag(id) then
+		self:CallOptResult(OPERTE_TYPE_NPCBUY,NPC_BUY_SELL_OUT)
+		return
+	end
+	
+	if self:GetVIP() < id then
+		return
+	end
+	
+	
+	if not self:hasAllItems(config.cost) then
+		self:CallOptResult(OPERTE_TYPE_NPCBUY,NPC_BUY_MONEY_NO_ENOUGH)
+		return
+	end
+	
+	if self:useAllItems(MONEY_CHANGE_TYPE_STORE_BUY,config.cost) then
+		self:AppdAddItems(config.gift, MONEY_CHANGE_TYPE_STORE_BUY,LOG_ITEM_OPER_TYPE_SHOP_BUY)
+		
+		self:SetVipGiftFlag(id)
+		
+	end
+	
+end
+
+------------------------------------------
+--玩家活动激活时数据清理
+function PlayerInfo:ActiveActivity(act_id)
+	local config = tb_activity_time[act_id]
+	
+	local spellMgr = self:getSpellMgr()
+	local category = config.category
+	
+	local prev = self:GetActivityDataActId(category)
+	if prev == act_id then
+		return
+	end
+	
+	outFmtInfo("#########player ActiveActivity id = %d", act_id)
+	
+	self:SetActivityDataActId(category,act_id)
+	for offset = 0,2 do
+		self:SetActivityDataUInt32(act_id,offset,0)
+	end
+	
+	spellMgr:SetStr(SPELL_STRING_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATASTRING_COUNT + PLAYER_ACTIVITTY_DATA_STRING_0,"")
+	
+end
+
+------------------------------玩家活动uint32数据
+function PlayerInfo:SetActivityDataUInt32(act_id,offset,value)
+	local config = tb_activity_time[act_id]
+	
+	local spellMgr = self:getSpellMgr()
+	local category = config.category
+	if offset < 0  or offset > 2 then
+		outFmtError("SetActivityDataUInt32 error offset %d",offset)
+		return
+	end
+	spellMgr:SetUInt32(SPELL_INT_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATAINT_COUNT + offset + 1,value)
+end
+
+function PlayerInfo:GetActivityDataUInt32(act_id,offset)
+	local config = tb_activity_time[act_id]
+	
+	local spellMgr = self:getSpellMgr()
+	local category = config.category
+	if offset < 0  or offset > 2 then
+		outFmtError("GetActivityDataUInt32 error offset %d",offset)
+		return
+	end
+	return spellMgr:GetUInt32(SPELL_INT_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATAINT_COUNT + offset + 1)
+end
+
+function PlayerInfo:GetActivityDataActId(category)
+	local spellMgr = self:getSpellMgr()
+	return spellMgr:GetUInt32(SPELL_INT_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATAINT_COUNT )
+end
+
+function PlayerInfo:SetActivityDataActId(category,val)
+	local spellMgr = self:getSpellMgr()
+	spellMgr:SetUInt32(SPELL_INT_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATAINT_COUNT ,val)
+end
+
+
+------------------------------玩家活动bit数据
+function PlayerInfo:SetActivityDataBit(act_id,offset,bit_offset)
+	local config = tb_activity_time[act_id]
+	
+	local spellMgr = self:getSpellMgr()
+	local category = config.category
+	if offset < 0  or offset > 2 then
+		outFmtError("SetActivityDataBit error offset %d",offset)
+		return
+	end
+	if bit_offset < 0  or bit_offset > 31 then
+		outFmtError("SetActivityDataBit error bit_offset %d",offset)
+		return
+	end
+	
+	spellMgr:SetBit(SPELL_INT_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATAINT_COUNT + offset + 1,bit_offset)
+end
+
+function PlayerInfo:UnSetActivityDataBit(act_id,offset,bit_offset)
+	local config = tb_activity_time[act_id]
+	
+	local spellMgr = self:getSpellMgr()
+	local category = config.category
+	if offset < 0  or offset > 2 then
+		outFmtError("UnSetActivityDataBit error offset %d",offset)
+		return
+	end
+	if bit_offset < 0  or bit_offset > 31 then
+		outFmtError("UnSetActivityDataBit error bit_offset %d",offset)
+		return
+	end
+	
+	spellMgr:UnSetBit(SPELL_INT_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATAINT_COUNT + offset + 1,bit_offset)
+end
+
+function PlayerInfo:GetActivityDataBit(act_id,offset,bit_offset)
+	local config = tb_activity_time[act_id]
+	
+	local spellMgr = self:getSpellMgr()
+	local category = config.category
+	if offset < 0  or offset > 2 then
+		outFmtError("GetActivityDataBit error offset %d",offset)
+		return
+	end
+	return spellMgr:GetBit(SPELL_INT_FIELD_PLAYER_ACTIVITY_DATA_START + category * MAX_PLAYERACTIVITTYDATAINT_COUNT + offset + 1,bit_offset)
+end
+
+
+------------------------------------------
+
+-------------------应用服经验------------
+function PlayerInfo:AddAppdExp(val)
+	if val <= 0 then
+		return
+	end
+	
+	self:AddDouble(PLAYER_EXPAND_INT_XP_ADDED, val)
+end
+
+------------------------------------------
+--七日大礼进度更新
+function PlayerInfo:LoginUpdateSevenDayProcess()
+	local questMgr = self:getQuestMgr()
+	if questMgr:GetSevenDayProcess() < 7 then
+		questMgr:AddSevenDayProcess(1)
+		outFmtInfo("LoginUpdateSevenDayProcess login days %d",questMgr:GetSevenDayProcess())
+	end
+end
+
+------------------------------------------
+function PlayerInfo:getLastPassedSectionId()
+	return self:GetUInt32(PLAYER_INT_FIELD_TRIAL_FINISHED_SECTIONID)
+end
+
+function PlayerInfo:getRiskSuitScore()
+	return self:GetUInt32(PLAYER_INT_FILED_LEAVE_RISK_SUIT_SCORE)
+end
+
+function PlayerInfo:setRiskSuitScore(val)
+	self:SetUInt32(PLAYER_INT_FILED_LEAVE_RISK_SUIT_SCORE, val)
+end
+
+
+function PlayerInfo:onPickedOfflineRiskReward(times)
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_WORLD_RISK, MODULE_WORLD_RISK_MAIN)) then
+		return
+	end
+	
+	if times == 0 then
+		return
+	end
+	
+	local rewardDict, sell = self:onCalRiskReward(times)
+	if rewardDict then
+		self:AppdAddItems(rewardDict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE, nil, nil, nil, 3)
+		local list = Change_List_To_Item_Reward_Info(rewardDict, sell)
+		self:call_offline_reward_result (sell, times * 10, 0, 0, list)
+	end
+end
+
+-- 领取世界冒险奖励
+function PlayerInfo:onPickRiskReward()
+
+	-- 系统未激活
+	if (not self:GetOpenMenuFlag(MODULE_WORLD_RISK, MODULE_WORLD_RISK_MAIN)) then
+		return
+	end
+	
+	local rewardDict, sell = self:onCalRiskReward(1)
+	if rewardDict then
+		self:AppdAddItems(rewardDict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE, nil, nil, nil, 3)
+		if sell > 0 then
+			self:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL_AUTO_SELL, sell)
+		end
+	end
+end
+
+
+function PlayerInfo:onCalRiskReward(times)
+	local passedSectionId = self:getLastPassedSectionId()
+	local sectionId = onGetAvailableSectionId(passedSectionId)
+	
+	-- 最大次数
+	local limit = 1440 * 6
+	if times > limit then
+		times = limit
+	end
+	
+	local rate = 100
+	if times > tb_risk_base[ 1 ].reduceTime * 6 then
+		rate = tb_risk_base[ 1 ].rate
+	end
+	
+	local config = tb_risk_data[sectionId]
+	local dict = {}
+	dict[config.goldReward[ 1 ]] = math.floor(config.goldReward[ 2 ] * times * rate / 100)
+	dict[config. expReward[ 1 ]] = math.floor(config. expReward[ 2 ] * times * rate / 100)
+	
+	local score = math.floor(config.suitScore * times * rate / 100)
+	local prevScore = self:getRiskSuitScore()
+	score = score + prevScore
+	
+	-- 随机装备
+	-- 先计算装备积分
+	local suitCount = math.floor(score / config.suitScoreChange)
+	self:setRiskSuitScore(score - suitCount * config.suitScoreChange)
+	
+	local dropid = config.dropid
+	for i = 1, suitCount do
+		DoRandomDrop(dropid, dict)
+	end
+	
+	local sell = 0
+	local itemMgr = self:getItemMgr()
+	local empty_count = itemMgr:getEmptyCount(BAG_TYPE_EQUIP_BAG)	--取出剩余位置个数
+	local rewardDict = {}
+	local dictTemp = {}
+	for entry, count in pairs(dict) do
+		dictTemp[entry] = count
+		if tb_item_template[entry].pos > 0 then
+			-- 已经满了
+			if empty_count <= 0 then
+				dictTemp[entry] = nil
+			end
+			-- 当前会超过
+			if empty_count > 0 and empty_count < count then
+				dictTemp[entry] = empty_count
+			end
+
+			empty_count = empty_count - count
+			for k = 1, count do
+				table.insert(rewardDict, {entry, 1})
+			end
+		else
+			table.insert(rewardDict, {entry, count})
+		end
+	end
+	
+	if empty_count < 0 then
+		sell = -empty_count
+	end
+	
+	return rewardDict, sell
+end
+
+function PlayerInfo:onUpdatePlayerQuest(type,params)
+	local questMgr = self:getQuestMgr()
+	questMgr:OnUpdate(type, params)
+end
+	
+
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()
 	self:KuafuMarked(0)
@@ -2333,6 +2650,10 @@ end
 -- 是否正在跨服
 function PlayerInfo:IsKuafuing()
 	return self:GetUInt32(PLAYER_INT_FIELD_KUAFU_NUMBER) > 0
+end
+
+function PlayerInfo:GetWingsUpgradeLevel()
+	self:GetUInt32(PLAYER_INT_FIELD_WINGS_RANK)
 end
 
 -- 关闭连接
@@ -2391,6 +2712,7 @@ require("appd/appd_context/handler/shop_handler")
 require("appd/appd_context/handler/rank_handler")
 require("appd/appd_context/handler/kuafu_handler")
 require("appd/appd_context/handler/active_handler")
+require("appd/appd_context/handler/activity_handler")
 require("appd/appd_context/handler/achieve_title_handler")
 require("appd/appd_context/handler/welfare_handler")
 require("appd/appd_context/handler/guide_handler")

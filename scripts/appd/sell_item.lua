@@ -8,7 +8,8 @@ local Packet = require 'util.packet'
 function SellItem(player, item_guid, count)
 	if count <= 0 then return end		--数量不能小于等于0
 	local itemMgr = player:getItemMgr()	
-	local item = itemMgr:getItemByGuid(item_guid, BAG_TYPE_MAIN_BAG)		--只有主包裹的物品才能出售
+	local item = itemMgr:getItemByGuid(item_guid)		--只有主包裹的物品才能出售
+	--outFmtError("SellItem:  item_guid %s ,count %d", item_guid,count)
 	if not item then
 		outFmtError("SellItem: not find item_id %s ", item_guid)
 		--没找到这个物品

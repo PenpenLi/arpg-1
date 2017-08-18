@@ -63,15 +63,16 @@ end
 function PlayerInfo:WelfareCheckInAll(id)
 	local questMgr = self:getQuestMgr()
 	
+	local config = tb_welfare_checkin_all[id]
+	if not config then
+		return
+	end
+	
 	if questMgr:getWelfareCheckInAll(id) then 
 		--self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
 		return
 	end
 	
-	local config = tb_welfare_checkin_all[id]
-	if not config then
-		return
-	end
 	
 	local allnum = questMgr:getWelfareCheckInDayNum()
 	
@@ -86,15 +87,17 @@ function PlayerInfo:WelfareLevel(id)
 	--outFmtDebug("000000000000")
 	local questMgr = self:getQuestMgr()
 	
+	local config = tb_welfare_level[id]
+	if not config then
+		return
+	end
+	
 	if questMgr:getWelfareLev(id) then 
 		--self:CallOptResult(OPRATE_TYPE_ACTIVITY, ACTIVITY_OPERATE_HASGET)
 		return
 	end
 	
-	local config = tb_welfare_level[id]
-	if not config then
-		return
-	end
+	
 	
 	if self:GetLevel() < config.lev then
 		return
@@ -374,3 +377,89 @@ function PlayerInfo:GetWelfareBackRewardData(type,bestGetback)
 end
 
 ------需要根据逻辑特殊处理-end--------------------------------------
+--累计元宝充值奖励
+function PlayerInfo:GetWelfareRechargeReward(id)
+	if id < 1 or id > 32 then
+		outFmtError("GetWelfareRechargeReward id %d error",id)
+		return
+	end
+	local config = tb_welfare_recharge[id]
+	
+	if not config then
+		outFmtError("GetWelfareRechargeReward config %d not exist",id)
+		return
+	end
+	
+	local questMgr = self:getQuestMgr()
+	if questMgr:GetRechargeRewardFlag(id - 1) then
+		outFmtError("GetWelfareRechargeReward reward %d already get",id)
+		return
+	end
+	
+	if self:GetRechageSum() < config.money then
+		outFmtError("GetWelfareRechargeReward money %d not reach target",self:GetRechageSum())
+		return
+	end
+	
+	self:AppdAddItems(config.item,MONEY_CHANGE_RECHARGE_REWARD,LOG_ITEM_OPER_TYPE_RECHARGE_REWARD)
+	questMgr:SetRechargeRewardFlag(id - 1)
+	
+end
+
+--累计元宝消费奖励
+function PlayerInfo:GetWelfareConsumeReward(id)
+	if id < 1 or id > 32 then
+		outFmtError("GetWelfareConsumeReward id %d error",id)
+		return
+	end
+	
+	local config = tb_welfare_consume[id]
+	
+	if not config then
+		outFmtError("GetWelfareConsumeReward config %d not exist",id)
+		return
+	end
+	
+	local questMgr = self:getQuestMgr()
+	if questMgr:GetConsumeRewardFlag(id - 1) then
+		outFmtError("GetWelfareConsumeReward reward %d already get",id)
+		return
+	end
+	
+	if self:GetConsumeSum() < config.money then
+		outFmtError("GetWelfareConsumeReward money %d not reach target",self:GetConsumeSum())
+		return
+	end
+	
+	self:AppdAddItems(config.item,MONEY_CHANGE_CONSUME_REWARD,LOG_ITEM_OPER_TYPE_CONSUME_REWARD)
+	questMgr:SetConsumeRewardFlag(id - 1)
+end
+
+
+function PlayerInfo:GetWelfareSevendayReward(id)
+	if id < 1 or id > 7 then
+		outFmtError("GetWelfareSevendayReward id %d error",id)
+		return
+	end
+	
+	local config = tb_welfare_sevengift[id]
+	
+	if not config then
+		outFmtError("GetWelfareSevendayReward config %d not exist",id)
+		return
+	end
+	
+	local questMgr = self:getQuestMgr()
+	if questMgr:GetSevenDayFlag(id - 1) then
+		outFmtError("GetWelfareSevendayReward reward %d already get",id)
+		return
+	end
+	
+	if questMgr:GetSevenDayProcess() < id then
+		outFmtError("GetWelfareSevendayReward login day %d not reach target",self:GetSevenDayProcess())
+		return
+	end
+	
+	self:AppdAddItems(config.item,MONEY_CHANGE_SEVEN_DAY_GIFT,LOG_ITEM_OPER_TYPE_SEVEN_DAY_GIFT)
+	questMgr:SetSevenDayFlag(id - 1)
+end

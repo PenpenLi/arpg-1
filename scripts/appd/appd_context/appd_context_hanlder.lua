@@ -278,6 +278,12 @@ function PlayerInfo:Handle_Get_Player_Overview(pkt)
 	self:call_show_player_overview(guid,name,equip,force,vip,title,gender,coat,weapon)
 end
 
+
+function PlayerInfo:Handle_Buy_VipGift(pkt)
+	local id = pkt.id
+	self:BuyVipGift(id)
+end
+
 --函数包路由表
 local OpcodeHandlerFuncTable = require 'appd.appd_context.appd_context_hanlder_map'
 

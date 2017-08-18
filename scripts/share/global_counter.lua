@@ -32,6 +32,77 @@ function GlobalCounter:unlock(rank1, rank2)
 	end
 end
 
+
+--------------------------------------活动信息-----------------------------------------
+local tb_activity_real_time = {}
+
+function GlobalCounter:activityInit()
+	for id, info in pairs(tb_activity_time) do
+		if not globalCounter:IsActivityFinished(id) then
+			local startTime = info.startTime
+			if startTime == -1 then
+				startTime = getTheFirstTimestampOfDay(globalGameConfig:GetKaiFuShiJian())
+			end
+			
+			startTime = startTime + 86400 * info.delayDays
+			local endTime = startTime + 86400 * info.lastDays
+			endTime = getTheFirstTimestampOfDay(endTime)-1
+			if os.time() < endTime then
+				tb_activity_real_time[ id ] = {startTime, endTime}
+				outFmtInfo("####### activityInit id = %d st = %d, et = %d", id, startTime, endTime)
+			else
+				if globalValue:IsActivityRunning(id) then
+					self:SetActivityFinished(id)
+				end
+			end
+		end
+	end
+end
+
+
+function GlobalCounter:activityUpdate()
+	local now = os.time()
+	
+	local removeSet = {}
+	-- 有无活动结束
+	for id, timeInfo in pairs(tb_activity_real_time) do
+		if now >= timeInfo[ 2 ] and not self:IsActivityFinished(id) then
+			outFmtInfo("================ need to be delete %d", id)
+			table.insert(removeSet, id)
+		end
+	end
+	
+	for _, id in ipairs(removeSet) do
+		self:SetActivityFinished(id)
+	end
+	
+	-- 有无活动开始
+	for id, timeInfo in pairs(tb_activity_real_time) do
+		if now >= timeInfo[ 1 ] and now <= timeInfo[ 2 ] and not globalValue:IsActivityRunning(id) then
+			globalValue:SetActivityRunning(id)
+		end
+	end
+end
+
+function GlobalCounter:IsActivityFinished(actId)
+	local off, sub = self:calOffsetAndSubOffset(actId)
+	return self:GetBit(GLOBALCOUNTER_INT_FIELD_ACTIVITIES_FINISH_START + off, sub)
+end
+
+function GlobalCounter:SetActivityFinished(actId)
+	globalValue:UnSetActivityRunning(actId)
+	local off, sub = self:calOffsetAndSubOffset(actId)
+	self:SetBit(GLOBALCOUNTER_INT_FIELD_ACTIVITIES_FINISH_START + off, sub)
+	tb_activity_real_time[actId] = nil
+	activityManagerFinished(actId)
+end
+
+function GlobalCounter:calOffsetAndSubOffset(actId)
+	local val = actId - 1
+	local offset = math.floor(val / 32)
+	return offset, val - offset * 32
+end
+
 -- 初始化斗剑台初始排名
 function GlobalCounter:InitDoujiantaiRank()
 	local length = math.min(MAX_DOUJIANTAI_RANK_COUNT, #tb_doujiantai_dummy)
@@ -427,6 +498,61 @@ function GlobalCounter:SyncOfflineRecord(playerInfo)
 			self:SetStr(strstart + i, '')
 		end
 	end
+end
+
+function GlobalCounter:getRiskRank(playerInfo)
+	local list = {}
+	for i = 0, MAX_RISK_RANK_COUNT-1 do
+		local intstart = GLOBALCOUNTER_INT_FIELD_RISK_RANK_INFO_START + i * MAX_RISK_RANK_INFO_COUNT
+		local strstart = GLOBALCOUNTER_STRING_FIELD_RISK_RANK_NAME_START + i
+		
+		local stru	= act_rank_info_t .new()
+		stru.name	= self:GetStr(strstart)
+		stru.value 	= self:GetUInt32(intstart + RISK_RANK_INFO_SECTION_ID)
+		table.insert(list, stru)
+	end
+	
+	playerInfo:call_risk_get_rank_result(list)
+end
+
+function GlobalCounter:onRiskRank(playerInfo, sectionId)
+	local prevIndx = self:findSelfRankIndx(playerInfo:GetName())
+
+	-- 先同步自己的数据
+	local intstart = GLOBALCOUNTER_INT_FIELD_RISK_RANK_INFO_START + prevIndx * MAX_RISK_RANK_INFO_COUNT
+	local strstart = GLOBALCOUNTER_STRING_FIELD_RISK_RANK_NAME_START + prevIndx
+	self:SetUInt32(intstart + RISK_RANK_INFO_SECTION_ID, sectionId)
+	self:SetUInt32(intstart + RISK_RANK_INFO_TIME, os.time())
+	self:SetStr(strstart, playerInfo:GetName())
+	
+	-- 交换
+	for i = prevIndx-1, 0, -1 do
+		local intstart = GLOBALCOUNTER_INT_FIELD_RISK_RANK_INFO_START + i * MAX_RISK_RANK_INFO_COUNT
+		local prevValue = self:GetUInt32(intstart + RISK_RANK_INFO_SECTION_ID)
+		if sectionId > prevValue then
+			self:swapRiskRank(prevIndx, i)
+		end
+	end
+end
+
+function GlobalCounter:swapRiskRank(ra, rb)
+	local intstart1 = GLOBALCOUNTER_INT_FIELD_RISK_RANK_INFO_START + ra * MAX_RISK_RANK_INFO_COUNT
+	local intstart2 = GLOBALCOUNTER_INT_FIELD_RISK_RANK_INFO_START + rb * MAX_RISK_RANK_INFO_COUNT
+	local strstart = GLOBALCOUNTER_STRING_FIELD_RISK_RANK_NAME_START
+	for i = 0, MAX_RISK_RANK_INFO_COUNT do
+		self:swapUInt(intstart1 + i, intstart2 + i)
+	end
+	self:swapStr(strstart + ra, strstart + rb)
+end
+
+function GlobalCounter:findSelfRankIndx(name)
+	for i = 0, MAX_RISK_RANK_COUNT-1 do
+		local strstart = GLOBALCOUNTER_STRING_FIELD_RISK_RANK_NAME_START + i
+		if self:GetStr(strstart) == name then
+			return i
+		end
+	end
+	return MAX_RISK_RANK_SWAPED_COUNT -1
 end
 
 return GlobalCounter

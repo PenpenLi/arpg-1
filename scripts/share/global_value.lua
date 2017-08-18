@@ -279,7 +279,7 @@ end
 
 -- 设置这2天要刷的世界BOSS类型
 function GlobalValue:RandomStepWorldBoss()
-	print("RandomStepWorldBoss")
+	outFmtInfo("RandomStepWorldBoss")
 	local dict = GetRandomIndexTable(#tb_worldboss_base, 2)
 	self:SetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 0, dict[ 1 ])
 	self:SetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 1, dict[ 2 ])
@@ -292,7 +292,7 @@ function GlobalValue:RandomStepWorldBossIfNeverDoes()
 	if not (0 < id and id <= #tb_worldboss_base) or not (0 < id2 and id2 <= #tb_worldboss_base) then
 		globalValue:RandomStepWorldBoss()
 	end
-	print("curr boss id = ", self:GetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 0), self:GetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 1))
+	outFmtInfo("curr boss id = %d, %d", self:GetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 0), self:GetByte(GLOBALVALUE_INT_FIELD_WORLD_BOSS_ID, 1))
 end
 
 -- 设置这次的BOSS ID
@@ -330,8 +330,31 @@ end
 
 
 
+------------------------------抽奖活动---------------------------------
+--[[
+#define MAX_LOTTERY_COUNT 10
+#define MAX_LOTTERY_RECORD_COUNT 10
 
+	GLOBALVALUE_INT_FIELD_LOTTERY_RECORD_CURSOR_START	= GLOBALVALUE_INT_FIELD_MASS_BOSS_END,		// 抽奖记录游标
+	GLOBALVALUE_INT_FIELD_LOTTERY_RECORD_CURSOR_END		= GLOBALVALUE_INT_FIELD_LOTTERY_RECORD_CURSOR_START + MAX_LOTTERY_COUNT,
+	
+	GLOBALVALUE_STRING_FIELD_LOTTERY_RECORD_START = GLOBALVALUE_STRING_FIELD_GIFT_RANK_WINER_GUARD_NAME + 1,		// 抽奖记录数据开始
+	GLOBALVALUE_STRING_FIELD_LOTTERY_RECORD_END   = GLOBALVALUE_STRING_FIELD_LOTTERY_RECORD_START + MAX_LOTTERY_COUNT * MAX_LOTTERY_RECORD_COUNT,	//
+--]]
 
+function GlobalValue:AddLotteryRecord(offset, record)
+	if offset < 0 or offset >= MAX_LOTTERY_COUNT then
+		return
+	end
+	local cursor = self:GetUInt32(GLOBALVALUE_INT_FIELD_LOTTERY_RECORD_CURSOR_START + offset)
+	--print("GlobalValue:AddXianfuRecord", cursor, record)
+	self:SetStr(cursor + GLOBALVALUE_STRING_FIELD_LOTTERY_RECORD_START + offset * MAX_LOTTERY_RECORD_COUNT, record)
+	cursor = cursor + 1
+	if cursor >= MAX_LOTTERY_RECORD_COUNT then
+		cursor = 0
+	end
+	self:SetUInt32(GLOBALVALUE_INT_FIELD_LOTTERY_RECORD_CURSOR_START + offset, cursor)
+end
 
 ------------------------------------仙府夺宝记录-----------------------------------
 -- GLOBALVALUE_STRING_FIELD_XIANFU_RECORD_START
@@ -375,6 +398,46 @@ function GlobalValue:checkMassBossReborn(id)
 end
 
 ------------------------------------------------------------------------
+function GlobalValue:IsActivityRunning(actId)
+	for i = GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_START, GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_END-1 do
+		if self:GetUInt32(i) == actId then
+			return true
+		end
+	end
+	return false
+end
+
+function GlobalValue:SetActivityRunning(actId)
+	for i = GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_START, GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_END-1 do
+		if self:GetUInt32(i) == 0 then
+			self:SetUInt32(i, actId)
+			activityManagerRunning(actId)
+			return
+		end
+	end
+	globalCounter:SetActivityFinished(actId)
+end
+
+function GlobalValue:UnSetActivityRunning(actId)
+	for i = GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_START, GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_END-1 do
+		if self:GetUInt32(i) == actId then
+			self:SetUInt32(i, 0)
+			return
+		end
+	end
+end
+
+function GlobalValue:GetActivityRunningList()
+	local list = {}
+	for i = GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_START, GLOBALVALUE_INT_FIELD_ACTIVITIES_RUNNING_END-1 do
+		local actId = self:GetUInt32(i)
+		if actId > 0 then
+			table.insert(list, actId)
+		end
+	end
+	return list
+end
+
 --魅力排行记录信息
 --[[
 --上周魅力排行第一家族旗子

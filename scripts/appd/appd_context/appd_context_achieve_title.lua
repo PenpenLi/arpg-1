@@ -143,6 +143,8 @@ end
 function PlayerInfo:AddTitle(id)
 	local questMgr = self:getQuestMgr()
 	questMgr:addTitle(id)
+	
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_TITLE_ACTIVE)
 end
 --…Ë÷√≥∆∫≈
 function PlayerInfo:SetTitle(id)

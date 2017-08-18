@@ -3,28 +3,22 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 	local guid = pkt.guid
 	local types = pkt.type
 	
-	local flag = self:GetBit(PLAYER_FIELD_USE_RANK_LIKE,types)
-	--outFmtDebug("day usenu %d",usenum)
-	if flag  then
-		--outFmtDebug("day max use like")
-		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_HAS_LIKE)
-		return
-	end
-	
 	local player
+	local target_rank = 0
 	if types == RANK_TYPE_POWER or types == RANK_TYPE_MONEY or
-		types == RANK_TYPE_LEVEL --[[or types == RANK_TYPE_DIVINE or
+		types == RANK_TYPE_LEVEL or types == RANK_TYPE_SINGLE_PVP--[[or types == RANK_TYPE_DIVINE or
 		types == RANK_TYPE_MOUNT--]] then
 		local flag , rank = RankHasGuid(types,guid)
-		if flag == false or rank < 1 or rank > 3 then
-			outFmtDebug("use is not in rank")
+		if flag == false or rank < 0 or rank > 2 then
+			outFmtDebug("use is not in rank  %s %s %d",guid,flag,rank)
 			return
 		end
-		
+		target_rank = rank
+		outFmtDebug("ok  use is not in rank  %s %s %d",guid,flag,rank)
 	elseif types == RANK_TYPE_FACTION then
 		local flag , rank = RankHasGuid(types,guid)
-		if flag == false or rank < 1 or rank > 3 then
-			outFmtDebug("use is not in rank")
+		if flag == false or rank < 0 or rank > 2 then
+			outFmtDebug("use is not in rank  %s %s %d",guid,flag,rank)
 			return
 		end
 		
@@ -38,6 +32,8 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 			return
 		end
 		guid = faction:GetBangZhuGuid()
+		target_rank = rank
+		outFmtDebug("ok  use is not in rank  %s %s %d",guid,flag,rank)
 	else 
 		return
 	end
@@ -49,7 +45,7 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 	player = app.objMgr:getObj(guid)
 	
 	if player ~= nil then
-		if self:ApplyRankLike(types,guid) then
+		if self:ApplyRankLike(types,guid,target_rank) then
 			local like = player:AddRankLike()
 			self:AddRankLikeResult(types,guid,like)
 		end
@@ -68,7 +64,7 @@ function PlayerInfo:Handle_Rank_Like(pkt)
 		local myplayer = app.objMgr:getObj(data.my_guid)
 		if not myplayer then return end
 		
-		if myplayer:ApplyRankLike(data.ranktype,data.callback_guid ) then
+		if myplayer:ApplyRankLike(data.ranktype,data.callback_guid ,target_rank) then
 			local like = targetPlayer:AddRankLike()
 			--更新到排行榜
 			UpdateRankLike(data.ranktype,data.callback_guid,like)
@@ -109,8 +105,8 @@ function PlayerInfo:AddApplyRankLike()
 	self:SetUInt32(PLAYER_FIELD_USE_RANK_LIKE,like)
 end
 --对某个排行榜的某个人点赞
-function PlayerInfo:ApplyRankLike(types,guid)
-	if self:HasRankLike(types,guid) then
+function PlayerInfo:ApplyRankLike(types,guid,target_rank)
+	if self:HasRankLike(types,guid,target_rank) then
 		--outFmtDebug("has like it")
 		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_HAS_LIKE)
 		return false
@@ -122,28 +118,31 @@ function PlayerInfo:ApplyRankLike(types,guid)
 	end
 	--]]
 	
-	local flag = self:GetBit(PLAYER_FIELD_USE_RANK_LIKE,types)
+	local flag = self:GetBit(PLAYER_FIELD_USE_RANK_LIKE,types * 3 + target_rank)
 	if flag  then
+		self:CallOptResult(OPERTE_TYPE_RANK_LIST, RANK_LIST_OPERATE_HAS_LIKE)
 		return false
 	end
 	
 	for i=PLAYER_STRING_FIELD_RANKLIKE_START,PLAYER_STRING_FIELD_RANKLIKE_ENE-1 do
 		if self:GetStr(i) == "" then
 			local spkey = "\1"
-			local key = guid .. spkey .. types
+			local key = ""..target_rank .. spkey .. types
 			self:SetStr(i,key)
 			--usenum = usenum + 1
 			--self:SetUInt32(PLAYER_FIELD_USE_RANK_LIKE,usenum)
-			self:SetBit(PLAYER_FIELD_USE_RANK_LIKE,types)
+			self:SetBit(PLAYER_FIELD_USE_RANK_LIKE,types * 3 + target_rank)
+			
+			outFmtDebug("ApplyRankLike  use is not in rank  %s %d",guid,target_rank)
 			return true
 		end
 	end
 	return false
 end
 
-function PlayerInfo:HasRankLike(types,guid)
+function PlayerInfo:HasRankLike(types,guid,target_rank)
 	local spkey = "\1"
-	local key = guid .. spkey .. types
+	local key = ""..target_rank .. spkey .. types
 	for i=PLAYER_STRING_FIELD_RANKLIKE_START,PLAYER_STRING_FIELD_RANKLIKE_ENE-1 do
 		if self:GetStr(i) == key then
 			return true

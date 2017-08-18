@@ -115,6 +115,8 @@ end
 function PlayerInfo:passWorldRiskInstance(id)
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_PASS_WORLD_RISK, {id})
+	
+	globalCounter:onRiskRank(self, self:getLastPassedSectionId())
 end
 
 
@@ -213,7 +215,7 @@ function ArrangeWorldBossRoom()
 		return {}, {}
 	end
 	
-	local room = math.ceil(count / config.world_boss_room_limit)
+	local room = math.ceil(count / tb_worldboss_time[ 1 ].roomLimit)
 	local playersPerRoom = math.floor(count / room)
 	local rest = count % room
 	
@@ -244,6 +246,8 @@ function DoWorldBossTeleport(playerDict, roomInfo)
 		-- ≤Œº”“∞Õ‚BOSS
 		local questMgr = playerInfo:getQuestMgr()
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_WORLD_BOSS)
+		
+		playerInfo:AddActiveItem(VITALITY_TYPE_WORLD_BOSS)
 	end
 end
 

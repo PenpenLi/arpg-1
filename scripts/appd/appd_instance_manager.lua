@@ -26,6 +26,8 @@ function AppInstanceMgr:checkIfCanEnterTrial()
 	
 	local questMgr = player:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_TRIAL_INSTANCE)
+	
+	player:AddActiveItem(VITALITY_TYPE_TRIAL_INSTANCE)
 end
 
 
@@ -69,6 +71,8 @@ function AppInstanceMgr:sweepTrialInstance()
 	-- 扫荡的结果发送
 	local list = Change_To_Item_Reward_Info(dict, true)
 	playerInfo:call_sweep_instance_reward (INSTANCE_SUB_TYPE_TRIAL, 0, 0, 0, list)
+	
+	playerInfo:AddActiveItem(VITALITY_TYPE_TRIAL_INSTANCE)
 end
 
 function AppInstanceMgr:checkIfCanEnterVIP(id, hard)
@@ -192,9 +196,7 @@ function AppInstanceMgr:checkIfCanEnterResInstance(id)
 	local x 	= config.x
 	local y 	= config.y
 	
-	self:AddByte(indx, 0, 1)
-
-	player:AddActiveItem(1)
+	player:AddActiveItem(VITALITY_TYPE_RES_INSTANCE)
 	
 	local gerneralId = string.format("%d:%d:%s", id, getMsTime(), player:GetGuid())
 	
@@ -212,6 +214,7 @@ end
 function AppInstanceMgr:passResInstance(id)
 	--outFmtDebug("ton guan zi yuan fu ben %d *************************************",id)
 	local idx =  INSTANCE_INT_FIELD_RES_START + id - 1
+	self:AddByte(idx, 0, 1)
 	local pas = self:GetByte(idx,1)
 	if pas == 0 then
 		self:SetByte(idx,1,1)
@@ -244,14 +247,9 @@ function AppInstanceMgr:sweepResInstance(id)
 		end
 		
 		local playerInfo = self:getOwner()
-		local idx = id * 100 + playerInfo:GetLevel()
+		local idx = id * 1000 + playerInfo:GetLevel()
 		local config = tb_instance_reward[idx]
-		local tab = {}
-		table.insert(tab,config.basereward[1])
-		local randomReward = config.randomreward
-		local rewardIdx = randInt(1, #randomReward)
-		table.insert(tab,randomReward[rewardIdx])
-		table.insert(tab,config.reward[1])
+		local tab = config.reward
 		
 		local list = {}
 		
@@ -268,7 +266,7 @@ function AppInstanceMgr:sweepResInstance(id)
 		--添加次数
 		self:AddByte(baseIdx, 0, 1)
 		
-		player:AddActiveItem(1)
+		player:AddActiveItem(VITALITY_TYPE_RES_INSTANCE)
 		
 		protocols.call_sweep_instance_reward ( player, INSTANCE_SUB_TYPE_RES, id, 0, 0, list)
 		
@@ -350,6 +348,11 @@ end
 --增加活跃度
 function AppInstanceMgr:addActivity(num)
 	self:AddUInt32(INSTANCE_INT_FIELD_ACTIVE,num)
+end
+
+--设置活跃度
+function AppInstanceMgr:setActivity(num)
+	self:SetUInt32(INSTANCE_INT_FIELD_ACTIVE,num)
 end
 
 --获取总活跃度
@@ -729,6 +732,8 @@ function AppInstanceMgr:checkIfCanEnterMassBoss(id)
 	
 	-- 发起传送
 	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, mapid, ''..id)
+	
+	player:AddActiveItem(VITALITY_TYPE_MASS_BOSS)
 end
 
 --组队副本

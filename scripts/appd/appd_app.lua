@@ -161,6 +161,9 @@ function AppdApp:InitCorn()
 		
 		-- 进行排位赛匹配
 		OnProcessLocalSinglePVPMatch()
+		
+		-- 检查活动是否开启
+		globalCounter:activityUpdate()
 	end)
 	
 	
@@ -175,21 +178,6 @@ function AppdApp:InitCorn()
 	self.cron:every("好友信息刷新",300,function()
 		self.objMgr:foreachAllPlayer(function(player)	
 			player:RefreshFriendInfo()
-		end)
-	end)
-
-
-	--每隔6s检测下失效幻化
-	self.cron:every("失效幻化检测", 6,function()
-		self.objMgr:foreachAllPlayer(function(player)	
-			player:OnRemoveExpireIllusion()
-		end)
-	end)
-	
-	--每隔7s检测下失效神兵
-	self.cron:every("失效神兵检测", 7,function()
-		self.objMgr:foreachAllPlayer(function(player)
-			player:OnRemoveExpireDivine()
 		end)
 	end)
 
@@ -209,6 +197,13 @@ function AppdApp:InitCorn()
 	self.cron:every("查询跨服匹配", 1, function()
 		self.objMgr:foreachAllPlayer(function(player)
 			player:QueryKuafuMatchInfo()
+		end)
+	end)
+	
+	--每隔10s跳一次挂机奖励
+	self.cron:every("跳一次挂机奖励", 10, function()
+		self.objMgr:foreachAllPlayer(function(player)
+			player:onPickRiskReward()
 		end)
 	end)
 	
@@ -341,7 +336,7 @@ function AppdApp:RankReward()
 	
 	--RANK_TYPE_FACTION
 	--FIXME
-	local ranktype = {RANK_TYPE_POWER,RANK_TYPE_LEVEL,RANK_TYPE_MOUNT,RANK_TYPE_WINGS}
+	local ranktype = {RANK_TYPE_POWER,RANK_TYPE_LEVEL,RANK_TYPE_MOUNT,RANK_TYPE_WINGS,RANK_TYPE_SINGLE_PVP,RANK_TYPE_FACTION}
 	
 	for i,rt in ipairs(ranktype) do
 		local tab = GetRankGuidTable(rt)

@@ -14,5 +14,6 @@ tb_worldboss_time = {
 	--  buffRandomPos:array 符点刷新位置
 	--  randomCount:int 每次刷几个
 	--  waitCountdown:int 等待倒计时
-	[1] = {id = 1, time = {19,0}, notice = 3, enrolllast = 2, time_last = 15, interval = 30, times = 2, buffRandomPos = {{29,9},{52,9},{29,32},{52,32}}, randomCount = 2, waitCountdown = 15},
+	--  roomLimit:int 每个房间最大人数
+	[1] = {id = 1, time = {19,0}, notice = 3, enrolllast = 2, time_last = 15, interval = 30, times = 2, buffRandomPos = {{29,9},{52,9},{29,32},{52,32}}, randomCount = 2, waitCountdown = 15, roomLimit = 50},
 }

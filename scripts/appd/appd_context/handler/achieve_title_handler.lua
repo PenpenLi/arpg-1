@@ -77,6 +77,9 @@ end
 function PlayerInfo:Handle_Unlock_title(pkt)
 	local indx = pkt.indx
 	
+	if indx <= 0 then
+		return
+	end
 	self:ItemUnlockTitle(indx)
 end
 

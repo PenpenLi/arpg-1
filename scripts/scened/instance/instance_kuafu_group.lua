@@ -312,7 +312,7 @@ function InstanceKuafuGroup:GetCostTimeCD(playerInfo)
 	local emptyIndex = self:findIndexByName(playerInfo:GetName())
 	if emptyIndex > -1 then
 		local intstart = KUAFU_GROUP_INSTANCE_INT_FIELDS_PLAYER_INFO_START + emptyIndex * MAX_KUAFU_GROUP_INSTANCE_PLAYER_INT_COUNT
-		return self:GetUInt32(intstart + KUAFU_GROUP_INSTANCE_PLAYER_REBRON_CD)
+		return self:GetUInt32(intstart + KUAFU_GROUP_INSTANCE_PLAYER_REBRON_CD) - os.time()
 	end
 	
 	return 0
@@ -346,7 +346,7 @@ AI_GroupMonster.ainame = "AI_GroupMonster"
 function AI_GroupMonster:JustDied( map_ptr,owner,killer_ptr )	
 	-- 先判断是不是VIP副本	
 	local mapid = mapLib.GetMapID(map_ptr)
-	if tb_map[mapid].inst_sub_type ~= 12 then
+	if tb_map[mapid].inst_sub_type ~= INSTANCE_SUB_TYPE_KUAFU_GROUP then
 		return
 	end
 	

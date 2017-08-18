@@ -6,9 +6,9 @@ hanlders[CMSG_LIMIT_ACTIVITY_RECEIVE] = PlayerInfo.Hanlde_Limit_Activity_Receive
 hanlders[CMSG_BAG_EXTENSION] = PlayerInfo.Hanlde_Bag_Extension
 hanlders[CMSG_WAREHOUSE_SAVE_MONEY] = PlayerInfo.Hanlde_Warehouse_Save_Money
 hanlders[CMSG_WAREHOUSE_TAKE_MONEY] = PlayerInfo.Hanlde_Warehouse_Take_Money
-hanlders[CMSG_RECEIVE_GIFT_PACKS] = PlayerInfo.Hanlde_Receive_Gift_Packs
+--hanlders[CMSG_RECEIVE_GIFT_PACKS] = PlayerInfo.Hanlde_Receive_Gift_Packs
 hanlders[CMSG_QUERY_PLAYER_INFO] = PlayerInfo.Hanlde_Query_Player_Info
-hanlders[CMSG_USE_GOLD_OPT] = PlayerInfo.Hanlde_Use_Gold
+--hanlders[CMSG_USE_GOLD_OPT] = PlayerInfo.Hanlde_Use_Gold
 hanlders[CMSG_BAG_ITEM_USER] = PlayerInfo.Hanlde_Bag_Item_User
 hanlders[CMSG_BAG_ITEM_SELL] = PlayerInfo.Hanlde_Bag_Item_Sell
 hanlders[CMSG_BAG_ITEM_SORT] = PlayerInfo.Hanlde_Bag_Item_Sort
@@ -29,22 +29,22 @@ hanlders[CMSG_GET_LOGIN_ACTIVITY_REWARD] = PlayerInfo.Hanlde_Get_Login_Activity_
 
 
 hanlders[CMSG_BAG_EXCHANGE_POS] = PlayerInfo.Hanlde_Bag_Exchange_Pos
-hanlders[CMSG_BAG_DESTROY] = PlayerInfo.Hanlde_Bag_Destroy
-hanlders[CMSG_BAG_ITEM_SPLIT] = PlayerInfo.Hanlde_Bag_Item_Split
-hanlders[CMSG_NPC_GET_GOODS_LIST] = PlayerInfo.Hanlde_Npc_Get_Goods_List
+--hanlders[CMSG_BAG_DESTROY] = PlayerInfo.Hanlde_Bag_Destroy
+--hanlders[CMSG_BAG_ITEM_SPLIT] = PlayerInfo.Hanlde_Bag_Item_Split
+--hanlders[CMSG_NPC_GET_GOODS_LIST] = PlayerInfo.Hanlde_Npc_Get_Goods_List
 --hanlders[CMSG_STORE_BUY] = PlayerInfo.Handle_Store_Buy
 hanlders[CMSG_NPC_SELL] = PlayerInfo.Hanlde_Npc_Sell
 hanlders[CMSG_NPC_REPURCHASE] = PlayerInfo.Hanlde_Npc_Rrpurchase
 hanlders[MSG_CHAT_NOTICE] = PlayerInfo.Handle_Chat_Notice
-hanlders[MSG_CHAT_HORN] = PlayerInfo.Handle_Chat_Horn
+--hanlders[MSG_CHAT_HORN] = PlayerInfo.Handle_Chat_Horn
 hanlders[CMSG_CHAT_WHISPER] = PlayerInfo.Handle_Chat_Whisper
-hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
+--hanlders[MSG_CHAT_WORLD] = PlayerInfo.Handle_Chat_World
 
 hanlders[CMSG_MALL_BUY] = PlayerInfo.Handle_Mall_Buy
 
 hanlders[CMSG_STRENGTH] = PlayerInfo.Handle_Strength
 hanlders[CMSG_CREATE_FACTION] = PlayerInfo.Handle_Faction_Create
-hanlders[CMSG_FACTION_UPGRADE] = PlayerInfo.Handle_Faction_Upgrade
+--hanlders[CMSG_FACTION_UPGRADE] = PlayerInfo.Handle_Faction_Upgrade
 hanlders[CMSG_FACTION_JOIN] = PlayerInfo.Hanlde_Faction_Apply
 hanlders[CMSG_RAISE_BASE_SPELL] = PlayerInfo.Handle_Raise_BaseSpell
 hanlders[CMSG_UPGRADE_ANGER_SPELL] = PlayerInfo.Handle_Upgrade_AngleSpell
@@ -57,9 +57,9 @@ hanlders[CMSG_ILLUSION_MOUNT] = PlayerInfo.Handle_Illusion
 
 hanlders[CMSG_GEM] = PlayerInfo.gem
 
-hanlders[CMSG_DIVINE_ACTIVE] = PlayerInfo.Handle_Divine_Active
+--[[hanlders[CMSG_DIVINE_ACTIVE] = PlayerInfo.Handle_Divine_Active
 hanlders[CMSG_DIVINE_UPLEV] = PlayerInfo.Handle_Divine_UpLev
-hanlders[CMSG_DIVINE_SWITCH] = PlayerInfo.Handle_Divine_Switch
+hanlders[CMSG_DIVINE_SWITCH] = PlayerInfo.Handle_Divine_Switch--]]
 
 
 hanlders[CMSG_SWEEP_VIP_INSTANCE] = PlayerInfo.Handle_Sweep_Vip_Instance
@@ -124,16 +124,20 @@ hanlders[CMSG_WELFARE_LEVEL] = PlayerInfo.Handle_Welfare_Level
 hanlders[CMSG_WELFARE_ACTIVE_GETBACK] = PlayerInfo.Handle_Welfare_ActiveGetback
 hanlders[CMSG_WELFARE_GETALLLIST_GETBACK] = PlayerInfo.Handle_Welfare_List_Getback
 hanlders[CMSG_WELFARE_GETALL_GETBACK] = PlayerInfo.Handle_Welfare_All_Getback
+
+hanlders[CMSG_WELFARE_GET_RECHARGE_REWARD] = PlayerInfo.Handle_Welfare_Get_Recharge_Reward
+hanlders[CMSG_WELFARE_GET_CONSUME_REWARD] = PlayerInfo.Handle_Welfare_Get_Consume_Reward
+hanlders[CMSG_WELFARE_GET_SEVENDAY_REWARD] = PlayerInfo.Handle_Welfare_Get_Sevenday_Reward
 --------------------------------
 hanlders[CMSG_PICK_QUEST_REWARD] = PlayerInfo.Handle_Pick_Quest
 
 hanlders[CMSG_PICK_QUEST_CHAPTER_REWARD] = PlayerInfo.Handle_Pick_Quest_Chapter_Reward
 
-hanlders[CMSG_KUAFU_3V3_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Match
+hanlders[MSG_KUAFU_3V3_CANCEL_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Cancel_Match
+
+--[[hanlders[CMSG_KUAFU_3V3_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Match
 
 hanlders[CMSG_KUAFU_3V3_MATCH_OPER]	= PlayerInfo.Handle_Kuafu_3v3_Match_Oper
-
-hanlders[MSG_KUAFU_3V3_CANCEL_MATCH]	= PlayerInfo.Handle_Kuafu_3v3_Cancel_Match
 
 
 hanlders[CMSG_KUAFU_3V3_BUYTIMES]	= PlayerInfo.Handle_Kuafu_3v3_BuyTimes
@@ -142,7 +146,7 @@ hanlders[CMSG_KUAFU_3V3_DAYREWARD]	= PlayerInfo.Handle_Kuafu_3v3Day_Reward
 
 hanlders[CMSG_KUAFU_3V3_GETRANLIST]	= PlayerInfo.Handle_Kuafu_3v3_RankList
 
-hanlders[CMSG_KUAFU_3V3_GETMYRANK]	= PlayerInfo.Handle_Kuafu_3v3_My_Rank
+hanlders[CMSG_KUAFU_3V3_GETMYRANK]	= PlayerInfo.Handle_Kuafu_3v3_My_Rank--]]
 
 hanlders[CMSG_USE_VIRTUAL_ITEM] = PlayerInfo.Handle_Use_Virtual_Item
 
@@ -183,6 +187,17 @@ hanlders[CMSG_STOREHOUSE_EXCHANGE] = PlayerInfo.Handle_Storehouse_Exchange
 
 hanlders[CMSG_STOREHOUSE_DESTROY] = PlayerInfo.Handle_Storehouse_Destroy
 
+hanlders[CMSG_SEND_FACTION_INVITE] = PlayerInfo.Handle_Send_Faction_Invite
+
+hanlders[CMSG_BUY_VIPGIFT] = PlayerInfo.Handle_Buy_VipGift
+
+hanlders[CMSG_ACTIVITY_OPT_BUY_DAILYGIFT] = PlayerInfo.Handle_Activity_Opt_Buy_DailyGift
+hanlders[CMSG_ACTIVITY_OPT_BUY_LIMITGIFT] = PlayerInfo.Handle_Activity_Opt_Buy_LimitGift
+hanlders[CMSG_ACTIVITY_OPT_GET_RANK_PROCESS_REWARD] = PlayerInfo.Handle_Activity_Opt_Get_Rank_Process_Reward
+hanlders[CMSG_ACTIVITY_OPT_GET_RANK_LIST] = PlayerInfo.Handle_Activity_Opt_Show_Rank_List
+
+
+
 hanlders[CMSG_SOCIAL_BUY_REVENGE_TIMES] = PlayerInfo.Handle_Buy_Revengr_Times
 hanlders[CMSG_SOCIAL_REMOVE_ENEMY] = PlayerInfo.Handle_Remove_Enemy
 
@@ -192,9 +207,9 @@ hanlders[CMSG_SOCIAL_REMOVE_ENEMY] = PlayerInfo.Handle_Remove_Enemy
 
 --hanlders[CMSG_GET_FACTION_GIFT_RANK_PAGE] = PlayerInfo.Handle_Get_Faction_Gift_Rank_Page
 
-hanlders[CMSG_DIVINE_FORGE] = PlayerInfo.Handle_Divine_Forge
-hanlders[CMSG_DIVINE_ADVANCE] = PlayerInfo.Handle_Divine_Advance
-hanlders[CMSG_DIVINE_SPIRIT] = PlayerInfo.Handle_Divine_Spirit
+--hanlders[CMSG_DIVINE_FORGE] = PlayerInfo.Handle_Divine_Forge
+--hanlders[CMSG_DIVINE_ADVANCE] = PlayerInfo.Handle_Divine_Advance
+--hanlders[CMSG_DIVINE_SPIRIT] = PlayerInfo.Handle_Divine_Spirit
 
 
 hanlders[CMSG_BUY_MASS_BOSS_TIMES] = PlayerInfo.Handle_Buy_Mass_Boss_Times
@@ -236,7 +251,12 @@ hanlders[CMSG_CANCEL_EQUIP_APPEARANCE] = PlayerInfo.Handle_Cancel_Equip_Appearan
 
 hanlders[CMSG_UNLOCK_TITLE] = PlayerInfo.Handle_Unlock_title
 
+hanlders[CMSG_DRAW_LOTTERY] = PlayerInfo.Handle_Draw_Lottery
+
 hanlders[CMSG_RENAME] = PlayerInfo.Handle_Rename
 
 hanlders[CMSG_GET_PLAYER_OVERVIEW] = PlayerInfo.Handle_Get_Player_Overview
+
+hanlders[CMSG_RISK_GET_RANK] = PlayerInfo.Handle_Get_Risk_Reward
+
 return hanlders

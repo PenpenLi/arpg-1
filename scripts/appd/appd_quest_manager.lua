@@ -280,6 +280,43 @@ function AppQuestMgr:testOutTime(curTime,targetTime)
 	return false
 end
 
+--累计充值奖励领取状态
+function AppQuestMgr:GetRechargeRewardFlag(index)
+	return self:GetBit(QUEST_FIELD_WELFARE_RECHARGE_REWARD_FLAG,index)
+end
+
+function AppQuestMgr:SetRechargeRewardFlag(index)
+	return self:SetBit(QUEST_FIELD_WELFARE_RECHARGE_REWARD_FLAG,index)
+end
+
+--累计消费奖励领取状态
+function AppQuestMgr:GetConsumeRewardFlag(index)
+	return self:GetBit(QUEST_FIELD_WELFARE_CONSUME_REWARD_FLAG,index)
+end
+
+function AppQuestMgr:SetConsumeRewardFlag(index)
+	return self:SetBit(QUEST_FIELD_WELFARE_CONSUME_REWARD_FLAG,index)
+end
+
+--七日大礼进度
+function AppQuestMgr:GetSevenDayProcess()
+	return self:GetUInt32(QUEST_FIELD_WELFARE_SEVEN_DAY_PROCESS)
+end
+
+function AppQuestMgr:AddSevenDayProcess(val)
+	return self:AddUInt32(QUEST_FIELD_WELFARE_SEVEN_DAY_PROCESS,val)
+end
+
+--七日大礼奖励领取状态
+function AppQuestMgr:GetSevenDayFlag(index)
+	return self:GetBit(QUEST_FIELD_WELFARE_SEVEN_DAY_FLAG,index)
+end
+
+function AppQuestMgr:SetSevenDayFlag(index)
+	return self:SetBit(QUEST_FIELD_WELFARE_SEVEN_DAY_FLAG,index)
+end
+
+
 
 -------------------------------下面是任务-------------------------------
 --[[
@@ -672,6 +709,8 @@ function AppQuestMgr:OnSubmitQuestDaily2()
 		local rewards = config.allFinishrewards
 		playerInfo:AppdAddItems(rewards, MONEY_CHANGE_QUEST, LOG_ITEM_OPER_TYPE_QUEST, 1, 0, ITEM_SHOW_TYPE_MINI_QUEST_DAILY2)
 	end
+	
+	playerInfo:onUpdatePlayerQuest(QUEST_TARGET_TYPE_DAILY_TASK, {})
 end
 
 --[[

@@ -64,6 +64,11 @@ function GetRandomIndexTable(size, count)
 	return ret
 end
 
+function mergeListToList(dict1,dict2)
+	for _,info in pairs(dict2) do
+		AddTempInfoIfExist(dict1,info[1],info[2])
+	end
+end
 
 --合并类似{{key1, value1}, {key2, value2}...}的table
 function AddTempInfoIfExist(map, key, value)
@@ -205,6 +210,26 @@ function Change_To_Item_Reward_Info(dict, exp)
 	return list
 end
 
+function Change_List_To_Item_Reward_Info(rewardDict, lost, exp)
+	exp = exp or true
+	-- 扫荡的结果发送
+	local list = {}
+	local size = #rewardDict - lost
+	for i = 1, size do
+		local itemInfo = rewardDict[ i ]
+		local item_id = itemInfo[ 1 ]
+		local num = itemInfo[ 2 ]
+		if (item_id ~= Item_Loot_Exp or exp) then
+			local stru = item_reward_info_t .new()
+			stru.item_id	= item_id
+			stru.num 		= num
+			table.insert(list, stru)
+		end
+	end
+	
+	return list
+end
+
 --[[
 	{{key1, value1}, {key2, value2}}  => {[key] = value}
 ]]
@@ -263,13 +288,20 @@ end
 
 -- 获得今天刚开始的时间戳
 function GetTodayStartTimestamp(days)
+	return getTheFirstTimestampOfDay(os.time(), days)
+end
+
+-- 获得时间戳对应的当天0点时间戳
+function getTheFirstTimestampOfDay(time, days)
+	time = time or os.time()
 	days = days or 0
-	local cur_date = os.date('*t', os.time())
+	local cur_date = os.date('*t', time)
 	cur_date.hour = 0
 	cur_date.sec = 0
 	cur_date.min = 0
 	return os.time(cur_date) + days * 86400
 end
+
 --获得今日指定时分秒的时间戳
 function GetTodayHMSTimestamp(h,m,s)
 	local cur_date = os.date('*t', os.time())
@@ -666,4 +698,8 @@ function MergeAttrKeysAndValues(attrKeys, attrValues)
 	end
 	
 	return ret
+end
+
+function swap(a, b)
+	return b, a
 end

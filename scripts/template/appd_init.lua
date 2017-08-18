@@ -147,6 +147,10 @@ require("template.tables.tb_welfare_level")
 require("template.tables.tb_welfare_back_data")
 require("template.tables.tb_welfare_back")
 
+require("template.tables.tb_welfare_consume")
+require("template.tables.tb_welfare_recharge")
+require("template.tables.tb_welfare_sevengift")
+
 -- 任务
 require("template.tables.tb_quest")
 require("template.tables.tb_quest_chapter")
@@ -237,6 +241,24 @@ require("template.tables.tb_char_info")
 
 require("template.tables.tb_battle_force")
 require("template.tables.tb_rename_info")
+
+require("template.tables.tb_activity_lottery_base")
+require("template.tables.tb_activity_lottery_high")
+require("template.tables.tb_activity_lottery_low")
+require("template.tables.tb_activity_lottery_middle")
+require("template.tables.tb_activity_time")
+
+require("template.tables.tb_activity_daily_gift_base")
+require("template.tables.tb_activity_daily_gift")
+
+require("template.tables.tb_activity_limit_gift_base")
+require("template.tables.tb_activity_limit_gift")
+
+require("template.tables.tb_activity_rank_base")
+require("template.tables.tb_activity_rank_rank_reward")
+require("template.tables.tb_activity_rank_process_reward")
+
+
 
 --- 数据预处理
 require("template.tabset")

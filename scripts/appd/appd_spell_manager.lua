@@ -113,6 +113,8 @@ end
 
 function AppSpellMgr:addMountLevelBase()
 	self:AddUInt32(SPELL_INT_FIELD_MOUNT_LEVEL_BASE, 1)
+	local playerInfo = self:getOwner()
+	playerInfo:onUpdatePlayerQuest(QUEST_TARGET_TYPE_MOUNT_STRENGTH_LEVEL, {self:GetUInt32(SPELL_INT_FIELD_MOUNT_LEVEL_BASE)})
 end
 
 -- 玩家能否升阶
@@ -1185,6 +1187,10 @@ function CalAppearanceAttrByApprId(dict, id)
 	end
 	
 	local config = tb_appearance_info[id]
+	if not config then
+		outFmtDebug("!!!!!!!!!!!!!CalAppearanceAttrByApprId id %d",id)
+		return
+	end
 	local list = MergeAttrKeysAndValues(config.attrKeys, config.attrValues)
 	
 	for _, info in ipairs(list) do

@@ -526,6 +526,8 @@ function AppItemMgr:smeltingEquip(pos_str)
 	-- 加任务
 	local questMgr = owner:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_SMELT, {cnt})
+	
+	owner:AddActiveItem(VITALITY_TYPE_SMELT_EQUIP)
 end
 
 return AppItemMgr

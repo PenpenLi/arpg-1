@@ -352,6 +352,21 @@ CMSG_ENTER_RISK_INSTANCE		= 387	-- /*请求进入世界冒险副本*/
 CMSG_SOCIAL_REMOVE_ENEMY		= 388	-- /*删除仇人*/	
 CMSG_GET_PLAYER_OVERVIEW		= 389	-- /*查看玩家详情*/	
 SMSG_SHOW_PLAYER_OVERVIEW		= 390	-- /*返回玩家详情*/	
+CMSG_SEND_FACTION_INVITE		= 391	-- /*邀请加入帮派*/	
+SMSG_SHOW_FACTION_INVITE		= 392	-- /*显示邀请*/	
+CMSG_BUY_VIPGIFT		= 393	-- /*购买vip礼包*/	
+CMSG_ACTIVITY_OPT_BUY_DAILYGIFT		= 394	-- /*购买活动每日礼包*/	
+CMSG_DRAW_LOTTERY		= 395	-- /*抽奖*/	
+CMSG_ACTIVITY_OPT_GET_RANK_PROCESS_REWARD		= 396	-- /*获取活动开服排行进度奖励*/	
+CMSG_ACTIVITY_OPT_GET_RANK_LIST		= 397	-- /*获取活动开服排行榜*/	
+SMSG_ACTIVITY_OPT_SHOW_RANK_LIST		= 398	-- /*返回活动开服排行榜*/	
+CMSG_ACTIVITY_OPT_BUY_LIMITGIFT		= 399	-- /*购买活动限定礼包*/	
+CMSG_WELFARE_GET_RECHARGE_REWARD		= 400	-- /*领取累计充值奖励*/	
+CMSG_WELFARE_GET_CONSUME_REWARD		= 401	-- /*领取累计消费奖励*/	
+CMSG_WELFARE_GET_SEVENDAY_REWARD		= 402	-- /*领取七日大礼奖励*/	
+SMSG_SEND_SERVER_OPEN_TIME		= 403	-- /*服务器开服时间*/	
+CMSG_RISK_GET_RANK		= 404	-- /*请求世界冒险排行榜*/	
+SMSG_RISK_GET_RANK_RESULT		= 405	-- /*世界冒险排行榜信息 */	
 
 
 ---------------------------------------------------------------------
@@ -1708,6 +1723,46 @@ function equip_info_t:write( output )
 		self.equip = ''
 	end
 	output:writeUTFByLen(self.equip , 50 ) 
+	
+	return output
+end
+
+---------------------------------------------------------------------
+--/*开服活动排名*/
+
+act_rank_info_t = class('act_rank_info_t')
+
+function act_rank_info_t:read( input )
+
+	local ret
+	ret,self.name = input:readUTFByLen(50)  --/*名称*/
+
+	if not ret then
+		return ret
+	end
+
+	if not ret then
+		return ret
+	end
+	ret,self.value = input:readU32() --/*数值*/
+
+	if not ret then
+		return ret
+	end
+
+	return input
+end
+
+function act_rank_info_t:write( output )
+	if(self.name == nil)then
+		self.name = ''
+	end
+	output:writeUTFByLen(self.name , 50 ) 
+	
+	if(self.value == nil)then
+		self.value = 0
+	end
+	output:writeU32(self.value)
 	
 	return output
 end
@@ -12667,6 +12722,503 @@ function Protocols.unpack_show_player_overview (pkt)
 end
 
 
+-- /*邀请加入帮派*/	
+function Protocols.pack_send_faction_invite ( guid)
+	local output = Packet.new(CMSG_SEND_FACTION_INVITE)
+	output:writeUTF(guid)
+	return output
+end
+
+-- /*邀请加入帮派*/	
+function Protocols.call_send_faction_invite ( playerInfo, guid)
+	local output = Protocols.	pack_send_faction_invite ( guid)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*邀请加入帮派*/	
+function Protocols.unpack_send_faction_invite (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*显示邀请*/	
+function Protocols.pack_show_faction_invite ( guid ,name ,faction_guid ,faction_name)
+	local output = Packet.new(SMSG_SHOW_FACTION_INVITE)
+	output:writeUTF(guid)
+	output:writeUTF(name)
+	output:writeUTF(faction_guid)
+	output:writeUTF(faction_name)
+	return output
+end
+
+-- /*显示邀请*/	
+function Protocols.call_show_faction_invite ( playerInfo, guid ,name ,faction_guid ,faction_name)
+	local output = Protocols.	pack_show_faction_invite ( guid ,name ,faction_guid ,faction_name)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*显示邀请*/	
+function Protocols.unpack_show_faction_invite (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.name = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.faction_guid = input:readUTF()
+	if not ret then
+		return false
+	end	
+	ret,param_table.faction_name = input:readUTF()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*购买vip礼包*/	
+function Protocols.pack_buy_vipgift ( id)
+	local output = Packet.new(CMSG_BUY_VIPGIFT)
+	output:writeU32(id)
+	return output
+end
+
+-- /*购买vip礼包*/	
+function Protocols.call_buy_vipgift ( playerInfo, id)
+	local output = Protocols.	pack_buy_vipgift ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*购买vip礼包*/	
+function Protocols.unpack_buy_vipgift (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*购买活动每日礼包*/	
+function Protocols.pack_activity_opt_buy_dailygift ( act_id ,index)
+	local output = Packet.new(CMSG_ACTIVITY_OPT_BUY_DAILYGIFT)
+	output:writeU32(act_id)
+	output:writeU32(index)
+	return output
+end
+
+-- /*购买活动每日礼包*/	
+function Protocols.call_activity_opt_buy_dailygift ( playerInfo, act_id ,index)
+	local output = Protocols.	pack_activity_opt_buy_dailygift ( act_id ,index)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*购买活动每日礼包*/	
+function Protocols.unpack_activity_opt_buy_dailygift (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.act_id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.index = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*抽奖*/	
+function Protocols.pack_draw_lottery ( actId ,type)
+	local output = Packet.new(CMSG_DRAW_LOTTERY)
+	output:writeU32(actId)
+	output:writeByte(type)
+	return output
+end
+
+-- /*抽奖*/	
+function Protocols.call_draw_lottery ( playerInfo, actId ,type)
+	local output = Protocols.	pack_draw_lottery ( actId ,type)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*抽奖*/	
+function Protocols.unpack_draw_lottery (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.actId = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.type = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*获取活动开服排行进度奖励*/	
+function Protocols.pack_activity_opt_get_rank_process_reward ( act_id ,index)
+	local output = Packet.new(CMSG_ACTIVITY_OPT_GET_RANK_PROCESS_REWARD)
+	output:writeU32(act_id)
+	output:writeU32(index)
+	return output
+end
+
+-- /*获取活动开服排行进度奖励*/	
+function Protocols.call_activity_opt_get_rank_process_reward ( playerInfo, act_id ,index)
+	local output = Protocols.	pack_activity_opt_get_rank_process_reward ( act_id ,index)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*获取活动开服排行进度奖励*/	
+function Protocols.unpack_activity_opt_get_rank_process_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.act_id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.index = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*获取活动开服排行榜*/	
+function Protocols.pack_activity_opt_get_rank_list ( act_id)
+	local output = Packet.new(CMSG_ACTIVITY_OPT_GET_RANK_LIST)
+	output:writeU32(act_id)
+	return output
+end
+
+-- /*获取活动开服排行榜*/	
+function Protocols.call_activity_opt_get_rank_list ( playerInfo, act_id)
+	local output = Protocols.	pack_activity_opt_get_rank_list ( act_id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*获取活动开服排行榜*/	
+function Protocols.unpack_activity_opt_get_rank_list (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.act_id = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*返回活动开服排行榜*/	
+function Protocols.pack_activity_opt_show_rank_list ( act_id ,list)
+	local output = Packet.new(SMSG_ACTIVITY_OPT_SHOW_RANK_LIST)
+	output:writeU32(act_id)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*返回活动开服排行榜*/	
+function Protocols.call_activity_opt_show_rank_list ( playerInfo, act_id ,list)
+	local output = Protocols.	pack_activity_opt_show_rank_list ( act_id ,list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*返回活动开服排行榜*/	
+function Protocols.unpack_activity_opt_show_rank_list (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.act_id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = act_rank_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*购买活动限定礼包*/	
+function Protocols.pack_activity_opt_buy_limitgift ( act_id ,index)
+	local output = Packet.new(CMSG_ACTIVITY_OPT_BUY_LIMITGIFT)
+	output:writeU32(act_id)
+	output:writeU32(index)
+	return output
+end
+
+-- /*购买活动限定礼包*/	
+function Protocols.call_activity_opt_buy_limitgift ( playerInfo, act_id ,index)
+	local output = Protocols.	pack_activity_opt_buy_limitgift ( act_id ,index)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*购买活动限定礼包*/	
+function Protocols.unpack_activity_opt_buy_limitgift (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.act_id = input:readU32()
+	if not ret then
+		return false
+	end	
+	ret,param_table.index = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*领取累计充值奖励*/	
+function Protocols.pack_welfare_get_recharge_reward ( id)
+	local output = Packet.new(CMSG_WELFARE_GET_RECHARGE_REWARD)
+	output:writeByte(id)
+	return output
+end
+
+-- /*领取累计充值奖励*/	
+function Protocols.call_welfare_get_recharge_reward ( playerInfo, id)
+	local output = Protocols.	pack_welfare_get_recharge_reward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取累计充值奖励*/	
+function Protocols.unpack_welfare_get_recharge_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*领取累计消费奖励*/	
+function Protocols.pack_welfare_get_consume_reward ( id)
+	local output = Packet.new(CMSG_WELFARE_GET_CONSUME_REWARD)
+	output:writeByte(id)
+	return output
+end
+
+-- /*领取累计消费奖励*/	
+function Protocols.call_welfare_get_consume_reward ( playerInfo, id)
+	local output = Protocols.	pack_welfare_get_consume_reward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取累计消费奖励*/	
+function Protocols.unpack_welfare_get_consume_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*领取七日大礼奖励*/	
+function Protocols.pack_welfare_get_sevenday_reward ( id)
+	local output = Packet.new(CMSG_WELFARE_GET_SEVENDAY_REWARD)
+	output:writeByte(id)
+	return output
+end
+
+-- /*领取七日大礼奖励*/	
+function Protocols.call_welfare_get_sevenday_reward ( playerInfo, id)
+	local output = Protocols.	pack_welfare_get_sevenday_reward ( id)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*领取七日大礼奖励*/	
+function Protocols.unpack_welfare_get_sevenday_reward (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.id = input:readByte()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
+-- /*服务器开服时间*/	
+function Protocols.pack_send_server_open_time ( open_time)
+	local output = Packet.new(SMSG_SEND_SERVER_OPEN_TIME)
+	output:writeU32(open_time)
+	return output
+end
+
+-- /*服务器开服时间*/	
+function Protocols.call_send_server_open_time ( playerInfo, open_time)
+	local output = Protocols.	pack_send_server_open_time ( open_time)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*服务器开服时间*/	
+function Protocols.unpack_send_server_open_time (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.open_time = input:readU32()
+	if not ret then
+		return false
+	end	
+
+	return true,param_table	
+
+end
+
+
+-- /*请求世界冒险排行榜*/	
+function Protocols.pack_risk_get_rank (  )
+	local output = Packet.new(CMSG_RISK_GET_RANK)
+	return output
+end
+
+-- /*请求世界冒险排行榜*/	
+function Protocols.call_risk_get_rank ( playerInfo )
+	local output = Protocols.	pack_risk_get_rank (  )
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*请求世界冒险排行榜*/	
+function Protocols.unpack_risk_get_rank (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+
+	return true,{}
+	
+
+end
+
+
+-- /*世界冒险排行榜信息 */	
+function Protocols.pack_risk_get_rank_result ( list)
+	local output = Packet.new(SMSG_RISK_GET_RANK_RESULT)
+	output:writeI16(#list)
+	for i = 1,#list,1
+	do
+		list[i]:write(output)
+	end
+	return output
+end
+
+-- /*世界冒险排行榜信息 */	
+function Protocols.call_risk_get_rank_result ( playerInfo, list)
+	local output = Protocols.	pack_risk_get_rank_result ( list)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*世界冒险排行榜信息 */	
+function Protocols.unpack_risk_get_rank_result (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,len = input:readU16()
+	if not ret then
+		return false
+	end
+	param_table.list = {}
+	for i = 1,len,1
+	do
+		local stru = act_rank_info_t .new()
+		if(stru:read(input)==false)then
+			return false
+		end
+		table.insert(param_table.list,stru)
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -13011,6 +13563,21 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_social_remove_enemy = self.call_social_remove_enemy
 	playerInfo.call_get_player_overview = self.call_get_player_overview
 	playerInfo.call_show_player_overview = self.call_show_player_overview
+	playerInfo.call_send_faction_invite = self.call_send_faction_invite
+	playerInfo.call_show_faction_invite = self.call_show_faction_invite
+	playerInfo.call_buy_vipgift = self.call_buy_vipgift
+	playerInfo.call_activity_opt_buy_dailygift = self.call_activity_opt_buy_dailygift
+	playerInfo.call_draw_lottery = self.call_draw_lottery
+	playerInfo.call_activity_opt_get_rank_process_reward = self.call_activity_opt_get_rank_process_reward
+	playerInfo.call_activity_opt_get_rank_list = self.call_activity_opt_get_rank_list
+	playerInfo.call_activity_opt_show_rank_list = self.call_activity_opt_show_rank_list
+	playerInfo.call_activity_opt_buy_limitgift = self.call_activity_opt_buy_limitgift
+	playerInfo.call_welfare_get_recharge_reward = self.call_welfare_get_recharge_reward
+	playerInfo.call_welfare_get_consume_reward = self.call_welfare_get_consume_reward
+	playerInfo.call_welfare_get_sevenday_reward = self.call_welfare_get_sevenday_reward
+	playerInfo.call_send_server_open_time = self.call_send_server_open_time
+	playerInfo.call_risk_get_rank = self.call_risk_get_rank
+	playerInfo.call_risk_get_rank_result = self.call_risk_get_rank_result
 end
 
 local unpack_handler = {
@@ -13352,6 +13919,21 @@ local unpack_handler = {
 [CMSG_SOCIAL_REMOVE_ENEMY] =  Protocols.unpack_social_remove_enemy,
 [CMSG_GET_PLAYER_OVERVIEW] =  Protocols.unpack_get_player_overview,
 [SMSG_SHOW_PLAYER_OVERVIEW] =  Protocols.unpack_show_player_overview,
+[CMSG_SEND_FACTION_INVITE] =  Protocols.unpack_send_faction_invite,
+[SMSG_SHOW_FACTION_INVITE] =  Protocols.unpack_show_faction_invite,
+[CMSG_BUY_VIPGIFT] =  Protocols.unpack_buy_vipgift,
+[CMSG_ACTIVITY_OPT_BUY_DAILYGIFT] =  Protocols.unpack_activity_opt_buy_dailygift,
+[CMSG_DRAW_LOTTERY] =  Protocols.unpack_draw_lottery,
+[CMSG_ACTIVITY_OPT_GET_RANK_PROCESS_REWARD] =  Protocols.unpack_activity_opt_get_rank_process_reward,
+[CMSG_ACTIVITY_OPT_GET_RANK_LIST] =  Protocols.unpack_activity_opt_get_rank_list,
+[SMSG_ACTIVITY_OPT_SHOW_RANK_LIST] =  Protocols.unpack_activity_opt_show_rank_list,
+[CMSG_ACTIVITY_OPT_BUY_LIMITGIFT] =  Protocols.unpack_activity_opt_buy_limitgift,
+[CMSG_WELFARE_GET_RECHARGE_REWARD] =  Protocols.unpack_welfare_get_recharge_reward,
+[CMSG_WELFARE_GET_CONSUME_REWARD] =  Protocols.unpack_welfare_get_consume_reward,
+[CMSG_WELFARE_GET_SEVENDAY_REWARD] =  Protocols.unpack_welfare_get_sevenday_reward,
+[SMSG_SEND_SERVER_OPEN_TIME] =  Protocols.unpack_send_server_open_time,
+[CMSG_RISK_GET_RANK] =  Protocols.unpack_risk_get_rank,
+[SMSG_RISK_GET_RANK_RESULT] =  Protocols.unpack_risk_get_rank_result,
 
 }
 

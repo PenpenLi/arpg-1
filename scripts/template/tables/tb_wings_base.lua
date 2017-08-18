@@ -16,10 +16,4 @@ tb_wings_base = {
 	[8] = {id = 8, max_stars = 10},
 	[9] = {id = 9, max_stars = 10},
 	[10] = {id = 10, max_stars = 10},
-	[11] = {id = 11, max_stars = 10},
-	[12] = {id = 12, max_stars = 10},
-	[13] = {id = 13, max_stars = 10},
-	[14] = {id = 14, max_stars = 10},
-	[15] = {id = 15, max_stars = 10},
-	[16] = {id = 16, max_stars = 10},
 }

@@ -1354,7 +1354,7 @@ function FactionInfo:FactionLevelUp(player )
 	end
 	self:SetFactionMoney(money - config.cost)
 	self:SetFactionLevel(lv + 1)
-	self:RefreshShop()
+	--self:RefreshShop()
 	--升级成功
 	player:CallOptResult(OPERTE_TYPE_FACTION, OPEATE_TYPE_FACTION_LEVEL_UP)
 	
@@ -1574,7 +1574,8 @@ function FactionInfo:ShopItem(player,item,num)
 end
 --商店刷新
 function FactionInfo:RefreshShop()
-	local lev = self:GetFactionLevel()
+	local lev = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_SHOP)
+
 	--print(lev)
 	local config = tb_faction_base[lev]
 	if not config then
@@ -1882,6 +1883,8 @@ function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
 		-- 加任务
 		local questMgr = player:getQuestMgr()
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_FACTION_DONATION, {money_type, money_sum})
+		
+		player:AddActiveItem(VITALITY_TYPE_FACTION_DONATE)
 	end
 	
 
@@ -2433,6 +2436,9 @@ end
 --客户端调用接口
 --购买令牌
 function FactionInfo:BuyToken(player,num)
+	if num < 1 then
+		return
+	end
 	local level = self:GetFactionLevel()
 	local count = self:GetTokenBuyCount()
 	local token_num = self:GetTokenNum()
@@ -2477,6 +2483,10 @@ function FactionInfo:ChallengeBoss(player,boss_id)
 		return
 	end
 	local config = tb_faction_boss[boss_id]
+	if not config then
+		return
+	end
+	
 	local token_num = self:GetTokenNum()
 	local level = self:GetFactionLevel()
 	local id_max = self:GetChallengeBossIdMax()
@@ -2934,6 +2944,9 @@ end
 
 --家族贡献礼包兑换
 function FactionInfo:FactionDonateGiftExchange(player,sum)
+	if sum < 1 then
+		return
+	end
 	local house_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_STOREHOUSE)
 	if house_lv <= 0 then
 		return
@@ -3055,6 +3068,11 @@ end
 --升级建筑
 function FactionInfo:UpgradeBuilding(player, id)
 	--self:PrintAllBuildings()
+	--检测升级条件
+	local building_info = tb_faction_building[id]
+	if not building_info then
+		return
+	end
 	--检测权限
 	local baseconfig = tb_faction_building_base[1]
 	local index = self:FindPlayerIndex(player:GetGuid())
@@ -3070,12 +3088,6 @@ function FactionInfo:UpgradeBuilding(player, id)
 	end
 	
 	if not flag then
-		return
-	end
-	
-	--检测升级条件
-	local building_info = tb_faction_building[id]
-	if not building_info then
 		return
 	end
 	
@@ -3119,6 +3131,9 @@ end
 --加速升级建筑
 function FactionInfo:UpgradeBuildingSpeedUp(player, count)
 	--检测玩家剩余次数
+	if count < 1 then
+		return
+	end
 	local pos = self:FindPlayerIndex(player:GetGuid())
 	if pos == nil then return end
 	
@@ -3196,12 +3211,17 @@ function FactionInfo:UpdateBuildingProcess()
 	if building_type == self:GetBuildingMainHallType() then
 		self:OnMainHallLvUp(building_lv)
 		self:SetFactionLevel(building_lv)
-		self:RefreshShop()
+		--self:RefreshShop()
 		rankInsertTask(self:GetGuid(), RANK_TYPE_FACTION)
 	end
 	--家族技能建筑升级
 	if building_type == FACTION_BUILDING_TYPE_SKILL then
 		self:ResetAllMemberFactionSkill()
+	end
+	
+	--家族商店升级
+	if building_type == FACTION_BUILDING_TYPE_SHOP then
+		self:RefreshShop()
 	end
 	
 	--其他...
@@ -4217,6 +4237,11 @@ function FactionInfo:BossDenfenseChallenge(player,index)
 	player:SubFactionBossDefenseTickets(1)
 	--outFmtDebug("BossDenfenseChallenge Tickets %d",player:GetFactionBossDefenseTickets(1))
 	self:SetBossDenfenseStatus(index,1)
+	
+	player:AddActiveItem(VITALITY_TYPE_FACTION_BOSS)
+	
+	--QUEST_TARGET_TYPE_FACTION_ACTIVITY
+	player:onUpdatePlayerQuest(QUEST_TARGET_TYPE_FACTION_ACTIVITY, {1})
 end
 
 --击杀结算(player_guid,index,hp)
@@ -4330,6 +4355,10 @@ end
 
 --获取输出排行榜
 function FactionInfo:GetBossDenfenseDamageList(player,index)
+	if index < 0 or index > MAX_FACTION_BOSSDEFENSE_COUNT - 1 then
+		outFmtDebug("GetBossDenfenseDamageList bad index %d",index)
+		return
+	end
 	local data_guid = guidMgr.replace(self:GetGuid(), guidMgr.ObjectTypeFactionData)
 	local factionData = app.objMgr:getObj(data_guid)
 	local damage_table = {}
@@ -4453,6 +4482,9 @@ function FactionInfo:TowerChallenge(player)
 	
 	call_appd_teleport(player:GetScenedFD(), player:GetGuid(), x, y, map_id, generalId)
 	
+	player:AddActiveItem(VITALITY_TYPE_FACTION_TOWER)
+	
+	player:onUpdatePlayerQuest(QUEST_TARGET_TYPE_FACTION_ACTIVITY, {2})
 end
 
 --统计某层通关人数
@@ -4516,6 +4548,8 @@ function FactionInfo:TowerSweep(player)
 	end
 	--player:call_show_faction_tower_sweep_list(list)
 	protocols.call_sweep_instance_reward ( player, INSTANCE_SUB_TYPE_FACTION_TOWER, 0, 0, 0, list)
+	
+	player:AddActiveItem(VITALITY_TYPE_FACTION_TOWER)
 end
 
 --挑战结束 更新排行 (player, floor)
@@ -4542,6 +4576,9 @@ end
 
 --领取福利宝箱 (player, chest_index)
 function FactionInfo:OpenTowerChest(player, chest_index)
+	if index <= 0 or index >= 32 then
+		return
+	end
 	if player:GetFactionTowerChestFlag(chest_index) then
 		outFmtDebug("OpenTowerChest chest flag true already opened")
 		return
@@ -4592,8 +4629,12 @@ end
 
 --成员学习技能
 function FactionInfo:FactionSkillLvup(player,id)
+	if not tb_faction_skill_base[id] then
+		return
+	end
 	local building_lv = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_SKILL)
 	local level_limit = tb_faction_skill_building[building_lv].level_limit
+	
 	local buildIng_need_lv = tb_faction_skill_base[id].unlock_level
 	local skill_id = tb_faction_skill_base[id].skill_id
 	local learn_lv = player:GetFactionSkillLearnLv(id)

@@ -207,15 +207,13 @@ function PlayerInfo:GmCommand(str)
 	end
 	
 	outFmtInfo("player %s send gm command : %s", self:GetGuid(), str)
-	local gm_level = 100;
-	--[[
 	local gm_level = self:GetGMLevel()
 	local whisper_str = "Please do not enter illegal characters"
 	if(gm_level < GM_LEVEL_3)then
-		self:call_chat_whisper(self:GetGuid(), self:GetFaction(), self:GetName(), whisper_str)
+		outFmtInfo("权限不足")
+		--self:call_chat_whisper(self:GetGuid(), self:GetFaction(), self:GetName(), whisper_str)
 		return
 	end
-	]]
 	-- //发给其他服务器
 	call_gm_command(self:GetGuid(), command)
 	
@@ -540,12 +538,18 @@ function PlayerInfo:GmCommand(str)
 		
 		--self:ItemUnlockTitle(tonumber(tokens[2]))
 		
-		self:getItemMgr().itemMgr:ForEachBagItem(BAG_TYPE_EQUIP
-, function(ptr)
-			local item = require("appd.appd_item").new(ptr)
-			outFmtInfo("=======================  %s, %s",tostring(item:getId()),item:toString())	
-		end)
+		--self:getItemMgr().itemMgr:ForEachBagItem(BAG_TYPE_EQUIP
+--, function(ptr)
+			--local item = require("appd.appd_item").new(ptr)
+			--outFmtInfo("=======================  %s, %s",tostring(item:getId()),item:toString())	
+		--end)
 		
+		--DoActivityDataUpdate (self, 1, {1,1})
+		--DoActivityDataUpdate (self, 10, {1,1})
+		local number = tonumber(tokens[2])
+		if number then
+			self:SetConsumeSum(number)
+		end
 	else
 		--[[
 		if(gm_level < GM_LEVEL_1)then

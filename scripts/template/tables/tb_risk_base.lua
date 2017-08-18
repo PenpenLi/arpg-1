@@ -7,5 +7,7 @@ tb_risk_base = {
 	--  id:int ID
 	--  pos_offset:int 刷新怪物坐标误差
 	--  firstSection:int 首关卡的id
-	[1] = {id = 1, pos_offset = 2, firstSection = 1001001},
+	--  reduceTime:int 收益减少分钟数
+	--  rate:int 收益百分比
+	[1] = {id = 1, pos_offset = 2, firstSection = 1001001, reduceTime = 480, rate = 80},
 }

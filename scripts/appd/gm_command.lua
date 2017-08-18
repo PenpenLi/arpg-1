@@ -242,7 +242,7 @@ function  DoGMScripts(player_ptr, gm_commands)
 		end
 	elseif(tokens[1] == "@假充值")then
 		local amount = 100
-		if(#tokens == 2 and tonumber(tokens[2]) > 0)then
+		if(#tokens >= 2 and tonumber(tokens[2]) > 0)then
 			amount = tonumber(tokens[2])
 		end
 		local cur_time = os.time()		

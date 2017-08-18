@@ -243,15 +243,16 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 			if not bagContains[bagType] then
 				bagContains[bagType] = {}
 			end
-			table.insert(bagContains[bagType], itemId)
+			bagContains[bagType][itemId] = count
 		end
 	end
 	
 	-- 判断背包格子是否足够
 	local itemMgr = playerInfo:getItemMgr()
-	for bagType, items in pairs(bagContains) do
+	for bagType, dict in pairs(bagContains) do
+		local need = self:GetNeedRoom(dict)
 		local emptys  = itemMgr:getEmptyCount(bagType)
-		if emptys < #items then
+		if emptys < need then
 			playerInfo:CallOptResult(OPRATE_TYPE_BAG, BAG_RESULT_BAG_FULL)
 			return
 		end
@@ -264,6 +265,18 @@ function GiftPacksInfo:pickMail(playerInfo, indx)
 	self:SetGiftPacksItem("", indx)
 	
 	playerInfo:AppdAddItems(rewardDict, MONEY_CHANGE_GIFT_PACKET, LOG_ITEM_OPER_TYPE_GIFT_PACKS, 1, 0, 0, 2)
+end
+
+function GiftPacksInfo:GetNeedRoom(dict)
+	local room = 0
+	for itemId, count in pairs(dict) do
+		room = room + count / tb_item_template[itemId].max_overlap
+		if (count % tb_item_template[itemId].max_overlap) > 0 then
+			room = room + 1
+		end
+	end
+	
+	return room
 end
 
 -- 删除礼包

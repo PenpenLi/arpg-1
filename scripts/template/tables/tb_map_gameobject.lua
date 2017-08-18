@@ -8,7 +8,7 @@ tb_map_gameobject = {
 	--  gameobjects:array 采集物列表
 	[1] = {id = 1, gameobjects = {}},
 	[1001] = {id = 1001, gameobjects = {4,5,6,7,13}},
-	[1002] = {id = 1002, gameobjects = {8,9}},
-	[1003] = {id = 1003, gameobjects = {11,12,13,14,15,16,17,18,19}},
+	[1002] = {id = 1002, gameobjects = {20,21,22}},
+	[1003] = {id = 1003, gameobjects = {23,24,25,26,27,28}},
 	[5001] = {id = 5001, gameobjects = {8,9}},
 }

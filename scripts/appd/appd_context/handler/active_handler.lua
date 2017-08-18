@@ -39,11 +39,12 @@ function PlayerInfo:Handle_Avtive_Reward(pkt)
 	
 	instMgr:SetActivityReward(idx)
 	
-	local tab 
+	local tab = {}
 
-	if vip == 1 then
+	if vip ~= 1 then
 		tab = config.reward
 	else
+		
 		tab = config.vipreward
 	end
 	
@@ -63,7 +64,27 @@ function PlayerInfo:AddActiveItem(id)
 	
 	local instMgr = self:getInstanceMgr()
 	local num = instMgr:getActiveNum(id)
+	
+	if num  == config.nums then
+		outFmtDebug("PlayerInfo:AddActiveItem id %d max nums",id)
+		return
+	end
 	num = num + 1
 	instMgr:setActiveNum(id,num)
 	instMgr:addActivity(config.active)
+	
+	if num  == config.nums then
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_ACTIVE_TASK, {})
+	end
+end
+
+--添加活跃度
+function PlayerInfo:DailyResetActive()
+	local instMgr = self:getInstanceMgr()
+	for id,_ in pairs(tb_activity_base) do
+		instMgr:setActiveNum(id,0)
+	end
+	instMgr:setActivity(0)
+	
+	instMgr:SetUInt32(INSTANCE_INT_FIELD_ACTIVE_REWARD,0)
 end

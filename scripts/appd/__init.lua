@@ -36,3 +36,6 @@ require("appd/appd_internal_handler")
 
 outString('load appd/quest/__init script')
 require("appd/quest/init")
+
+outString('load appd/activities/__init script')
+require("appd/activities/init")

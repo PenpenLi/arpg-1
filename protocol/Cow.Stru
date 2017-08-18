@@ -153,3 +153,7 @@ mass_boss_rank_info,/*全民boss排名*/
 equip_info,/*装备信息*/
 	equip,String,50,/*装备信息*/
 	
+#全民boss排名
+act_rank_info,/*开服活动排名*/
+	name,String,50,/*名称*/
+	value,uint32,0,/*数值*/

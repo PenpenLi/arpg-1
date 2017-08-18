@@ -251,7 +251,7 @@ function PlayerInfo:CreateFaction(server_name, faction_name, icon)
 	end
 	
 	faction:OnMainHallLvUp(1) -- 创建1级主殿
-	faction:RefreshShop()
+	--faction:RefreshShop()
 	
 	
 	--登录服也监听下
@@ -287,6 +287,10 @@ end
 --获取帮派列表
 function PlayerInfo:Handle_Faction_Get_List( pkt )
 	local page, num,grep = pkt.page, pkt.num,pkt.grep 
+	
+	if page < 1 or num < 1 then
+		return
+	end
 	local lev = 0
 	--outFmtDebug("self grep %d",grep)
 	if grep == 1 then
@@ -494,71 +498,6 @@ function PlayerInfo:Handle_Faction_People( pkt )
 	elseif opt_type == FACTION_MANAGER_TYPE_DONATE_GIFT_EXCHANGE then
 		faction:FactionDonateGiftExchange(self,reserve_int1)
 		
-	--[[
-	--查看礼物列表
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_PAGE then
-		if(not factionData)then
-			return
-		end
-		faction:ShowFactionGiftPage(factionData,self,reserve_int1)
-	--查看礼物信息
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_INFO then
-		if(not factionData)then
-			return
-		end
-		faction:ShowFactionGiftInfo(factionData,self,reserve_int1)
-	--女王查看未感谢礼物
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_UNTHANK_PAGE then
-		if self:GetGuid() ~= faction:GetBangZhuGuid() then
-			return
-		end
-		if(not factionData)then
-			return
-		end
-		faction:ShowFactionGiftUnthankPage(factionData,self,reserve_int1,true)
-	--女王查看历史记录
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_SHOW_HISTORY_PAGE then
-		if self:GetGuid() ~= faction:GetBangZhuGuid() then
-			return
-		end
-		if(not factionData)then
-			return
-		end
-		faction:ShowFactionGiftHistoryPage(factionData,self,reserve_int1)
-	--女王感谢
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_THANK then
-		if self:GetGuid() ~= faction:GetBangZhuGuid() then
-			return
-		end
-		if(not factionData)then
-			return
-		end
-		faction:ThankFactionGift(factionData,self,reserve_int1,true)
-	--女王全部感谢
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_THANK_ALL then
-		if self:GetGuid() ~= faction:GetBangZhuGuid() then
-			return
-		end
-		if(not factionData)then
-			return
-		end
-		faction:ThankAllFactionGift(factionData,self)
-	--女王感谢并回复
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_THANK_AND_REPLY then
-		if self:GetGuid() ~= faction:GetBangZhuGuid() then
-			return
-		end
-		if(not factionData)then
-			return
-		end
-		faction:ThankAndReplyFactionGift(factionData,self,reserve_int1,reserve_int2,reserve_str1)
-	--所有人回复
-	elseif opt_type == FACTION_MANAGER_TYPE_GIFT_REPLY then
-		if(not factionData)then
-			return
-		end
-		faction:ReplyFactionGift(factionData,self,reserve_int1,reserve_int2,reserve_str1)
-	--]]
 	elseif opt_type == FACTION_MANAGER_TYPE_BOSSDEFENSE_CHALLENGE then
 		faction:BossDenfenseChallenge(self,reserve_int1)
 		
@@ -617,7 +556,43 @@ function PlayerInfo:Handle_Storehouse_Destroy(pkt)
 	end
 end
 
-
+function PlayerInfo:Handle_Send_Faction_Invite(pkt)
+	local guid = pkt.guid
+	local factionID = self:GetFactionId()
+	if factionID ~= "" then
+		local faction = app.objMgr:getObj(factionID)
+		if faction then
+			if faction:GetMemberCount() >= faction:GetMemberMaxCount() then
+				--帮派人数已满
+				self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_MEMBER_MAX_COUNT)
+				return 
+			end
+			
+			if not app.objMgr:IsPlayerGuid(guid) then
+				self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_NOT_FIND)
+				return
+			end
+			local player = app.objMgr:getObj(guid)
+			
+			if player then
+				if player:GetFactionId() ~= "" then
+					if player:GetFactionId() == self:GetFactionId() then
+						self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_SAME_FACTION)
+						return
+					else
+						self:CallOptResult(OPERTE_TYPE_SOCIAL,OPERTE_TYPE_SOCIAL_OTHNER_FACTION)
+						return
+					end
+				end
+				
+				player:call_show_faction_invite(self:GetGuid(),self:GetName(),faction:GetGuid(),faction:GetName())
+			end
+			
+			
+		end
+	end
+	
+end
 
 --[[
 --帮派部分

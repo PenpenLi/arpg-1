@@ -83,6 +83,8 @@ function PlayerInfo:OnDoujiantaiFight(indx)
 	cdSeconds = cdSeconds + os.time()
 	
 	instMgr:setDoujianCD(cdSeconds)
+	
+	self:AddActiveItem(VITALITY_TYPE_DOUJIANTAI)
 end
 
 -- 获取对手信息
@@ -249,7 +251,9 @@ end
 --每日奖励
 function PlayerInfo:DoDoujiantaiDayReward()
 	local rank = self:GetDoujiantaiRank()
-	
+	if rank == 0 then
+		return
+	end
 	for i,v in ipairs(tb_doujiantai_day) do
 		if rank <= v.rank then
 			local rewardStr = ""

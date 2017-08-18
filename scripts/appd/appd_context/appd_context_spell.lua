@@ -477,6 +477,9 @@ function PlayerInfo:DoHandleRaiseMount()
 		
 		-- 重算战斗力(当前和属性绑定在一起)
 		self:RecalcAttrAndBattlePoint()
+		
+		--更新开服排行
+		DoActivitySystemDataUpdateByScriptId(3,{5,self})
 	else
 		-- 未升星, 只加经验
 		spellMgr:addTrainExp(addExp)
@@ -638,6 +641,7 @@ function PlayerInfo:upgraded()
 	
 	-- 成就
 	self:AddAchieve(QUEST_TARGET_TYPE_MOUNT_LEVEL, 1)
+	
 end
 
 -- 进阶后做某些事
@@ -651,6 +655,9 @@ function PlayerInfo:DoAfterUpgrade(level)
 	
 	-- 重算战斗力(当前和属性绑定在一起)
 	self:RecalcAttrAndBattlePoint()
+	
+	--更新开服排行
+	DoActivitySystemDataUpdateByScriptId(3,{5,self})
 end
 
 -- 解锁坐骑技能
@@ -707,7 +714,7 @@ function PlayerInfo:onActiveIllusion(illuId)
 	for _, spellId in pairs(config.spells) do
 		self:onActiveSpellWithoutInitiative(spellId)
 	end
-	
+	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_ILLUSION_ACTIVE)
 	-- 重算战斗力(当前和属性绑定在一起)
 	self:RecalcAttrAndBattlePoint()
 end
@@ -721,6 +728,11 @@ function PlayerInfo:DoHandleIllusion(illuId)
 		curr = illuId
 	end
 	
+	if curr == 0 then
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_ILLUSION_UNSET)
+	else
+		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_ILLUSION_SET)
+	end
 	self:SetCurrIllusionId(curr)
 	-- 发送到场景服
 	--[[
@@ -736,6 +748,8 @@ function PlayerInfo:raiseMountLevelBase()
 			return
 		end
 		spellMgr:addMountLevelBase()
+		
+		self:CallOptResult(OPRATE_TYPE_UPGRADE,UPGRADE_OPRATE_MOUNT_LEVEL_BASE_UP)
 	end
 end
 
@@ -1101,6 +1115,23 @@ function PlayerInfo:DivineSpiritUpLev(divineId,protect,improve)
 	end
 end
 
+function PlayerInfo:getTalismanLevelIfNotReturnMaxLevelOfAllTalisman(id)
+	local spellMgr = self:getSpellMgr()
+	local dict = spellMgr:getTalismanList()
+	
+	local level = 0
+	for k, v in pairs(dict) do
+		if id == k then
+			return v
+		end
+		if level < v then
+			level = v
+		end
+	end
+	
+	return level
+end
+
 
 --法宝激活
 function PlayerInfo:TalismanActive(id)
@@ -1125,6 +1156,9 @@ function PlayerInfo:TalismanActive(id)
 			spellMgr:calculTalismanForce(id)
 			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_TALISMAN_ACTIVE)
 			self:RecalcAttrAndBattlePoint()
+			
+			--更新开服排行
+			DoActivitySystemDataUpdateByScriptId(3,{6,self})
 		else 
 			outFmtError("active talisman has not enough item");
 			return
@@ -1151,15 +1185,28 @@ function PlayerInfo:TalismanLvUp(id)
 		return
 	end
 	
-	local tf,tab = self:checkMoneyEnoughIfUseGoldIngot(config.money_cost)
+	--消耗跟随法宝品质
+	local money = config.money_cost[tb_talisman_base[id].quality + 1]
+	if not money then
+		outFmtError("talisman up lev money_cost not exist")
+		return
+	end
+	
+	local tf,tab = self:checkMoneyEnoughIfUseGoldIngot({money})
 	
 	--是否有足够的道具
-	if not tf or not self:hasMulItem(config.item_cost) then
+	local item = config.item_cost[tb_talisman_base[id].quality + 1]
+	if not item then
+		outFmtError("talisman up lev item_cost not exist")
+		return
+	end
+
+	if not tf or not self:hasMulItem({item}) then
 		outFmtError("talisman up lev resouce not enough")
 		return
 	end
 	
-	if self:useMulItem(config.item_cost) and self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
+	if self:useMulItem({item}) and self:costMoneys(MONEY_CHANGE_SHENBING_BUY,tab) then
 		local nowLev = curlev + 1
 	 	spellMgr:SetTalismanLv(index,nowLev)
 		spellMgr:calculTalismanForce(id)
@@ -1171,6 +1218,10 @@ function PlayerInfo:TalismanLvUp(id)
 		-- 重算战斗力(当前和属性绑定在一起)
 		self:RecalcAttrAndBattlePoint()
 		
+		--更新开服排行
+		DoActivitySystemDataUpdateByScriptId(3,{6,self})
+		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_TALISMAN_LEVEL, {id,nowLev})
 	end
 	
 end
@@ -1184,6 +1235,11 @@ function PlayerInfo:WingsActive()
 		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_ACTIVE)
 		--重算战斗力
 		self:RecalcAttrAndBattlePoint()
+		
+		--更新开服排行
+		DoActivitySystemDataUpdateByScriptId(3,{7,self})
+		
+		rankInsertTask(self:GetGuid(),RANK_TYPE_WINGS)
 	end
 end
 --神羽祝福
@@ -1217,6 +1273,11 @@ function PlayerInfo:WingsBless()
 				self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_BLESS)
 				-- 重算战斗力(当前和属性绑定在一起)
 				self:RecalcAttrAndBattlePoint()
+				
+				--更新开服排行
+				DoActivitySystemDataUpdateByScriptId(3,{7,self})
+				
+				rankInsertTask(self:GetGuid(),RANK_TYPE_WINGS)
 			else
 				spellMgr:SetWingsBlessExp(cur_exp + config.bless_exp)
 			end
@@ -1253,6 +1314,13 @@ function PlayerInfo:WingsRankUp()
 			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_RANKUP)
 			-- 重算战斗力(当前和属性绑定在一起)
 			self:RecalcAttrAndBattlePoint()
+			--更新开服排行
+			DoActivitySystemDataUpdateByScriptId(3,{7,self})
+			
+			rankInsertTask(self:GetGuid(),RANK_TYPE_WINGS)
+			
+			self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WINGS_UPGRADE_LEVEL, {self:GetWingsUpgradeLevel()})
+			self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WINGS_UPDRADE_TIMES, {})
 		end
 	else
 		outFmtError("wings id:%d can not rank up",wings_id)
@@ -1300,11 +1368,14 @@ function PlayerInfo:WingsStrength()
 			
 			-- 重算战斗力(当前和属性绑定在一起)
 			self:RecalcAttrAndBattlePoint()
+			
+			self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WINGS_STRENGTH_LEVEL, {spellMgr:GetWingsLevel()})
+			
 		else
 			outFmtInfo("wings strength fail")
 			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_WINGS_STRENGTH_FAIL)
 		end
-		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WINGS_STRENGTH_TIMES, {})
 	end
 	
 end
@@ -1354,6 +1425,11 @@ function PlayerInfo:meridianPractise()
 		end
 		-- 重算战斗力(当前和属性绑定在一起)
 		self:RecalcAttrAndBattlePoint()
+		
+		--更新开服排行
+		DoActivitySystemDataUpdateByScriptId(3,{1,self})
+		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_MERIDIAN_LEVEL, {spellMgr:getMeridianLevel()})
 	else
 		-- 表示突破
 		
@@ -1471,6 +1547,10 @@ function PlayerInfo:EquipDevelopStrength(pos,count)
 		self:UpdateEquipDevelopStrengthBonus(currLv + up_level)
 		--self:EquipDevelopGemActive(pos)
 		
+		--更新开服排行
+		DoActivitySystemDataUpdateByScriptId(3,{2,self})
+		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_STRENGTH_SUIT, {pos,up_level})
 	end
 
 
@@ -1524,11 +1604,16 @@ function PlayerInfo:EquipDevelopRefineStarUp(pos)
 			
 			--检测装备养成 奖励
 			
+			--更新开服排行
+			DoActivitySystemDataUpdateByScriptId(3,{4,self})
+			
+			
+			
 		else
 			outFmtInfo("EquipDevelopRefineStarUp refine fail")
 			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_STAR_FAIL)
 		end
-		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_REFINE_SUIT, {pos})
 	end
 end
 
@@ -1581,11 +1666,16 @@ function PlayerInfo:EquipDevelopRefineRankUp(pos)
 			--检测装备养成 奖励
 			self:UpdateEquipDevelopRefineBonus(currRank + 1)
 			--self:EquipDevelopGemActive(pos)
+			
+			--更新开服排行
+			DoActivitySystemDataUpdateByScriptId(3,{4,self})
+			
+			
 		else
 			outFmtInfo("EquipDevelopRefineRankUp refine  rank fail")
 			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_RANK_FAIL)
 		end
-		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_REFINE_SUIT, {pos})
 	end
 end
 
@@ -1636,6 +1726,8 @@ function PlayerInfo:EquipDevelopGemActive(pos,gem_pos)
 			
 			--检测装备养成 奖励
 			self:UpdateEquipDevelopGemBonus(1)
+			--更新开服排行
+		DoActivitySystemDataUpdateByScriptId(3,{3,self})
 		end
 	else
 		outFmtError("EquipDevelopGemActive strength_lv refine_rank not enough")
@@ -1681,6 +1773,11 @@ function PlayerInfo:EquipDevelopGemLvUp(pos,gem_pos)
 		
 		--检测装备养成 奖励
 		self:UpdateEquipDevelopGemBonus(currLv + 1)
+		
+		--更新开服排行
+		DoActivitySystemDataUpdateByScriptId(3,{3,self})
+		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_STRENGTH_GEM, {pos})
 	end
 end
 
@@ -1887,6 +1984,8 @@ function PlayerInfo:EquipDevelopWashAttrsWash(equip_guid)
 		outFmtInfo("+++++++++++++++++++++++ %s",info)
 		spellMgr:SetEquipDevelopWashAttrsInfo(info)
 		self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_WASHATTRS_WASH)
+		
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WASH_SUIT, {item_tempate.pos})
 	end
 	
 end

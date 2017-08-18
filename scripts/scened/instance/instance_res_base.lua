@@ -296,14 +296,18 @@ function InstanceResBase:SendResReward(player)
 	-- »ñµÃËæ»ú½±ÀødropIdTable
 --		local dropIdTable = tb_instance_trial[ id ].reward
 	local playerInfo = UnitInfo:new{ptr = player}
-	local idx = id * 100 + playerInfo:GetLevel()
+	local idx = id * 1000 + playerInfo:GetLevel()
 	--outFmtDebug("tb_instance_reward idx %d",idx)
 	local config = tb_instance_reward[idx]
 	local tab = {}
-	table.insert(tab,config.basereward[1])
+	for _, rewardInfo in pairs(config.basereward) do
+		table.insert(tab, rewardInfo)
+	end
 	local randomReward = config.randomreward
-	local rewardIdx = randInt(1, #randomReward)
-	table.insert(tab,randomReward[rewardIdx])
+	if #randomReward > 0 then
+		local rewardIdx = randInt(1, #randomReward)
+		table.insert(tab,randomReward[rewardIdx])
+	end
 	
 	local dict = self:RandomReward(player, {}, tab)
 	
@@ -350,7 +354,7 @@ function InstanceResBase:SetCreaturePro(creature, pros, bRecal, mul)
 	--creature:SetBaseAttrs(pros, bRecal, mul)
 	local entry = creature:GetEntry()
 	local lev = creature:GetLevel()
-	local idx = entry * 100 + lev
+	local idx = entry * 1000 + lev
 	--outFmtDebug("SetBaseAttrs -- ai res %d--%d--%d",entry,lev,idx)
 	local config = tb_creature_resource[idx]
 	if config then

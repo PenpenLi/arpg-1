@@ -1504,3 +1504,70 @@ show_player_overview,s2c,390,/*返回玩家详情*/,STATUS_NEVER,False
 	coat,uint32,False,/*外观*/
 	weapon,uint32,False,/*武器外观*/
 	
+#
+send_faction_invite,c2s,391,/*邀请加入帮派*/,STATUS_NEVER,False
+	guid,String,False,/*玩家id*/	
+	
+#
+show_faction_invite,s2c,392,/*显示邀请*/,STATUS_NEVER,False
+	guid,String,False,/*玩家id*/
+	name,String,False,/*玩家名称*/
+	faction_guid,String,False,/*家族id*/
+	faction_name,String,False,/*家族名称*/
+
+#
+buy_vipgift,c2s,393,/*购买vip礼包*/,STATUS_NEVER,False
+	id,uint32,False,/*礼包id*/
+	
+#
+activity_opt_buy_dailygift,c2s,394,/*购买活动每日礼包*/,STATUS_NEVER,False
+	act_id,uint32,False,/*活动id*/
+	index,uint32,False,/*礼包下标*/
+	
+#
+draw_lottery,c2s,395,/*抽奖*/,STATUS_NEVER,False
+	actId,uint32,False,/*活动id*/
+	type,uint8,False,/*类型*/
+	
+#
+activity_opt_get_rank_process_reward,c2s,396,/*获取活动开服排行进度奖励*/,STATUS_NEVER,False
+	act_id,uint32,False,/*活动id*/
+	index,uint32,False,/*奖励下标*/
+	
+#
+activity_opt_get_rank_list,c2s,397,/*获取活动开服排行榜*/,STATUS_NEVER,False
+	act_id,uint32,False,/*活动id*/
+	
+#
+activity_opt_show_rank_list,s2c,398,/*返回活动开服排行榜*/,STATUS_NEVER,False
+	act_id,uint32,False,/*活动id*/
+	list,act_rank_info,True,/*排行列表*/
+	
+#
+activity_opt_buy_limitgift,c2s,399,/*购买活动限定礼包*/,STATUS_NEVER,False
+	act_id,uint32,False,/*活动id*/
+	index,uint32,False,/*礼包下标*/
+	
+#
+welfare_get_recharge_reward,c2s,400,/*领取累计充值奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*奖励id*/
+	
+#
+welfare_get_consume_reward,c2s,401,/*领取累计消费奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*奖励id*/
+
+#
+welfare_get_sevenday_reward,c2s,402,/*领取七日大礼奖励*/,STATUS_NEVER,False
+	id,uint8,False,/*奖励id*/
+	
+#
+send_server_open_time,s2c,403,/*服务器开服时间*/,STATUS_NEVER,False
+	open_time,uint32,False,/*时间戳*/
+
+#
+risk_get_rank,c2s,404,/*请求世界冒险排行榜*/,STATUS_NEVER,False
+	
+
+#
+risk_get_rank_result,s2c,405,/*世界冒险排行榜信息 */,STATUS_NEVER,False
+	list,act_rank_info,True,/*排行列表*/

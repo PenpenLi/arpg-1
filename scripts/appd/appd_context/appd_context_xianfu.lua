@@ -258,6 +258,10 @@ function PlayerInfo:OnBuyTicket(type, indx, count)
 		return
 	end
 	
+	if count < 1 then
+		return
+	end
+	
 	local ticketid = tb_kuafu_xianfu_condition[type].ticketid
 	local cost = {{config[indx][1], config[indx][2]}}
 	

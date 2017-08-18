@@ -6,6 +6,10 @@ function PlayerInfo:Handle_Chat_Whisper( pkt )
 		return
 	end
 	
+	if not app.objMgr:IsPlayerGuid(guid) then
+		return
+	end
+	
 	local socialMgr = self:getSocialMgr()
 	if not socialMgr:isFriend(guid) then
 		outFmtError("Handle_Chat_Whisper target not friend %s",guid)
@@ -71,6 +75,10 @@ end
 -- 屏蔽某人
 function PlayerInfo:Handle_Block_Chat(pkt)
 	local guid = pkt.guid
+	
+	if not app.objMgr:IsPlayerGuid(guid) then
+		return
+	end
 	
 	-- 屏蔽的人一定要在线
 	local blocker = app.objMgr:getObj(guid)

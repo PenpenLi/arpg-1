@@ -278,6 +278,9 @@ end
 
 function PlayerInfo:Handle_Doujian_BuyTimes(pkt)
 	local num = pkt.num
+	if num <= 0 then
+		return
+	end
 	self:BuyDoujiantaiTime(num)
 end
 
@@ -313,11 +316,13 @@ end
 function PlayerInfo:Handle_Group_Instance_Match(pkt)
 	-- 系统未激活
 	if (not self:GetOpenMenuFlag(MODULE_INSTANCE, MODULE_INSTANCE_TEAM)) then
+		outFmtInfo("==============")
 		return
 	end
 	local indx = pkt.indx
 	-- index是否正确
-	if indx < 1 or indx > #tb_group_instance_base then
+	if not tb_group_instance_base[indx] then
+		outFmtInfo("============== 2")
 		return
 	end
 	
