@@ -11,11 +11,13 @@ end
 
 --初始化脚本函数
 function InstanceWorldRisk:OnInitScript(  )
-	InstanceInstBase.OnInitScript(self) --调用基类
-	
-	if self:GetMapQuestEndTime() > 0 then
+	-- 不让重复初始化
+	if self:isInstanceInit() then
 		return
 	end
+	self:SetInstanceInited()
+	
+	InstanceInstBase.OnInitScript(self) --调用基类
 	
 	self:parseGeneralId()
 
@@ -30,6 +32,21 @@ function InstanceWorldRisk:parseGeneralId()
 	local generalId = self:GetMapGeneralId()
 	local params = string.split(generalId, '#')
 	self:SetUInt32(TRIAL_INSTANCE_FIELD_SECTION_ID, tonumber(params[ 2 ]))
+end
+
+-- 退出倒计时到了准备退出
+function InstanceWorldRisk:prepareToLeave()
+	local seciontId = self:getSectionId()
+
+	if tb_risk_data[seciontId].is_boss_section == 0 then
+		mapLib.ExitInstance(self.ptr)
+	else
+		local allPlayers = mapLib.GetAllPlayer(self.ptr)
+		for _, player in pairs(allPlayers) do
+			local playerInfo = UnitInfo:new {ptr = player}
+			playerInfo:teleportWorldRisk()
+		end
+	end
 end
 
 

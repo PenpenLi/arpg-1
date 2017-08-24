@@ -61,7 +61,7 @@ function PlayerInfo:DoGetScenedDoSomething  ( ntype, data, str)
 		self:SetRideState(data)
 		
 	elseif SCENED_APPD_GOLD_RESPAWN == ntype then
-		if self:costMoneys(MONEY_CHANGE_ATUO_GOLD_RESPAWN, {{MONEY_TYPE_GOLD_INGOT, data}}) then
+		if self:costMoneys(MONEY_CHANGE_ATUO_GOLD_RESPAWN, {{MONEY_TYPE_BIND_GOLD, data}}) then
 			-- 通知场景服复活
 			self:CallScenedDoSomething(APPD_SCENED_RESPAWN)
 		end

@@ -233,7 +233,7 @@ function AppSpellMgr:calculMountAttr(attrs)
 	local baseForce = DoAnyOneCalcForce(mountAttr)
 	allForce = allForce + baseForce
 	-- 属性
-	for indx, val in ipairs(mountAttr)do
+	for indx, val in pairs(mountAttr)do
 		-- 速度属性就不在这里计算了
 		if indx ~= EQUIP_ATTR_MOVE_SPEED then
 			if attrs[indx] == nil then
@@ -1084,12 +1084,16 @@ function AppSpellMgr:GetEquipDevelopGemLv(index,gem_index)
 	local res1 = gem_index%2
 	local res2 = math.floor(gem_index/2)
 	
-	return self:GetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_GEM_LV_START + res2,res1,1)
+	local i = SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_GEM_LV_START + res2
+	
+	return self:GetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_GEM_LV_START + res2,res1)
 end
 
 function AppSpellMgr:SetEquipDevelopGemLv(index,gem_index,value)
 	local res1 = gem_index%2
 	local res2 = math.floor(gem_index/2)
+	
+	local i = SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_GEM_LV_START + res2
 	
 	self:SetUInt16(SPELL_INT_FIELD_EQUIPDEVELOP_START + index * MAX_EQUIPDEVELOP_COUNT + EQUIPDEVELOP_GEM_LV_START + res2,res1,value)
 end

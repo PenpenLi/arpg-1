@@ -1571,3 +1571,7 @@ risk_get_rank,c2s,404,/*请求世界冒险排行榜*/,STATUS_NEVER,False
 #
 risk_get_rank_result,s2c,405,/*世界冒险排行榜信息 */,STATUS_NEVER,False
 	list,act_rank_info,True,/*排行列表*/
+
+#
+set_orient,c2s,406,/*设置朝向*/,STATUS_NEVER,False
+	angle,uint16,False,/*角度*/

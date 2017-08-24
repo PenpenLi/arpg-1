@@ -29,5 +29,10 @@ tb_shop = {
 	[14] = {id = 14, itemId = 2005, limtype = 1, limdata = 2, discount = 10, costResource = {{1, 14}}, time = {}, count = 1, limit = 20},
 	[15] = {id = 15, itemId = 201, limtype = 1, limdata = 2, discount = 10, costResource = {{1, 15}}, time = {}, count = 1, limit = 20},
 	[16] = {id = 16, itemId = 202, limtype = 2, limdata = 2, discount = 10, costResource = {{1, 16}}, time = {}, count = 1, limit = 99},
-	[17] = {id = 17, itemId = 203, limtype = 2, limdata = 10, discount = 10, costResource = {{1, 17}}, time = {}, count = 1, limit = 99},
+	[17] = {id = 17, itemId = 203, limtype = 2, limdata = 10, discount = 10, costResource = {{1, 10}}, time = {}, count = 1, limit = 99},
+	[18] = {id = 18, itemId = 235, limtype = 1, limdata = 5, discount = 10, costResource = {{1, 20}}, time = {}, count = 1, limit = 5},
+	[19] = {id = 19, itemId = 236, limtype = 1, limdata = 5, discount = 10, costResource = {{1, 30}}, time = {}, count = 1, limit = 5},
+	[20] = {id = 20, itemId = 237, limtype = 1, limdata = 5, discount = 10, costResource = {{1, 11}}, time = {}, count = 1, limit = 5},
+	[21] = {id = 21, itemId = 238, limtype = 1, limdata = 5, discount = 10, costResource = {{1, 40}}, time = {}, count = 1, limit = 5},
+	[22] = {id = 22, itemId = 239, limtype = 1, limdata = 1, discount = 10, costResource = {{1, 50}}, time = {}, count = 1, limit = 1},
 }

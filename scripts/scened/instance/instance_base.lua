@@ -847,6 +847,9 @@ Instance_base = {
 	--复活后干点啥
 	DoAfterRespawn = 
 		function(self, unit_ptr)
+			if GetUnitTypeID(unit_ptr) == TYPEID_UNIT then
+				return
+			end
 			-- 加无敌buff
 			unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 0, 3)
 			local unitInfo = UnitInfo:new {ptr = unit_ptr}

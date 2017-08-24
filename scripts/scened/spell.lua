@@ -394,6 +394,7 @@ function handle_cast_add_unit_effect_heal(caster, target, spell_id, spell_lv,dst
 	--1,5,200,1000,17000
 	local diff = upLevelConfig.skillEffectParams[ 4 ]
 	local loadedTime = upLevelConfig.skillEffectParams[ 5 ]
+	local entry = upLevelConfig.skillEffectParams[ 6 ]
 	local count = math.floor(loadedTime / diff)
 	
 	--刷特效精灵
@@ -402,7 +403,7 @@ function handle_cast_add_unit_effect_heal(caster, target, spell_id, spell_lv,dst
 	
 	casterInfo:CallCastSpellStart(casterInfo:GetIntGuid(),0,spell_id, {}, true)
 	local ix, iy = unitLib.GetPos(caster)
-	local creature = mapLib.AddCreature(map_ptr, {templateid = 6001, x = ix, y = iy, ainame = 'AI_guaiwu', active_grid = true, npcflag = {UNIT_NPC_FLAG_GOSSIP}})
+	local creature = mapLib.AddCreature(map_ptr, {templateid = entry, x = ix, y = iy, ainame = 'AI_guaiwu', active_grid = true, npcflag = {UNIT_NPC_FLAG_GOSSIP}})
 	if creature then
 		creatureLib.MonsterMove(creature, DEADLINE_MOTION_TYPE, 0, loadedTime)
 		creatureLib.SetMonsterHost(creature, caster)

@@ -525,7 +525,7 @@ function PlayerInfo:costMoneys(oper_type, costTable, times)
 	if bool then
 		-- 实际扣除
 		for _, res in pairs(realCostTable) do
-			self:SubMoney(res[ 1 ], oper_type, res[ 2 ] * times)
+			self:SubMoney(res[ 1 ], oper_type, res[ 2 ])
 		end
 	end
 	
@@ -903,7 +903,7 @@ function PlayerInfo:AddItemByEntry(entry, count, money_log, item_log, item_bind,
 		-- 全服
 		if record == ITEM_RECORD_BROADCAST then
 			local itemName = GetColordItemName(entry)
-			app:CallOptResult(OPRATE_TYPE_REWARD, item_log, {self:GetName(), itemName})
+			app:CallOptResult(OPRATE_TYPE_REWARD, item_log, {ToShowName(self:GetName()), itemName})
 		end
 		
 		--[[
@@ -1283,6 +1283,8 @@ end
 function PlayerInfo:OnForceChanged()
 	outFmtDebug("force changed")
 	self:factionUpForce()
+	-- 成就
+	self:SetAchieve(QUEST_TARGET_TYPE_PLAYER_FORCE, self:GetForce())
 	-- 加任务
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_PLAYER_FORCE, {self:GetForce()})
@@ -2541,7 +2543,7 @@ function PlayerInfo:onPickedOfflineRiskReward(times)
 	local rewardDict, sell = self:onCalRiskReward(times)
 	if rewardDict then
 		self:AppdAddItems(rewardDict, MONEY_CHANGE_OFFLINE, LOG_ITEM_OPER_TYPE_OFFLINE, nil, nil, nil, 3)
-		local list = Change_List_To_Item_Reward_Info(rewardDict, sell)
+		local list = Change_List_To_Item_Reward_Info(rewardDict, sell, true)
 		self:call_offline_reward_result (sell, times * 10, 0, 0, list)
 	end
 end
@@ -2567,7 +2569,6 @@ end
 function PlayerInfo:onCalRiskReward(times)
 	local passedSectionId = self:getLastPassedSectionId()
 	local sectionId = onGetAvailableSectionId(passedSectionId)
-	
 	-- 最大次数
 	local limit = 1440 * 6
 	if times > limit then
@@ -2602,25 +2603,18 @@ function PlayerInfo:onCalRiskReward(times)
 	local itemMgr = self:getItemMgr()
 	local empty_count = itemMgr:getEmptyCount(BAG_TYPE_EQUIP_BAG)	--取出剩余位置个数
 	local rewardDict = {}
-	local dictTemp = {}
 	for entry, count in pairs(dict) do
-		dictTemp[entry] = count
+		if tb_item_template[entry].pos == 0 then
+			table.insert(rewardDict, {entry, count})
+		end
+	end
+	
+	for entry, count in pairs(dict) do
 		if tb_item_template[entry].pos > 0 then
-			-- 已经满了
-			if empty_count <= 0 then
-				dictTemp[entry] = nil
-			end
-			-- 当前会超过
-			if empty_count > 0 and empty_count < count then
-				dictTemp[entry] = empty_count
-			end
-
 			empty_count = empty_count - count
 			for k = 1, count do
 				table.insert(rewardDict, {entry, 1})
 			end
-		else
-			table.insert(rewardDict, {entry, count})
 		end
 	end
 	
@@ -2653,7 +2647,25 @@ function PlayerInfo:IsKuafuing()
 end
 
 function PlayerInfo:GetWingsUpgradeLevel()
-	self:GetUInt32(PLAYER_INT_FIELD_WINGS_RANK)
+	return self:GetUInt32(PLAYER_INT_FIELD_WINGS_RANK)
+end
+
+function PlayerInfo:GetGemTotalLevel()
+	local spellMgr = self:getSpellMgr()
+	local count = 0
+	for index = 0,EQUIPMENT_COUNT - 1 do
+		local gem_part_config = tb_equipdevelop_gem_part[index + 1]
+		local gem_count = #(gem_part_config.gem_array)
+		for gem_index = 0,gem_count -1 do
+			
+			local level = spellMgr:GetEquipDevelopGemLv(index,gem_index)
+			
+			count = count + level
+			
+		end
+	end
+	
+	return count
 end
 
 -- 关闭连接

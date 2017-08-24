@@ -118,6 +118,10 @@ end
 -- return
 --		是否命中
 function isHit(attackInfo, hurtInfo)
+	-- 小怪必定命中
+	if hurtInfo:GetTypeID() == TYPEID_UNIT and not hurtInfo:GetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE) then
+		return true
+	end
 	local casterHit  = math.min(attackInfo:GetHit() * 10000 / (attackInfo:GetHit() + 4 * attackInfo:GetLevel() + 20) + attackInfo:GetHitRate(), 10000)
 	local targetMiss1 = hurtInfo:GetMiss() - attackInfo:GetIgnoreMiss()
 	local targetMiss = math.max(targetMiss1 * 10000 / (targetMiss1 + hurtInfo:GetLevel() * 150 + 3000) + hurtInfo:GetMissRate(), 0)

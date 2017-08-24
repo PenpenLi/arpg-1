@@ -2361,5 +2361,13 @@ function ScenedGetRiskTeleportInfo(player_ptr)
 end
 
 
+function UnitInfo:teleportWorldRisk()
+	local passedSectionId = self:getLastPassedSectionId()
+	local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetPlayerGuid(), passedSectionId)
+	
+	playerLib.Teleport(self.ptr, mapid, x, y, 0, generalId)
+end
+
+
 require 'scened.unit.unit_spell'
 require 'scened.unit.scened_appd_dosomething'

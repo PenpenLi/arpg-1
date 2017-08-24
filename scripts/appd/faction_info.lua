@@ -1312,6 +1312,10 @@ function FactionInfo:FactionRecruit(player,reserve_int1,reserve_int2,reserve_str
 		outFmtDebug("faction Recruit level error")
 		return;
 	end
+	if string.utf8len(reserve_str1) > 100 then
+		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOTICE_ERR)
+		return
+	end
 	local player_guid = player:GetGuid()
 	--local pos = self:FindPlayerIndex(player_guid)
 	--if pos == nil then return end
@@ -1326,7 +1330,7 @@ function FactionInfo:FactionRecruit(player,reserve_int1,reserve_int2,reserve_str
 	else
 		self:UnSetFactionFlags(FACTION_FLAGS_AUTO)
 	end
-
+	
 	self:SetFactionMinLev(reserve_int2)
 	self:SetFactionZhaoMuNotice(reserve_str1)
 
@@ -1447,8 +1451,9 @@ function FactionInfo:FactionNotice(player,notice)
 		return
 	end
 	
-	--帮派公告不能超过144个中文字符
-	if string.utf8len(notice) > 144 then
+	--帮派公告不能超过100个字符
+	
+	if string.utf8len(notice) > 100 then
 		player:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NOTICE_ERR)
 		return
 	end
@@ -1575,7 +1580,6 @@ end
 --商店刷新
 function FactionInfo:RefreshShop()
 	local lev = self:GetBuildingLvByType(FACTION_BUILDING_TYPE_SHOP)
-
 	--print(lev)
 	local config = tb_faction_base[lev]
 	if not config then
@@ -1599,6 +1603,7 @@ function FactionInfo:RefreshShop()
 			for _,info in ipairs(list[group_id][index]) do
 				if info.total_weight >= randomResult then
 					table.insert(item_list,info.config)
+					
 					break
 				end
 			end
@@ -1868,11 +1873,12 @@ function FactionInfo:FactionJuanXian(player,pos,money_type,money_sum)
 	end
 	
 	if player:costMoneys(MONEY_CHANGE_FACTION_DONATION,baseconfig.cost,money_sum) then
-		local devote = baseconfig.devote * money_sum
+		local devote = baseconfig.devote[2] * money_sum
 		local zijin = baseconfig.money * money_sum
 		self:AddFactionMoney(zijin)
 		self:AddFactionMemberTotalGongXian(pos,devote)
-		player:AddMoney(MONEY_TYPE_FACTION, MONEY_CHANGE_FACTION_DONATION, devote)
+		player:AddMoney(baseconfig.devote[1], MONEY_CHANGE_FACTION_DONATION, devote)
+		
 		self:AddEvent(player:GetName(),money_type,money_sum)
 		if money_type == 1 then
 			self:AddFactionMemberGoldDonation(pos,money_sum)
@@ -3251,6 +3257,10 @@ function FactionInfo:OnMainHallLvUp(level)
 			end
 			if math.floor(id/100) == FACTION_BUILDING_TYPE_SKILL then
 				self:ResetAllMemberFactionSkill()
+			end
+			
+			if math.floor(id/100) == FACTION_BUILDING_TYPE_SHOP then
+				self:RefreshShop()
 			end
 		end
 	end

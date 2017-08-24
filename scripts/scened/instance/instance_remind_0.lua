@@ -13,17 +13,19 @@ end
 
 --初始化脚本函数
 function InstanceRemind0:OnInitScript(  )
-	InstanceInstBase.OnInitScript(self) --调用基类
-	
-	if self:GetMapQuestEndTime() > 0 then
+	-- 不让重复初始化
+	if self:isInstanceInit() then
 		return
 	end
+	self:SetInstanceInited()
+
+	InstanceInstBase.OnInitScript(self) --调用基类
 	
 	self:parseGeneralId()
 	
 	local timestamp = os.time() + 60
 	self:SetMapQuestEndTime(timestamp)
-	self:SetMapEndTime(timestamp+1)
+	self:SetMapEndTime(timestamp)
 	-- 副本时间超时回调
 	self:AddTimeOutCallback(self.Time_Out_Fail_Callback, timestamp)
 end
@@ -33,6 +35,7 @@ function InstanceRemind0:timeoutCallback()
 	self:SetMapState(self.STATE_FINISH)
 	return false
 end
+
 
 function InstanceRemind0:parseGeneralId()
 	local generalId	= self:GetMapGeneralId()
@@ -76,6 +79,11 @@ function InstanceRemind0:OnSetState(fromstate,tostate)
 	end
 end
 
+-- 副本失败退出
+function InstanceRemind0:instanceFail()
+	self:SetMapState(self.STATE_FAIL)
+end
+
 --玩家加入地图
 function InstanceRemind0:OnJoinPlayer(player)
 	
@@ -99,7 +107,13 @@ function InstanceRemind0:OnPlayerDeath(player)
 	
 	-- 立马复活
 	unitLib.Respawn(player, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
-	
+end
+
+-- 复活后
+function InstanceRemind0:DoAfterRespawn(unit_ptr)
+	local unitInfo = UnitInfo:new{ptr = unit_ptr}
+	-- 加无敌隐身buff
+	unitLib.AddBuff(unit_ptr, BUFF_INVINCIBLE, unit_ptr, 1, 1)
 	-- 设置状态
 	self:SetMapState(self.STATE_FAIL)
 end

@@ -46,4 +46,5 @@ tb_gameobject_template = {
 	[37] = {id = 37, name = "慈云寺香炉2", time = 3, actionState = 0, regX = 0, regY = 0, isAround = 0, judge = 0, go_flag = 292, quest_id0 = 0, quest_id1 = 0, quest_id2 = 0, quest_id3 = 0, trigger_width = 6, trigger_height = 6},
 	[38] = {id = 38, name = "慈云寺香炉3", time = 3, actionState = 0, regX = 0, regY = 0, isAround = 0, judge = 0, go_flag = 292, quest_id0 = 0, quest_id1 = 0, quest_id2 = 0, quest_id3 = 0, trigger_width = 6, trigger_height = 6},
 	[39] = {id = 39, name = "慈云寺香炉4", time = 3, actionState = 0, regX = 0, regY = 0, isAround = 0, judge = 0, go_flag = 292, quest_id0 = 0, quest_id1 = 0, quest_id2 = 0, quest_id3 = 0, trigger_width = 6, trigger_height = 6},
+	[40] = {id = 40, name = "风口点", time = 3, actionState = 0, regX = 0, regY = 0, isAround = 0, judge = 0, go_flag = 292, quest_id0 = 0, quest_id1 = 0, quest_id2 = 0, quest_id3 = 0, trigger_width = 3, trigger_height = 3},
 }

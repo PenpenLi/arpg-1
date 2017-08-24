@@ -27,7 +27,7 @@ function InstanceMassBoss:OnInitScript(  )
 	end
 	self:SetInstanceInited()
 	
-	Instance_base.OnInitScript(self) --调用基类
+	InstanceInstBase.OnInitScript(self) --调用基类
 	-- 解析generalid
 	self:parseGeneralId()
 	-- 刷boss

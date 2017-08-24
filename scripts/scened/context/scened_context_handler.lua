@@ -632,23 +632,16 @@ end
 -- 进入世界冒险
 function ScenedContext:Hanlde_Enter_Risk_Instance(pkt)
 	
-	local toMapId = tb_instance_trial[1].mapid
-	
 	-- 玩家必须还活着
 	if not self:IsAlive() then
 		outFmtError("Hanlde_Enter_Trial_Instance player %s is not alive!", self:GetPlayerGuid())
 		return 
 	end
 
-	-- 该地图是否存在
-	if tb_map[toMapId] == nil then
-		return
-	end
-	
 	local mapid = unitLib.GetMapID(self.ptr)
 	-- 是否允许传送
 	local subType = tb_map[mapid].inst_sub_type
-	if mapid ~= toMapId and subType > 0 and subType ~= INSTANCE_SUB_TYPE_RISK then
+	if subType > 0 and subType ~= INSTANCE_SUB_TYPE_RISK then
 --		outFmtError("Hanlde_Enter_VIP_Instance player %s cannot tele to vip map curmapid %d!", self:GetPlayerGuid(), mapid)
 		return
 	end
@@ -659,10 +652,7 @@ function ScenedContext:Hanlde_Enter_Risk_Instance(pkt)
 		return
 	end
 
-	local passedSectionId = self:getLastPassedSectionId()
-	local mapid, x, y, generalId = onGetRiskTeleportInfo(self:GetPlayerGuid(), passedSectionId)
-	
-	playerLib.Teleport(self.ptr, mapid, x, y, 0, generalId)
+	self:teleportWorldRisk()
 end
 
 --进入资源副本

@@ -367,6 +367,7 @@ CMSG_WELFARE_GET_SEVENDAY_REWARD		= 402	-- /*领取七日大礼奖励*/
 SMSG_SEND_SERVER_OPEN_TIME		= 403	-- /*服务器开服时间*/	
 CMSG_RISK_GET_RANK		= 404	-- /*请求世界冒险排行榜*/	
 SMSG_RISK_GET_RANK_RESULT		= 405	-- /*世界冒险排行榜信息 */	
+CMSG_SET_ORIENT		= 406	-- /*设置朝向*/	
 
 
 ---------------------------------------------------------------------
@@ -13219,6 +13220,35 @@ function Protocols.unpack_risk_get_rank_result (pkt)
 end
 
 
+-- /*设置朝向*/	
+function Protocols.pack_set_orient ( angle)
+	local output = Packet.new(CMSG_SET_ORIENT)
+	output:writeI16(angle)
+	return output
+end
+
+-- /*设置朝向*/	
+function Protocols.call_set_orient ( playerInfo, angle)
+	local output = Protocols.	pack_set_orient ( angle)
+	playerInfo:SendPacket(output)
+	output:delete()
+end
+
+-- /*设置朝向*/	
+function Protocols.unpack_set_orient (pkt)
+	local input = Packet.new(nil, pkt)
+	local param_table = {}
+	local ret
+	ret,param_table.angle = input:readU16()
+	if not ret then
+		return false
+	end
+
+	return true,param_table	
+
+end
+
+
 
 function Protocols:SendPacket(pkt)
 	external_send(self.ptr_player_data or self.ptr, pkt.ptr)
@@ -13578,6 +13608,7 @@ function Protocols:extend(playerInfo)
 	playerInfo.call_send_server_open_time = self.call_send_server_open_time
 	playerInfo.call_risk_get_rank = self.call_risk_get_rank
 	playerInfo.call_risk_get_rank_result = self.call_risk_get_rank_result
+	playerInfo.call_set_orient = self.call_set_orient
 end
 
 local unpack_handler = {
@@ -13934,6 +13965,7 @@ local unpack_handler = {
 [SMSG_SEND_SERVER_OPEN_TIME] =  Protocols.unpack_send_server_open_time,
 [CMSG_RISK_GET_RANK] =  Protocols.unpack_risk_get_rank,
 [SMSG_RISK_GET_RANK_RESULT] =  Protocols.unpack_risk_get_rank_result,
+[CMSG_SET_ORIENT] =  Protocols.unpack_set_orient,
 
 }
 

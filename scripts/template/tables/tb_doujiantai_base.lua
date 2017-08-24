@@ -16,5 +16,5 @@ tb_doujiantai_base = {
 	--  refreshCountdown:int 刷新冷却时间
 	--  battleCountdown:array 挑战冷却时间
 	--  changeRate:array 1分钟需要的资源数
-	[1] = {id = 1, bornPos = {{9,20},{72,20}}, cd = 3, last = 90, joinTime = {{0,0,23,59}}, dailytimes = 3, tryReward = {{8,50}}, buyInfo = {{1,10},{1,20},{1,30},{1,40},{1,50}}, level = 5, refreshCountdown = 5, battleCountdown = {0,100,100,30,60,120,180,240,300,300}, changeRate = {{1,1}}},
+	[1] = {id = 1, bornPos = {{9,20},{72,20}}, cd = 3, last = 90, joinTime = {{0,0,23,59}}, dailytimes = 10, tryReward = {{8,50}}, buyInfo = {{1,10},{1,20},{1,30},{1,40},{1,50}}, level = 5, refreshCountdown = 5, battleCountdown = {0,100,100,30,60,120,180,240,300,300}, changeRate = {{1,1}}},
 }

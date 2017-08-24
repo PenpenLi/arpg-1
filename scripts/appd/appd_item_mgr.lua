@@ -57,7 +57,7 @@ end
 
 --交换位置
 function AppItemMgr:exchangePos(src_bag, src_pos, dst_bag, dst_pos)
-	outFmtDebug("-------------exchange%d,%d,%d,%d",src_bag,src_pos,dst_bag,dst_pos)
+	--outFmtDebug("-------------exchange%d,%d,%d,%d",src_bag,src_pos,dst_bag,dst_pos)
 	local owner = self:getOwner()
 	if not owner then
 		outFmtError("exchangePos:not find %s owner!", self.itemMgr:GetGuid())
@@ -485,6 +485,7 @@ function AppItemMgr:smeltingEquip(pos_str)
 	local values =  string.split(pos_str, "|")
 	local cnt = 0
 	local rewardList = {}
+	
 	for i, str in pairs(values) do
 		local pos = tonumber(str)
 		if pos then
@@ -494,7 +495,8 @@ function AppItemMgr:smeltingEquip(pos_str)
 				if (entry) then
 					local config = tb_item_template[entry]
 					if config then
-						local drop_id = config.drop_id
+						
+						--[[local drop_id = config.drop_id
 						if drop_id and drop_id ~= 0 then
 							local dict = {}
 							DoRandomDrop(drop_id, dict)
@@ -510,18 +512,18 @@ function AppItemMgr:smeltingEquip(pos_str)
 							self:delItemObj(item,1)
 							--owner:AppdAddItems(rewardDict, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
 							cnt = cnt + 1
-						end
+						end--]]
+						cnt = cnt + 1
+						self:delItemObj(item,1)
+						local drop_item = config.drop_item
+						mergeListToList(rewardList,drop_item)
 					end
 				end
 			end
 		end
 	end
-	
-	local rewardDict = {}
-	for itemId, value in pairs(rewardList) do
-		table.insert(rewardDict, {itemId, value})
-	end
-	owner:AppdAddItems(rewardDict, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
+
+	owner:AppdAddItems(rewardList, MONEY_CHANGE_BOX_RANDOM, LOG_ITEM_OPER_TYPE_OPEN_BOX)
 	SortItem(owner,true)--强制整理
 	-- 加任务
 	local questMgr = owner:getQuestMgr()

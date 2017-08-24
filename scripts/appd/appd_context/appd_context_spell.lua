@@ -447,11 +447,11 @@ function PlayerInfo:DoHandleRaiseMount()
 	-- 获得暴击值
 	local vip = false
 	local multi = self:randomMulti(config, vip)
-	local addExp = multi * config.addTrainExp
 	
 	-- 计算升星上线
 	local seq = (level - 1) * 11 + star + 1
 	local trainConfig = tb_mount_train[seq]
+	local addExp = multi * trainConfig.addTrainExp
 	local limit = trainConfig.exp
 	
 	self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_MOUNT_EXP, {addExp, multi})
@@ -506,10 +506,9 @@ end
 
 -- 申请升阶坐骑
 function PlayerInfo:DoHandleUpgradeMount()
---[[	local spellMgr = self:getSpellMgr()
-	
+	local spellMgr = self:getSpellMgr()
 	local level = spellMgr:getMountLevel()
-	
+	--[[	
 	local prev = spellMgr:getBlessExp()
 	local ret, added = self:upgradeOnce(prev)
 	
@@ -748,8 +747,9 @@ function PlayerInfo:raiseMountLevelBase()
 			return
 		end
 		spellMgr:addMountLevelBase()
-		
-		self:CallOptResult(OPRATE_TYPE_UPGRADE,UPGRADE_OPRATE_MOUNT_LEVEL_BASE_UP)
+		-- 重算战斗力(当前和属性绑定在一起)
+		self:RecalcAttrAndBattlePoint()
+		self:CallOptResult(OPRATE_TYPE_UPGRADE,UPGRADE_OPRATE_MOUNT_LEVEL_UP)
 	end
 end
 
@@ -1278,6 +1278,7 @@ function PlayerInfo:WingsBless()
 				DoActivitySystemDataUpdateByScriptId(3,{7,self})
 				
 				rankInsertTask(self:GetGuid(),RANK_TYPE_WINGS)
+				self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WINGS_UPDRADE_TIMES, {})
 			else
 				spellMgr:SetWingsBlessExp(cur_exp + config.bless_exp)
 			end
@@ -1320,7 +1321,7 @@ function PlayerInfo:WingsRankUp()
 			rankInsertTask(self:GetGuid(),RANK_TYPE_WINGS)
 			
 			self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WINGS_UPGRADE_LEVEL, {self:GetWingsUpgradeLevel()})
-			self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_WINGS_UPDRADE_TIMES, {})
+			
 		end
 	else
 		outFmtError("wings id:%d can not rank up",wings_id)
@@ -1727,7 +1728,10 @@ function PlayerInfo:EquipDevelopGemActive(pos,gem_pos)
 			--检测装备养成 奖励
 			self:UpdateEquipDevelopGemBonus(1)
 			--更新开服排行
-		DoActivitySystemDataUpdateByScriptId(3,{3,self})
+			DoActivitySystemDataUpdateByScriptId(3,{3,self})
+			
+			local level = self:GetGemTotalLevel()
+			self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_GEM_TOTAL_LEVEL, {level})
 		end
 	else
 		outFmtError("EquipDevelopGemActive strength_lv refine_rank not enough")
@@ -1778,6 +1782,9 @@ function PlayerInfo:EquipDevelopGemLvUp(pos,gem_pos)
 		DoActivitySystemDataUpdateByScriptId(3,{3,self})
 		
 		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_STRENGTH_GEM, {pos})
+		
+		local level = self:GetGemTotalLevel()
+		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_GEM_TOTAL_LEVEL, {level})
 	end
 end
 
@@ -1893,17 +1900,7 @@ function PlayerInfo:UpdateEquipDevelopGemBonus(new_lv)
 	end
 	--]]
 	
-	for index = 0,EQUIPMENT_COUNT - 1 do
-		local gem_part_config = tb_equipdevelop_gem_part[index + 1]
-		local gem_count = #(gem_part_config.gem_array)
-		for gem_index = 0,gem_count -1 do
-			
-			local level = spellMgr:GetEquipDevelopGemLv(index,gem_index)
-			
-			count = count + level
-			
-		end
-	end
+	count = self:GetGemTotalLevel()
 	
 	if count <= 0 then
 		outFmtInfo("UpdateEquipDevelopGemBonus no bonus")

@@ -116,7 +116,7 @@ function PlayerInfo:passWorldRiskInstance(id)
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(QUEST_TARGET_TYPE_PASS_WORLD_RISK, {id})
 	
-	globalCounter:onRiskRank(self, self:getLastPassedSectionId())
+	globalCounter:onRiskRank(self, id)
 end
 
 

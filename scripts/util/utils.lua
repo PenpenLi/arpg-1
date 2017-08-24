@@ -37,6 +37,20 @@ function GetRandomIndex(randTable)
 	return 0
 end
 
+function GetRandomIndexByRateList(randTable)
+	local rd = randInt(1, 10000)
+	local bs = 0
+	
+	for i = 1, #randTable do
+		bs = bs + randTable[ i ]
+		if rd <= bs then
+			return i
+		end
+	end
+	
+	return 0
+end
+
 -- 从连续的size个数里面随机count个数, 保证惟一
 function GetRandomIndexTable(size, count)
 	if (size < count) then
@@ -169,19 +183,25 @@ end
 function DoRandomDrop(dropId, dict)
 	local config = tb_drop_reward[dropId]
 	if not config then return end
+	
 	for _, packetInfo in pairs(config.reward) do
 		local packetId = packetInfo[ 1 ]
 		local rate = packetInfo[ 2 ]
 		local rd = randInt(1, 10000)
-		
 		if rd <= rate then
 			local packConfig = tb_drop_packet[packetId]
-			
-			local indx = GetRandomIndex(packConfig.items)
+			if not packConfig then
+				outFmtError("============= DoRandomDrop packetId = %d is not exist", packetId)
+				return
+			end
+			local indx = GetRandomIndexByRateList(packConfig.itemRates)
 			if indx > 0 then
-				local itemId = packConfig.items[indx][ 1 ]
-				local count = GetRandomExp(packConfig.counts[indx])
-				
+				local itemId = packConfig.itemKeys[indx]
+				local count = packConfig.counts[indx]
+				if not tb_item_template[itemId] then
+					outFmtError("================ itemId = %d in packetId = %d", itemId, packetId)
+					return
+				end
 				if dict[itemId] == nil then
 					dict[itemId] = 0
 				end
@@ -260,15 +280,16 @@ function DoAnyOneCalcForce(attrDict)
 		battlePoint = battlePoint + value * tb_battle_force[attrId].rate
 	end
 	
-	return battlePoint
+	return math.floor(battlePoint / 10000)
 end
+
 function DoAnyOneCalcForceByAry(attrAy)
 	local battlePoint = 0
 	for k, v in pairs(attrAy) do
 		battlePoint = battlePoint + v[2] * tb_battle_force[v[1]].rate
 	end
 	
-	return battlePoint
+	return math.floor(battlePoint / 10000)
 end
 
 -- 获得邮件模版id

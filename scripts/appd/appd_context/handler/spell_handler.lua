@@ -141,10 +141,13 @@ function PlayerInfo:Handle_Raise_Mount(pkt)
 	local config = tb_mount_base[level]
 	
 	local star  = spellMgr:getMountStar()
-	local trainExp = spellMgr:getTrainExp()	
+	local trainExp = spellMgr:getTrainExp()
+	
+	local seq = (level - 1) * 11 + star + 1
+	local trainConfig = tb_mount_train[seq]
 	
 	-- 扣资源
-	if not self:useAllItems(MONEY_CHANGE_RAISE_MOUNT, config.traincost) then
+	if not self:useAllItems(MONEY_CHANGE_RAISE_MOUNT, trainConfig.traincost) then
 		outFmtError("resouce not enough")
 		return
 	end

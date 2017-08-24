@@ -11,5 +11,5 @@ tb_faction_building_base = {
 	--  speedup_limit:int 加速次数每日限制
 	--  speedup_donate:int 加速获得帮贡
 	--  speedup_reward:array 加速奖励id
-	[1] = {id = 1, zhiwei_limit = {1}, speedup_cost = {{0,10}}, speedup_time = 1, speedup_limit = 100, speedup_donate = 10, speedup_reward = {1,2,3,4,5}},
+	[1] = {id = 1, zhiwei_limit = {1}, speedup_cost = {{1,10}}, speedup_time = 1, speedup_limit = 100, speedup_donate = 10, speedup_reward = {1,2,3,4,5}},
 }

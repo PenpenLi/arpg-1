@@ -531,6 +531,7 @@ function GlobalCounter:onRiskRank(playerInfo, sectionId)
 		local prevValue = self:GetUInt32(intstart + RISK_RANK_INFO_SECTION_ID)
 		if sectionId > prevValue then
 			self:swapRiskRank(prevIndx, i)
+			prevIndx = i
 		end
 	end
 end
@@ -539,7 +540,7 @@ function GlobalCounter:swapRiskRank(ra, rb)
 	local intstart1 = GLOBALCOUNTER_INT_FIELD_RISK_RANK_INFO_START + ra * MAX_RISK_RANK_INFO_COUNT
 	local intstart2 = GLOBALCOUNTER_INT_FIELD_RISK_RANK_INFO_START + rb * MAX_RISK_RANK_INFO_COUNT
 	local strstart = GLOBALCOUNTER_STRING_FIELD_RISK_RANK_NAME_START
-	for i = 0, MAX_RISK_RANK_INFO_COUNT do
+	for i = 0, MAX_RISK_RANK_INFO_COUNT-1 do
 		self:swapUInt(intstart1 + i, intstart2 + i)
 	end
 	self:swapStr(strstart + ra, strstart + rb)
