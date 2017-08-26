@@ -7,7 +7,7 @@ tb_activity_limit_gift = {
 	--  id:int gift序号
 	--  item:array 道具
 	--  cost:array 消耗
-	[1] = {id = 1, item = {{201,1}}, cost = {{1,10}}},
-	[2] = {id = 2, item = {{202,1}}, cost = {{1,20}}},
-	[3] = {id = 3, item = {{203,1}}, cost = {{1,30}}},
+	[1] = {id = 1, item = {{1503,1}}, cost = {{2,1000}}},
+	[2] = {id = 2, item = {{1501,1}}, cost = {{2,2000}}},
+	[3] = {id = 3, item = {{1502,1}}, cost = {{2,2000}}},
 }

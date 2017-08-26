@@ -163,6 +163,7 @@ function PlayerInfo:SetTitle(id)
 		self:SetByte(PLAYER_FIELD_BYTES_2,3,id)
 		self:CallOptResult(OPRATE_TYPE_ACHIEVE, ACHIEVE_OPERATE_TITLE_SUC)
 		
+		self:UpdateFactionBangZhuInfo()
 		-- хннЯ
 		local questMgr = self:getQuestMgr()
 		questMgr:OnUpdate(QUEST_TARGET_TYPE_SUIT_TITLE, {id})

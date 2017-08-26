@@ -777,6 +777,20 @@ function FactionInfo:FindPlayerIndex(PlayGuid)
 	end
 	return pos
 end
+
+function FactionInfo:SetBangZhuInfo(player)
+	if not player then
+		outFmtDebug("SetBangZhuInfo player is nil")
+		return
+	end
+	self:SetUInt32(FACTION_INT_FIELD_MANGER_COAT,player:GetUInt16(PLAYER_INT_FIELD_APPEARANCE,1))
+	self:SetUInt32(FACTION_INT_FIELD_MANGER_WEAPON,player:GetUInt16(PLAYER_INT_FIELD_APPEARANCE,0))
+	self:SetUInt32(FACTION_INT_FIELD_MANGER_VIP,player:GetVIP())
+	self:SetUInt32(FACTION_INT_FIELD_MANGER_GENDER,player:GetGender())
+	self:SetUInt32(FACTION_INT_FIELD_MANGER_TITLE,player:GetTitle())
+	self:SetUInt32(FACTION_INT_FIELD_MANGER_LIKE,player:GetUInt32(PLAYER_FIELD_RANK_LIKE))
+end
+
 --设置帮主名字
 function FactionInfo:SetBangZhuName(name)
 	self:SetStr(FACTION_STRING_FIELD_MANGER_NAME,name)
@@ -1253,6 +1267,8 @@ function FactionInfo:FactionAppoint( player, member_id,zhiwei)
 			self:SetFactionMemberIdentity(pos,FACTION_MEMBER_IDENTITY_QUNZHONG)
 			self:SetBangZhuName(self:GetFactionMemberName(member_pos))
 			self:SetBangZhuGuid(self:GetFactionMemberGuid(member_pos))
+			
+			
 			--[[
 			--修改魅力排行
 			local pos = self:FindPlayerIndex(member_id)

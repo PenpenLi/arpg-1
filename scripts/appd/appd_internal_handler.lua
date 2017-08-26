@@ -292,6 +292,7 @@ local function on_logind_send_rename_check_result(pkt)
 		if playerInfo:useAllItems(MONEY_CHANGE_RENAME, costs) then
 			playerInfo:AddRenameTimes()
 			playerInfo:SetName(realName)
+			playerInfo:UpdateFactionBangZhuInfo()
 			playerInfo:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_RENAME_SUCCESS)
 		end
 	end

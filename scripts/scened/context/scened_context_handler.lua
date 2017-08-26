@@ -651,6 +651,11 @@ function ScenedContext:Hanlde_Enter_Risk_Instance(pkt)
 		self:CallOptResult(OPRATE_TYPE_TELEPORT, TELEPORT_OPRATE_PVP_STATE)
 		return
 	end
+	
+	-- 系统未激活
+	if not self:GetOpenMenuFlag(MODULE_WORLD_RISK,MODULE_WORLD_RISK_MAIN) then
+		return
+	end
 
 	self:teleportWorldRisk()
 end
@@ -922,7 +927,7 @@ function ScenedContext:Handle_random_Respawn(pkt)
 	local map_ptr = unitLib.GetMap(self.ptr)
 	local mapInfo = Select_Instance_Script(mapid):new{ptr = map_ptr}
 	
-	mapInfo:OnRandomRespawn(self)
+	mapInfo:OnCheckIfCanRandomRespawn(self)
 end
 
 --[[-- 换线

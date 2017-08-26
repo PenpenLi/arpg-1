@@ -75,7 +75,10 @@ function PlayerInfo:FriendIsFull()
 end
 --申请添加好友
 function PlayerInfo:ApplyFriend(guid)
-
+	if guid == self:GetGuid() then
+		self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
+		return false
+	end
 	
 	local friend = app.objMgr:getObj(guid)
 	if not friend then 
@@ -117,7 +120,7 @@ function PlayerInfo:SureApplyFriend(guid)
 		local addTest = friend:CanAddFriend(self)
 		if addTest ~= 0 then
 			if addTest == 1 then
-				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_TARGET_FULL)
 			elseif addTest == 2 then
 				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
 			elseif addTest == 3 then
@@ -134,7 +137,7 @@ function PlayerInfo:SureApplyFriend(guid)
 		addTest = self:CanAddFriend(friend)
 		if addTest ~= 0 then
 			if addTest == 1 then
-				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_TARGET_FULL)
+				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_SELF_FULL)
 			elseif addTest == 2 then
 				self:CallOptResult(OPERTE_TYPE_SOCIAL, OPERTE_TYPE_SOCIAL_ADD_MYSELF)
 			elseif addTest == 3 then

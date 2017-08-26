@@ -93,6 +93,7 @@ function PlayerInfo:AddRankLike()
 	local like = self:GetUInt32(PLAYER_FIELD_RANK_LIKE)
 	like = like + 1
 	self:SetUInt32(PLAYER_FIELD_RANK_LIKE,like)
+	self:UpdateFactionBangZhuInfo()
 	return like
 end
 

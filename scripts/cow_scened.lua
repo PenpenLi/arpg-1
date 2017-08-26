@@ -194,7 +194,7 @@ config = {
 		CMSG_ENTER_FACTION_FUBEN,				--进入帮派副本
 		]]
 		CMSG_FORCEINTO,							--强制进入
-		CMSG_SET_ORIENT,
+		--CMSG_SET_ORIENT,
 	},
 	--pk服命令表
 	pk_external_router_map = {
@@ -222,7 +222,7 @@ config = {
 		--CMSG_FLZ_HDQS_OPT,			--荒岛求生玩家操作
 		CMSG_GOLD_RESPAWN,			--元宝复活
 		CMSG_XIANFU_RANDOM_RESPAWN,	--随机复活
-		CMSG_SET_ORIENT,
+		--CMSG_SET_ORIENT,
 	},
 }
 

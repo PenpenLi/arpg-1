@@ -104,7 +104,7 @@ function ItemMgrBase:addItem(entry, count, isBind, isAppaisal, isSystem, strong_
 			local equiped_item = self:getBagItemByPos(BAG_TYPE_EQUIP,item_tempate.pos)
 	
 			if not equiped_item or item:getForce() > equiped_item:getForce() then
-				outFmtInfo("addItem: find better equip %d %d %d ",entry,bag_pos, item:getForce())
+				--outFmtInfo("addItem: find better equip %d %d %d ",entry,bag_pos, item:getForce())
 				--local item_guid = string.format("%s;%d",self:GetGuid(), result_pos)
 				self:getOwner():call_bag_find_equip_better(entry, bag_pos)
 			end

@@ -78,4 +78,5 @@ tb_system_base = {
 	[7013] = {id = 7013, level = 30, questId = 0, guide_id = 0, optional_guide_id = 0},
 	[7014] = {id = 7014, level = 30, questId = 0, guide_id = 0, optional_guide_id = 0},
 	[8011] = {id = 8011, level = 30, questId = 0, guide_id = 0, optional_guide_id = 0},
+	[901] = {id = 901, level = 0, questId = 0, guide_id = 0, optional_guide_id = 0},
 }

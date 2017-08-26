@@ -6,9 +6,7 @@
 tb_mass_boss_loot = {
 	--  id:int 序号
 	--  rankrange:array 排名区间
-	--  dropid:int 掉落包
-	[1] = {id = 1, rankrange = {1,1}, dropid = 1},
-	[2] = {id = 2, rankrange = {2,2}, dropid = 2},
-	[3] = {id = 3, rankrange = {3,3}, dropid = 3},
-	[4] = {id = 4, rankrange = {4,9999}, dropid = 4},
+	--  dropid:array 掉落包
+	[1] = {id = 1, rankrange = {1,1}, dropid = {11,12,13,14,15,16,17,18,19,20}},
+	[4] = {id = 4, rankrange = {2,50}, dropid = {10,10,10,10,10,10,10,10,10,10}},
 }

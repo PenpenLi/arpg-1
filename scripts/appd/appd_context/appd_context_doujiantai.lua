@@ -320,7 +320,7 @@ function PlayerInfo:GetDoujiantaiRankList(startIdx,endIdx)
 		
 		output:writeI16(RANK_LIST_CURRENT_OBJ_STR_FIELD_PLAYER_NAME+1)
 		
-		outFmtDebug("rank string ----  %d",RANK_LIST_CURRENT_OBJ_STR_FIELD_PLAYER_NAME+1)
+		--outFmtDebug("rank string ----  %d",RANK_LIST_CURRENT_OBJ_STR_FIELD_PLAYER_NAME+1)
 		
 		for j=0,RANK_LIST_CURRENT_OBJ_STR_FIELD_PLAYER_NAME do
 			if j == RANK_LIST_CURRENT_OBJ_STR_FIELD_PLAYER_GUID then
@@ -332,7 +332,6 @@ function PlayerInfo:GetDoujiantaiRankList(startIdx,endIdx)
 			end
 		end
 	end
-
 	self:SendPacket(output)
 	output:delete()
 end

@@ -125,7 +125,7 @@ function PlayerInfo:Handle_Faction_Create( pkt )
 	local faction_name = string.format("%s,%s,%s", name_tab[1], name_tab[2], name)
 	local server_name = string.format("%s_%s", name_tab[1], name_tab[2])
 	
-	if not checkFactionNameAvailable (factionName) then
+	if not checkFactionNameAvailable (faction_name) then
 		self:CallOptResult(OPERTE_TYPE_FACTION, OPERTE_TYPE_FACTION_NAME_REPEAT)
 		return
 	end
@@ -175,10 +175,10 @@ function PlayerInfo:NewPlayerCreateFaction(name, icon)
 	local server_name = string.format("%s_%s", name_tab[1], name_tab[2])
 	
 	local dict = GetFactionNameDict()
-	if not dict[factionName] then
+	if not dict[faction_name] then
 		for i = 0, 3000 do
-			factionName = string.format("%s,%s,%s%sd", name_tab[1], name_tab[2], name_tab[ 3 ], common, i)
-			if checkFactionNameAvailable (factionName) then
+			faction_name = string.format("%s,%s,%s%sd", name_tab[1], name_tab[2], name_tab[ 3 ], common, i)
+			if checkFactionNameAvailable (faction_name) then
 				break
 			end
 		end
@@ -197,7 +197,7 @@ function PlayerInfo:NewPlayerCreateFaction(name, icon)
 	return self:CreateFaction(server_name, faction_name, icon)
 end
 
-function checkFactionNameAvailable (factionName)
+function checkFactionNameAvailable (faction_name)
 	local bRepeat = false
 	app.objMgr:foreachAllFaction(function(faction)
 		if faction:GetName() == faction_name then
@@ -241,6 +241,8 @@ function PlayerInfo:CreateFaction(server_name, faction_name, icon)
 	faction:SetFactionLevel(faction_lv)
 	faction:SetBangZhuName(self:GetName())
 	faction:SetBangZhuGuid(self:GetGuid())
+	
+	faction:SetBangZhuInfo(self)
 	faction:SetFactionCurFlagId(icon)
 
 	if not faction:MemberAdd(self) then

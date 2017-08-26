@@ -409,6 +409,8 @@ function handle_cast_add_unit_effect_heal(caster, target, spell_id, spell_lv,dst
 		creatureLib.SetMonsterHost(creature, caster)
 		local sec = math.floor(loadedTime / 1000) + 1
 		unitLib.AddBuff(creature, BUFF_INVINCIBLE, creature, 0, sec)
+		local creatureInfo = UnitInfo:new{ptr = creature}
+		creatureInfo:SetUnitFlags(UNIT_FIELD_FLAGS_IS_INVISIBLE_SPELL)
 	end
 	unitLib.AddSpellTrigger(creature, "", dst_x, dst_y, spell_id, spell_lv, diff, count, "")
 end
@@ -442,7 +444,7 @@ function handle_cast_spell_heal(caster,target,spell_id,spell_lv,dst_x,dst_y, all
 			local pos = GetHitAreaPostion({cast_x,cast_y,shifa_x,shifa_y,tar_x,tar_y,0})
 			attack_mast[ 1 ] = pos[ 1 ]
 			attack_mast[ 2 ] = pos[ 2 ]
-			if CalHitTest(attack_mast)[ 1 ] then
+			if CalHitTest(attack_mast)[ 1 ] and unitLib.IsFriendlyTo(caster, attack_target) == 1 then
 				local maxValue = binLogLib.GetUInt32(attack_target, binlogIndx)
 				local added = math.floor(maxValue * percent / 100) + fixValue
 				unitLib.ModifyHealth(attack_target, added)
@@ -2235,5 +2237,9 @@ function terminalSpell(caster)
 		unitLib.DelSpellTrigger(caster, spellId)
 		casterInfo:CallSpellStop(true)
 		casterInfo:ClearCurSpell(true)
+		--允许施法
+		if casterInfo:GetUnitFlags(UNIT_FIELD_FLAGS_CANT_CAST) then
+			casterInfo:UnSetUnitFlags(UNIT_FIELD_FLAGS_CANT_CAST)
+		end
 	end
 end

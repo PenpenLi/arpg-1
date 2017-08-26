@@ -2368,6 +2368,17 @@ function UnitInfo:teleportWorldRisk()
 	playerLib.Teleport(self.ptr, mapid, x, y, 0, generalId)
 end
 
+function UnitInfo:GetOpenMenuFlag(id,subid)
+	
+	for i=0,self:GetPlayerUInt32(PLAYER_INT_FIELD_OPEN_MENU_INDEX) -1 do
+		local temp_id = self:GetPlayerUInt32(PLAYER_INT_FIELD_OPEN_MENU_START + i * MAX_OPEN_MENU_ATTR_COUNT + OPEN_MENU_MAIN_ID)
+		if temp_id == id then
+			return self:GetPlayerBit(PLAYER_INT_FIELD_OPEN_MENU_START + i * MAX_OPEN_MENU_ATTR_COUNT + OPEN_MENU_SUB_FLAG,subid)
+		end
+	end
+	return false
+end
+
 
 require 'scened.unit.unit_spell'
 require 'scened.unit.scened_appd_dosomething'

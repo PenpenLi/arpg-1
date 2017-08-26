@@ -226,16 +226,17 @@ function InstanceMassBoss:sendReward()
 end
 
 function InstanceMassBoss:findDropId(rank)
-	local id = #tb_mass_boss_loot
+	local indx = #tb_mass_boss_loot
 	for i = 1, #tb_mass_boss_loot do
 		local range = tb_mass_boss_loot[ i ].rankrange
 		if range[ 1 ] <= rank and rank <= range[ 2 ] then
-			id = i
+			indx = i
 			break
 		end
 	end
 	
-	return tb_mass_boss_loot[ id ].dropid
+	local id = self:GetMassBossId()
+	return tb_mass_boss_loot[indx].dropid[ id ]
 end
 
 function InstanceMassBoss:AddMassBossDamage(name, damage, playerGuid)

@@ -372,6 +372,9 @@ function OperationFailedToString(type, reason, data)
 		if (reason ==BAG_RESULT_BAG_FULL_AUTO_SELL)then
 			return "ShowOperationFailed OPRATE_TYPE_BAG包裹 - BAG_RESULT_BAG_FULL_AUTO_SELL包裹已满自动出售 - " .. data 
 		end
+		if (reason ==BAG_RESULT_BAG_XIULIAN_USE)then
+			return "ShowOperationFailed OPRATE_TYPE_BAG包裹 - BAG_RESULT_BAG_XIULIAN_USE使用修炼丹获得经验 - " .. data 
+		end
 		return "未知错误1  OPRATE_TYPE_BAG " .. reason .. "    "  .. data
 	end
 	if(type == OPRATE_TYPE_TRADE)then

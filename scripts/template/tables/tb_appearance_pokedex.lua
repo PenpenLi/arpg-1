@@ -8,7 +8,7 @@ tb_appearance_pokedex = {
 	--  attrKeys:array 图鉴属性id
 	--  attrValues:array 图鉴属性值
 	--  exterior:array 外观序号
-	[1] = {id = 1, attrKeys = {1,2,3,4,5}, attrValues = {1,1,1,1,1}, exterior = {1,9,11}},
-	[2] = {id = 2, attrKeys = {1,2,3,4,5}, attrValues = {11,1,1,1,1}, exterior = {3,9,12}},
-	[3] = {id = 3, attrKeys = {1,2,3,4,5}, attrValues = {11,11,1,1,1}, exterior = {5,9,13}},
+	[1] = {id = 1, attrKeys = {1,2,3,4,5}, attrValues = {1,1,1,1,1}, exterior = {1,8,11}},
+	[2] = {id = 2, attrKeys = {1,2,3,4,5}, attrValues = {11,1,1,1,1}, exterior = {3,8,12}},
+	[3] = {id = 3, attrKeys = {1,2,3,4,5}, attrValues = {11,11,1,1,1}, exterior = {5,8,13}},
 }

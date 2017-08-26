@@ -235,6 +235,8 @@ function PlayerInfo:SetVIP(vipLevel, time)
 	
 	self:SetUInt32(PLAYER_FIELD_VIP_LEVEL, vipLevel)
 	self:SetUInt32(PLAYER_FIELD_VIP_TIME_OUT, time)
+	
+	self:UpdateFactionBangZhuInfo()
 end
 
 -- 是否达到该vip等级
@@ -2629,7 +2631,17 @@ function PlayerInfo:onUpdatePlayerQuest(type,params)
 	local questMgr = self:getQuestMgr()
 	questMgr:OnUpdate(type, params)
 end
-	
+
+function PlayerInfo:UpdateFactionBangZhuInfo()
+	local faction = app.objMgr:getObj(self:GetFactionId())
+	if faction then
+		if faction:GetBangZhuGuid() == self:GetGuid() then
+			faction:SetBangZhuName(self:GetName())
+			faction:SetBangZhuInfo(self)
+			
+		end
+	end
+end
 
 -- 跨服回来进行清空标志
 function PlayerInfo:KuafuUnMarked()

@@ -1395,6 +1395,8 @@ function PlayerInfo:onAddMeridianExpItem(id)
 	end
 	
 	spellMgr:addMeridianExp(config.exp)
+	
+	self:CallOptResult(OPRATE_TYPE_BAG,BAG_RESULT_BAG_XIULIAN_USE,{config.exp})
 end
 
 
@@ -1637,7 +1639,7 @@ function PlayerInfo:EquipDevelopRefineRankUp(pos)
 		return
 	end
 	
-	local next_config = tb_equipdevelop_refine[pos * 10000 + (currRank + 1)* 100 + currStar]
+	local next_config = tb_equipdevelop_refine[pos * 10000 + (currRank + 1)* 100 + 0]
 	if not next_config then
 		outFmtDebug("EquipDevelopRefineRankUp next_config not exist %d %d %d",pos,currRank + 1,currStar)
 		return
@@ -1659,7 +1661,7 @@ function PlayerInfo:EquipDevelopRefineRankUp(pos)
 			spellMgr:SetEquipDevelopRefineRank(index,currRank + 1)
 			outFmtInfo("EquipDevelopRefineRankUp refine rank success")
 			
-			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_RANK_SUCCESS)
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_STAR_SUCCESS)
 			
 			-- 重算战斗力(当前和属性绑定在一起)
 			self:RecalcAttrAndBattlePoint()
@@ -1674,7 +1676,7 @@ function PlayerInfo:EquipDevelopRefineRankUp(pos)
 			
 		else
 			outFmtInfo("EquipDevelopRefineRankUp refine  rank fail")
-			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_RANK_FAIL)
+			self:CallOptResult(OPRATE_TYPE_UPGRADE, UPGRADE_OPRATE_EQUIPDEVELOP_REFINE_STAR_FAIL)
 		end
 		self:onUpdatePlayerQuest(QUEST_TARGET_TYPE_REFINE_SUIT, {pos})
 	end
@@ -2041,10 +2043,12 @@ end
 
 function PlayerInfo:SetAppearance(id)
 	self:SetUInt16(PLAYER_INT_FIELD_APPEARANCE, tb_appearance_info[ id ].type, id)
+	self:UpdateFactionBangZhuInfo()
 end
 
 function PlayerInfo:UnsetAppearance(type)
 	self:SetUInt16(PLAYER_INT_FIELD_APPEARANCE, type, 0)
+	self:UpdateFactionBangZhuInfo()
 end
 
 function PlayerInfo:GetAppearance(type)

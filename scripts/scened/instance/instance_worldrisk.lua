@@ -249,12 +249,21 @@ end
 
 --当玩家死亡后触发()
 function InstanceWorldRisk:OnPlayerDeath(player)
-	
+	local playerInfo = UnitInfo:new {ptr = player}
+	local mapid = self:GetMapId()
+	local waitTimeList = tb_map[mapid].rebornWaitTime
+	local sec = waitTimeList[ 1 ]
+	self:SetUInt32(TRIAL_INSTANCE_FIELD_LAST_RANDOM_TIMESTAMP, os.time() + sec)
+	self:OnSendDeathInfo(playerInfo, '', '')
 end
 
 -- 当进度更新时调用
 function InstanceWorldRisk:AfterProcessUpdate(player)
 	
+end
+
+function InstanceWorldRisk:GetCostTimeCD(playerInfo)
+	return self:GetUInt32(TRIAL_INSTANCE_FIELD_LAST_RANDOM_TIMESTAMP)
 end
 
 -------------------------------- BOSS

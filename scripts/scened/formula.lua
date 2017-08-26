@@ -148,6 +148,9 @@ function getCastDamage(attackInfo, hurtInfo, skillLevel, skillDamFactor, skillDa
 	
 	-- 防御免伤
 	local armorDiff = hurtInfo:GetArmor() - attackInfo:GetIgnoreArmor()
+	if armorDiff < 0 then
+		armorDiff = 0
+	end
 	local armorResit = armorDiff / (armorDiff * 1.25 + 500 + 22.5 * hurtInfo:GetLevel())
 	-- 技能伤害
 	local skillam = getSkillDam(attackInfo:GetDamage(), skillDamFactor, skillDamVal)

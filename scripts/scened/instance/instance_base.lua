@@ -1189,6 +1189,9 @@ Instance_base = {
 		if value == 0 then
 			type = self.STAND_UP_TYPE_COST_GOLD
 			value = self:GetCostGold(playerInfo)
+		else
+			-- 时间戳的话换算CD
+			value = value - os.time()
 		end
 		local cooldown = self:GetSingleRespawnTime(playerInfo.ptr)
 		playerInfo:call_field_death_cooldown(type ,value , killername, cooldown, params)
@@ -1201,12 +1204,8 @@ Instance_base = {
 			return
 		end
 		
-		local respawnCD = self:GetCostTimeCD(playerInfo)
-		if respawnCD > 0 then
-			if os.time() >= respawnCD then
-				self:OnCostRespawn(playerInfo)
-			end
-		else
+		local respawnTime = self:GetCostTimeCD(playerInfo)
+		if respawnTime == 0 then
 			local gold = self:GetCostGold(playerInfo)
 			-- 通知是否可以复活
 			playerLib.SendToAppdDoSomething(player, SCENED_APPD_GOLD_RESPAWN, gold)
@@ -1257,6 +1256,20 @@ Instance_base = {
 			local mapid = self:GetMapId()
 			playerInfo:SetUseRespawnMapId(mapid)
 			unitLib.Respawn(playerInfo.ptr, RESURRPCTION_HUANHUNDAN, 100)	--原地复活
+		end
+	end,
+	
+	-- 判断是否够随机复活
+	OnCheckIfCanRandomRespawn = function (self, playerInfo)
+		if playerInfo:IsAlive() then
+			return
+		end
+		
+		local respawnTime = self:GetCostTimeCD(playerInfo)
+		if respawnTime > 0 then
+			if os.time() >= respawnTime then
+				self:OnRandomRespawn(playerInfo)
+			end
 		end
 	end,
 	
