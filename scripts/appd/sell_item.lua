@@ -61,6 +61,7 @@ function SortItem(player,flag)
 	
 	if not flag and nowtime - lasttime < tb_item_sort_cd[1].cd then
 		--outFmtError("SortItem: less than 10s from last sort!")
+		player:CallOptResult(OPRATE_TYPE_BAG,BAG_RESULT_BAG_SORT_CD)
 		return
 	end
 	if not flag then
@@ -88,11 +89,16 @@ function SortItem(player,flag)
 			local value1 = tb_item_template[item:getEntry()].rank --等级(降序) 品质(降序)  类型(升序)  战力(降序)  获取时间(降序)  entry(升序) 
 			local value2 = tb_item_template[item:getEntry()].quality
 			local value3 = tb_item_template[item:getEntry()].type_c
+			local value3_1 = tb_item_template[item:getEntry()].pos
 			local value4 = item:getForce()
 			local value5 = 0
 			local value6 = item:getEntry()
 			local value7 = item:getCount()
-			table.insert(tempTable,{pos=pos,value1=value1,value2=value2,value3=value3,value4=value4,value5=value5,value6=value6,value7=value7})
+			
+			-- 
+			local value = value4 + (99 - value3_1) * 100000+ (99-value3) * 10000000 + value2 * 1000000000+ value1 * 10000000000
+			--outFmtDebug("======= value4 = %d", value4)
+			table.insert(tempTable,{pos=pos,value = value,value1=value1,value2=value2,value3=value3,value3_1=value3_1,value4=value4,value5=value5,value6=value6,value7=value7})
 		end
 
 		--print("------------------------------")	
@@ -100,44 +106,39 @@ function SortItem(player,flag)
 		
 		--quickSort(itemMgr,tempTable,function(a,b)
 		mi_sort(tempTable, function(a,b)
-			--print("================")
-			--printTable(a)
-			--printTable(b)
-			if not b then
-				print(debug.traceback())
-			end
-			local r = false
-			if a.value1 == b.value1 then
-				if a.value2 == b.value2 then
-					if a.value3 == b.value3 then
-						if a.value4 == b.value4 then
-							if a.value5 == b.value5 then
-								if a.value6 == b.value6 then
-									r =  a.value7 >= b.value7
-								else
-									r =  a.value6 < b.value6
-								end
-							else
-							
-							
-							r =  a.value5 > b.value5
-							end
-						else
-							r =  a.value4 > b.value4
-						end
-					else
-						r =  a.value3 < b.value3
-					end
-				else
-					r =  a.value2 > b.value2
-				end
-			else
-				r =  a.value1 > b.value1
+			
+						
+			if a.value1 ~= b.value1 then
+				return a.value1 > b.value1
 			end
 			
+			if a.value2 ~= b.value2 then
+				return a.value2 > b.value2
+			end
 			
-			return r
-		end,function(a,b)
+			if a.value3 ~= b.value3 then
+				return a.value3 < b.value3
+			end
+			
+			if a.value3_1 ~= b.value3_1 then
+				return a.value3_1 < b.value3_1
+			end
+			
+			if a.value4 ~= b.value4 then
+				return a.value4 > b.value4
+			end
+			
+			if a.value5 ~= b.value5 then
+				return a.value5 > b.value5
+			end
+			
+			if a.value6 ~= b.value6 then
+				return a.value6 < b.value6
+			end
+			
+			return a.value7 > b.value7
+		end
+		,function(a,b)
 			itemMgr:exchangePos(bag_type,a.pos,bag_type,b.pos)
 			local temp = a.pos
 			a.pos = b.pos

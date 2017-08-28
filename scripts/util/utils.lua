@@ -436,14 +436,23 @@ function _sort(list, lt, rt, comp, callback)
 	local j = rt
 	local mid = math.floor((i + j) / 2)
 	local midValue = list[mid]
-	
+	--outFmtDebug("========= sort lt = %d, rt = %d", lt, rt)
+	--printCompareValue(midValue)
 	while (i <= j) do
-		while (i < mid and comp(list[ i ], midValue)) do
+		--outFmtDebug("========= i = %d, j = %d", i, j)
+		while (i < rt and comp(list[ i ], midValue)) do
+			--outFmtDebug("========= i = %d great than mid", i)
+			--printCompareValue(list[ i ])
 			i = i + 1
 		end
-		while (mid < j and comp(midValue, list[ j ])) do
+		while (lt < j and comp(midValue, list[ j ])) do
+			--outFmtDebug("========= j = %d small than mid", j)
+			--printCompareValue(list[ j ])
 			j = j - 1
 		end
+		--outFmtDebug("##################after check i = %d, j = %d", i, j)
+		--printCompareValue(list[ i ])
+		--printCompareValue(list[ j ])
 		if i <= j then
 			if callback and i < j then
 				callback(list[ i ], list[ j ])
@@ -463,6 +472,11 @@ function _sort(list, lt, rt, comp, callback)
 	if j > lt then
 		_sort(list, lt, j, comp, callback)
 	end
+end
+
+function printCompareValue(obj)
+	outFmtDebug("printCompareValue pos=%d,value = %d,value1=%d,value2=%d,value3=%d,value3_1=%d,value4=%d,value5=%d,value6=%d,value7=%d", 
+obj.pos,obj.value,obj.value1,obj.value2,obj.value3,obj.value3_1,obj.value4,obj.value5,obj.value6,obj.value7)
 end
 
 function IsKeyInTable(key, tbl)
@@ -723,4 +737,13 @@ end
 
 function swap(a, b)
 	return b, a
+end
+
+function string.ljust(str, len, char)
+	char = char or ' '
+	for i = len-#str, 1, -1 do
+		str = char.. str
+	end
+	
+	return str
 end
