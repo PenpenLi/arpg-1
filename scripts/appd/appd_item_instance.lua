@@ -35,17 +35,18 @@ end
 
 
 --获得物品属性 ps：这里只获得pk属性相关的，不包括特殊属性
-function AppItemInstance:getItemCalculAttr( item ,attrs)
+function AppItemInstance:getItemCalculAttr( item ,attrs,suitBaseAttribute)
 	--先添加基础属性
 	local entry = item:getEntry()
 	local item_tempate = tb_item_template[entry]
 	local pos = item_tempate.pos
 	local ary = item_tempate.basic_properties
+	
 	for i=1,#ary do
-		if not attrs[ary[i][1]] then
-			attrs[ary[i][1]] = 0
+		if not suitBaseAttribute[ary[i][1]] then
+			suitBaseAttribute[ary[i][1]] = 0
 		end
-		attrs[ary[i][1]] = attrs[ary[i][1]] + ary[i][2]
+		suitBaseAttribute[ary[i][1]] = suitBaseAttribute[ary[i][1]] + ary[i][2]
 	end
 	
 	local playerInfo = self:getOwner()
@@ -74,7 +75,7 @@ function AppItemInstance:getItemCalculAttr( item ,attrs)
 		end
 	end
 	--]]
-	--装备养成 部位属性 装备属性*精炼倍率 
+	--[[--装备养成 部位属性 装备属性*精炼倍率 
 	local refine_rank = spellMgr:GetEquipDevelopRefineRank(pos - 1)
 	local refine_star = spellMgr:GetEquipDevelopRefineStar(pos - 1)
 	local refine_config = tb_equipdevelop_refine[pos*10000+refine_rank*100+refine_star]
@@ -89,33 +90,35 @@ function AppItemInstance:getItemCalculAttr( item ,attrs)
 	for i,prop in pairs(array) do
 		table.insert(props,{prop[1],math.floor(prop[2] * refine_scale)})
 	end
-	
+	--]]
 	--添加附加属性 *精炼倍率 
 	local func = function (key,val)
 		if not attrs[key] then
 			attrs[key] = 0
 		end
-		attrs[key] = attrs[key] + math.floor(val * refine_scale)
+		attrs[key] = attrs[key] + val--math.floor( * refine_scale)
 	end
 
 	item:forEachBaseAttr(func)
 	
-	mergeAttrs(attrs, props)
+	--mergeAttrs(attrs, props)
 
-	
+	return item_tempate.battlePoint
 end
 
 --物品属性重算
-function AppItemInstance:itemCalculAttr( attrs )
+function AppItemInstance:itemCalculAttr( attrs ,suitBaseAttribute)
 	--local attrs = {}					--汇总所有属性
 	--for i = EQUIP_ATTR_HP, EQUIP_ATTR_CRIT_DEF do
 	--	attrs[i] = 0
 	--end
 	outFmtDebug("zhuangbei chongsuan")
 	--遍历装备包裹
+	local suitBasePoint = 0
 	local func = function( ptr )
 		local item = require("appd.appd_item").new(ptr)	
-		self:getItemCalculAttr(item,attrs)
+		local point = self:getItemCalculAttr(item,attrs ,suitBaseAttribute)
+		suitBasePoint = suitBasePoint + point
 		--local temp_attrs = self:getItemCalculAttr(item)
 		--self:resetItemForce(item)					
 		--汇总到总属性
@@ -144,13 +147,44 @@ function AppItemInstance:itemCalculAttr( attrs )
 	--]]
 	
 	
-	--todo 新装备养成 强化属性 宝石属性 全身奖励
+	--todo 新装备养成 精炼属性 强化属性 宝石属性 全身奖励
 	for pos = 1,EQUIPMENT_COUNT do
+		local refine_rank = spellMgr:GetEquipDevelopRefineRank(pos - 1)
+		local refine_star = spellMgr:GetEquipDevelopRefineStar(pos - 1)
+		local refine_config = tb_equipdevelop_refine[pos*10000+refine_rank*100+refine_star]
+		local refine_scale = 1
+		--[[
+		if refine_config then
+			refine_scale = (100 + refine_config.improve) /100
+		end
+		
+		for index,_ in pairs(attrs) do
+			attrs[index] = math.floor( attrs[index] * refine_scale)
+		end
+		
 		local strength_lv = spellMgr:GetEquipDevelopStrengthLv(pos - 1)
-		if tb_equipdevelop_strength[pos * 1000 + strength_lv] then
-			local props = tb_equipdevelop_strength[pos * 1000 + strength_lv].props
+		local strength_config = tb_equipdevelop_strength[pos * 1000 + strength_lv]
+		if strength_config then
+			local props = strength_config.props
 			mergeAttrs(attrs, props)
 		end
+		--]]
+		
+		if refine_config then
+			local props = refine_config["props"..getJobIndxByGender(playerInfo:GetGender())]
+			mergeAttrs(attrs, props)
+		end
+		
+		
+		local strength_lv = spellMgr:GetEquipDevelopStrengthLv(pos - 1)
+		local strength_config = tb_equipdevelop_strength[pos * 1000 + strength_lv]
+		if strength_config then
+			local props = strength_config["props"..getJobIndxByGender(playerInfo:GetGender())]
+			mergeAttrs(attrs, props)
+		end
+		
+		
+		
 		
 		local gem_part_config = tb_equipdevelop_gem_part[pos]
 		local gem_count = #(gem_part_config.gem_array)
@@ -184,7 +218,7 @@ function AppItemInstance:itemCalculAttr( attrs )
 	end
 	
 	outFmtInfo("bonus %d %d %d",bonus_strength_lv,bonus_refine_lv,bonus_gem_lv)
-	return attrs
+	return suitBasePoint
 end
 
 --套装属性重算
@@ -295,9 +329,9 @@ end
 function AppItemInstance:resetItemForce(item)
 	----[[
 	local temp_attrs = {}
-	self:getItemCalculAttr(item, temp_attrs)
-	
-	local force = DoAnyOneCalcForce( temp_attrs )		--计算战斗力
+	local force = self:getItemCalculAttr(item, temp_attrs,{})
+	local playerInfo = self:getOwner()
+	force = force + DoAnyOneCalcForce( temp_attrs, playerInfo:GetGender())		--计算战斗力
 	local cur_force = item:getAttr(ITEM_OTHER_ATTR_FORCE)
 	if cur_force == 0 or cur_force ~= force then
 		item:setAttr(ITEM_OTHER_ATTR_FORCE, force)		--更新物品战斗力		

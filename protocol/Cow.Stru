@@ -152,6 +152,13 @@ mass_boss_rank_info,/*全民boss排名*/
 #装备信息
 equip_info,/*装备信息*/
 	equip,String,50,/*装备信息*/
+	strength_lv,uint32,0,/*强化*/
+	refine_rank,uint32,0,/*精炼阶级*/
+	refine_star,uint32,0,/*精炼星级*/
+	gem1_lv,uint32,0,/*宝石1等级*/
+	gem2_lv,uint32,0,/*宝石1等级*/
+	gem3_lv,uint32,0,/*宝石1等级*/
+	
 	
 #全民boss排名
 act_rank_info,/*开服活动排名*/

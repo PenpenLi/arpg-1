@@ -207,7 +207,7 @@ end
 function PlayerInfo:SetRideState(val)
 	self:SetByte(PLAYER_INT_FIELD_MOUNT_LEVEL, 2, val)
 	local spellMgr = self:getSpellMgr()
-	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide())
+	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide(), self:GetGender())
 	self:SetMoveSpeed(speed)
 end
 

@@ -1293,21 +1293,20 @@ function handle_cast_monomer_spell(caster, target, spell_id, spell_lv, allTarget
 	skillDamVal		= params[ 4 ]
 	
 	local hitInfo = HITINFO_NORMALSWING
-	local normalDam = getCastDamage(casterInfo, targetInfo, spell_lv, skillDamFactor/100, skillDamVal)
-	local dam = 0
+	local mult = 1
 	-- 判断暴击
 	if isCrit(casterInfo, targetInfo) then
-		local mult = critMult(casterInfo, targetInfo)
-		dam = math.floor(critDamage(normalDam, mult))
+		mult = critMult(casterInfo, targetInfo)
 		hitInfo = HITINFO_CRITHIT
-	else
-		dam = math.floor(normalDam)
 	end
 	
+	local dam = getCastDamage(casterInfo, targetInfo, skillDamFactor/100, skillDamVal, mult)
 	-- 最小值
 	if dam <= 0 then
 		dam = 1
 	end
+	
+	dam = dam * 100
 	
 	AddSpellCastinfo(caster, target, dam, hitInfo, spell_id, tar_x, tar_y)
 		

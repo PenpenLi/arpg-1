@@ -113,11 +113,12 @@ end
 --称号装备重算 修改为计算所有拥有称号属性
 function AppQuestMgr:calculTitleAttr(attrs)
 	local allForce = 0
+	local owner = self:getOwner()
 	for i=QUEST_FIELD_TITLE_START,QUEST_FIELD_TITLE_END-1,MAX_TITLE_FIELD do
 		local title_id = self:GetUInt16(i,0)
 		if title_id ~= 0 then
 			local config = tb_title_base[title_id].prop
-			local baseForce = DoAnyOneCalcForceByAry(config)
+			local baseForce = DoAnyOneCalcForceByAry(config, owner:GetGender())
 			allForce = allForce + baseForce
 			for i=1,#config do
 				attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
@@ -125,7 +126,6 @@ function AppQuestMgr:calculTitleAttr(attrs)
 		end
 	end
 	
-	local owner = self:getOwner()
 	owner:SetTitleForce(allForce)
 end
 --检测失效称号

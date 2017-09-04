@@ -789,6 +789,7 @@ function FactionInfo:SetBangZhuInfo(player)
 	self:SetUInt32(FACTION_INT_FIELD_MANGER_GENDER,player:GetGender())
 	self:SetUInt32(FACTION_INT_FIELD_MANGER_TITLE,player:GetTitle())
 	self:SetUInt32(FACTION_INT_FIELD_MANGER_LIKE,player:GetUInt32(PLAYER_FIELD_RANK_LIKE))
+	self:SetUInt32(FACTION_INT_FIELD_MANGER_WING,player:GetUInt32(PLAYER_INT_FIELD_WINGS_RANK)*100 + player:GetUInt32(PLAYER_INT_FIELD_WINGS_STAR))
 end
 
 --设置帮主名字

@@ -394,3 +394,11 @@ function call_opt_login_check_name(player_guid, name)
 	app:sendToLogind(pkt)
 	pkt:delete()
 end
+
+function call_opt_update_char_name(player_guid, name)
+	local pkt = Packet.new(INTERNAL_OPT_UPDATE_CHAR_NAME)
+	pkt:writeUTF(player_guid)
+	pkt:writeUTF(name)
+	app:sendToLogind(pkt)
+	pkt:delete()
+end

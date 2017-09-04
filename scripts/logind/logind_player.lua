@@ -132,6 +132,7 @@ function DoMergeSomething()
 
 end
 
+
 -- 获得最大生命
 function LogindPlayer:GetMaxHealth()
 	return self:GetDouble(PLAYER_FIELD_MAX_HEALTH)
@@ -292,6 +293,11 @@ function LogindPlayer:SetControlResistRate(val)
 	self:SetDouble(PLAYER_FIELD_CONTROL_RESIST_RATE, val)
 end
 
+-- 设置强化护甲
+function LogindPlayer:SetStrengthArmor(val)
+	self:SetDouble(PLAYER_FIELD_STRENGTH_ARMOR, val)
+end
+
 local InitAttrFunc = {
 	[EQUIP_ATTR_MAX_HEALTH] = LogindPlayer.SetMaxHealth,	--设置最大生命
 	[EQUIP_ATTR_DAMAGE] = LogindPlayer.SetDamage,	--设置攻击力
@@ -323,6 +329,7 @@ local InitAttrFunc = {
 	[EQUIP_ATTR_CHARM_RATE] = LogindPlayer.SetCharmRate,	--设置魅惑
 	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = LogindPlayer.SetControlEnhanceRate,	--设置控制增强
 	[EQUIP_ATTR_CONTROL_RESIST_RATE] = LogindPlayer.SetControlResistRate,	--设置控制减免
+	[EQUIP_ATTR_STRENGTH_ARMOR] = LogindPlayer.SetStrengthArmor,	--设置强化护甲
 }
 
 
@@ -333,7 +340,9 @@ function LogindPlayer:SetNewPlayerInfo()
 	local config = tb_char_level[1]
 	if config then
 		self:SetDouble(PLAYER_EXPAND_INT_NEXT_LEVEL_XP, config.next_exp)
-		for _, val in ipairs(config.prop)do
+		local jobIndx = getJobIndxByGender(self:GetGender())
+		local baseprop = config["prop"..jobIndx]
+		for _, val in ipairs(baseprop)do
 			local func = InitAttrFunc[val[ 1 ]];
 			if func ~= nil then
 				func(self, val[2])

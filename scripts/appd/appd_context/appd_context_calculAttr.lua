@@ -155,6 +155,11 @@ function PlayerInfo:GetControlResistRate()
 	return self:GetDouble(PLAYER_FIELD_CONTROL_RESIST_RATE)
 end
 
+-- 获得强化护甲
+function PlayerInfo:GetStrengthArmor()
+	return self:GetDouble(PLAYER_FIELD_STRENGTH_ARMOR)
+end
+
 -- 设置当前生命
 function PlayerInfo:SetHealth(val)
 	self:SetDouble(PLAYER_FIELD_HEALTH, val)
@@ -310,6 +315,11 @@ function PlayerInfo:SetControlResistRate(val)
 	self:SetDouble(PLAYER_FIELD_CONTROL_RESIST_RATE, val)
 end
 
+-- 设置强化护甲
+function PlayerInfo:SetStrengthArmor(val)
+	self:SetDouble(PLAYER_FIELD_STRENGTH_ARMOR, val)
+end
+
 local PlayerInfo_Get_Attr_Func = {
 	[EQUIP_ATTR_MAX_HEALTH] = PlayerInfo.GetMaxHealth,	--设置最大生命
 	[EQUIP_ATTR_DAMAGE] = PlayerInfo.GetDamage,	--设置攻击力
@@ -341,6 +351,7 @@ local PlayerInfo_Get_Attr_Func = {
 	[EQUIP_ATTR_CHARM_RATE] = PlayerInfo.GetCharmRate,	--设置魅惑
 	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = PlayerInfo.GetControlEnhanceRate,	--设置控制增强
 	[EQUIP_ATTR_CONTROL_RESIST_RATE] = PlayerInfo.GetControlResistRate,	--设置控制减免
+	[EQUIP_ATTR_STRENGTH_ARMOR] = PlayerInfo.GetStrengthArmor,	--设置强化护甲
 }
 
 local PlayerInfo_Set_Attr_Func = {
@@ -374,6 +385,7 @@ local PlayerInfo_Set_Attr_Func = {
 	[EQUIP_ATTR_CHARM_RATE] = PlayerInfo.SetCharmRate,	--设置魅惑
 	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = PlayerInfo.SetControlEnhanceRate,	--设置控制增强
 	[EQUIP_ATTR_CONTROL_RESIST_RATE] = PlayerInfo.SetControlResistRate,	--设置控制减免
+	[EQUIP_ATTR_STRENGTH_ARMOR] = PlayerInfo.SetStrengthArmor,	--设置强化护甲
 }
 
 
@@ -394,23 +406,6 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	for attrId,_ in pairs(PlayerInfo_Set_Attr_Func) do
 		attrs[attrId] = 0
 	end
-	
-	-- 玩家基础属性
-	local level = self:GetLevel()
-	local config = tb_char_level[level]
-	if config then
-		for _, val in ipairs(config.prop) do
-			local indx = val[ 1 ]
-			-- 不是速度属性 或者 是速度属性 但是未骑乘
-			if indx ~= EQUIP_ATTR_MOVE_SPEED then
-				attrs[indx] = val[ 2 ]
-			end
-		end
-		-- battleForce = battleForce + DoAnyOneCalcForceByAry(config.prop)
-	end
-	
-	printAttr("base ", attrs)
-	
 	-- 技能管理类
 	local spellMgr = self:getSpellMgr()
 	local skillForce = 0
@@ -429,10 +424,14 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	outFmtDebug("base skill force %d", battleForce)
 	
 	-- 装备
+	local suitBaseForce = 0
+	local suitBaseAttribute = {}
 	local itemMgr = self:getItemMgr()
 	if itemMgr then 
-		itemMgr:itemCalculAttr(attrs) 
+		suitBaseForce = itemMgr:itemCalculAttr(attrs, suitBaseAttribute)
 	end
+	
+	battleForce = battleForce + suitBaseForce
 	
 	printAttr("suit ", attrs)
 
@@ -473,7 +472,7 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	printAttr("passive attr ", attrs)
 	
 	-- 获得玩家速度
-	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide())
+	local speed = GetPlayerSpeed(self:GetLevel(), spellMgr:getMountLevel(), self:GetCurrIllusionId(), self:isRide(), self:GetGender())
 	attrs[EQUIP_ATTR_MOVE_SPEED] = speed
 	
 	-- 外观
@@ -490,7 +489,25 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 	printAttr("appearance ", attrs)
 	
 	-- 算属性的战力
-	battleForce = battleForce + DoAnyOneCalcForce(attrs)
+	battleForce = battleForce + math.floor(DoAnyOneCalcForce(attrs, self:GetGender()) / 100)
+	
+	-- 玩家基础属性
+	local level = self:GetLevel()
+	local config = tb_char_level[level]
+	local jobIndx = getJobIndxByGender(self:GetGender())
+	if config then
+		local baseprop = config["prop"..jobIndx]
+		for _, val in ipairs(baseprop) do
+			local indx = val[ 1 ]
+			-- 不是速度属性 或者 是速度属性 但是未骑乘
+			if indx ~= EQUIP_ATTR_MOVE_SPEED then
+				attrs[indx] = val[ 2 ]
+			end
+		end
+		battleForce = battleForce + config["battlePoint"..jobIndx]
+	end
+	
+	printAttr("base ", attrs)
 	
 	local prevlist = {}
 	-- 设置到playerBase中
@@ -505,7 +522,11 @@ function PlayerInfo:DoCalculAttr  ( attr_binlog)
 				prevlist[attrId] = val - prev
 			end
 		end
-			
+		
+		if suitBaseAttribute[attrId] then
+			val = val + suitBaseAttribute[attrId]
+		end
+		
 		local func = PlayerInfo_Set_Attr_Func[attrId]
 		if func then
 			local index = attrId - 1

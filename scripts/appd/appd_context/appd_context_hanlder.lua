@@ -1,3 +1,5 @@
+local Packet = require 'util.packet'
+
 function PlayerInfo:Hanlde_Limit_Activity_Receive( pkt )
 	local limit_acti = self:getLimitActivityInfo()
 	if not limit_acti then
@@ -259,15 +261,6 @@ function PlayerInfo:Handle_Get_Player_Overview(pkt)
 		return
 	end
 	
-	local equip = {}
-	player:getItemMgr().itemMgr:ForEachBagItem(BAG_TYPE_EQUIP
-, function(ptr)
-		local item = require("appd.appd_item").new(ptr)
-		local stru = equip_info_t .new()
-		stru.equip 	= item:toString()
-		table.insert(equip, stru)
-	end)
-	
 	local name = player:GetName()
 	local force = player:GetForce()
 	local vip = player:GetVIP()
@@ -275,7 +268,51 @@ function PlayerInfo:Handle_Get_Player_Overview(pkt)
 	local gender = player:GetGender()
 	local coat = player:GetUInt16(PLAYER_INT_FIELD_APPEARANCE, 1)
 	local weapon = player:GetUInt16(PLAYER_INT_FIELD_APPEARANCE, 0)
-	self:call_show_player_overview(guid,name,equip,force,vip,title,gender,coat,weapon)
+	
+	local output = Packet.new(SMSG_SHOW_PLAYER_OVERVIEW)
+	output:writeUTF(guid)
+	output:writeUTF(name)
+	output:writeU32(force)
+	output:writeU32(vip)
+	output:writeU32(title)
+	output:writeU32(gender)
+	output:writeU32(coat)
+	output:writeU32(weapon)
+	
+	
+	local spellMgr = player:getSpellMgr()
+	local equip = {}
+	player:getItemMgr().itemMgr:ForEachBagItem(BAG_TYPE_EQUIP
+, function(ptr)
+		local item = require("appd.appd_item").new(ptr)
+		local stru = equip_info_t .new()
+		stru.equip 	= item:toString()
+		local entry = item:getEntry()
+		local item_tempate = tb_item_template[entry]
+		local pos = item_tempate.pos
+		stru.strength_lv = spellMgr:GetEquipDevelopStrengthLv(pos-1)
+		stru.refine_rank = spellMgr:GetEquipDevelopRefineRank(pos-1)
+		stru.refine_star = spellMgr:GetEquipDevelopRefineStar(pos-1)
+		stru.gem1_lv = spellMgr:GetEquipDevelopGemLv(pos-1,0)
+		stru.gem2_lv = spellMgr:GetEquipDevelopGemLv(pos-1,1)
+		stru.gem3_lv = spellMgr:GetEquipDevelopGemLv(pos-1,2)
+		
+		table.insert(equip, stru)
+	end)
+	
+	output:writeU16(#equip)
+	for _, equipInfo in ipairs(equip) do
+		output:writeUTF(equipInfo.equip) 
+		output:writeU32(equipInfo.strength_lv)
+		output:writeU32(equipInfo.refine_rank)
+		output:writeU32(equipInfo.refine_star)
+		output:writeU32(equipInfo.gem1_lv)
+		output:writeU32(equipInfo.gem2_lv)
+		output:writeU32(equipInfo.gem3_lv)
+	end
+	
+	self:SendPacket(output)
+	output:delete()
 end
 
 

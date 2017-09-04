@@ -110,32 +110,27 @@ end
 
 
 ----------------------------------计算战斗公式----------------------------------
--- 攻方命中率=min(命中 * 10000 /(命中+4*lv+20)+命中率增加(万分比),1)
--- 守方闪避率=max((闪避-忽视闪避(攻方))* 10000 /(闪避-忽视闪避(攻方)+lv*150+3000)+闪避率增加,0)
--- 实际命中率=攻方命中率-守方闪避率
+-- 命中率=85%+命中*0.01%
+-- 闪避率=闪避*0.005%
+-- 是否命中=命中率*（1-闪避率）		
+-- 所有属性都是*100的值 所以这里得还原
 -- @param attackInfo: 攻击方
 -- @param hurtInfo: 防守方
 -- return
 --		是否命中
 function isHit(attackInfo, hurtInfo)
-	-- 小怪必定命中
-	if hurtInfo:GetTypeID() == TYPEID_UNIT and not hurtInfo:GetUnitFlags(UNIT_FIELD_FLAGS_IS_BOSS_CREATURE) then
-		return true
-	end
-	local casterHit  = math.min(attackInfo:GetHit() * 10000 / (attackInfo:GetHit() + 4 * attackInfo:GetLevel() + 20) + attackInfo:GetHitRate(), 10000)
-	local targetMiss1 = hurtInfo:GetMiss() - attackInfo:GetIgnoreMiss()
-	local targetMiss = math.max(targetMiss1 * 10000 / (targetMiss1 + hurtInfo:GetLevel() * 150 + 3000) + hurtInfo:GetMissRate(), 0)
-	local p = math.floor(casterHit - targetMiss)
+	local hitRate  = 0.85 + attackInfo:GetHit() / 100 * 0.01 / 100
+	local missRate = hurtInfo:GetMiss() / 100 * 0.005 / 100
+	local p = math.floor(hitRate * (1 - missRate) * 10000)
 	local val = randInt(1, 10000)
 	
 	return val <= p
 end
 
--- 防御免伤=(防御-忽视防御)/((防御-忽视防御)*1.25+500+22.5*lv)
--- PS：此处防御是守方防御，忽视防御是攻方的忽视防御，lv是守方等级
-
--- 最终伤害=技能伤害*防御免伤*伤害增强*(1-伤害减免)
--- PS：此处伤害增强是攻方的伤害增强属性，伤害减免是守方的伤害减免属性
+-- 实际受到伤害=（攻击*技能加成比+技能附加）*（1-总免伤）*K暴击修正*（1+伤害加深-伤害减免）
+-- 总免伤=基础免伤+强化免伤
+-- 基础免伤=基础护甲/（基础护甲+25.5*lv+400）
+-- 强化免伤=强化护甲*职业系数
 
 -- @param attackInfo: 攻击方
 -- @param hurtInfo: 防守方
@@ -144,19 +139,21 @@ end
 -- @param skillDamVal: 攻击方技能伤害附加值(填表的)
 -- return
 --		伤害
-function getCastDamage(attackInfo, hurtInfo, skillLevel, skillDamFactor, skillDamVal)
-	
-	-- 防御免伤
-	local armorDiff = hurtInfo:GetArmor() - attackInfo:GetIgnoreArmor()
-	if armorDiff < 0 then
-		armorDiff = 0
+function getCastDamage(attackInfo, hurtInfo, skillDamFactor, skillDamVal, mult)
+	local armor = hurtInfo:GetArmor() / 100
+	local jobIndx = -1
+	if hurtInfo:GetGender() > 0 then
+		jobIndx = getJobIndxByGender(hurtInfo:GetGender())
 	end
-	local armorResit = armorDiff / (armorDiff * 1.25 + 500 + 22.5 * hurtInfo:GetLevel())
-	-- 技能伤害
-	local skillam = getSkillDam(attackInfo:GetDamage(), skillDamFactor, skillDamVal)
-	-- 最终伤害
-	local normalDam = math.floor(skillam * (1-armorResit) * (1 + attackInfo:GetDamageAmplifyRate() / 10000) * (10000 - hurtInfo:GetDamageResistRate()) / 10000)
-	return normalDam
+	local factor = tb_job_info[jobIndx].rate / 1000000
+	local damageResist = armor / (armor + 25.5 * attackInfo:GetLevel() + 400) + hurtInfo:GetStrengthArmor() / 100 * factor 
+	
+	local damAmp = attackInfo:GetDamageAmplifyRate() / 100 / 10000
+	local damRes = hurtInfo:GetDamageResistRate() / 100 / 10000
+	local attackDamage = attackInfo:GetDamage() / 100
+	
+	local dam = math.floor((attackDamage * skillDamFactor + skillDamVal) * (1 - damageResist) * mult * (1 + damAmp - damRes))
+	return dam
 end
 
 -- 伤害随机区间：[85%, 115%]
@@ -175,10 +172,11 @@ function getSkillDam(damage, skillDamFactor, skillDamVal)
 end
 
 --[[
-	攻方暴击率=暴击*10000/(暴击*1. 5+3950+25*lv)+暴击率增加
-	守方免暴率=坚韧*10000/(坚韧*8+7000+20*lv)+免暴率增加
-	实际暴击率=max(攻方暴击率-守方免暴率,0)
+暴击率=10%+暴击*0.005%	
+抗暴击率=抗暴*0.008%	
+是否暴击=暴击率*（1-抗暴率）
 
+-- 所有属性都是*100的值 所以这里得还原
 	@param attackInfo: 攻击方
 	@param hurtInfo: 防守方
 	return
@@ -186,21 +184,24 @@ end
 --]]
 
 function isCrit(attackInfo, hurtInfo)
-	local casterCrit	= math.floor(attackInfo:GetCrit() * 10000 / (attackInfo:GetCrit() * 1.5 + 3950 + 25 * attackInfo:GetLevel()) + attackInfo:GetCritRate())
-	local targetResist	= math.floor(hurtInfo:GetTough() * 10000 / (hurtInfo:GetTough() * 8 + 7000+ 20 * hurtInfo:GetLevel()) + hurtInfo:GetCritResistRate())
-	local p = math.max(casterCrit - targetResist, 0)
+	local critRate = 0.1 + attackInfo:GetCrit() / 100 * 0.005 / 100
+	local resistCritRate = hurtInfo:GetTough() / 100 * 0.008 / 100
+	
+	local p = math.floor(critRate * (1 - resistCritRate) * 10000)
 	local val = randInt(1, 10000)
 
 	return val <= p
 end
 
--- 爆伤万分比=200%+(爆伤增加(攻方)-爆伤减免(守方)) / 10000
+-- 未暴击，K暴击修正=0								
+-- 暴击时，K暴击修正=1.5+(暴击伤害-暴伤减免)*0.01%							150%<=K暴击修正<=300%	
+-- 所有属性都是*100的值 所以这里得还原
 -- @param attackInfo: 攻击方
 -- @param hurtInfo: 防守方
 -- return
 --		暴击倍数
 function critMult(attackInfo, hurtInfo)
-	return 2 + (attackInfo:GetCritDamRate() - hurtInfo:GetCritResistDamRate()) / 10000
+	return 1.5 + (attackInfo:GetCritDamRate() - hurtInfo:GetCritResistDamRate()) / 100 * 0.01 / 100
 end
 
 -- 暴击伤害=暴击伤害倍数*普通伤害
@@ -218,7 +219,7 @@ end
 -- return
 --		反弹伤害
 function damageReturned(damage, hurtInfo)
-	return math.floor(damage * hurtInfo:GetDamageReturnRate() / 10000)
+	return math.floor(damage * hurtInfo:GetDamageReturnRate() / 100 / 10000)
 end
 
 -- 吸血
@@ -227,5 +228,5 @@ end
 -- return
 --		吸血值
 function damageVampiric(damage, casterInfo)
-	return math.floor(damage * casterInfo:GetVampiricRate() / 10000)
+	return math.floor(damage * casterInfo:GetVampiricRate() / 100 / 10000)
 end

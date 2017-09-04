@@ -1496,14 +1496,13 @@ get_player_overview,c2s,389,/*查看玩家详情*/,STATUS_NEVER,False
 show_player_overview,s2c,390,/*返回玩家详情*/,STATUS_NEVER,False
 	guid,String,False,/*玩家id*/
 	name,String,False,/*名称*/
-	equip,equip_info,True,/*装备*/
 	force,uint32,False,/*战力*/
 	vip,uint32,False,/*vip*/
 	title,uint32,False,/*称号*/
 	gender,uint32,False,/*性别*/
 	coat,uint32,False,/*外观*/
 	weapon,uint32,False,/*武器外观*/
-	
+
 #
 send_faction_invite,c2s,391,/*邀请加入帮派*/,STATUS_NEVER,False
 	guid,String,False,/*玩家id*/	

@@ -230,7 +230,7 @@ function AppSpellMgr:calculMountAttr(attrs)
 	end
 	
 	-- 计算总的属性
-	local baseForce = DoAnyOneCalcForce(mountAttr)
+	local baseForce = DoAnyOneCalcForce(mountAttr, player:GetGender())
 	allForce = allForce + baseForce
 	-- 属性
 	for indx, val in pairs(mountAttr)do
@@ -397,6 +397,7 @@ function AppSpellMgr:getDivineList()
 end
 --神兵属性加成
 function AppSpellMgr:calculDivineAttr(attrs)
+	local player = self:getOwner()
 	local tab = self:getDivineList()
 	--Ttab(attrs)
 	local allForce = 0
@@ -443,14 +444,13 @@ function AppSpellMgr:calculDivineAttr(attrs)
 			
 		end
 		
-		local baseForce = DoAnyOneCalcForceByAry(config)
+		local baseForce = DoAnyOneCalcForceByAry(config, player:GetGender())
 		allForce = allForce + baseForce
 		for i=1,#config do
 			attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
 		end
 	end
 	
-	local player = self:getOwner()
 	player:SetDivineForce(allForce)
 	--Ttab(attrs)
 end
@@ -739,14 +739,15 @@ function AppSpellMgr:calculTalismanForce(id)
 		table.insert(config,{attr_id,attr_value})
 		
 	end
-	
-	local baseForce = DoAnyOneCalcForceByAry(config)
+	local player = self:getOwner()
+	local baseForce = DoAnyOneCalcForceByAry(config, player:GetGender())
 	self:SetTalismanForce(index,baseForce)
 end
 
 
 --法宝属性总加成
 function AppSpellMgr:calculTalismanAttr(attrs)
+	local player = self:getOwner()
 	local tab = self:getTalismanList()
 	--Ttab(attrs)
 	local allForce = 0
@@ -778,14 +779,13 @@ function AppSpellMgr:calculTalismanAttr(attrs)
 			
 		end
 		
-		local baseForce = DoAnyOneCalcForceByAry(config)
+		local baseForce = DoAnyOneCalcForceByAry(config, player:GetGender())
 		allForce = allForce + baseForce
 		for i=1,#config do
 			attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
 		end
 	end
 	
-	local player = self:getOwner()
 	player:SetAllTalismanForce(allForce)
 	--Ttab(attrs)
 end
@@ -822,7 +822,7 @@ function AppSpellMgr:SetWingsBlessExp(value)
 end
 
 function AppSpellMgr:calculWingsAttr(attrs)
-	
+	local player = self:getOwner()
 	local props_table = {}
 	
 	local id = self:GetWingsId()
@@ -852,13 +852,12 @@ function AppSpellMgr:calculWingsAttr(attrs)
 		
 	end
 	
-	local baseForce = DoAnyOneCalcForceByAry(config)
+	local baseForce = DoAnyOneCalcForceByAry(config, player:GetGender())
 	
 	for i=1,#config do
 		attrs[config[i][1]] = attrs[config[i][1]] + config[i][2]
 	end
 	
-	local player = self:getOwner()
 	player:SetWingsForce(baseForce)
 	--Ttab(attrs)
 end
@@ -926,13 +925,15 @@ function AppSpellMgr:addMeridianExpSource(sourceId)
 end
 
 function AppSpellMgr:calcMeridianAttr(attrs)
+	local player = self:getOwner()
 	
 	local meridianAttrs = {}
 	local lv = self:getMeridianLevel()
 	local config = tb_meridian_info[lv]
 	
-	local attrKeys = config.attrKeys
-	local attrValues = config.attrValues
+	local jobIndx = getJobIndxByGender(player:GetGender())
+	local attrKeys = config["attrKeys"..jobIndx]
+	local attrValues = config["attrValues"..jobIndx]
 	for i = 1, #attrKeys do
 		local attr_id		= attrKeys[ i ]
 		local attr_value	= attrValues[ i ]
@@ -943,8 +944,8 @@ function AppSpellMgr:calcMeridianAttr(attrs)
 		attrs[attr_id] = attrs[attr_id] + attr_value
 	end
 	
-	local baseForce = DoAnyOneCalcForceByAry(meridianAttrs)
-	local player = self:getOwner()
+	local baseForce = DoAnyOneCalcForceByAry(meridianAttrs, player:GetGender())
+	
 	player:SetMeridianForce(baseForce)
 end
 

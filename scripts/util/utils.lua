@@ -274,19 +274,21 @@ function changeTableToList(dict)
 end
 
 -- 计算战斗力
-function DoAnyOneCalcForce(attrDict)
+function DoAnyOneCalcForce(attrDict, gender)
+	local jobIndx = getJobIndxByGender(gender)
 	local battlePoint = 0
 	for attrId, value in pairs(attrDict) do
-		battlePoint = battlePoint + value * tb_battle_force[attrId].rate
+		battlePoint = battlePoint + value * tb_battle_force[attrId]["rate"..jobIndx]
 	end
 	
 	return math.floor(battlePoint / 10000)
 end
 
-function DoAnyOneCalcForceByAry(attrAy)
+function DoAnyOneCalcForceByAry(attrAy, gender)
+	local jobIndx = getJobIndxByGender(gender)
 	local battlePoint = 0
 	for k, v in pairs(attrAy) do
-		battlePoint = battlePoint + v[2] * tb_battle_force[v[1]].rate
+		battlePoint = battlePoint + v[2] * tb_battle_force[v[1]]["rate"..jobIndx]
 	end
 	
 	return math.floor(battlePoint / 10000)
@@ -352,14 +354,16 @@ function GetCostMulTab(baseTab,mul)
 end
 
 -- 获得玩家的当前速度
-function GetPlayerSpeed(playerLevel, mountLevel, illusionId, isRidable)
+function GetPlayerSpeed(playerLevel, mountLevel, illusionId, isRidable, gender)
 	local speed = 0
 	
 	-- 未骑乘的取玩家速度
 	if not isRidable then
 		local config = tb_char_level[playerLevel]
 		if config then
-			for _, val in ipairs(config.prop) do
+			local jobIndx = getJobIndxByGender(gender)
+			local baseprop = config["prop"..jobIndx]
+			for _, val in ipairs(baseprop) do
 				local indx = val[ 1 ]
 				if indx == EQUIP_ATTR_MOVE_SPEED then
 					return val[ 2 ]
@@ -627,6 +631,7 @@ attrKeys = {
 	[EQUIP_ATTR_CHARM_RATE] = PLAYER_FIELD_CHARM_RATE,	--魅惑
 	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = PLAYER_FIELD_CONTROL_ENHANCE_RATE,	--控制增强
 	[EQUIP_ATTR_CONTROL_RESIST_RATE] = PLAYER_FIELD_CONTROL_RESIST_RATE,	--控制减免
+	[EQUIP_ATTR_STRENGTH_ARMOR] = PLAYER_FIELD_STRENGTH_ARMOR,	--强化护甲
 }
 
 -- 得到属性对应的区间所所表示的颜色
@@ -746,4 +751,8 @@ function string.ljust(str, len, char)
 	end
 	
 	return str
+end
+
+function getJobIndxByGender(gender)
+	return math.floor((gender - 1) / 2)
 end

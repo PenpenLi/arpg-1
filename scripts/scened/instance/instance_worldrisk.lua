@@ -220,7 +220,7 @@ function InstanceWorldRisk:onBossLoot(player_ptr, dict)
 	local seciontId = self:getSectionId()
 	playerInfo:passSection(seciontId)
 
-	PlayerAddRewards(player_ptr, dict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD, 1)
+	PlayerAddRewards(player_ptr, dict, MONEY_CHANGE_TRIAL_INSTANCE_REWARD, LOG_ITEM_OPER_TYPE_TRIAL_INSTANCE_REWARD, 0)
 
 	-- Ñ¹³É×Ö·û´®
 	local reward = {}

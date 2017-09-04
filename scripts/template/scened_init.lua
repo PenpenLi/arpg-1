@@ -141,4 +141,5 @@ require("template.tables.tb_group_instance_base")
 require("template.tables.tb_script_base")
 
 require("template.tables.tb_mail")
+require("template.tables.tb_job_info")
 require("template.tables.tb_doujiantai_combat_win")

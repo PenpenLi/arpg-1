@@ -583,6 +583,7 @@ local tBaseKey = {
 	[EQUIP_ATTR_CHARM_RATE] = UNIT_FIELD_CHARM_RATE,	--魅惑
 	[EQUIP_ATTR_CONTROL_ENHANCE_RATE] = UNIT_FIELD_CONTROL_ENHANCE_RATE,	--控制增强
 	[EQUIP_ATTR_CONTROL_RESIST_RATE] = UNIT_FIELD_CONTROL_RESIST_RATE,	--控制减免
+	[EQUIP_ATTR_STRENGTH_ARMOR] = UNIT_FIELD_STRENGTH_ARMOR,	--强化护甲
 }
 
 function GetAttrSize()
@@ -1833,6 +1834,11 @@ function UnitInfo:GetControlResistRate()
 	return self:GetUInt32(UNIT_FIELD_CONTROL_RESIST_RATE)
 end
 
+-- 获得强化护甲
+function UnitInfo:GetStrengthArmor()
+	return self:GetUInt32(UNIT_FIELD_STRENGTH_ARMOR)
+end
+
 -- 设置最大生命
 function UnitInfo:SetMaxHealth(val)
 	self:SetUInt32(UNIT_FIELD_MAX_HEALTH, val)
@@ -1983,6 +1989,10 @@ function UnitInfo:SetControlResistRate(val)
 	self:SetUInt32(UNIT_FIELD_CONTROL_RESIST_RATE, val)
 end
 
+-- 设置强化护甲
+function UnitInfo:SetStrengthArmor(val)
+	self:SetUInt32(UNIT_FIELD_STRENGTH_ARMOR, val)
+end
 
 --属性重算（场景服）
 function DoRecalculationAttrs(attrBinlog, player, runtime, bRecal)

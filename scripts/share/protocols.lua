@@ -1715,6 +1715,36 @@ function equip_info_t:read( input )
 	if not ret then
 		return ret
 	end
+	ret,self.strength_lv = input:readU32() --/*强化*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.refine_rank = input:readU32() --/*精炼阶级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.refine_star = input:readU32() --/*精炼星级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.gem1_lv = input:readU32() --/*宝石1等级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.gem2_lv = input:readU32() --/*宝石1等级*/
+
+	if not ret then
+		return ret
+	end
+	ret,self.gem3_lv = input:readU32() --/*宝石1等级*/
+
+	if not ret then
+		return ret
+	end
 
 	return input
 end
@@ -1724,6 +1754,36 @@ function equip_info_t:write( output )
 		self.equip = ''
 	end
 	output:writeUTFByLen(self.equip , 50 ) 
+	
+	if(self.strength_lv == nil)then
+		self.strength_lv = 0
+	end
+	output:writeU32(self.strength_lv)
+	
+	if(self.refine_rank == nil)then
+		self.refine_rank = 0
+	end
+	output:writeU32(self.refine_rank)
+	
+	if(self.refine_star == nil)then
+		self.refine_star = 0
+	end
+	output:writeU32(self.refine_star)
+	
+	if(self.gem1_lv == nil)then
+		self.gem1_lv = 0
+	end
+	output:writeU32(self.gem1_lv)
+	
+	if(self.gem2_lv == nil)then
+		self.gem2_lv = 0
+	end
+	output:writeU32(self.gem2_lv)
+	
+	if(self.gem3_lv == nil)then
+		self.gem3_lv = 0
+	end
+	output:writeU32(self.gem3_lv)
 	
 	return output
 end
@@ -12642,15 +12702,10 @@ end
 
 
 -- /*返回玩家详情*/	
-function Protocols.pack_show_player_overview ( guid ,name ,equip ,force ,vip ,title ,gender ,coat ,weapon)
+function Protocols.pack_show_player_overview ( guid ,name ,force ,vip ,title ,gender ,coat ,weapon)
 	local output = Packet.new(SMSG_SHOW_PLAYER_OVERVIEW)
 	output:writeUTF(guid)
 	output:writeUTF(name)
-	output:writeI16(#equip)
-	for i = 1,#equip,1
-	do
-		equip[i]:write(output)
-	end
 	output:writeU32(force)
 	output:writeU32(vip)
 	output:writeU32(title)
@@ -12661,8 +12716,8 @@ function Protocols.pack_show_player_overview ( guid ,name ,equip ,force ,vip ,ti
 end
 
 -- /*返回玩家详情*/	
-function Protocols.call_show_player_overview ( playerInfo, guid ,name ,equip ,force ,vip ,title ,gender ,coat ,weapon)
-	local output = Protocols.	pack_show_player_overview ( guid ,name ,equip ,force ,vip ,title ,gender ,coat ,weapon)
+function Protocols.call_show_player_overview ( playerInfo, guid ,name ,force ,vip ,title ,gender ,coat ,weapon)
+	local output = Protocols.	pack_show_player_overview ( guid ,name ,force ,vip ,title ,gender ,coat ,weapon)
 	playerInfo:SendPacket(output)
 	output:delete()
 end
@@ -12680,19 +12735,6 @@ function Protocols.unpack_show_player_overview (pkt)
 	if not ret then
 		return false
 	end	
-	ret,len = input:readU16()
-	if not ret then
-		return false
-	end
-	param_table.equip = {}
-	for i = 1,len,1
-	do
-		local stru = equip_info_t .new()
-		if(stru:read(input)==false)then
-			return false
-		end
-		table.insert(param_table.equip,stru)
-	end
 	ret,param_table.force = input:readU32()
 	if not ret then
 		return false
